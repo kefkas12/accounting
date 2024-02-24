@@ -44,7 +44,7 @@
                                     <td width="500px">
                                         <div class="d-flex">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-xs username">({{ $w->akun->nomor }}) - {{ $w->akun->nama }}</h6>
+                                                <h6 class="mb-0 text-xs username">@if($w->akun) ({{ $w->akun->nomor }}) - {{ $w->akun->nama }} @else - @endif</h6>
                                                 <p class="text-xs mb-0 email">{{ $w->deskripsi }}</p>
                                             </div>
                                         </div>

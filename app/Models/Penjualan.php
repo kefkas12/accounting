@@ -52,10 +52,11 @@ class Penjualan extends Model
         $this->id_pelanggan = $request->input('pelanggan');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
         $this->status = 'open';
-        $this->subtotal = $request->input('subtotal');
-        $this->ppn = $request->input('ppn');
-        $this->sisa_tagihan = $request->input('sisa_tagihan');
-        $this->total = $request->input('total');
+        $this->subtotal = $request->input('input_subtotal');
+        $this->diskon_per_baris = $request->input('input_diskon_per_baris');
+        $this->ppn = $request->input('input_ppn');
+        $this->sisa_tagihan = $request->input('input_sisa_tagihan');
+        $this->total = $request->input('input_total');
         $this->alamat = $request->input('alamat');
         $this->email = $request->input('email');
         $this->id_jurnal = $idJurnal;

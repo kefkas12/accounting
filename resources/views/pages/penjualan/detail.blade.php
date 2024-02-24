@@ -85,7 +85,7 @@
                                                     0%
                                                 @endif
                                             </td>
-                                            <td>PPN</td>
+                                            <td>@if($v->pajak != 0) PPN @endif</td>
                                             <td>Rp. {{ number_format($v->jumlah, 2, ',', '.') }}</td>
                                         </tr>
                                     @endforeach
@@ -95,7 +95,7 @@
                         <div class="row">
                             <div class="col-sm-7"></div>
                             <div class="col-sm-5">
-                                <div class="row my-3">
+                                <div class="row my-2">
                                     <div class="col-sm-6">
                                         <h4>Subtotal</h4>
                                     </div>
@@ -103,12 +103,22 @@
                                         <h4>Rp. {{ number_format($penjualan->subtotal, 2, ',', '.') }}</h4>
                                     </div>
                                 </div>
-                                <div class="row my-3">
+                                @if($penjualan->diskon_per_baris)
+                                <div class="row">
                                     <div class="col-sm-6">
-                                        <h4>PPN 11%</h4>
+                                        <p>Diskon per baris</p>
                                     </div>
                                     <div class="col-sm-6 d-flex justify-content-end">
-                                        <h4>Rp. {{ number_format($penjualan->ppn, 2, ',', '.') }}</h4>
+                                        <p>Rp. {{ number_format($penjualan->diskon_per_baris, 2, ',', '.') }}</p>
+                                    </div>
+                                </div>
+                                @endif
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <p>PPN 11%</p>
+                                    </div>
+                                    <div class="col-sm-6 d-flex justify-content-end">
+                                        <p>Rp. {{ number_format($penjualan->ppn, 2, ',', '.') }}</p>
                                     </div>
                                 </div>
                                 <hr>

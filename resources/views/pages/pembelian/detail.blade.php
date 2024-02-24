@@ -77,7 +77,7 @@
                                             <td>{{ $v->kuantitas }}</td>
                                             <td>Buah</td>
                                             <td>Rp. {{ number_format($v->harga_satuan, 2, ',', '.') }}</td>
-                                            <td>PPN</td>
+                                            <td>@if($v->pajak != 0) PPN @endif</td>
                                             <td>Rp. {{ number_format($v->jumlah, 2, ',', '.') }}</td>
                                         </tr>
                                     @endforeach

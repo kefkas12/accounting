@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Akun;
+use App\Models\Akun_company;
+use App\Models\Company;
 use App\Models\Detail_pembelian;
+use App\Models\Jurnal;
 use App\Models\Kontak;
 use App\Models\Pembayaran_pembelian;
 use App\Models\Pembelian;
@@ -28,6 +32,7 @@ class PembelianController extends Controller
                                         ->get();
         $data['belum_dibayar'] = number_format(Pembelian::where('tanggal_jatuh_tempo','>',date('Y-m-d'))
                                         ->sum('sisa_tagihan'),2,',','.');
+
         return view('pages.pembelian.index', $data);
     }
     public function detail($id)
@@ -67,33 +72,11 @@ class PembelianController extends Controller
 
     public function insert(Request $request)
     {
-        $pembelian = new Pembelian;
-        $pembelian->id_company = Auth::user()->id_company;
-        $pembelian->tanggal_transaksi = $_POST['tanggal_transaksi'];
-        $pembelian->no = $pembelian->no();
-        $pembelian->no_str = 'Purchase Invoice #'.$pembelian->no();
-        $pembelian->id_supplier = $_POST['supplier'];
-        $pembelian->tanggal_jatuh_tempo = $_POST['tanggal_jatuh_tempo'];
-        $pembelian->status = 'open';
-        $pembelian->subtotal = $_POST['subtotal'];
-        $pembelian->ppn = $_POST['ppn'];
-        $pembelian->sisa_tagihan = $_POST['sisa_tagihan'];
-        $pembelian->total = $_POST['total'];
-        $pembelian->alamat = $_POST['alamat'];
-        $pembelian->email = $_POST['email'];
-        $pembelian->save();
+        $jurnal = new Jurnal;
+        $jurnal->pembelian($request);
 
-        for($i=0; $i<count($_POST['produk']) ; $i++){
-            $detail_pembelian = new Detail_pembelian;
-            $detail_pembelian->id_company = Auth::user()->id_company;
-            $detail_pembelian->id_pembelian = $pembelian->id;
-            $detail_pembelian->id_produk = $_POST['produk'][$i];
-            $detail_pembelian->kuantitas = $_POST['kuantitas'][$i];
-            $detail_pembelian->harga_satuan = $_POST['harga_satuan'][$i];
-            $detail_pembelian->pajak = $_POST['jumlah'][$i] * $_POST['pajak'][$i] / 100;
-            $detail_pembelian->jumlah = $_POST['jumlah'][$i];
-            $detail_pembelian->save();
-        }
+        $pembelian = new Pembelian;
+        $pembelian->insert($request, $jurnal->id);
 
         return redirect('pembelian');
     }

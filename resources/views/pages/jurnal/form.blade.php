@@ -2,6 +2,11 @@
 
 @section('content')
     @include('layouts.headers.cards')
+    <style>
+        .chosen-container.chosen-with-drop .chosen-drop {
+    position: relative;
+}
+    </style>
     <!-- Page content -->
     <div class="mt--6">
         <!-- Dark table -->
@@ -22,15 +27,15 @@
                                 </div>
                             </div>
 
-                            <div class="table-responsive">
-                                <table class="table align-items-center table-flush">
+                            <div style="overflow-x: auto">
+                                <table class="table">
                                     <thead>
                                         <tr>
-                                            <th>Akun</th>
-                                            <th>Deskripsi</th>
-                                            <th>Debit</th>
-                                            <th>Kredit</th>
-                                            <th></th>
+                                            <th scope="col" style="min-width: 300px !important;">Akun</th>
+                                            <th scope="col" style="min-width: 250px !important;">Deskripsi</th>
+                                            <th scope="col" style="min-width: 250px !important;">Debit</th>
+                                            <th scope="col" style="min-width: 250px !important;">Kredit</th>
+                                            <th scope="col" style="min-width: 25px !important;"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="list">
@@ -70,45 +75,40 @@
                                                     value="0" onkeyup="change_debit(2)"></td>
                                             <td><input type="number" class="form-control" id="kredit_2" name="kredit[]"
                                                     value="0" onkeyup="change_kredit(2)"></td>
-                                            <td></td>
+                                            <td><a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a></td>
                                         </tr>
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="6"><button type="button" class="btn btn-primary btn-block"
-                                                    onclick="create_row()">Tambah</button></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
-                                <hr>
-                                <div class="row">
-                                    <div class="col-sm-8"></div>
-                                    <div class="col">
-                                        <span>Total Debit</span>
-                                    </div>
-                                    <div class="col">
-                                        <span>Total Kredit</span>
-                                    </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-8"></div>
+                                <div class="col">
+                                    <span>Total Debit</span>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm-8"></div>
-                                    <div class="col">
-                                        <span id="debit">Rp 0,00</span>
-                                        <input type="text" id="input_debit" name="total_debit" hidden>
-                                    </div>
-                                    <div class="col">
-                                        <span id="kredit">Rp 0,00</span>
-                                        <input type="text" id="input_kredit" name="total_kredit" hidden>
-                                    </div>
-                                </div>
-                                <div class="row my-5">
-                                    <div class="col d-flex justify-content-end">
-                                        <a href="{{ url('akun') }}" class="btn btn-light">Batalkan</a>
-                                        <button type="button" class="btn btn-primary" onclick="check_balance();">Buat
-                                            Jurnal Umum</button>
-                                    </div>
+                                <div class="col">
+                                    <span>Total Kredit</span>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-sm-8"></div>
+                                <div class="col">
+                                    <span id="debit">Rp 0,00</span>
+                                    <input type="text" id="input_debit" name="total_debit" hidden>
+                                </div>
+                                <div class="col">
+                                    <span id="kredit">Rp 0,00</span>
+                                    <input type="text" id="input_kredit" name="total_kredit" hidden>
+                                </div>
+                            </div>
+                            <div class="row my-5">
+                                <div class="col d-flex justify-content-end">
+                                    <a href="{{ url('akun') }}" class="btn btn-light">Batalkan</a>
+                                    <button type="button" class="btn btn-primary" onclick="check_balance();">Buat
+                                        Jurnal Umum</button>
+                                </div>
+                            </div>
+                            
                         </form>
                     </div>
                 </div>
@@ -148,14 +148,6 @@
         var debit = {};
         var kredit = {};
 
-        const rupiah = (number) => {
-            return new Intl.NumberFormat("id-ID", {
-                style: "currency",
-                currency: "IDR"
-            }).format(number);
-        }
-
-
         function load() {
             result_debit = 0;
             for (var key in debit) {
@@ -174,12 +166,12 @@
         }
 
         function change_debit(no) {
-            debit[no] = $('#debit_' + no).val() == '' ? 0 : parseInt($('#debit_' + no).val());
+            debit[no] = $('#debit_' + no).val() == '' ? 0 : parseFloat($('#debit_' + no).val());
             load();
         }
 
         function change_kredit(no) {
-            kredit[no] = $('#kredit_' + no).val() == '' ? 0 : parseInt($('#kredit_' + no).val());
+            kredit[no] = $('#kredit_' + no).val() == '' ? 0 : parseFloat($('#kredit_' + no).val());
             load();
         }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Akun;
+use App\Models\Akun_company;
 use App\Models\Detail_jurnal;
 use App\Models\Jurnal;
 use Illuminate\Http\Request;
@@ -36,9 +37,15 @@ class JurnalController extends Controller
             $detail_jurnal->kredit = $_POST['kredit'][$i];
             $detail_jurnal->save();
 
-            $akun = Akun::find($_POST['akun'][$i]);
-            $akun->saldo = $akun->saldo + $detail_jurnal->debit - $detail_jurnal->kredit;
-            $akun->save();
+            $akun_company = Akun_company::where('id_akun',$_POST['akun'][$i])
+                                        ->where('id_company',Auth::user()->id_company)
+                                        ->first();
+            $saldo = $akun_company ? $akun_company->saldo : 0;
+
+            $akun_company = Akun_company::updateOrCreate(
+                ['id_akun' => $_POST['akun'][$i], 'id_company' => Auth::user()->id_company],
+                ['saldo' => $saldo + $detail_jurnal->debit - $detail_jurnal->kredit]
+            );
         }
 
         return redirect('laporan/jurnal');

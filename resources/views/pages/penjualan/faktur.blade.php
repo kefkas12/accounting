@@ -6,9 +6,9 @@
     <div class="mt--6">
         <!-- Dark table -->
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col">
                 <div class="card mb-5">
-                    <div class="card-header bg-transparent border-0">
+                    <div class="card-header border-0">
                         Buat Faktur Penjualan
                     </div>
                     <form method="POST" action="{{ url('penjualan/faktur') }}">
@@ -56,6 +56,7 @@
                                         name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
                                 </div>
                             </div>
+
                             <div style="overflow: auto">
                                 <table class="table align-items-center table-flush">
                                     <!-- Your table headers -->
@@ -85,10 +86,10 @@
                                             </td>
                                             <td><input type="number" class="form-control" id="kuantitas_1"
                                                     name="kuantitas[]" value="1" onkeyup="change_jumlah(1)"
-                                                    onblur="check_null(this)"></td>
+                                                    onblur="check_null(this)" step="any"></td>
                                             <td><input type="number" class="form-control" id="harga_satuan_1"
                                                     name="harga_satuan[]" value="0" onkeyup="change_jumlah(1)"
-                                                    onblur="check_null(this)"></td>
+                                                    onblur="check_null(this)" step="any"></td>
                                             <td>
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
@@ -96,7 +97,7 @@
                                                         </div>
                                                         <input type="number" class="form-control" id="diskon_per_baris_1"
                                                             name="diskon_per_baris[]" value="0"
-                                                            onkeyup="change_diskon_per_baris(1)" onblur="check_null(this)">
+                                                            onkeyup="change_diskon_per_baris(1)" onblur="check_null(this)" step="any">
                                                     </div>
                                             </td>
                                             <td>
@@ -107,7 +108,7 @@
                                                 </select>
                                             </td>
                                             <td><input type="number" class="form-control" id="jumlah_1" name="jumlah[]"
-                                                    value="0"></td>
+                                                    value="0" step="any"></td>
                                             <td><a href="javascript:;" onclick="create_row()"><i
                                                         class="fa fa-plus text-primary"></i></a></td>
                                         </tr>
@@ -124,7 +125,7 @@
                                         </div>
                                         <div class="col d-flex justify-content-end">
                                             <span id="subtotal">Rp 0,00</span>
-                                            <input type="text" id="input_subtotal" name="subtotal" hidden>
+                                            <input type="text" id="input_subtotal" name="input_subtotal" hidden>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -133,7 +134,7 @@
                                         </div>
                                         <div class="col d-flex justify-content-end">
                                             <span id="diskon_per_baris">Rp 0,00</span>
-                                            <input type="text" id="input_diskon_per_baris" name="diskon_per_baris"
+                                            <input type="text" id="input_diskon_per_baris" name="input_diskon_per_baris"
                                                 hidden>
                                         </div>
                                     </div>
@@ -143,7 +144,7 @@
                                         </div>
                                         <div class="col d-flex justify-content-end">
                                             <span id="ppn">Rp 0,00</span>
-                                            <input type="text" id="input_ppn" name="ppn" hidden>
+                                            <input type="text" id="input_ppn" name="input_ppn" hidden>
                                         </div>
                                     </div>
                                     <hr class="bg-white">
@@ -153,7 +154,7 @@
                                         </div>
                                         <div class="col d-flex justify-content-end">
                                             <span id="total">Rp 0,00</span>
-                                            <input type="text" id="input_total" name="total" hidden>
+                                            <input type="text" id="input_total" name="input_total" hidden>
                                         </div>
                                     </div>
                                     <div class="row mb-5">
@@ -162,7 +163,7 @@
                                         </div>
                                         <div class="col d-flex justify-content-end">
                                             <span id="sisa_tagihan">Rp 0,00</span>
-                                            <input type="text" id="input_sisa_tagihan" name="sisa_tagihan" hidden>
+                                            <input type="text" id="input_sisa_tagihan" name="input_sisa_tagihan" hidden>
                                         </div>
                                     </div>
                                     <div class="row my-5">
@@ -224,13 +225,13 @@
             var selected = $(thisElement).find('option:selected').data('harga_jual');
             $('#harga_satuan_' + no).val(selected);
             $('#jumlah_' + no).val(selected);
-            subtotal[no] = parseInt($('#kuantitas_' + no).val()) * parseInt(selected);
-            diskon_per_baris[no] = subtotal[no] * parseInt($('#diskon_per_baris_' + no).val()) / 100;
+            subtotal[no] = parseFloat($('#kuantitas_' + no).val()) * parseFloat(selected);
+            diskon_per_baris[no] = subtotal[no] * parseFloat($('#diskon_per_baris_' + no).val()) / 100;
             load();
         }
 
         function get_pajak(thisElement, no) {
-            var selected = parseInt($(thisElement).find('option:selected').data('persen'));
+            var selected = parseFloat($(thisElement).find('option:selected').data('persen'));
 
             if (selected != 0) {
                 ppn[no] = selected * $('#jumlah_' + no).val() / 100;
@@ -242,8 +243,8 @@
         }
 
         function change_jumlah(no) {
-            subtotal[no] = parseInt($('#kuantitas_' + no).val()) * parseInt($('#harga_satuan_' + no).val());
-            diskon_per_baris[no] = subtotal[no] * parseInt($('#diskon_per_baris_' + no).val()) / 100;
+            subtotal[no] = parseFloat($('#kuantitas_' + no).val()) * parseFloat($('#harga_satuan_' + no).val());
+            diskon_per_baris[no] = subtotal[no] * parseFloat($('#diskon_per_baris_' + no).val()) / 100;
             $('#jumlah_' + no).val(subtotal[no] - diskon_per_baris[no]);
 
             get_pajak($('#pajak_'+no), no);
@@ -252,8 +253,8 @@
         }
 
         function change_diskon_per_baris(no) {
-            var subtotal = parseInt($('#kuantitas_' + no).val()) * parseInt($('#harga_satuan_' + no).val());
-            diskon_per_baris[no] = subtotal * parseInt($('#diskon_per_baris_' + no).val()) / 100;
+            var subtotal = parseFloat($('#kuantitas_' + no).val()) * parseFloat($('#harga_satuan_' + no).val());
+            diskon_per_baris[no] = subtotal * parseFloat($('#diskon_per_baris_' + no).val()) / 100;
             $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
 
             get_pajak($('#pajak_'+no), no);
@@ -289,16 +290,23 @@
                             @endforeach
                         </select>
                     </th>
-                    <td><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)"></td>
-                    <td><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)"></td>
-                    <td><input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" value="0" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)"></td>
+                    <td><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                    <td><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                    <td>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" value="0" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                        </div>
+                    </td>
                     <td>
                         <select class="form-control" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required>
                             <option value="0" data-persen="0" >Pilih pajak</option>
                             <option value="11" data-persen="11">PPN</option>
                         </select>
                     </td>
-                    <td><input type="number" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0"></td>
+                    <td><input type="number" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" step="any"></td>
                     <td><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>
                 </tr>
             `);

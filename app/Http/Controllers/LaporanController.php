@@ -25,6 +25,7 @@ class LaporanController extends Controller
         $data['sidebar'] = 'laporan';
         $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
                                 ->select('jurnal.*')
+                                ->where('id_company',Auth::user()->id_company)
                                 ->orderBy('jurnal.id','DESC')
                                 ->get();
                                 

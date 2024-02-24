@@ -34,7 +34,7 @@
                                     <td>{{ $v->nomor }}</td>
                                     <td><a href="{{ url('akun/detail').'/'.$v->id }}">{{ $v->nama }}</a></td>
                                     <td>{{ $v->nama_kategori }}</td>
-                                    <td>@if($v->saldo < 0 )( {{ number_format(abs($v->saldo),2,',','.') }} ) @else {{ number_format($v->saldo,2,',','.')  }} @endif</td>
+                                    <td>@if($v->saldo_akun < 0 )( {{ number_format(abs($v->saldo_akun),2,',','.') }} ) @else {{ number_format($v->saldo_akun,2,',','.')  }} @endif</td>
                                 </tr>
                                 @endforeach
                             </tbody>

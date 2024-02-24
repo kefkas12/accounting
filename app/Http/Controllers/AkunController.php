@@ -17,7 +17,10 @@ class AkunController extends Controller
     public function index()
     {
         $data['sidebar'] = 'akun';
-        $data['akun'] = Akun::get();
+        $data['akun'] = Akun::join('akun_company','akun.id','=','akun_company.id_akun')
+                            ->select('akun.*','akun_company.saldo as saldo_akun')
+                            ->where('akun_company.id_company',Auth::user()->id_company)
+                            ->get();
         return view('pages.akun.index', $data);
     }
 
