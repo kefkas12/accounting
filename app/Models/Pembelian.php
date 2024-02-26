@@ -30,6 +30,11 @@ class Pembelian extends Model
         return $this->hasMany(Detail_pembelian::class, 'id_pembelian');
     }
 
+    public function detail_pembayaran_pembelian(): HasMany
+    {
+        return $this->hasMany(Detail_pembayaran_pembelian::class, 'id_pembelian');
+    }
+
     public function kontak(): BelongsTo
     {
         return $this->belongsTo(Kontak::class, 'id_supplier');
@@ -70,11 +75,5 @@ class Pembelian extends Model
 
             $detail_pembelian->save();
         }
-    }
-
-
-    public function pembayaran_pembelian(): BelongsTo
-    {
-        return $this->belongsTo(Pembayaran_pembelian::class, 'id_pembelian');
     }
 }

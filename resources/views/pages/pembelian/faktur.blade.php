@@ -78,15 +78,15 @@
                                                     @endforeach
                                                 </select>
                                             </th>
-                                            <td><input type="number" class="form-control" id="kuantitas_1" name="kuantitas[]" value="1" onkeyup="change_jumlah(1)" onblur="check_null(this)"></td>
-                                            <td><input type="number" class="form-control" id="harga_satuan_1" name="harga_satuan[]" value="0" onkeyup="change_jumlah(1)" onblur="check_null(this)"></td>
+                                            <td><input type="number" class="form-control" id="kuantitas_1" name="kuantitas[]" value="1" onkeyup="change_jumlah(1)" onblur="check_null(this)" step="any"></td>
+                                            <td><input type="number" class="form-control" id="harga_satuan_1" name="harga_satuan[]" value="0" onkeyup="change_jumlah(1)" onblur="check_null(this)" step="any"></td>
                                             <td>
                                                 <select class="form-control" id="pajak_1" name="pajak[]" onchange="get_pajak(this, 1)" required>
                                                     <option value="0"  data-persen="0">Pilih pajak</option>
                                                     <option value="11" data-persen="11">PPN</option>
                                                 </select>
                                             </td>
-                                            <td><input type="number" class="form-control" id="jumlah_1" name="jumlah[]" value="0"></td>
+                                            <td><input type="number" class="form-control" id="jumlah_1" name="jumlah[]" value="0" step="any"></td>
                                             <td><a href="javascript:;" onclick="create_row()"><i
                                                 class="fa fa-plus text-primary"></i></a></td>
                                         </tr>
@@ -142,7 +142,6 @@
                                     </div>
                                 </div>
                             </div>
-                            
                         </div>
                     </form>
                 </div>
@@ -182,7 +181,8 @@
             var selected = $(thisElement).find('option:selected').data('harga_beli');
             $('#harga_satuan_'+no).val(selected);
             $('#jumlah_'+no).val(selected);
-            subtotal[no] = parseFloat($('#kuantitas_'+no).val()) * parseFloat(selected);
+            kuantitas = $('#kuantitas_'+no).val() ? parseFloat($('#kuantitas_'+no).val()) : 0 ;
+            subtotal[no] = kuantitas * parseFloat(selected);
             load();
         }
 
@@ -199,7 +199,9 @@
         }
 
         function change_jumlah(no){
-            subtotal[no] = parseFloat($('#kuantitas_'+no).val()) * parseFloat($('#harga_satuan_'+no).val());
+            kuantitas = $('#kuantitas_'+no).val() ? parseFloat($('#kuantitas_'+no).val()) : 0;
+            harga_satuan = $('#harga_satuan_'+no).val() ? parseFloat($('#harga_satuan_'+no).val()) : 0;
+            subtotal[no] = kuantitas * harga_satuan;
             $('#jumlah_'+no).val(subtotal[no]);
 
             get_pajak($('#pajak_'+no), no);
@@ -234,15 +236,15 @@
                             @endforeach
                         </select>
                     </th>
-                    <td><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)"></td>
-                    <td><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)"></td>
+                    <td><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                    <td><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
                     <td>
                         <select class="form-control" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})"  required>
                             <option value="0" data-persen="0">Pilih pajak</option>
                             <option value="11" data-persen="11">PPN</option>
                         </select>
                     </td>
-                    <td><input type="number" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0"></td>
+                    <td><input type="number" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" step="any"></td>
                     <td><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>
                 </tr>
             `);

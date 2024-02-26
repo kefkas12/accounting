@@ -34,7 +34,8 @@
                             <div class="col-sm-2">Email</div>
                             <div class="col-sm-2"><strong>{{ $pembelian->email }}</strong></div>
                             <div class="col-sm-4 d-flex justify-content-end">
-                                <h3>Sisa tagihan Rp. {{ number_format($pembelian->sisa_tagihan, 2, ',', '.') }}</h3>
+                                <h3>Sisa tagihan Rp. {{ number_format($pembelian->sisa_tagihan, 2, ',', '.') }} <br>
+                                    <a href="#" data-toggle="modal" data-target="#exampleModal">Lihat Jurnal Entry</a></h3>
                             </div>
                         </div>
                         <hr>
@@ -133,7 +134,7 @@
                             </div>
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <button class="btn btn-outline-primary">Ubah</button>
-                                <a href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}"class="btn btn-primary">Kirim
+                                <a href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}" class="btn btn-primary">Kirim
                                     Pembayaran</a>
                             </div>
                         </div>
@@ -151,13 +152,19 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($pembayaran_pembelian as $v)
+                                    @foreach ($pembelian->detail_pembayaran_pembelian as $v)
                                         <tr>
-                                            <th>{{ $v->tanggal }}</th>
-                                            <td>{{ $v->no_str }}</td>
-                                            <td>{{ $v->setor }}</td>
-                                            <td>{{ $v->cara_pembayaran }}</td>
-                                            <td>{{ $v->status_pembayaran }}</td>
+                                            <th>{{ $v->pembayaran_pembelian->tanggal_transaksi }}</th>
+                                            <td>
+                                                <div>
+                                                    <div class="row"><a href="{{ url('pembelian/receive_payment').'/'.$v->pembayaran_pembelian->id }}">{{ $v->pembayaran_pembelian->no_str }}</a></div>
+                                                    <div class="row text-xs">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{ $v->pembayaran_pembelian->setor }}</td>
+                                            <td>{{ $v->pembayaran_pembelian->cara_pembayaran }}</td>
+                                            <td>{{ $v->pembayaran_pembelian->status_pembayaran }}</td>
                                             <td>{{ $v->jumlah }}</td>
                                         </tr>
                                     @endforeach
@@ -165,6 +172,98 @@
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{{ $jurnal->no_str }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Akun</th>
+                                <th scope="col">Debit</th>
+                                <th scope="col">Kredit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $total_debit = 0;
+                                $total_kredit = 0;
+                            @endphp
+                            @foreach($jurnal->detail_jurnal as $v)
+                            <tr>
+                                <td>{{ $v->akun->nomor }} - {{ $v->akun->nama }}</td>
+                                <td>Rp. {{ number_format($v->debit,2,',','.') }}</td>
+                                <td>Rp. {{ number_format($v->kredit,2,',','.') }}</td>
+                            </tr>
+                            @php
+                                $total_debit += $v->debit;
+                                $total_kredit += $v->kredit;
+                            @endphp
+                            @endforeach
+                            <tr>
+                                <td>Total</td>
+                                <td>Rp. {{ number_format($total_debit,2,',','.') }}</td>
+                                <td>Rp. {{ number_format($total_kredit,2,',','.')    }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{{ $jurnal->no_str }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Akun</th>
+                                <th scope="col">Debit</th>
+                                <th scope="col">Kredit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $total_debit = 0;
+                                $total_kredit = 0;
+                            @endphp
+                            @foreach($jurnal->detail_jurnal as $v)
+                            <tr>
+                                <td>{{ $v->akun->nomor }} - {{ $v->akun->nama }}</td>
+                                <td>Rp. {{ number_format($v->debit,2,',','.') }}</td>
+                                <td>Rp. {{ number_format($v->kredit,2,',','.') }}</td>
+                            </tr>
+                            @php
+                                $total_debit += $v->debit;
+                                $total_kredit += $v->kredit;
+                            @endphp
+                            @endforeach
+                            <tr>
+                                <td>Total</td>
+                                <td>Rp. {{ number_format($total_debit,2,',','.') }}</td>
+                                <td>Rp. {{ number_format($total_kredit,2,',','.')    }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

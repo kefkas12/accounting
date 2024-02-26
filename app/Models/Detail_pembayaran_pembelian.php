@@ -15,13 +15,13 @@ class Detail_pembayaran_pembelian extends Model
 
     public function pembayaran_pembelian(): BelongsTo
     {
-        return $this->belongsTo(Pembayaran_pembelian::class);
+        return $this->belongsTo(Pembayaran_pembelian::class, 'id_pembayaran_pembelian');
     }
 
-    // public function pembelian(): BelongsTo
-    // {
-    //     return $this->belongsTo(Pembelian::class);
-    // }
+    public function pembelian(): BelongsTo
+    {
+        return $this->belongsTo(Pembelian::class, 'id_pembelian');
+    }
 
     // public function produk(): BelongsTo
     // {

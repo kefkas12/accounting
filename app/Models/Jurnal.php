@@ -31,7 +31,7 @@ class Jurnal extends Model
         return $this->hasMany(Detail_jurnal::class, 'id_jurnal');
     }
 
-    public function pembayaran(Request $request)
+    public function pembayaran_penjualan(Request $request)
     {
         $this->id_company = Auth::user()->id_company;
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');
@@ -52,6 +52,31 @@ class Jurnal extends Model
                 $this->updateAkunBalance(4, $request->input('total')[$i]);
             }
         }
+    }
+
+    public function pembayaran_pembelian(Request $request)
+    {
+        $this->id_company = Auth::user()->id_company;
+        $this->tanggal_transaksi = $request->input('tanggal_transaksi');
+        $this->kategori = 'purchase_payment';
+        $this->no = $this->no('purchase_payment');
+        $this->no_str = 'Purchase Payment #' . $this->no('purchase_payment');
+        $this->debit = $request->input('subtotal');
+        $this->kredit = $request->input('subtotal');
+        $this->save();
+
+        for ($i = 0; $i < count($request->input('id_pembelian')); $i++) {
+            if($request->input('total')[$i] != '' && $request->input('total')[$i] != null ){
+
+                $this->createDetailJurnal($this->id, 33, $request->input('total')[$i], 0);
+                $this->updateAkunBalance(33, $request->input('total')[$i]);
+            }
+        }
+
+        $this->createDetailJurnal($this->id, $request->input('setor_ke'), 0, $request->input('subtotal'));
+        $this->updateAkunBalance($request->input('setor_ke'), $request->input('subtotal'));
+
+        
     }
 
     public function penjualan(Request $request)

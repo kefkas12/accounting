@@ -78,6 +78,7 @@
                                     <thead style="background-color: #E0F7FF">
                                         <tr>
                                             <th>Number</th>
+                                            <th>Deskripsi</th>
                                             <th>Tgl Jatuh Tempo</th>
                                             <th>Total</th>
                                             <th>Sisa Tagihan</th>
@@ -89,6 +90,7 @@
                                             @if($v->sisa_tagihan != 0)
                                             <tr>
                                                 <td>{{ $v->no_str }}</td>
+                                                <td></td>
                                                 <td>{{ $v->tanggal_jatuh_tempo }}</td>
                                                 <td>{{ $v->total }}</td>
                                                 <td>{{ $v->sisa_tagihan }}</td>
@@ -97,7 +99,7 @@
                                                     <input type="number" class="form-control"
                                                         name="total[]" id="total_{{ $v->id }}"
                                                         onkeyup="change_total({{ $v->id }})" 
-                                                        @if($v->id == $penjualan->id) value="{{ $v->sisa_tagihan }}" @endif>
+                                                        @if($v->id == $penjualan->id) value="{{ $v->sisa_tagihan }}" @endif step="any">
                                                 </td>
                                             </tr>
                                             @endif
@@ -140,7 +142,7 @@
         var total = {};
 
         function change_total(no) {
-            total[no] = parseInt($('#total_' + no).val());
+            total[no] = $('#total_' + no).val() ? parseFloat($('#total_' + no).val()) : 0 ;
             load();
         }
 
@@ -154,5 +156,6 @@
 
             $('#input_subtotal').val(result_total);
         }
+
     </script>
 @endsection

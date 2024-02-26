@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Akun;
 use App\Models\Akun_company;
 use App\Models\Company;
+use App\Models\Detail_pembayaran_pembelian;
 use App\Models\Detail_pembelian;
 use App\Models\Jurnal;
 use App\Models\Kontak;
@@ -38,26 +39,34 @@ class PembelianController extends Controller
     public function detail($id)
     {
         $data['sidebar'] = 'pembelian';
-        $data['pembelian'] = Pembelian::with('detail_pembelian.produk')
+        $data['pembelian'] = Pembelian::with(['detail_pembelian.produk','detail_pembayaran_pembelian' => function ($query){
+                                            $query->orderBy('detail_pembayaran_pembelian.id_pembayaran_pembelian','desc');
+                                        }])
                                         ->leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
                                         ->select('pembelian.*','kontak.nama as nama_supplier')
+                                        ->where('pembelian.id',$id)
                                         ->where('pembelian.id_company',Auth::user()->id_company)
+                                        ->first();
+        $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                                        ->leftJoin('pembelian','jurnal.id','=','pembelian.id_jurnal')
+                                        ->select('jurnal.*')
                                         ->where('pembelian.id',$id)
                                         ->first();
-
-        $data['pembayaran_pembelian'] = Pembayaran_pembelian::where('id_pembelian',$id)->get();
         return view('pages.pembelian.detail', $data);
     }
 
     public function pembayaran($id)
     {
         $data['sidebar'] = 'pembelian';
-        $data['pembelian'] = Pembelian::with('detail_pembelian.produk')
-                                        ->leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
-                                        ->select('pembelian.*','kontak.nama as nama_supplier')
-                                        ->where('pembelian.id',$id)
-                                        ->where('pembelian.id_company',Auth::user()->id_company)
-                                        ->first();
+        $data['akun'] = Akun::where('id_kategori',3)->get();
+        $data['pembelian'] = Pembelian::where('id',$id)->first();
+        $data['pembayaran'] = Kontak::with(['pembelian' => function ($query){
+                                        $query->orderBy('id', 'desc');
+                                    }])
+                                    ->select('kontak.*','kontak.nama as nama_supplier')
+                                    ->where('kontak.id',$data['pembelian']->id_supplier)
+                                    ->where('kontak.id_company',Auth::user()->id_company)
+                                    ->first();
         return view('pages.pembelian.pembayaran', $data);
     }
 
@@ -66,8 +75,37 @@ class PembelianController extends Controller
         $data['sidebar'] = 'pembelian';
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
         $data['supplier'] = Kontak::where('tipe','supplier')
-                                    ->where('id_company',Auth::user()->id_company)->get();
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
         return view('pages.pembelian.faktur', $data);
+    }
+
+    public function penerimaan_pembayaran(Request $request)
+    {
+        $data['sidebar'] = 'pembelian';
+        
+        $jurnal = new Jurnal;
+        $jurnal->pembayaran_pembelian($request);
+
+        $pembayaran_pembelian = new Pembayaran_pembelian;
+        $pembayaran_pembelian->insert($request, $jurnal->id);
+
+        return redirect('pembelian/receive_payment/'.$pembayaran_pembelian->id);
+    }
+
+    public function receive_payment(Request $request, $id)
+    {
+        $data['sidebar'] = 'pembelian';
+        $data['detail_pembayaran_pembelian'] = Detail_pembayaran_pembelian::with('pembayaran_pembelian', 'pembelian.kontak')
+                                            ->where('id_pembayaran_pembelian',$id)
+                                            ->get();
+                                            // dd($data);
+        $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                                            ->leftJoin('pembayaran_pembelian','jurnal.id','=','pembayaran_pembelian.id_jurnal')
+                                            ->select('jurnal.*')
+                                            ->where('pembayaran_pembelian.id',$id)
+                                            ->first();
+        return view('pages.pembelian.receive_payment',$data);
     }
 
     public function insert(Request $request)

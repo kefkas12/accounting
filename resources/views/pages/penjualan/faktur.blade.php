@@ -225,7 +225,8 @@
             var selected = $(thisElement).find('option:selected').data('harga_jual');
             $('#harga_satuan_' + no).val(selected);
             $('#jumlah_' + no).val(selected);
-            subtotal[no] = parseFloat($('#kuantitas_' + no).val()) * parseFloat(selected);
+            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0 ;
+            subtotal[no] = kuantitas * parseFloat(selected);
             diskon_per_baris[no] = subtotal[no] * parseFloat($('#diskon_per_baris_' + no).val()) / 100;
             load();
         }
@@ -243,8 +244,11 @@
         }
 
         function change_jumlah(no) {
-            subtotal[no] = parseFloat($('#kuantitas_' + no).val()) * parseFloat($('#harga_satuan_' + no).val());
-            diskon_per_baris[no] = subtotal[no] * parseFloat($('#diskon_per_baris_' + no).val()) / 100;
+            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
+            subtotal[no] = kuantitas * harga_satuan;
+            diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
+            diskon_per_baris[no] = subtotal[no] * diskon / 100;
             $('#jumlah_' + no).val(subtotal[no] - diskon_per_baris[no]);
 
             get_pajak($('#pajak_'+no), no);
@@ -253,8 +257,11 @@
         }
 
         function change_diskon_per_baris(no) {
-            var subtotal = parseFloat($('#kuantitas_' + no).val()) * parseFloat($('#harga_satuan_' + no).val());
-            diskon_per_baris[no] = subtotal * parseFloat($('#diskon_per_baris_' + no).val()) / 100;
+            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
+            var subtotal = kuantitas * harga_satuan;
+            diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
+            diskon_per_baris[no] = subtotal * diskon / 100;
             $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
 
             get_pajak($('#pajak_'+no), no);

@@ -142,8 +142,12 @@
                         </div>
                         <div class="row my-4">
                             <div class="col-sm-6">
-                                <a href="{{ url('penjualan/hapus') . '/' . $penjualan->id }}"
-                                    class="btn btn-outline-danger ">Hapus</a>
+                                <form id="deleteForm" action="{{ url('penjualan/hapus') . '/' . $penjualan->id }}"
+                                    method="post">
+                                    @csrf
+                                    <button type="submit"
+                                        class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
+                                </form>
                             </div>
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <button class="btn btn-outline-primary">Ubah</button>
@@ -235,4 +239,23 @@
             </div>
         </div>
     </div>
+    <script>
+        function confirmDelete(event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            });
+        }
+    </script>
 @endsection

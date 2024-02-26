@@ -84,7 +84,7 @@ class PenjualanController extends Controller
         $data['sidebar'] = 'penjualan';
         
         $jurnal = new Jurnal;
-        $jurnal->pembayaran($request);
+        $jurnal->pembayaran_penjualan($request);
 
         $pembayaran_penjualan = new Pembayaran_penjualan;
         $pembayaran_penjualan->insert($request, $jurnal->id);
