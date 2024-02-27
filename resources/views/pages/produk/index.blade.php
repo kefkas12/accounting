@@ -53,18 +53,22 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
+                        <div style="overflow: auto">
 
                             <table id="example" class="table table-striped table-bordered" style="width:100%">
                                 <thead>
                                     <tr>
-                                        <th>Nama Produk</th>
-                                        <th>Kode Produk</th>
+                                        <th>Nama produk</th>
+                                        <th>barcode produk</th>
+                                        <th>Kode produk</th>
                                         <th>Kategori produk</th>
-                                        <th>Total Stok</th>
+                                        <th>Total stok</th>
+                                        <th>Batas minimum</th>
                                         <th>Unit</th>
-                                        <th>Harga Beli</th>
-                                        <th>Harga Jual</th>
+                                        <th>Harga rata-rata</th>
+                                        <th>Harga beli terakhir</th>
+                                        <th>Harga beli</th>
+                                        <th>Harga jual</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -72,10 +76,17 @@
                                         <tr>
                                             <td><a href="{{ url('produk/detail') . '/' . $v->id }}">{{ $v->nama }}</a>
                                             </td>
+                                            <td>
+                                                {{-- <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG($v->id, 'C39') }}" alt="" srcset=""> --}}
+                                                <a class="btn btn-sm btn-primary" download="barcode_{{ $v->nama }}.png" href="data:image/png;base64,{{ DNS1D::getBarcodePNG($v->id, 'C39+',5,55) }}">Generate</a>
+                                            </td>
                                             <td>{{ $v->kode }}</td>
                                             <td>{{ $v->kategori }}</td>
                                             <td>{{ $v->stok }}</td>
+                                            <td>{{ $v->batas_minimum }}</td>
                                             <td>{{ $v->unit }}</td>
+                                            <td>@if($v->harga_rata_rata) {{ number_format($v->harga_rata_rata, 2, ',', '.') }} @else 0,00 @endif</td>
+                                            <td>@if($v->harga_beli_terakhir) {{ number_format($v->harga_beli_terakhir, 2, ',', '.') }} @else 0,00 @endif</td>
                                             <td>@if($v->harga_beli) {{ number_format($v->harga_beli, 2, ',', '.') }} @else 0,00 @endif</td>
                                             <td>@if($v->harga_jual) {{ number_format($v->harga_jual, 2, ',', '.') }} @else 0,00 @endif</td>
                                         </tr>

@@ -36,6 +36,7 @@ class ProdukController extends Controller
         $produk->kode = $_POST['kode'];
         $produk->unit = 'buah';
         $produk->kategori = $_POST['kategori'];
+        $produk->batas_minimum = $_POST['batas_minimum'];
         $produk->harga_beli = $_POST['harga_beli'] ? $_POST['harga_beli'] : 0;
         $produk->harga_jual = $_POST['harga_jual'] ? $_POST['harga_jual'] : 0;
         $produk->save();
