@@ -79,6 +79,36 @@ class PenjualanController extends Controller
         return view('pages.penjualan.faktur', $data);
     }
 
+    public function pemesanan()
+    {
+        $data['sidebar'] = 'penjualan';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['pelanggan'] = Kontak::where('tipe','pelanggan')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        return view('pages.penjualan.pemesanan', $data);
+    }
+
+    public function penawaran()
+    {
+        $data['sidebar'] = 'penjualan';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['pelanggan'] = Kontak::where('tipe','pelanggan')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        return view('pages.penjualan.penawaran', $data);
+    }
+
+    public function penagihan()
+    {
+        $data['sidebar'] = 'penjualan';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['pelanggan'] = Kontak::where('tipe','pelanggan')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        return view('pages.penjualan.penagihan', $data);
+    }
+
     public function penerimaan_pembayaran(Request $request)
     {
         $data['sidebar'] = 'penjualan';

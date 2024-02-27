@@ -85,6 +85,11 @@ Route::controller(PembelianController::class)->prefix('pembelian')->group(functi
 Route::controller(PenjualanController::class)->prefix('penjualan')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/faktur', 'faktur');
+
+	Route::get('/pemesanan', 'pemesanan');
+	Route::get('/penawaran', 'penawaran');
+	Route::get('/penagihan', 'penagihan');
+
 	Route::get('/detail/{id}', 'detail');
 	Route::get('/pembayaran/{id}', 'pembayaran');
 	Route::get('/receive_payment/{id}','receive_payment');
