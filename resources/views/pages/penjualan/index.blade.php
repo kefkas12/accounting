@@ -64,9 +64,6 @@
                                 <button class="nav-link active" id="nav-penagihan-penjualan-tab" data-toggle="tab" data-target="#nav-penagihan-penjualan"
                                     type="button" role="tab" aria-controls="nav-penagihan-penjualan"
                                     aria-selected="true">Faktur Penjualan</button>
-                                <button class="nav-link" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
-                                    type="button" role="tab" aria-controls="nav-pengiriman"
-                                    aria-selected="false">Pengiriman</button>
                                 <button class="nav-link" id="nav-pesanan-penjualan-tab" data-toggle="tab" data-target="#nav-pesanan-penjualan"
                                     type="button" role="tab" aria-controls="nav-pesanan-penjualan"
                                     aria-selected="false">Pesanan Penjualan</button>
@@ -78,37 +75,6 @@
                         <div class="tab-content" id="nav-tabContent">
                             <div class="tab-pane fade show active" id="nav-penagihan-penjualan" role="tabpanel"
                                 aria-labelledby="nav-penagihan-penjualan-tab">
-                                <div class="table-responsive">
-                                    <table class="table align-items-center table-flush">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Tanggal</th>
-                                                <th scope="col">No</th>
-                                                <th scope="col">Pelanggan </th>
-                                                <th scope="col">Tgl. Jatuh Tempo</th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Sisa Tagihan</th>
-                                                <th scope="col">Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list">
-                                            @foreach($penagihan as $v)
-                                            <tr>
-                                                <td>{{ $v->tanggal_transaksi }}</td>
-                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
-                                                <td>{{ $v->nama_pelanggan }}</td>
-                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
-                                                <td>{{ $v->status }}</td>
-                                                <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
-                                                <td>Rp {{ number_format($v->total,2,',','.') }}</td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="nav-pengiriman" role="tabpanel"
-                                aria-labelledby="nav-pengiriman-tab">
                                 <div class="table-responsive">
                                     <table class="table align-items-center table-flush">
                                         <thead>

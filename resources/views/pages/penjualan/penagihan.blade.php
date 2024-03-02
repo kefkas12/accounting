@@ -9,9 +9,34 @@
             <div class="col">
                 <div class="card mb-5">
                     <div class="card-header border-0">
-                        Buat Penagihan Penjualan
+                        <div class="row">
+                            <div class="col">
+                                <a href="{{ url('penjualan') }}">Penjualan</a>
+                            </div>
+                        </div>
+                        <div class="row text-sm">
+                            <div class="col">
+                                <h2>Buat Penagihan Penjualan</h2>
+                            </div>
+                            <div class="col-sm-3 d-flex justify-content-end">
+                                <select class="form-control" onchange="location = this.value;" @if(isset($pemesanan)) disabled @endif>
+                                    <option selected disabled hidden>Penagihan Penjualan</option>
+                                    <option value="{{ url('penjualan/penagihan') }}">Penagihan Penjualan</option>
+                                    <option value="{{ url('penjualan/penawaran') }}">Penawaran Penjualan</option>
+                                    <option value="{{ url('penjualan/pemesanan') }}">Pemesanan Penjualan</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <form method="POST" @if(isset($penjualan)) action="{{ url('penjualan/penagihan').'/'.$penjualan->id }}" @else action="{{ url('penjualan/penagihan') }}" @endif>
+                    <form method="POST" id="form"
+                        @if(isset($pemesanan))
+                        action="{{ url('penjualan/pemesanan').'/penagihan/'.$penjualan->id }}" 
+                        @elseif(isset($penjualan)) 
+                            action="{{ url('penjualan/penagihan').'/'.$penjualan->id }}" 
+                        @else 
+                            action="{{ url('penjualan/penagihan') }}" 
+                        @endif
+                    >
                         @csrf
                         <div class="card-body">
                             <div class="form-row">
@@ -80,7 +105,7 @@
                                             <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Diskon</th>
                                             <th scope="col" style="min-width: 200px !important;padding: 10px !important;">Pajak</th>
                                             <th scope="col" style="min-width: 200px !important;padding: 10px !important;">Jumlah</th>
-                                            <th scope="col" style="min-width: 50px !important;padding: 10px !important;"></th>
+                                            @if(!isset($pemesanan))<th scope="col" style="min-width: 50px !important;padding: 10px !important;"></th>@endif
                                         </tr>
                                     </thead>
                                     <tbody id="list">
@@ -107,7 +132,7 @@
                                             <td style="padding: 10px !important;">
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
-                                                            <span class="input-group-text">%</span>
+                                                            <span class="input-group-text" @if(isset($pemesanan)) style="background-color: #e9ecefc4;" @endif>%</span>
                                                         </div>
                                                         <input type="number" class="form-control" id="diskon_per_baris_1"
                                                             name="diskon_per_baris[]" value="0"
@@ -123,8 +148,8 @@
                                             </td>
                                             <td style="padding: 10px !important;"><input type="number" class="form-control" id="jumlah_1" name="jumlah[]"
                                                     value="0" step="any" @if(isset($pemesanan)) disabled @endif></td>
-                                            <td style="padding: 10px !important;"><a href="javascript:;" onclick="create_row()"><i
-                                                        class="fa fa-plus text-primary"></i></a></td>
+                                            @if(!isset($pemesanan))<td style="padding: 10px !important;"><a href="javascript:;" onclick="create_row()"><i
+                                                        class="fa fa-plus text-primary"></i></a></td>@endif
                                         </tr>
                                     </tbody>
                                 </table>
@@ -196,7 +221,7 @@
                                     <div class="row my-5">
                                         <div class="col d-flex justify-content-end">
                                             <a href="{{ url('penjualan') }}" class="btn btn-light">Batalkan</a>
-                                            <button type="submit" class="btn btn-primary">Buat Faktur</button>
+                                            <button type="submit" class="btn btn-primary">@if(isset($pemesanan)) Buat @else Buat Faktur @endif</button>
                                         </div>
                                     </div>
                                 </div>
@@ -337,7 +362,7 @@
                     <td style="padding: 10px !important;">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">%</span>
+                                <span class="input-group-text" @if(isset($pemesanan)) style="background-color: #e9ecefc4;" @endif>%</span>
                             </div>
                             <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" value="0" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any" @if(isset($pemesanan)) disabled @endif>
                         </div>
@@ -349,7 +374,7 @@
                         </select>
                     </td>
                     <td style="padding: 10px !important;"><input type="number" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" step="any" @if(isset($pemesanan)) disabled @endif></td>
-                    <td style="padding: 10px !important;"><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>
+                    @if(!isset($pemesanan))<td style="padding: 10px !important;"><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>@endif
                 </tr>
             `);
 
@@ -381,6 +406,12 @@
             hapus(x);
 
             
+        });
+        @endif
+
+        @if(isset($pemesanan))
+        $('#form').submit(function() {
+            $('.form-control').removeAttr('disabled');
         });
         @endif
     </script>

@@ -30,6 +30,45 @@
                                     <div class="col-sm-6 ">
                                         <div class="card">
                                             <div class="card-body">
+                                                <h5 class="card-title">Neraca</h5>
+                                                <p class="card-text">Menampilkan apa yang dimiliki (aset), apa saja utangnya (liabilitas), dan apa yang sudah diinvestasikan ke perusahaan ini (ekuitas) pada tanggal tertentu.
+                                                </p>
+
+                                            </div>
+                                            <div class="card-footer">
+                                                <a href="{{ url('laporan/neraca') }}" class="btn btn-primary">Lihat Laporan</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 ">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Buku Besar</h5>
+                                                <p class="card-text">Menampilkan semua transaksi berdasarkan akun dalam periode tertentu, termasuk kronologi pergerakan transaksinya selama periode berlangsung.
+                                                </p>
+
+                                            </div>
+                                            <div class="card-footer">
+                                                <a href="{{ url('laporan/buku_besar') }}" class="btn btn-primary">Lihat Laporan</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 ">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Laba rugi</h5>
+                                                <p class="card-text">Menampilkan semua pendapatan yang diperoleh dan biaya yang dikeluarkan dalam periode tertentu. Template laporan versi terkini bisa Anda custom sesuai kebutuhan.
+                                                </p>
+
+                                            </div>
+                                            <div class="card-footer">
+                                                <a href="{{ url('laporan/laba_rugi') }}" class="btn btn-primary">Lihat Laporan</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 ">
+                                        <div class="card">
+                                            <div class="card-body">
                                                 <h5 class="card-title">Jurnal</h5>
                                                 <p class="card-text">Menampilkan semua journal entry per transaksi dalam periode tertentu. Anda dapat melacak transaksi yang masuk ke masing-masing akun.
                                                 </p>

@@ -16,7 +16,6 @@
                         </div>
                         <div class="row text-sm">
                             <div class="col">
-                                
                                 <h2>Buat Penawaran Penjualan</h2>
                             </div>
                             <div class="col-sm-3 d-flex justify-content-end">
@@ -28,7 +27,6 @@
                                 </select>
                             </div>
                         </div>
-                        
                     </div>
                     <form method="POST"
                         @if(isset($penjualan)) 

@@ -71,7 +71,11 @@ class PenjualanController extends Controller
                                         ->where('penjualan.id',$id)
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->first();
-        // dd($data['penjualan']);
+        if($data['penjualan']->jenis == 'pemesanan'){
+            $data['penagihan'] = Penjualan::where('id_pemesanan',$id)
+                                            ->where('jenis','penagihan')
+                                            ->get();
+        }
         $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
                                 ->leftJoin('penjualan','jurnal.id','=','penjualan.id_jurnal')
                                 ->select('jurnal.*')
@@ -258,8 +262,11 @@ class PenjualanController extends Controller
 
     public function insert_pemesanan_penagihan(Request $request, $id)
     {
+        $jurnal = new Jurnal;
+        $jurnal->penjualan($request);
+        
         $penjualan = new Penjualan;
-        $penjualan->insert($request, null, 'penagihan', $id);
+        $penjualan->insert($request, $jurnal->id, 'penagihan', $id);
 
         return redirect('penjualan');
     }

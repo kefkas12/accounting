@@ -214,6 +214,7 @@
                                         class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
                                 </form>
                             </div>
+                            @if($penjualan->jenis == 'penagihan' && $penjualan->status != 'paid')
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
                                 <div class="btn-group dropup">
@@ -235,6 +236,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                         </div>
                         @endif
                         @if(count($penjualan->detail_pembayaran_penjualan) != 0)
@@ -266,8 +268,53 @@
                                             </td>
                                             <td>{{ $v->pembayaran_penjualan->setor }}</td>
                                             <td>{{ $v->pembayaran_penjualan->cara_pembayaran }}</td>
-                                            <td>{{ $v->pembayaran_penjualan->status_pembayaran }}</td>
-                                            <td>{{ $v->jumlah }}</td>
+                                            <td><button class="btn btn-sm btn-success">{{ $v->pembayaran_penjualan->status_pembayaran }}</button></td>
+                                            <td>Rp {{ number_format($v->jumlah, 2, ',', '.') }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @endif
+                        @if(isset($penagihan))
+                        <div class="table-responsive">
+                            Penagihan Penjualan
+                            <table class="table my-4">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>No.</th>
+                                        <th>Tgl. jatuh tempo</th>
+                                        <th>Status</th>
+                                        <th>Jumlah</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($penagihan as $v)
+                                        <tr>
+                                            <td>{{ $v->tanggal_transaksi }}</td>
+                                            <td>
+                                                <div>
+                                                    <div class="row"><a
+                                                            href="{{ url('penjualan/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
+                                                    </div>
+                                                    <div class="row text-xs">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{ $v->tanggal_jatuh_tempo }}</td>
+                                            <td>
+                                                <button class="btn btn-sm 
+                                                @if ($v->status == 'open') btn-warning
+                                                @elseif($v->status == 'partial') btn-info
+                                                @elseif($v->status == 'paid') btn-success
+                                                @elseif($v->status == 'overdue') btn-danger 
+                                                @elseif($v->status == 'closed') btn-dark @endif
+                                                ml-2">
+                                                    {{ $v->status }}
+                                                </button>
+                                            </td>
+                                            <td>Rp {{ number_format($v->total, 2, ',', '.') }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
