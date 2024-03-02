@@ -59,6 +59,7 @@ class Pembayaran_penjualan extends Model
                 $detail_penjualan->save();
 
                 $penjualan = Penjualan::find($request->input('id_penjualan')[$i]);
+                $penjualan->jumlah_terbayar = $request->input('total')[$i];
                 $penjualan->sisa_tagihan = $penjualan->sisa_tagihan - $request->input('total')[$i];
                 if($penjualan->sisa_tagihan == 0){
                     $penjualan->status = 'paid';

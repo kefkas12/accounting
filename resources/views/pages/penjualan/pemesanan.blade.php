@@ -19,7 +19,7 @@
                                 <h2>Buat Pemesanan Penjualan</h2>
                             </div>
                             <div class="col-sm-3 d-flex justify-content-end">
-                                <select class="form-control" onchange="location = this.value;">
+                                <select class="form-control" onchange="location = this.value;" @if(isset($penawaran)) disabled @endif>
                                     <option selected disabled hidden>Pemesanan Penjualan</option>
                                     <option value="{{ url('penjualan/penagihan') }}">Penagihan Penjualan</option>
                                     <option value="{{ url('penjualan/penawaran') }}">Penawaran Penjualan</option>
@@ -28,13 +28,21 @@
                             </div>
                         </div>
                     </div>
-                    <form method="POST" action="{{ url('penjualan/faktur') }}">
+                    <form method="POST" id="form"
+                        @if(isset($penawaran))
+                            action="{{ url('penjualan/penawaran').'/pemesanan/'.$penjualan->id }}" 
+                        @elseif(isset($penjualan))
+                            action="{{ url('penjualan/pemesanan').'/'.$penjualan->id }}" 
+                        @else
+                            action="{{ url('penjualan/pemesanan') }}" 
+                        @endif
+                    >
                         @csrf
                         <div class="card-body">
-                            <div class="form-row">
+                            <div class="form-row text-sm">
                                 <div class="form-group col-md-3 pr-4">
                                     <label for="pelanggan">Pelanggan</label>
-                                    <select class="form-control" id="pelanggan" name="pelanggan" required>
+                                    <select class="form-control" id="pelanggan" name="pelanggan" required @if(isset($penawaran)) disabled @endif>
                                         <option selected disabled>Pilih kontak</option>
                                         @foreach ($pelanggan as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
@@ -52,10 +60,10 @@
                                     Total Rp <span id="total_faktur">0</span>
                                 </div>
                             </div>
-                            <div class="form-row">
+                            <div class="form-row text-sm">
                                 <div class="form-group col-md-3 pr-4">
                                     <label for="alamat">Alamat Penagihan</label><br>
-                                    <textarea class="form-control" name="alamat" id="alamat"></textarea>
+                                    <textarea class="form-control" name="alamat" id="alamat" rows="2"></textarea>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group pr-4">
@@ -71,6 +79,17 @@
                                     <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
                                     <input type="date" class="form-control" id="tanggal_jatuh_tempo"
                                         name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
+                                    <label for="gudang" class="mt-3">Gudang</label>
+                                    <select class="form-control" id="gudang" name="gudang">
+                                        <option selected disabled hidden>Pilih Gudang</option>
+                                        <option disabled>No result found</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3 pr-4">
+                                    @if(isset($penawaran))
+                                    <label for="nomor_penawaran_penjualan">No Penawaran Penjualan</label> <br>
+                                    <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->$penawaran->no_str }}</a>
+                                    @endif
                                 </div>
                             </div>
 
@@ -190,7 +209,7 @@
                                     <div class="row my-5">
                                         <div class="col d-flex justify-content-end">
                                             <a href="{{ url('penjualan') }}" class="btn btn-light">Batalkan</a>
-                                            <button type="submit" class="btn btn-primary">Buat Faktur</button>
+                                            <button type="submit" class="btn btn-primary">Buat</button>
                                         </div>
                                     </div>
                                 </div>
@@ -341,7 +360,41 @@
                     <td style="padding: 10px !important;"><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>
                 </tr>
             `);
-
         };
+
+        @if(isset($penjualan))
+        $( document ).ready(function() {
+            $('#pelanggan').val('{{ $penjualan->id_pelanggan }}')
+            $('#email').val('{{ $penjualan->email }}')
+            $('#alamat').val('{{ $penjualan->alamat }}')
+            $('#tanggal_transaksi').val('{{ $penjualan->tanggal_transaksi }}')
+            $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
+
+            var x = 1;
+            @foreach($detail_penjualan as $v)
+                $('#produk_'+x).val('{{ $v->id_produk }}');
+                $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
+                $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
+                $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').trigger('keyup');
+                $('#diskon_per_baris_'+x).val('{{ $v->diskon_per_baris }}').trigger('keyup');
+                @if($v->pajak != 0)
+                    $('#pajak_'+x).val('11').trigger('change');
+                @else
+                    $('#pajak_'+x).val('0').trigger('change');
+                @endif
+                create_row();
+                x++;
+            @endforeach
+            hapus(x);
+
+            
+        });
+        @endif
+
+        @if(isset($penawaran))
+        document.getElementById('form').addEventListener('submit', function() {
+            document.getElementById('pelanggan').removeAttribute('disabled');
+        });
+        @endif
     </script>
 @endsection

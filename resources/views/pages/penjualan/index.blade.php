@@ -14,14 +14,11 @@
                                 <div class="input-group-prepend">
                                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Buat penjualan baru</button>
                                     <div class="dropdown-menu">
-                                      <a class="dropdown-item" href="{{ url('penjualan/faktur') }}">Penagihan Penjualan</a>
+                                      <a class="dropdown-item" href="{{ url('penjualan/penagihan') }}">Penagihan Penjualan</a>
                                       <a class="dropdown-item" href="{{ url('penjualan/pemesanan') }}">Pemesanan Penjualan</a>
                                       <a class="dropdown-item" href="{{ url('penjualan/penawaran') }}">Penawaran Penjualan</a>
                                     </div>
                                   </div>
-                                {{-- <a href="{{ url('penjualan/faktur') }}"class="btn btn-primary" >
-                                    Buat penjualan baru
-                                </a> --}}
                             </div>
                         </div>
                         
@@ -64,8 +61,8 @@
                     <div class='container'>
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                <button class="nav-link active" id="nav-faktur-penjualan-tab" data-toggle="tab" data-target="#nav-faktur-penjualan"
-                                    type="button" role="tab" aria-controls="nav-faktur-penjualan"
+                                <button class="nav-link active" id="nav-penagihan-penjualan-tab" data-toggle="tab" data-target="#nav-penagihan-penjualan"
+                                    type="button" role="tab" aria-controls="nav-penagihan-penjualan"
                                     aria-selected="true">Faktur Penjualan</button>
                                 <button class="nav-link" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
                                     type="button" role="tab" aria-controls="nav-pengiriman"
@@ -79,8 +76,8 @@
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
-                            <div class="tab-pane fade show active" id="nav-faktur-penjualan" role="tabpanel"
-                                aria-labelledby="nav-faktur-penjualan-tab">
+                            <div class="tab-pane fade show active" id="nav-penagihan-penjualan" role="tabpanel"
+                                aria-labelledby="nav-penagihan-penjualan-tab">
                                 <div class="table-responsive">
                                     <table class="table align-items-center table-flush">
                                         <thead>
@@ -95,7 +92,7 @@
                                             </tr>
                                         </thead>
                                         <tbody class="list">
-                                            @foreach($faktur as $v)
+                                            @foreach($penagihan as $v)
                                             <tr>
                                                 <td>{{ $v->tanggal_transaksi }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
@@ -126,7 +123,7 @@
                                             </tr>
                                         </thead>
                                         <tbody class="list">
-                                            @foreach($faktur as $v)
+                                            @foreach($penagihan as $v)
                                             <tr>
                                                 <td>{{ $v->tanggal_transaksi }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
@@ -157,7 +154,7 @@
                                             </tr>
                                         </thead>
                                         <tbody class="list">
-                                            @foreach($faktur as $v)
+                                            @foreach($pemesanan as $v)
                                             <tr>
                                                 <td>{{ $v->tanggal_transaksi }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>

@@ -8,18 +8,23 @@
             <div class="col">
                 <div class="card mb-5">
                     <div class="card-header bg-transparent border-0">
-                        @if ($penjualan->jenis == 'faktur')
+                        <h2>
+                        @if ($penjualan->jenis == 'penagihan')
                             Penagihan
                         @elseif($penjualan->jenis == 'penawaran')
                             Penawaran
+                        @elseif($penjualan->jenis == 'pemesanan')
+                            Pemesanan
                         @endif
                         Penjualan #{{ $penjualan->no }}
+                        
                         <button
                             class="btn btn-sm 
                         @if ($penjualan->status == 'open') btn-warning
                         @elseif($penjualan->status == 'partial') btn-info
                         @elseif($penjualan->status == 'paid') btn-success
-                        @elseif($penjualan->status == 'overdue') btn-danger @endif
+                        @elseif($penjualan->status == 'overdue') btn-danger 
+                        @elseif($penjualan->status == 'closed') btn-dark @endif
                         ml-2">
                             @if ($penjualan->status == 'open')
                                 Belum Dibayar
@@ -29,8 +34,11 @@
                                 Lunas
                             @elseif($penjualan->status == 'overdue')
                                 Lewat Jatuh Tempo
+                            @elseif($penjualan->status == 'closed')
+                                Selesai
                             @endif
                         </button>
+                    </h2>
                     </div>
                     <div class="card-body " style="font-size: 12px;">
                         <div class="row">
@@ -68,7 +76,7 @@
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2">
-                                @if ($penjualan->jenis == 'faktur')
+                                @if ($penjualan->jenis == 'penagihan' || $penjualan->jenis == 'pemesanan')
                                     Tgl. Jatuh Tempo
                                 @elseif($penjualan->jenis == 'penawaran')
                                     Tgl. kedaluarsa
@@ -77,8 +85,22 @@
                             <div class="col-sm-2">
                                 <strong>{{ date('d/m/Y', strtotime($penjualan->tanggal_jatuh_tempo)) }}</strong>
                             </div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
+                            @if($penjualan->penawaran)
+                            <div class="col-sm-2" style="margin-right: -25px !important;">
+                                No. Penawaran
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="{{ url('penjualan/detail').'/'.$penjualan->penawaran->id }}">{{ $penjualan->penawaran->no_str }}</a>
+                            </div>
+                            @endif
+                            @if($penjualan->pemesanan)
+                            <div class="col-sm-2" style="margin-right: -25px !important;">
+                                No. Pemesanan
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="{{ url('penjualan/detail').'/'.$penjualan->pemesanan->id }}">{{ $penjualan->pemesanan->no_str }}</a>
+                            </div>
+                            @endif
                         </div>
                         <div class="table-responsive">
                             <table class="table my-4">
@@ -150,7 +172,11 @@
                                     </div>
                                 </div>
                                 <hr>
+                                @if($penjualan->jumlah_terbayar != 0)
+                                <div class="row">
+                                @else
                                 <div class="row my-3">
+                                @endif
                                     <div class="col-sm-6">
                                         <h4>Total</h4>
                                     </div>
@@ -158,6 +184,16 @@
                                         <h4>Rp. {{ number_format($penjualan->total, 2, ',', '.') }}</h4>
                                     </div>
                                 </div>
+                                @if($penjualan->jumlah_terbayar != 0)
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <h4>Jumlah Terbayar</h4>
+                                    </div>
+                                    <div class="col-sm-6 d-flex justify-content-end">
+                                        <h4>Rp. {{ number_format($penjualan->jumlah_terbayar, 2, ',', '.') }}</h4>
+                                    </div>
+                                </div>
+                                @endif
                                 <div class="row my-3">
                                     <div class="col-sm-6">
                                         <h2>Sisa Tagihan</h2>
@@ -168,6 +204,7 @@
                                 </div>
                             </div>
                         </div>
+                        @if($penjualan->status != 'closed')
                         <div class="row my-4">
                             <div class="col-sm-6">
                                 <form id="deleteForm" action="{{ url('penjualan/hapus') . '/' . $penjualan->id }}"
@@ -186,16 +223,21 @@
                                     </button>
                                     <div class="dropdown-menu">
                                         <!-- Dropdown menu links -->
-                                        @if($penjualan->jenis == 'faktur')
+                                        @if($penjualan->jenis == 'penagihan')
                                             <a class="dropdown-item" href="{{ url('penjualan/pembayaran') . '/' . $penjualan->id }}">Terima Pembayaran</a>
                                         @elseif($penjualan->jenis == 'penawaran')
-                                            <a class="dropdown-item" href="#">Buat Penagihan</a>
-                                            <a class="dropdown-item" href="#">Buat Pemesanan</a>
+                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
+                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pemesanan/' . $penjualan->id }}">Buat Pemesanan</a>
+                                        @elseif($penjualan->jenis == 'pemesanan')
+                                        <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pengiriman/' . $penjualan->id }}">Buat Pengiriman</a>
+                                        <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
                                         @endif
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        @endif
+                        @if(count($penjualan->detail_pembayaran_penjualan) != 0)
                         <div class="table-responsive">
                             Pembayaran
                             <table class="table my-4">
@@ -231,6 +273,7 @@
                                 </tbody>
                             </table>
                         </div>
+                        @endif
                     </div>
                 </div>
             </div>

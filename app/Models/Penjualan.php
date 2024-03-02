@@ -43,15 +43,27 @@ class Penjualan extends Model
         return $this->belongsTo(Kontak::class, 'id_pelanggan');
     }
 
-    public function insert($request, $idJurnal, $jenis)
+    public function penawaran()
+    {
+        return $this->belongsTo(Penjualan::class, 'id_penawaran');
+    }
+
+    public function pemesanan()
+    {
+        return $this->belongsTo(Penjualan::class, 'id_pemesanan');
+    }
+
+    public function insert($request, $idJurnal, $jenis, $id_penawaran=null)
     {
         $this->id_company = Auth::user()->id_company;
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');
         $this->no = $this->no($jenis);
-        if($jenis == 'faktur'){
+        if($jenis == 'penagihan'){
             $this->no_str = 'Sales Invoice #' . $this->no;
         }else if($jenis == 'penawaran'){
             $this->no_str = 'Sales Quote #' . $this->no;
+        }else if($jenis == 'pemesanan'){
+            $this->no_str = 'Sales Order #' . $this->no;
         }
         $this->id_pelanggan = $request->input('pelanggan');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
@@ -65,7 +77,17 @@ class Penjualan extends Model
         $this->email = $request->input('email');
         $this->jenis = $jenis;
         $this->id_jurnal = $idJurnal;
+        if($jenis == 'pemesanan'){
+            $this->id_penawaran = $id_penawaran;
+        }else if($jenis == 'pemesanan')
         $this->save();
+
+        if($jenis == 'pemesanan'){
+            $penjualan = Penjualan::find($id_penawaran);
+            $penjualan->id_pemesanan = $this->id;
+            $penjualan->status = 'closed';
+            $penjualan->save();
+        }
 
         $this->insertDetailPenjualan($request);
     }

@@ -30,7 +30,13 @@
                         </div>
                         
                     </div>
-                    <form method="POST" @if(isset($penjualan)) action="{{ url('penjualan/penawaran').'/'.$penjualan->id }}" @else action="{{ url('penjualan/penawaran') }}" @endif>
+                    <form method="POST"
+                        @if(isset($penjualan)) 
+                            action="{{ url('penjualan/penawaran').'/'.$penjualan->id }}" 
+                        @else 
+                            action="{{ url('penjualan/penawaran') }}" 
+                        @endif
+                    >
                         @csrf
                         <div class="card-body">
                             <div class="form-row">
@@ -377,5 +383,9 @@
             
         });
         @endif
+
+        document.getElementById('myForm').addEventListener('submit', function() {
+            document.getElementById('mySelect').removeAttribute('disabled');
+        });
     </script>
 @endsection
