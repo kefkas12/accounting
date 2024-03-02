@@ -9,7 +9,24 @@
             <div class="col">
                 <div class="card mb-5">
                     <div class="card-header border-0">
-                        Buat Faktur Penjualan
+                        <div class="row">
+                            <div class="col">
+                                <a href="{{ url('penjualan') }}">Penjualan</a>
+                            </div>
+                        </div>
+                        <div class="row text-sm">
+                            <div class="col">
+                                <h2>Buat Pemesanan Penjualan</h2>
+                            </div>
+                            <div class="col-sm-3 d-flex justify-content-end">
+                                <select class="form-control" onchange="location = this.value;">
+                                    <option selected disabled hidden>Pemesanan Penjualan</option>
+                                    <option value="{{ url('penjualan/penagihan') }}">Penagihan Penjualan</option>
+                                    <option value="{{ url('penjualan/penawaran') }}">Penawaran Penjualan</option>
+                                    <option value="{{ url('penjualan/pemesanan') }}">Pemesanan Penjualan</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <form method="POST" action="{{ url('penjualan/faktur') }}">
                         @csrf
@@ -62,19 +79,20 @@
                                     <!-- Your table headers -->
                                     <thead>
                                         <tr>
-                                            <th scope="col" style="min-width: 300px !important;">Produk</th>
-                                            <th scope="col" style="min-width: 100px !important;">Kuantitas</th>
-                                            <th scope="col" style="min-width: 200px !important;">Harga Satuan</th>
-                                            <th scope="col" style="min-width: 150px !important;">Diskon</th>
-                                            <th scope="col" style="min-width: 200px !important;">Pajak</th>
-                                            <th scope="col" style="min-width: 200px !important;">Jumlah</th>
-                                            <th scope="col" style="min-width: 50px !important;"></th>
+                                            <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk</th>
+                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Deskripsi</th>
+                                            <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas</th>
+                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Harga Satuan</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Diskon</th>
+                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Pajak</th>
+                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Jumlah</th>
+                                            <th scope="col" style="min-width: 50px !important; padding: 10px !important;"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="list">
                                         <tr>
-                                            <td>
-                                                <select class="form-control" name="produk[]" onchange="get_data(this, 1)"
+                                            <td style="padding: 10px !important;">
+                                                <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)"
                                                     required>
                                                     <option selected disabled hidden>Pilih produk</option>
                                                     @foreach ($produk as $v)
@@ -84,13 +102,16 @@
                                                     @endforeach
                                                 </select>
                                             </td>
-                                            <td><input type="number" class="form-control" id="kuantitas_1"
+                                            <td style="padding: 10px !important;">
+                                                <textarea class="form-control" name="deskripsi[]" id="deskripsi_1" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
+                                            </td>
+                                            <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_1"
                                                     name="kuantitas[]" value="1" onkeyup="change_jumlah(1)"
                                                     onblur="check_null(this)" step="any"></td>
-                                            <td><input type="number" class="form-control" id="harga_satuan_1"
+                                            <td style="padding: 10px !important;"><input type="number" class="form-control" id="harga_satuan_1"
                                                     name="harga_satuan[]" value="0" onkeyup="change_jumlah(1)"
                                                     onblur="check_null(this)" step="any"></td>
-                                            <td>
+                                            <td style="padding: 10px !important;">
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text">%</span>
@@ -100,16 +121,16 @@
                                                             onkeyup="change_diskon_per_baris(1)" onblur="check_null(this)" step="any">
                                                     </div>
                                             </td>
-                                            <td>
+                                            <td style="padding: 10px !important;">
                                                 <select class="form-control" id="pajak_1" name="pajak[]"
                                                     onchange="get_pajak(this, 1)" required>
                                                     <option value="0" data-persen="0">Pilih pajak</option>
                                                     <option value="11" data-persen="11">PPN</option>
                                                 </select>
                                             </td>
-                                            <td><input type="number" class="form-control" id="jumlah_1" name="jumlah[]"
+                                            <td style="padding: 10px !important;"><input type="number" class="form-control" id="jumlah_1" name="jumlah[]"
                                                     value="0" step="any"></td>
-                                            <td><a href="javascript:;" onclick="create_row()"><i
+                                            <td style="padding: 10px !important;"><a href="javascript:;" onclick="create_row()"><i
                                                         class="fa fa-plus text-primary"></i></a></td>
                                         </tr>
                                     </tbody>
@@ -289,17 +310,20 @@
             i++;
             $('#list').append(`
                 <tr id="list_${i}">
-                    <th>
-                        <select class="form-control" name="produk[]" onchange="get_data(this, ${i})" required>
+                    <th style="padding: 10px !important;">
+                        <select class="form-control" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
                             <option selected disabled hidden>Pilih produk</option>
                             @foreach ($produk as $v)
                                 <option value="{{ $v->id }}" data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}</option>
                             @endforeach
                         </select>
                     </th>
-                    <td><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
-                    <td><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
-                    <td>
+                    <td style="padding: 10px !important;">
+                        <textarea class="form-control" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
+                    </td>
+                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                    <td style="padding: 10px !important;">
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">%</span>
@@ -307,14 +331,14 @@
                             <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" value="0" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
                         </div>
                     </td>
-                    <td>
+                    <td style="padding: 10px !important;">
                         <select class="form-control" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required>
                             <option value="0" data-persen="0" >Pilih pajak</option>
                             <option value="11" data-persen="11">PPN</option>
                         </select>
                     </td>
-                    <td><input type="number" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" step="any"></td>
-                    <td><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>
+                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" step="any"></td>
+                    <td style="padding: 10px !important;"><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>
                 </tr>
             `);
 

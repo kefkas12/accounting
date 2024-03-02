@@ -26,12 +26,19 @@ class PenjualanController extends Controller
     public function index()
     {
         $data['sidebar'] = 'penjualan';
-        $data['penjualan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+        $data['faktur'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
                                         ->select('penjualan.*','kontak.nama as nama_pelanggan')
                                         ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->where('penjualan.jenis','faktur')
                                         ->orderBy('id','DESC')
                                         ->get();
-        $data['belum_dibayar'] = number_format(Penjualan::where('tanggal_jatuh_tempo','>',date('Y-m-d'))
+        $data['penawaran'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan')
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->where('penjualan.jenis','penawaran')
+                                        ->orderBy('id','DESC')
+                                        ->get();
+        $data['belum_dibayar'] = number_format(Penjualan::where('tanggal_jatuh_tempo','>',date('Y-m-d'))->where('penjualan.jenis','faktur')
                                         ->sum('sisa_tagihan'),2,',','.');
         return view('pages.penjualan.index', $data);
     }
@@ -69,13 +76,17 @@ class PenjualanController extends Controller
         return view('pages.penjualan.pembayaran', $data);
     }
 
-    public function faktur()
+    public function faktur($id=null)
     {
         $data['sidebar'] = 'penjualan';
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
+        if($id != null){
+            $data['penjualan'] = Penjualan::where('id',$id)->first();
+            $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
+        }
         return view('pages.penjualan.faktur', $data);
     }
 
@@ -89,13 +100,17 @@ class PenjualanController extends Controller
         return view('pages.penjualan.pemesanan', $data);
     }
 
-    public function penawaran()
+    public function penawaran($id=null)
     {
         $data['sidebar'] = 'penjualan';
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
+        if($id != null){
+            $data['penjualan'] = Penjualan::where('id',$id)->first();
+            $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
+        }
         return view('pages.penjualan.penawaran', $data);
     }
 
@@ -137,14 +152,37 @@ class PenjualanController extends Controller
         return view('pages.penjualan.receive_payment',$data);
     }
 
-    public function insert(Request $request)
+    public function insert_faktur(Request $request)
     {
         $jurnal = new Jurnal;
         $jurnal->penjualan($request);
-
         
         $penjualan = new Penjualan;
-        $penjualan->insert($request, $jurnal->id);
+        $penjualan->insert($request, $jurnal->id, 'faktur');
+
+        return redirect('penjualan');
+    }
+
+    public function update_faktur(Request $request, $id)
+    {
+        $penjualan = Penjualan::find($id);
+        $penjualan->edit($request, 'penawaran');
+
+        return redirect('penjualan');
+    }
+
+    public function insert_penawaran(Request $request)
+    {
+        $penjualan = new Penjualan;
+        $penjualan->insert($request, null, 'penawaran');
+
+        return redirect('penjualan');
+    }
+
+    public function update_penawaran(Request $request, $id)
+    {
+        $penjualan = Penjualan::find($id);
+        $penjualan->edit($request, 'penawaran');
 
         return redirect('penjualan');
     }

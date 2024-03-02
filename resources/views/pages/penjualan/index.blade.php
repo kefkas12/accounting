@@ -95,7 +95,7 @@
                                             </tr>
                                         </thead>
                                         <tbody class="list">
-                                            @foreach($penjualan as $v)
+                                            @foreach($faktur as $v)
                                             <tr>
                                                 <td>{{ $v->tanggal_transaksi }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
@@ -126,7 +126,7 @@
                                             </tr>
                                         </thead>
                                         <tbody class="list">
-                                            @foreach($penjualan as $v)
+                                            @foreach($faktur as $v)
                                             <tr>
                                                 <td>{{ $v->tanggal_transaksi }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
@@ -157,7 +157,7 @@
                                             </tr>
                                         </thead>
                                         <tbody class="list">
-                                            @foreach($penjualan as $v)
+                                            @foreach($faktur as $v)
                                             <tr>
                                                 <td>{{ $v->tanggal_transaksi }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
@@ -181,14 +181,14 @@
                                                 <th scope="col">Tanggal</th>
                                                 <th scope="col">No</th>
                                                 <th scope="col">Pelanggan </th>
-                                                <th scope="col">Tgl. Jatuh Tempo</th>
+                                                <th scope="col">Berlaku Hingga</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Sisa Tagihan</th>
                                                 <th scope="col">Total</th>
                                             </tr>
                                         </thead>
                                         <tbody class="list">
-                                            @foreach($penjualan as $v)
+                                            @foreach($penawaran as $v)
                                             <tr>
                                                 <td>{{ $v->tanggal_transaksi }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
