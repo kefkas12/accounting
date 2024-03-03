@@ -15,7 +15,7 @@ class Detail_jurnal extends Model
 
     public function jurnal(): BelongsTo
     {
-        return $this->belongsTo(Jurnal::class);
+        return $this->belongsTo(Jurnal::class, 'id_jurnal');
     }
 
     public function akun(): BelongsTo

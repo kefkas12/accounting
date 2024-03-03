@@ -9,88 +9,51 @@
                 <div class="card mb-5">
                     <div class="card-header bg-transparent border-0">
                         <div class="row">
-                            <div class="col-sm-6">Informasi Produk</div>
-                            <div class="col-sm-6 d-flex justify-content-end">
-                                <a href="{{ url('produk/edit').'/'.$produk->id }}" class="btn btn-outline-primary">Ubah</a>
-                                <a href="{{ url('produk/hapus').'/'.$produk->id }}" class="btn btn-outline-danger">Hapus</a>
+                            <div class="col-sm-6">
+                                <h2>
+                                    <small style="display: block;">Akun - {{ $akun->nama_kategori }}</small>
+                                     ({{ $akun->nomor }}) {{ $akun->nama }}
+                                </h2>
+                            </div>
+                            <div class="col-sm-6 d-flex justify-content-end py-2">
+                                <a href="{{ url('akun/edit').'/'.$akun->id }}" class="btn btn-outline-primary">Ubah</a>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body" style="font-size: 12px;">
-                        Informasi Produk
-                        <div class="row my-4">
-                            <div class="col-sm-2">Nama</div>
-                            <div class="col-sm-4">
-                                @if (isset($produk))
-                                    {{ $produk->nama }}
-                                @else
-                                    -
-                                @endif
-                            </div>  
-                        </div>
-                        <div class="row my-4">
-                            <div class="col-sm-2">Kode</div>
-                            <div class="col-sm-4">
-                                @if (isset($produk) && $produk->kode != null)
-                                    {{ $produk->kode }}
-                                @else
-                                    -
-                                @endif
-                            </div>
-                        </div>
-                        <div class="row my-4">
-                            <div class="col-sm-2">Kategori</div>
-                            <div class="col-sm-4">
-                                @if (isset($produk) && $produk->kategori != null)
-                                    {{ $produk->kategori }}
-                                @else
-                                    -
-                                @endif
-                            </div>
-                        </div>
-                        <div class="row my-4">
-                            <div class="col-sm-2">Stok</div>
-                            <div class="col-sm-4">
-                                @if (isset($produk) && $produk->stok != null)
-                                    {{ $produk->stok }}
-                                @else
-                                    -
-                                @endif
-                            </div>
-                        </div>
-                        <div class="row my-4">
-                            <div class="col-sm-2">Unit</div>
-                            <div class="col-sm-4">
-                                @if (isset($produk) && $produk->unit != null)
-                                    {{ $produk->unit }}
-                                @else
-                                    -
-                                @endif
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row my-4">
-                            <div class="col-sm-2">Info Pembelian</div>
-                            <div class="col-sm-4"></div>
-                            <div class="col-sm-2">Info Penjualan</div>
-                            <div class="col-sm-4"></div>
-                        </div>
-                        <div class="row my-4">
-                            <div class="col-sm-2">Harga Beli</div>
-                            <div class="col-sm-4">
-                                @if (isset($produk) && $produk->harga_beli != '')
-                                    Rp {{ number_format($produk->harga_beli,2,',','.') }}
-                                @else
-                                    -
-                                @endif
-                            </div>
-                            <div class="col-sm-2">Harga Jual</div>
-                            <div class="col-sm-4">
-                                @if (isset($produk) && $produk->harga_jual != null)
-                                    Rp {{ number_format($produk->harga_jual,2,',','.') }}
-                                @else
-                                    -
-                                @endif
+                    <div class="card-body">
+                        Transaksi Akun
+                        <div class="card-body mt-4" style="padding: 0px !important;">    
+                            <div class="table-responsive">
+                                <table class="table my-4">
+                                    <thead style="background-color: #E0F7FF">
+                                        <tr>
+                                            <th>Tanggal</th>
+                                            <th>Nomor</th>
+                                            <th>Kontak</th>
+                                            <th class="text-right">Debit (dalam IDR)</th>
+                                            <th class="text-right">Kredit (dalam IDR)</th>
+                                            <th class="text-right">Saldo (dalam IDR)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php
+                                        $saldo = 0;
+                                        @endphp
+                                        @foreach($transaksi_akun as $v)
+                                        <tr>
+                                            <td>{{ $v->jurnal->tanggal_transaksi }}</td>
+                                            <td><a href="{{ url('jurnal/detail').'/'.$v->jurnal->id  }}" >{{ $v->jurnal->no_str }}</a></td>
+                                            <td></td>
+                                            <td class="text-right">{{ number_format($v->debit,2,',','.') }}</td>
+                                            <td class="text-right">{{ number_format($v->kredit,2,',','.') }}</td>
+                                            @php
+                                            $saldo = $saldo + $v->debit - $v->kredit;
+                                            @endphp
+                                            <td class="text-right">{{ number_format($saldo,2,',','.') }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

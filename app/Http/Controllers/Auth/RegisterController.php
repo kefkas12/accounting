@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Akun;
+use App\Models\Akun_company;
+use App\Models\Company;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -64,10 +67,25 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        $company = new Company; 
+        $company->nama_perusahaan = $data['nama_perusahaan'];
+        $company->save();
+
+        $akun = Akun::get();
+        foreach($akun as $v){
+            $akun_company = new Akun_company;
+            $akun_company->id_company = $company->id;
+            $akun_company->id_akun = $v->id;
+            $akun_company->saldo = 0;
+            $akun_company->save();
+        }
+
         return User::create([
+            'id_company' => $company->id,
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'role' => 0
         ]);
     }
 }

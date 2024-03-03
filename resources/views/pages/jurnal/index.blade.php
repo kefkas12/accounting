@@ -11,7 +11,7 @@
                     <div class="card-header border-0">
                         <div class="row mb-3">
                             <div class="col">
-                                Laporan Jurnal (dalam IDR)
+                                <strong><span style="font-size: 1.5rem;">Laporan Jurnal</span></strong> (dalam IDR)
                             </div>
                         </div>
                     </div>
@@ -37,7 +37,7 @@
                                     $kredit = 0;
                                 @endphp
                                 <tr>
-                                    <td colspan="3" style="background: #f8f8f8;"><h4><strong>{{ $v->no_str }} | {{ $v->tanggal_transaksi }} (created on {{ $v->created_at }})</strong></h4></td>
+                                    <td colspan="3" style="background: #f8f8f8;"><h4><strong><a href="">{{ $v->no_str }}</a> | {{ $v->tanggal_transaksi }} (created on {{ $v->created_at }})</strong></h4></td>
                                 </tr>
                                 @foreach($v->detail_jurnal as $w)
                                 <tr>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Akun;
+use App\Models\Detail_jurnal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -51,11 +52,12 @@ class AkunController extends Controller
             if($status == 'edit'){
                 return view('pages.akun.form', $data);
             }else if($status == 'detail'){
+                $data['transaksi_akun'] = Detail_jurnal::with('jurnal')->where('id_akun',$id)->get();
                 return view('pages.akun.detail', $data);
             }
         }else{
             return view('pages.akun.form', $data);
-        }  
+        }
     }
     public function edit($id, Request $request)
     {

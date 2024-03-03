@@ -50,10 +50,19 @@ class JurnalController extends Controller
 
         return redirect('laporan/jurnal');
     }
-    public function detail()
+    public function detail($status=null,$id=null)
     {
         $data['sidebar'] = 'akun';
         $data['akun'] = Akun::get();
-        return view('pages.jurnal.form', $data);
+        if($id){
+            if($status == 'edit'){
+                return view('pages.jurnal.form', $data);
+            }else if($status == 'detail'){
+                $data['jurnal'] = Jurnal::with('detail_jurnal.akun')->where('id',$id)->first();
+                return view('pages.jurnal.detail', $data);
+            }
+        }else{
+            return view('pages.jurnal.form', $data);
+        }
     }
 }

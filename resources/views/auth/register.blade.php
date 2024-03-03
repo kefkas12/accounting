@@ -12,7 +12,19 @@
                         <div class="text-muted text-center mt-2 mb-4"><small>{{ __('Sign up') }}</small></div>
                         <form role="form" method="POST" action="{{ route('register') }}">
                             @csrf
-
+                            <div class="form-group{{ $errors->has('nama_perusahaan') ? ' has-danger' : '' }}">
+                                <div class="input-group input-group-alternative mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="ni ni-building"></i></span>
+                                    </div>
+                                    <input class="form-control{{ $errors->has('nama_perusahaan') ? ' is-invalid' : '' }}" placeholder="{{ __('Nama Perusahaan') }}" type="text" name="nama_perusahaan" value="{{ old('nama_perusahaan') }}" required autofocus>
+                                </div>
+                                @if ($errors->has('nama_perusahaan'))
+                                    <span class="invalid-feedback" style="display: block;" role="alert">
+                                        <strong>{{ $errors->first('nama_perusahaan') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
                             <div class="form-group{{ $errors->has('name') ? ' has-danger' : '' }}">
                                 <div class="input-group input-group-alternative mb-3">
                                     <div class="input-group-prepend">
