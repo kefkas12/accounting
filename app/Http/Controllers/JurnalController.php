@@ -58,7 +58,10 @@ class JurnalController extends Controller
             if($status == 'edit'){
                 return view('pages.jurnal.form', $data);
             }else if($status == 'detail'){
-                $data['jurnal'] = Jurnal::with('detail_jurnal.akun')->where('id',$id)->first();
+                $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                                        ->where('id',$id)
+                                        ->where('id_company',Auth::user()->id_company)
+                                        ->first();
                 return view('pages.jurnal.detail', $data);
             }
         }else{

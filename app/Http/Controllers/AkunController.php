@@ -52,7 +52,13 @@ class AkunController extends Controller
             if($status == 'edit'){
                 return view('pages.akun.form', $data);
             }else if($status == 'detail'){
-                $data['transaksi_akun'] = Detail_jurnal::with('jurnal')->where('id_akun',$id)->get();
+                $id_company = Auth::user()->id_company;
+                $data['transaksi_akun'] = Detail_jurnal::with('jurnal')
+                                                        ->whereHas('jurnal', function($query) use ($id_company) {
+                                                            $query->where('id_company', $id_company);
+                                                        })
+                                                        ->where('id_akun',$id)
+                                                        ->get();
                 return view('pages.akun.detail', $data);
             }
         }else{

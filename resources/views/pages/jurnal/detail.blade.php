@@ -52,8 +52,8 @@
                                     @endphp
                                     @foreach($jurnal->detail_jurnal as $v)
                                         <tr>
-                                            <td>{{ $v->akun->nomor }}</td>
-                                            <td>{{ $v->akun->nama }}</td>
+                                            <td><a href="{{ url('akun/detail').'/'.$v->akun->id}}">{{ $v->akun->nomor }}</a></td>
+                                            <td><a href="{{ url('akun/detail').'/'.$v->akun->id}}">{{ $v->akun->nama }}</a></td>
                                             <td>{{ $v->deskripsi }}</td>
                                             <td class="text-right">{{ number_format($v->debit,2,',','.') }}</td>
                                             <td class="text-right">{{ number_format($v->kredit,2,',','.') }}</td>

@@ -15,8 +15,8 @@
                                      ({{ $akun->nomor }}) {{ $akun->nama }}
                                 </h2>
                             </div>
-                            <div class="col-sm-6 d-flex justify-content-end py-2">
-                                <a href="{{ url('akun/edit').'/'.$akun->id }}" class="btn btn-outline-primary">Ubah</a>
+                            <div class="col-sm-6 d-flex justify-content-end py-2" >
+                                <a href="{{ url('akun/edit').'/'.$akun->id }}" class="btn btn-outline-primary" hidden>Ubah</a>
                             </div>
                         </div>
                     </div>
