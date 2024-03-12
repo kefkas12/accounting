@@ -49,7 +49,7 @@
                         </div>
                         <hr>
                         <div class="row">
-                            <div class="col-sm-2">Alamat penagihan</div>
+                            <div class="col-sm-2">Alamat faktur</div>
                             <div class="col-sm-2"><strong>{{ $pembelian->alamat }}</strong></div>
                             <div class="col-sm-2">Tgl. Transaksi</div>
                             <div class="col-sm-2">
@@ -122,6 +122,16 @@
                                         <h4>Rp. {{ number_format($pembelian->total, 2, ',', '.') }}</h4>
                                     </div>
                                 </div>
+                                @if($pembelian->jumlah_terbayar != 0)
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <h4>Jumlah Terbayar</h4>
+                                    </div>
+                                    <div class="col-sm-6 d-flex justify-content-end">
+                                        <h4>Rp. {{ number_format($pembelian->jumlah_terbayar, 2, ',', '.') }}</h4>
+                                    </div>
+                                </div>
+                                @endif
                                 <div class="row my-3">
                                     <div class="col-sm-6">
                                         <h2>Sisa Tagihan</h2>
@@ -141,11 +151,53 @@
                                         class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
                                 </form>
                             </div>
+                            @if($pembelian->jenis == 'faktur' && $pembelian->status != 'paid')
                             <div class="col-sm-6 d-flex justify-content-end">
-                                <button class="btn btn-outline-primary">Ubah</button>
+                                <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
+                                <div class="btn-group dropup">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                        Tindakan
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <!-- Dropdown menu links -->
+                                        @if($pembelian->jenis == 'faktur')
+                                            <a class="dropdown-item" href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}">Kirim Pembayaran</a>
+                                        @elseif($pembelian->jenis == 'penawaran')
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
+                                        @elseif($pembelian->jenis == 'pemesanan')
+                                        <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                        <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            @else
+                            <div class="col-sm-6 d-flex justify-content-end">
+                                <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
                                 <a href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}" class="btn btn-primary">Kirim
                                     Pembayaran</a>
+                                <div class="btn-group dropup">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                        Tindakan
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <!-- Dropdown menu links -->
+                                        @if($pembelian->jenis == 'faktur')
+                                            <a class="dropdown-item" href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}">Terima Pembayaran</a>
+                                        @elseif($pembelian->jenis == 'penawaran')
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
+                                        @elseif($pembelian->jenis == 'pemesanan')
+                                        <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                        <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
+                            @endif
                         </div>
                         <div class="table-responsive">
                             Pembayaran
@@ -181,52 +233,6 @@
                             </table>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">{{ $jurnal->no_str }}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Akun</th>
-                                <th scope="col">Debit</th>
-                                <th scope="col">Kredit</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php
-                                $total_debit = 0;
-                                $total_kredit = 0;
-                            @endphp
-                            @foreach($jurnal->detail_jurnal as $v)
-                            <tr>
-                                <td>{{ $v->akun->nomor }} - {{ $v->akun->nama }}</td>
-                                <td>Rp. {{ number_format($v->debit,2,',','.') }}</td>
-                                <td>Rp. {{ number_format($v->kredit,2,',','.') }}</td>
-                            </tr>
-                            @php
-                                $total_debit += $v->debit;
-                                $total_kredit += $v->kredit;
-                            @endphp
-                            @endforeach
-                            <tr>
-                                <td>Total</td>
-                                <td>Rp. {{ number_format($total_debit,2,',','.') }}</td>
-                                <td>Rp. {{ number_format($total_kredit,2,',','.')    }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>

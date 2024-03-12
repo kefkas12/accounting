@@ -153,13 +153,23 @@ class PembelianController extends Controller
         return view('pages.pembelian.receive_payment',$data);
     }
 
-    public function insert(Request $request)
+    public function insert_faktur(Request $request)
     {
         $jurnal = new Jurnal;
         $jurnal->pembelian($request);
 
         $pembelian = new Pembelian;
-        $pembelian->insert($request, $jurnal->id);
+        $pembelian->insert($request, $jurnal->id, 'faktur');
+
+        return redirect('pembelian');
+    }
+
+    public function update_faktur(Request $request, $id)
+    {
+        $pembelian = Pembelian::find($id);
+        $jurnal = Jurnal::find($pembelian->id_jurnal);
+        $jurnal->pembelian($request);
+        $pembelian->edit($request);
 
         return redirect('pembelian');
     }

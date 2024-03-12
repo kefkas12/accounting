@@ -205,7 +205,6 @@ class PenjualanController extends Controller
         $data['detail_pembayaran_penjualan'] = Detail_pembayaran_penjualan::with('pembayaran_penjualan', 'penjualan.kontak')
                                             ->where('id_pembayaran_penjualan',$id)
                                             ->get();
-                                            // dd($data);
         $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
                                             ->leftJoin('pembayaran_penjualan','jurnal.id','=','pembayaran_penjualan.id_jurnal')
                                             ->select('jurnal.*')
@@ -226,12 +225,11 @@ class PenjualanController extends Controller
     }
 
     public function update_penagihan(Request $request, $id)
-    {
-        $jurnal = new Jurnal;
-        $jurnal->penjualan($request);
-        
+    {        
         $penjualan = Penjualan::find($id);
-        $penjualan->edit($request, 'penawaran');
+        $jurnal = Jurnal::find($penjualan->id_jurnal);
+        $jurnal->penjualan($request, $id);
+        $penjualan->edit($request);
 
         return redirect('penjualan');
     }
@@ -247,7 +245,7 @@ class PenjualanController extends Controller
     public function update_penawaran(Request $request, $id)
     {
         $penjualan = Penjualan::find($id);
-        $penjualan->edit($request, 'penawaran');
+        $penjualan->edit($request);
 
         return redirect('penjualan');
     }

@@ -75,12 +75,19 @@ Route::controller(PembelianController::class)->prefix('pembelian')->group(functi
 	Route::get('/pemesanan', 'pemesanan');
 	Route::get('/penawaran', 'penawaran');
 
+	Route::get('/penawaran/{id}', 'penawaran');
+	Route::get('/penawaran/pemesanan/{id}', 'penawaran_pemesanan');
+	Route::get('/pemesanan/faktur/{id}', 'pemesanan_faktur');
+	Route::get('/faktur/{id}', 'faktur');
+
 	Route::get('/detail/{id}', 'detail');
 	Route::get('/pembayaran/{id}', 'pembayaran');
 	Route::get('/receive_payment/{id}','receive_payment');
-	Route::post('/hapus/{id}', 'hapus');
-	Route::post('/faktur', 'insert');
 	Route::post('/pembayaran', 'penerimaan_pembayaran');
+	Route::post('/hapus/{id}', 'hapus');
+	Route::post('/faktur', 'insert_faktur');
+	Route::post('/faktur/{id}', 'update_faktur');
+	
 
 });
 

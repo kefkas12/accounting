@@ -117,7 +117,7 @@ class Penjualan extends Model
         }
     }
 
-    public function edit($request, $jenis)
+    public function edit($request)
     {
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');
         $this->id_pelanggan = $request->input('pelanggan');

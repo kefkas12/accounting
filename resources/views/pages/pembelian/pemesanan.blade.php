@@ -19,11 +19,11 @@
                                 <h2>Buat Pemesanan Pembelian</h2>
                             </div>
                             <div class="col-sm-3 d-flex justify-content-end">
-                                <select class="form-control" onchange="location = this.value;" @if(isset($penawaran)) disabled @endif>
+                                <select class="form-control" onchange="location = this.value;">
                                     <option selected disabled hidden>Pemesanan Pembelian</option>
-                                    <option value="{{ url('pembelian/penagihan') }}">Penagihan Pembelian</option>
-                                    <option value="{{ url('pembelian/penawaran') }}">Penawaran Pembelian</option>
+                                    <option value="{{ url('pembelian/faktur') }}">Faktur Pembelian</option>
                                     <option value="{{ url('pembelian/pemesanan') }}">Pemesanan Pembelian</option>
+                                    <option value="{{ url('pembelian/penawaran') }}">Penawaran Pembelian</option>
                                 </select>
                             </div>
                         </div>

@@ -21,9 +21,9 @@
                             <div class="col-sm-3 d-flex justify-content-end">
                                 <select class="form-control" onchange="location = this.value;">
                                     <option selected disabled hidden>Penawaran Pembelian</option>
-                                    <option value="{{ url('pembelian/penagihan') }}">Penagihan Pembelian</option>
-                                    <option value="{{ url('pembelian/penawaran') }}">Penawaran Pembelian</option>
+                                    <option value="{{ url('pembelian/faktur') }}">Faktur Pembelian</option>
                                     <option value="{{ url('pembelian/pemesanan') }}">Pemesanan Pembelian</option>
+                                    <option value="{{ url('pembelian/penawaran') }}">Penawaran Pembelian</option>
                                 </select>
                             </div>
                         </div>
@@ -39,10 +39,10 @@
                         <div class="card-body">
                             <div class="form-row">
                                 <div class="form-group col-md-3 pr-4">
-                                    <label for="pelanggan">Pelanggan <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="pelanggan" name="pelanggan" required>
+                                    <label for="supplier">Supplier <span class="text-danger">*</span></label>
+                                    <select class="form-control" id="supplier" name="supplier" required>
                                         <option selected disabled>Pilih kontak</option>
-                                        @foreach ($pelanggan as $v)
+                                        @foreach ($supplier as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
                                         @endforeach
@@ -89,7 +89,6 @@
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Deskripsi</th>
                                             <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas</th>
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Harga Satuan</th>
-                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Diskon</th>
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Pajak</th>
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Jumlah</th>
                                             <th scope="col" style="min-width: 50px !important; padding: 10px !important;"></th>
@@ -118,17 +117,6 @@
                                                     name="harga_satuan[]" value="0" onkeyup="change_jumlah(1)"
                                                     onblur="check_null(this)" step="any"></td>
                                             <td style="padding: 10px !important;">
-                                                <div class="input-group">
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text">%</span>
-                                                    </div>
-                                                    <input type="number" class="form-control" id="diskon_per_baris_1"
-                                                        name="diskon_per_baris[]" value="0"
-                                                        onkeyup="change_diskon_per_baris(1)" onblur="check_null(this)"
-                                                        step="any">
-                                                </div>
-                                            </td>
-                                            <td style="padding: 10px !important;">
                                                 <select class="form-control" id="pajak_1" name="pajak[]"
                                                     onchange="get_pajak(this, 1)" required>
                                                     <option value="0" data-persen="0">Pilih pajak</option>
@@ -154,16 +142,6 @@
                                         <div class="col d-flex justify-content-end">
                                             <span id="subtotal">Rp 0,00</span>
                                             <input type="text" id="input_subtotal" name="input_subtotal" hidden>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-3">
-                                        <div class="col">
-                                            <span>Diskon per baris</span>
-                                        </div>
-                                        <div class="col d-flex justify-content-end">
-                                            <span id="diskon_per_baris">Rp 0,00</span>
-                                            <input type="text" id="input_diskon_per_baris"
-                                                name="input_diskon_per_baris" hidden>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -213,10 +191,8 @@
         var i = 1;
         var ppn = {};
         var subtotal = {};
-        var diskon_per_baris = {};
         var result_subtotal = 0;
         var result_ppn = 0;
-        var result_diskon_per_baris = 0;
 
 
         function load() {
@@ -231,22 +207,15 @@
                 result_ppn += ppn[key];
             }
 
-            result_diskon_per_baris = 0;
-            for (var key in diskon_per_baris) {
-                result_diskon_per_baris += diskon_per_baris[key];
-            }
-
             $('#total_faktur').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
 
             $('#subtotal').text(rupiah(result_subtotal));
             $('#ppn').text(rupiah(result_ppn));
-            $('#diskon_per_baris').text(rupiah(result_diskon_per_baris));
             $('#total').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
             $('#sisa_tagihan').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
 
             $('#input_subtotal').val(result_subtotal);
             $('#input_ppn').val(result_ppn);
-            $('#input_diskon_per_baris').val(result_diskon_per_baris);
             $('#input_total').val(result_subtotal + result_ppn - result_diskon_per_baris);
             $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris);
         }
@@ -257,7 +226,6 @@
             $('#jumlah_' + no).val(selected);
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
             subtotal[no] = kuantitas * parseFloat(selected);
-            diskon_per_baris[no] = subtotal[no] * parseFloat($('#diskon_per_baris_' + no).val()) / 100;
             load();
         }
 
@@ -277,22 +245,7 @@
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
             harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
             subtotal[no] = kuantitas * harga_satuan;
-            diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
-            diskon_per_baris[no] = subtotal[no] * diskon / 100;
-            $('#jumlah_' + no).val(subtotal[no] - diskon_per_baris[no]);
-
-            get_pajak($('#pajak_' + no), no);
-
-            load();
-        }
-
-        function change_diskon_per_baris(no) {
-            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
-            harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
-            var subtotal = kuantitas * harga_satuan;
-            diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
-            diskon_per_baris[no] = subtotal * diskon / 100;
-            $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
+            $('#jumlah_' + no).val(subtotal[no]);
 
             get_pajak($('#pajak_' + no), no);
 
@@ -333,14 +286,6 @@
                     <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
                     <td style="padding: 10px !important;"><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
                     <td style="padding: 10px !important;">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">%</span>
-                            </div>
-                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" value="0" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
-                        </div>
-                    </td>
-                    <td style="padding: 10px !important;">
                         <select class="form-control" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required>
                             <option value="0" data-persen="0" >Pilih pajak</option>
                             <option value="11" data-persen="11">PPN</option>
@@ -355,7 +300,7 @@
 
         @if(isset($pembelian))
         $( document ).ready(function() {
-            $('#pelanggan').val('{{ $pembelian->id_pelanggan }}')
+            $('#supplier').val('{{ $pembelian->id_supplier }}')
             $('#email').val('{{ $pembelian->email }}')
             $('#alamat').val('{{ $pembelian->alamat }}')
             $('#tanggal_transaksi').val('{{ $pembelian->tanggal_transaksi }}')
@@ -367,7 +312,6 @@
                 $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
                 $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
                 $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').trigger('keyup');
-                $('#diskon_per_baris_'+x).val('{{ $v->diskon_per_baris }}').trigger('keyup');
                 @if($v->pajak != 0)
                     $('#pajak_'+x).val('11').trigger('change');
                 @else

@@ -221,7 +221,7 @@
                                     <div class="row my-5">
                                         <div class="col d-flex justify-content-end">
                                             <a href="{{ url('penjualan') }}" class="btn btn-light">Batalkan</a>
-                                            <button type="submit" class="btn btn-primary">@if(isset($pemesanan)) Buat @else Buat Faktur @endif</button>
+                                            <button type="submit" class="btn btn-primary">@if(isset($pembelian)) Simpan perubahan @elseif(isset($pemesanan)) Buat @else Buat Faktur @endif</button>
                                         </div>
                                     </div>
                                 </div>
@@ -264,18 +264,19 @@
             $('#diskon_per_baris').text(rupiah(result_diskon_per_baris));
             $('#total').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
             $('#total_faktur').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
+            @if(isset($penjualan) && $penjualan->jumlah_terbayar != 0)
+            $('#sisa_tagihan').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris - {{ $penjualan->jumlah_terbayar }}));
+            $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris - {{ $penjualan->jumlah_terbayar }});
+            @else
             $('#sisa_tagihan').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
+            $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris);
+            @endif
 
             $('#input_subtotal').val(result_subtotal);
             $('#input_ppn').val(result_ppn);
             $('#input_diskon_per_baris').val(result_diskon_per_baris);
             $('#input_total').val(result_subtotal + result_ppn - result_diskon_per_baris);
             
-            @if(isset($penjualan))
-            $('#input_sisa_tagihan').val({{ $penjualan->sisa_tagihan }});
-            @else
-            $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris);
-            @endif
         }
 
         function get_data(thisElement, no) {
