@@ -42,7 +42,16 @@
                                         @foreach($transaksi_akun as $v)
                                         <tr>
                                             <td>{{ $v->jurnal->tanggal_transaksi }}</td>
-                                            <td><a href="{{ url('jurnal/detail').'/'.$v->jurnal->id  }}" >{{ $v->jurnal->no_str }}</a></td>
+                                            <td>
+                                                <div class="d-flex">
+                                                    <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-xs">
+                                                        <a href="{{ url('jurnal/detail').'/'.$v->jurnal->id  }}" >{{ $v->jurnal->no_str }}</a>
+                                                    </h6>
+                                                    <p class="text-xs mb-0 email">{{ $v->deskripsi }}</p>
+                                                </div>
+                                            </div>
+                                            </td>
                                             <td></td>
                                             <td class="text-right">{{ number_format($v->debit,2,',','.') }}</td>
                                             <td class="text-right">{{ number_format($v->kredit,2,',','.') }}</td>

@@ -26,9 +26,22 @@ class PembelianController extends Controller
     public function index()
     {
         $data['sidebar'] = 'pembelian';
-        $data['pembelian'] = Pembelian::leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
+        $data['faktur'] = Pembelian::leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
                                         ->select('pembelian.*','kontak.nama as nama_supplier')
                                         ->where('pembelian.id_company',Auth::user()->id_company)
+                                        ->where('pembelian.jenis','faktur')
+                                        ->orderBy('id','DESC')
+                                        ->get();
+        $data['penawaran'] = Pembelian::leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
+                                        ->select('pembelian.*','kontak.nama as nama_pelanggan')
+                                        ->where('pembelian.id_company',Auth::user()->id_company)
+                                        ->where('pembelian.jenis','penawaran')
+                                        ->orderBy('id','DESC')
+                                        ->get();
+        $data['pemesanan'] = Pembelian::leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
+                                        ->select('pembelian.*','kontak.nama as nama_pelanggan')
+                                        ->where('pembelian.id_company',Auth::user()->id_company)
+                                        ->where('pembelian.jenis','pemesanan')
                                         ->orderBy('id','DESC')
                                         ->get();
         $data['belum_dibayar'] = number_format(Pembelian::where('tanggal_jatuh_tempo','>',date('Y-m-d'))
@@ -70,14 +83,46 @@ class PembelianController extends Controller
         return view('pages.pembelian.pembayaran', $data);
     }
 
-    public function faktur()
+    public function faktur($id=null)
     {
         $data['sidebar'] = 'pembelian';
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
         $data['supplier'] = Kontak::where('tipe','supplier')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
+        if($id != null){
+            $data['pembelian'] = Pembelian::where('id',$id)->first();
+            $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
+        }
         return view('pages.pembelian.faktur', $data);
+    }
+
+    public function pemesanan($id=null)
+    {
+        $data['sidebar'] = 'pembelian';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['supplier'] = Kontak::where('tipe','supplier')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        if($id != null){
+            $data['pembelian'] = Pembelian::where('id',$id)->first();
+            $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
+        }
+        return view('pages.pembelian.pemesanan', $data);
+    }
+
+    public function penawaran($id=null)
+    {
+        $data['sidebar'] = 'pembelian';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['supplier'] = Kontak::where('tipe','supplier')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        if($id != null){
+            $data['pembelian'] = Pembelian::where('id',$id)->first();
+            $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
+        }
+        return view('pages.pembelian.penawaran', $data);
     }
 
     public function penerimaan_pembayaran(Request $request)

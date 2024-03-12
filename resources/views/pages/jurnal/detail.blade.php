@@ -77,6 +77,20 @@
                                 </tbody>
                             </table>
                         </div>
+                        <div class="row my-4">
+                            <div class="col-sm-6">
+                                <form id="deleteForm" action="{{ url('jurnal/hapus') . '/' . $jurnal->id }}"
+                                    method="post">
+                                    @csrf
+                                    <button type="submit"
+                                        class="btn btn-dark" onclick="confirmDelete(event)">Hapus</button>
+                                </form>
+                            </div>
+                            <div class="col-sm-6 d-flex justify-content-end">
+                                <a href="{{ url('jurnal') }}" class="btn btn-danger">Kembali</a>
+                                <a href="{{ url('jurnal').'/edit/'.$jurnal->id }}" class="btn btn-success">Ubah</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

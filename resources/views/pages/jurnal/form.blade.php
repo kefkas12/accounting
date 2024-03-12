@@ -4,8 +4,8 @@
     @include('layouts.headers.cards')
     <style>
         .chosen-container.chosen-with-drop .chosen-drop {
-    position: relative;
-}
+            position: relative;
+        }
     </style>
     <!-- Page content -->
     <div class="mt--6">
@@ -17,7 +17,7 @@
                         Jurnal Umum
                     </div>
                     <div class="card-body ">
-                        <form method="POST" action="{{ url('jurnal/insert') }}" id="insertForm">
+                        <form method="POST" @if (isset($jurnal)) action="{{ url('jurnal/edit').'/'.$jurnal->id }}" @else action="{{ url('jurnal/insert') }}" @endif id="insertForm">
                             @csrf
                             <div class="form-row">
                                 <div class="form-group col-md-3 pr-4">
@@ -41,13 +41,16 @@
                                     <tbody id="list">
                                         <tr>
                                             <th>
-                                                <select class="chosen-select" name="akun[]" id="akun_1" required>
-                                                    <option value=""></option>
+                                                <select class="form-control" name="akun[]" id="akun_1" required>
+                                                    <option value="" hidden selected disabled>Pilih akun</option>
                                                     @foreach ($akun as $v)
                                                         <option value="{{ $v->id }}">({{ $v->nomor }})
                                                             {{ $v->nama }} ({{ $v->nama_kategori }})</option>
                                                     @endforeach
                                                 </select>
+                                                @if (isset($jurnal)) 
+                                                    <input type="number" name="id_detail_jurnal[]" id="id_detail_jurnal_1" hidden>
+                                                @endif
                                             </th>
                                             <td>
                                                 <textarea class="form-control" id="deskripsi_1" name="deskripsi[]"></textarea>
@@ -58,31 +61,12 @@
                                                     value="0" onkeyup="change_kredit(1)"></td>
                                             <td></td>
                                         </tr>
-                                        <tr>
-                                            <th>
-                                                <select class="chosen-select" name="akun[]" id="akun_2" required>
-                                                    <option value=""></option>
-                                                    @foreach ($akun as $v)
-                                                        <option value="{{ $v->id }}">({{ $v->nomor }})
-                                                            {{ $v->nama }} ({{ $v->nama_kategori }})</option>
-                                                    @endforeach
-                                                </select>
-                                            </th>
-                                            <td>
-                                                <textarea class="form-control" id="deskripsi_2" name="deskripsi[]"></textarea>
-                                            </td>
-                                            <td><input type="number" class="form-control" id="debit_2" name="debit[]"
-                                                    value="0" onkeyup="change_debit(2)"></td>
-                                            <td><input type="number" class="form-control" id="kredit_2" name="kredit[]"
-                                                    value="0" onkeyup="change_kredit(2)"></td>
-                                            <td><a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a></td>
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <hr>
                             <div class="row">
-                                <div class="col-sm-8"></div>
+                                <div class="col-sm-7"></div>
                                 <div class="col">
                                     <span>Total Debit</span>
                                 </div>
@@ -91,7 +75,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-8"></div>
+                                <div class="col-sm-7"></div>
                                 <div class="col">
                                     <span id="debit">Rp 0,00</span>
                                     <input type="text" id="input_debit" name="total_debit" hidden>
@@ -103,12 +87,18 @@
                             </div>
                             <div class="row my-5">
                                 <div class="col d-flex justify-content-end">
+                                    @if (isset($jurnal))
+                                    <a href="{{ url('jurnal') }}" class="btn btn-danger">Batal</a>
+                                    <button type="button" class="btn btn-success" onclick="check_balance();">Ubah
+                                        Jurnal Umum</button>
+                                    @else
                                     <a href="{{ url('akun') }}" class="btn btn-light">Batalkan</a>
                                     <button type="button" class="btn btn-primary" onclick="check_balance();">Buat
                                         Jurnal Umum</button>
+                                    @endif
                                 </div>
                             </div>
-                            
+
                         </form>
                     </div>
                 </div>
@@ -116,12 +106,30 @@
         </div>
     </div>
     <script>
+        var i = 1;
         var result_debit = 0;
         var result_kredit = 0;
 
         $(document).ready(function() {
-            load_select_2(1);
-            load_select_2(2);
+            @if (isset($jurnal))
+                $('#tanggal_transaksi').val('{{ $jurnal->tanggal_transaksi }}')
+
+                var x = 1;
+                load_select_2(x);
+                @foreach ($jurnal->detail_jurnal as $v)
+                    $('#id_detail_jurnal_' + x).val('{{ $v->id }}').trigger('change');
+                    $('#akun_' + x).val('{{ $v->id_akun }}').trigger('change');
+                    $('#deskripsi_' + x).val(`{{ $v->deskripsi }}`);
+                    $('#debit_' + x).val('{{ $v->debit }}').trigger('keyup');
+                    $('#kredit_' + x).val('{{ $v->kredit }}').trigger('keyup');
+                    x++;
+                    create_row();
+                @endforeach
+                hapus(x)
+            @else
+                load_select_2(1);
+                create_row();
+            @endif
         });
 
         function check_balance() {
@@ -132,19 +140,21 @@
                     text: 'Debit harus sama dengan Kredit.',
                     icon: 'error'
                 })
-            }else{
+            } else {
                 $('#insertForm').submit();
             }
             // 
         }
 
         function load_select_2(id) {
-            $("#akun_" + id).chosen({
-                width: "100%"
+            $("#akun_" + id).select2({
+                allowClear: true,
+                placeholder: 'Pilih akun'
             });
+            $('#akun_'+id).attr('onchange','create_row()');
         }
 
-        var i = 2;
+        
         var debit = {};
         var kredit = {};
 
@@ -183,16 +193,20 @@
         }
 
         function create_row() {
+            $('#akun_'+i).removeAttr('onchange');
             i++;
             $('#list').append(`
                 <tr id="list_${i}">
                     <th>
-                        <select class="chosen-select" name="akun[]" id="akun_${i}" required>
-                            <option value=""></option>
+                        <select class="form-control" name="akun[]" id="akun_${i}" required>
+                            <option value="" hidden selected disabled>Pilih akun</option>
                             @foreach ($akun as $v)
                                 <option value="{{ $v->id }}" >({{ $v->nomor }}) {{ $v->nama }} ({{ $v->nama_kategori }})</option>
                             @endforeach
                         </select>
+                        @if (isset($jurnal)) 
+                            <input type="number" name="id_detail_jurnal[]" id="id_detail_jurnal_${i}" hidden>
+                        @endif
                     </th>
                     <td><textarea class="form-control" id="deskripsi_${i}" name="deskripsi[]"></textarea></td>
                     <td><input type="number" class="form-control" id="debit_${i}" name="debit[]" value="0" onkeyup="change_debit(${i})"></td>

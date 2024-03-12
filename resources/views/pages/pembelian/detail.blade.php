@@ -8,24 +8,33 @@
             <div class="col">
                 <div class="card mb-5">
                     <div class="card-header bg-transparent border-0">
-                        Faktur Pembelian #{{ $pembelian->no }}
-                        <button
-                            class="btn btn-sm 
-                        @if ($pembelian->status == 'open') btn-warning
-                        @elseif($pembelian->status == 'partial') btn-info
-                        @elseif($pembelian->status == 'paid') btn-success
-                        @elseif($pembelian->status == 'overdue') btn-danger @endif
-                        ml-2">
-                            @if ($pembelian->status == 'open')
-                                Belum Dibayar
-                            @elseif($pembelian->status == 'partial')
-                                Terbayar Sebagian
-                            @elseif($pembelian->status == 'paid')
-                                Lunas
-                            @elseif($pembelian->status == 'overdue')
-                                Lewat Jatuh Tempo
-                            @endif
-                        </button>
+                        <h2>
+                        @if ($pembelian->jenis == 'faktur')
+                            Penagihan 
+                        @elseif($pembelian->jenis == 'penawaran')
+                            Penawaran 
+                        @elseif($pembelian->jenis == 'pemesanan')
+                            Pemesanan 
+                        @endif
+                        Pembelian #{{ $pembelian->no }}
+                            <button
+                                class="btn btn-sm 
+                            @if ($pembelian->status == 'open') btn-warning
+                            @elseif($pembelian->status == 'partial') btn-info
+                            @elseif($pembelian->status == 'paid') btn-success
+                            @elseif($pembelian->status == 'overdue') btn-danger @endif
+                            ml-2">
+                                @if ($pembelian->status == 'open')
+                                    Belum Dibayar
+                                @elseif($pembelian->status == 'partial')
+                                    Terbayar Sebagian
+                                @elseif($pembelian->status == 'paid')
+                                    Lunas
+                                @elseif($pembelian->status == 'overdue')
+                                    Lewat Jatuh Tempo
+                                @endif
+                            </button>
+                        </h2>
                     </div>
                     <div class="card-body " style="font-size: 12px;">
                         <div class="row">

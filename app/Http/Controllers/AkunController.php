@@ -35,11 +35,6 @@ class AkunController extends Controller
     {
         $akun = new Akun();
         $akun->nama = $_POST['nama'];
-        $akun->kode = $_POST['kode'];
-        $akun->unit = 'buah';
-        $akun->kategori = $_POST['kategori'];
-        $akun->harga_beli = $_POST['harga_beli'];
-        $akun->harga_jual = $_POST['harga_jual'];
         $akun->save();
 
         return redirect('akun');

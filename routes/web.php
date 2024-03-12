@@ -72,13 +72,15 @@ Route::group(['middleware' => 'auth'], function () {
 Route::controller(PembelianController::class)->prefix('pembelian')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/faktur', 'faktur');
+	Route::get('/pemesanan', 'pemesanan');
+	Route::get('/penawaran', 'penawaran');
+
 	Route::get('/detail/{id}', 'detail');
 	Route::get('/pembayaran/{id}', 'pembayaran');
 	Route::get('/receive_payment/{id}','receive_payment');
 	Route::post('/hapus/{id}', 'hapus');
 	Route::post('/faktur', 'insert');
 	Route::post('/pembayaran', 'penerimaan_pembayaran');
-	// Route::post('/{id}', 'edit');
 
 });
 
@@ -151,6 +153,7 @@ Route::controller(JurnalController::class)->prefix('jurnal')->group(function () 
 Route::controller(LaporanController::class)->prefix('laporan')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/jurnal', 'jurnal');
+	Route::get('/neraca', 'neraca');
 });
 
 /*

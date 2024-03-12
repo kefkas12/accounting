@@ -37,14 +37,14 @@
                                     $kredit = 0;
                                 @endphp
                                 <tr>
-                                    <td colspan="3" style="background: #f8f8f8;"><h4><strong><a href="">{{ $v->no_str }}</a> | {{ $v->tanggal_transaksi }} (created on {{ $v->created_at }})</strong></h4></td>
+                                    <td colspan="3" style="background: #f8f8f8;"><h4><strong><a href="{{ url('jurnal/detail').'/'.$v->id }}">{{ $v->no_str }}</a> | {{ $v->tanggal_transaksi }} (created on {{ $v->created_at }})</strong></h4></td>
                                 </tr>
                                 @foreach($v->detail_jurnal as $w)
                                 <tr>
                                     <td width="500px">
                                         <div class="d-flex">
                                             <div class="d-flex flex-column justify-content-center">
-                                                <h6 class="mb-0 text-xs username">@if($w->akun) ({{ $w->akun->nomor }}) - {{ $w->akun->nama }} @else - @endif</h6>
+                                                <h6 class="mb-0 text-xs username">@if($w->akun) <a href="{{ url('akun/detail').'/'.$w->akun->id }}">({{ $w->akun->nomor }}) - {{ $w->akun->nama }}</a>@else - @endif</h6>
                                                 <p class="text-xs mb-0 email">{{ $w->deskripsi }}</p>
                                             </div>
                                         </div>

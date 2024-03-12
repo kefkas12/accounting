@@ -44,45 +44,4 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Supir</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form method="POST" action="{{ url('/supir_input') }}" id="form">
-                        @csrf
-                        <div class="form-group">
-                            <label for="nama" class="col-form-label">Nama Supir</label>
-                            <input type="text" class="form-control" name="nama" id="nama" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="nama_rekening" class="col-form-label">Nama Rekening Supir</label>
-                            <input type="text" class="form-control" name="nama_rekening" id="nama_rekening" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="no_rekening" class="col-form-label">No Rekening Supir</label>
-                            <input type="number" class="form-control" name="no_rekening" id="no_rekening" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="alamat" class="col-form-label">Status</label>
-                            <select class="form-control" name="status" id="status">
-                                <option>Aktif</option>
-                                <option>Tidak Aktif</option>
-                            </select>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Send</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
