@@ -382,8 +382,8 @@
         });
         @endif
 
-        document.getElementById('myForm').addEventListener('submit', function() {
-            document.getElementById('mySelect').removeAttribute('disabled');
-        });
+        // document.getElementById('myForm').addEventListener('submit', function() {
+        //     document.getElementById('mySelect').removeAttribute('disabled');
+        // });
     </script>
 @endsection

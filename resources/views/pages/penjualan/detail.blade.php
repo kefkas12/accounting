@@ -51,8 +51,9 @@
                                     @if ($jurnal)
                                         <a href="#" data-toggle="modal" data-target="#exampleModal">Lihat Jurnal
                                             Entry</a>
+                                    @endif
                                 </h3>
-                                @endif
+                                
                             </div>
                         </div>
                         <hr>
@@ -217,6 +218,25 @@
                             @if($penjualan->jenis == 'penagihan' && $penjualan->status != 'paid')
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
+                                <div class="btn-group dropup mr-2">
+                                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                        Cetak
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <!-- Dropdown menu links -->
+                                        @if($penjualan->jenis == 'penagihan')
+                                            <a class="dropdown-item" href="{{ url('penjualan/cetak/penagihan') . '/' . $penjualan->id }}" target="_blank">Cetak Faktur</a>
+                                            <a class="dropdown-item" href="{{ url('penjualan/cetak/surat_jalan') . '/' . $penjualan->id }}" target="_blank">Cetak Surat Jalan</a>
+                                        @elseif($penjualan->jenis == 'penawaran')
+                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
+                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pemesanan/' . $penjualan->id }}">Buat Pemesanan</a>
+                                        @elseif($penjualan->jenis == 'pemesanan')
+                                        <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pengiriman/' . $penjualan->id }}">Buat Pengiriman</a>
+                                        <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
+                                        @endif
+                                    </div>
+                                </div>
                                 <div class="btn-group dropup">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
                                         aria-expanded="false">

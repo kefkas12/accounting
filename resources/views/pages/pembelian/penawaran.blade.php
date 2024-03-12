@@ -207,17 +207,17 @@
                 result_ppn += ppn[key];
             }
 
-            $('#total_faktur').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
+            $('#total_faktur').text(rupiah(result_subtotal + result_ppn));
 
             $('#subtotal').text(rupiah(result_subtotal));
             $('#ppn').text(rupiah(result_ppn));
-            $('#total').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
-            $('#sisa_tagihan').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
+            $('#total').text(rupiah(result_subtotal + result_ppn));
+            $('#sisa_tagihan').text(rupiah(result_subtotal + result_ppn));
 
             $('#input_subtotal').val(result_subtotal);
             $('#input_ppn').val(result_ppn);
-            $('#input_total').val(result_subtotal + result_ppn - result_diskon_per_baris);
-            $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris);
+            $('#input_total').val(result_subtotal + result_ppn);
+            $('#input_sisa_tagihan').val(result_subtotal + result_ppn);
         }
 
         function get_data(thisElement, no) {
@@ -264,7 +264,6 @@
             $('#list_' + no).remove();
             subtotal[no] = 0;
             ppn[no] = 0;
-            diskon_per_baris[no] = 0;
             load();
         }
 
@@ -326,8 +325,8 @@
         });
         @endif
 
-        document.getElementById('myForm').addEventListener('submit', function() {
-            document.getElementById('mySelect').removeAttribute('disabled');
-        });
+        // document.getElementById('myForm').addEventListener('submit', function() {
+        //     document.getElementById('mySelect').removeAttribute('disabled');
+        // });
     </script>
 @endsection

@@ -33,13 +33,13 @@ class PembelianController extends Controller
                                         ->orderBy('id','DESC')
                                         ->get();
         $data['penawaran'] = Pembelian::leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
-                                        ->select('pembelian.*','kontak.nama as nama_pelanggan')
+                                        ->select('pembelian.*','kontak.nama as nama_supplier')
                                         ->where('pembelian.id_company',Auth::user()->id_company)
                                         ->where('pembelian.jenis','penawaran')
                                         ->orderBy('id','DESC')
                                         ->get();
         $data['pemesanan'] = Pembelian::leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
-                                        ->select('pembelian.*','kontak.nama as nama_pelanggan')
+                                        ->select('pembelian.*','kontak.nama as nama_supplier')
                                         ->where('pembelian.id_company',Auth::user()->id_company)
                                         ->where('pembelian.jenis','pemesanan')
                                         ->orderBy('id','DESC')
@@ -52,10 +52,21 @@ class PembelianController extends Controller
     public function detail($id)
     {
         $data['sidebar'] = 'pembelian';
-        $data['pembelian'] = Pembelian::with(['detail_pembelian.produk','detail_pembayaran_pembelian' => function ($query){
-                                            $query->orderBy('detail_pembayaran_pembelian.id_pembayaran_pembelian','desc');
-                                        }])
+        $data['pembelian'] = Pembelian::with([
+                                            'detail_pembelian.produk',
+                                            'detail_pembayaran_pembelian' => function ($query){
+                                                $query->orderBy('detail_pembayaran_pembelian.id_pembayaran_pembelian','desc');
+                                            },
+                                            'penawaran' => function ($query){
+                                                $query->select('id', 'no_str');
+                                            },
+                                            'pemesanan' => function ($query){
+                                                $query->select('id', 'no_str');
+                                            }
+                                            ])
                                         ->leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
+                                        ->leftJoin('pembelian as penawaran', 'pembelian.id_penawaran', '=', 'penawaran.id')
+                                        ->leftJoin('pembelian as pemesanan', 'pembelian.id_pemesanan', '=', 'pemesanan.id')
                                         ->select('pembelian.*','kontak.nama as nama_supplier')
                                         ->where('pembelian.id',$id)
                                         ->where('pembelian.id_company',Auth::user()->id_company)
@@ -125,6 +136,51 @@ class PembelianController extends Controller
         return view('pages.pembelian.penawaran', $data);
     }
 
+    public function penawaran_pemesanan($id)
+    {
+        $data['sidebar'] = 'pembelian';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['supplier'] = Kontak::where('tipe','supplier')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        if($id != null){
+            $data['penawaran'] = true;
+            $data['pembelian'] = Pembelian::where('id',$id)->first();
+            $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
+        }
+        return view('pages.pembelian.pemesanan', $data);
+    }
+
+    public function penawaran_faktur($id)
+    {
+        $data['sidebar'] = 'pembelian';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['supplier'] = Kontak::where('tipe','supplier')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        if($id != null){
+            $data['penawaran'] = true;
+            $data['pembelian'] = Pembelian::where('id',$id)->first();
+            $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
+        }
+        return view('pages.pembelian.faktur', $data);
+    }
+
+    public function pemesanan_faktur($id)
+    {
+        $data['sidebar'] = 'pembelian';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['supplier'] = Kontak::where('tipe','supplier')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        if($id != null){
+            $data['pemesanan'] = true;
+            $data['pembelian'] = Pembelian::where('id',$id)->first();
+            $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
+        }
+        return view('pages.pembelian.faktur', $data);
+    }
+
     public function penerimaan_pembayaran(Request $request)
     {
         $data['sidebar'] = 'pembelian';
@@ -170,6 +226,41 @@ class PembelianController extends Controller
         $jurnal = Jurnal::find($pembelian->id_jurnal);
         $jurnal->pembelian($request);
         $pembelian->edit($request);
+
+        return redirect('pembelian');
+    }
+
+    public function insert_penawaran(Request $request)
+    {
+        $pembelian = new Pembelian;
+        $pembelian->insert($request, null, 'penawaran');
+
+        return redirect('pembelian');
+    }
+
+    public function update_penawaran(Request $request, $id)
+    {
+        $pembelian = Pembelian::find($id);
+        $pembelian->edit($request);
+
+        return redirect('pembelian');
+    }
+
+    public function insert_penawaran_pemesanan(Request $request, $id)
+    {
+        $pembelian = new Pembelian;
+        $pembelian->insert($request, null, 'pemesanan', $id);
+
+        return redirect('pembelian');
+    }
+
+    public function insert_pemesanan_faktur(Request $request, $id)
+    {
+        $jurnal = new Jurnal;
+        $jurnal->pembelian($request);
+        
+        $pembelian = new Pembelian;
+        $pembelian->insert($request, $jurnal->id, 'faktur', $id);
 
         return redirect('pembelian');
     }

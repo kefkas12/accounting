@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Akun;
+use App\Models\Company;
 use App\Models\Detail_jurnal;
 use App\Models\Detail_pembayaran_penjualan;
 use App\Models\Detail_penjualan;
@@ -16,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use PDO;
 
 class PenjualanController extends Controller
 {
@@ -171,6 +173,7 @@ class PenjualanController extends Controller
         }
         return view('pages.penjualan.penagihan', $data);
     }
+
     public function pemesanan_penagihan($id)
     {
         $data['sidebar'] = 'penjualan';
@@ -274,5 +277,21 @@ class PenjualanController extends Controller
         Detail_penjualan::where('id_penjualan',$id)->delete();
         
         return redirect('penjualan');
+    }
+
+    public function cetak_surat_jalan($id){
+        $data['company'] = Company::where('id',Auth::user()->id_company)->first();
+        $data['penjualan'] = Penjualan::where('id',$id)->first();
+        $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
+
+        return view('pages.penjualan.cetak.surat_jalan',$data);
+    }
+    
+    public function cetak_penagihan($id){
+        $data['company'] = Company::where('id',Auth::user()->id_company)->first();
+        $data['penjualan'] = Penjualan::where('id',$id)->first();
+        $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
+
+        return view('pages.penjualan.cetak.penagihan',$data);
     }
 }

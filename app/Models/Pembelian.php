@@ -14,8 +14,8 @@ class Pembelian extends Model
     use HasFactory;
     protected $table = 'pembelian';
 
-    function no(){
-        $no = Pembelian::select('no')->orderBy('id','DESC')->first();
+    function no($jenis){
+        $no = Pembelian::select('no')->where('jenis',$jenis)->orderBy('id','DESC')->first();
         if($no){
             $no = $no->no;
             $no++; 
@@ -40,12 +40,28 @@ class Pembelian extends Model
         return $this->belongsTo(Kontak::class, 'id_supplier');
     }
 
-    public function insert($request, $idJurnal)
+    public function penawaran()
+    {
+        return $this->belongsTo(Pembelian::class, 'id_penawaran');
+    }
+
+    public function pemesanan()
+    {
+        return $this->belongsTo(Pembelian::class, 'id_pemesanan');
+    }
+
+    public function insert($request, $idJurnal, $jenis, $id_jenis=null)
     {
         $this->id_company = Auth::user()->id_company;
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');
-        $this->no = $this->no();
-        $this->no_str = 'Purchase Invoice #' . $this->no;
+        $this->no = $this->no($jenis);
+        if($jenis == 'faktur'){
+            $this->no_str = 'Purchase Invoice #' . $this->no;
+        }else if($jenis == 'penawaran'){
+            $this->no_str = 'Purchase Quote #' . $this->no;
+        }else if($jenis == 'pemesanan'){
+            $this->no_str = 'Purchase Order #' . $this->no;
+        }
         $this->id_supplier = $request->input('supplier');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
         $this->status = 'open';
@@ -55,8 +71,25 @@ class Pembelian extends Model
         $this->total = $request->input('input_total');
         $this->alamat = $request->input('alamat');
         $this->email = $request->input('email');
+        $this->jenis = $jenis;
         $this->id_jurnal = $idJurnal;
+        if($jenis == 'pemesanan'){
+            $this->id_penawaran = $id_jenis;
+        }elseif($jenis == 'faktur' && $id_jenis != null){
+            $this->id_pemesanan = $id_jenis;
+        }
         $this->save();
+
+        if($jenis == 'pemesanan'){
+            $pembelian = Pembelian::find($id_jenis);
+            $pembelian->id_pemesanan = $this->id;
+            $pembelian->status = 'closed';
+            $pembelian->save();
+        }elseif($jenis == 'faktur' && $id_jenis != null){
+            $pembelian = Pembelian::find($id_jenis);
+            $pembelian->status = 'closed';
+            $pembelian->save();
+        }
 
         $this->insertDetailPembelian($request);
     }

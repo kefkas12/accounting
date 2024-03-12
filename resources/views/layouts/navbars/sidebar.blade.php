@@ -6,7 +6,7 @@
         </button>
         <!-- Brand -->
         <a class="navbar-brand pt-0" href="{{ url('/') }}">
-            Global Perdana Racking
+            {{ Auth::user()->nama_perusahaan }}
         </a>
         <!-- User -->
         <ul class="nav align-items-center d-md-none">

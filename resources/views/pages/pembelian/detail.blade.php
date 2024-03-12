@@ -22,7 +22,8 @@
                             @if ($pembelian->status == 'open') btn-warning
                             @elseif($pembelian->status == 'partial') btn-info
                             @elseif($pembelian->status == 'paid') btn-success
-                            @elseif($pembelian->status == 'overdue') btn-danger @endif
+                            @elseif($pembelian->status == 'overdue') btn-danger 
+                            @elseif($pembelian->status == 'closed') btn-dark @endif
                             ml-2">
                                 @if ($pembelian->status == 'open')
                                     Belum Dibayar
@@ -32,6 +33,8 @@
                                     Lunas
                                 @elseif($pembelian->status == 'overdue')
                                     Lewat Jatuh Tempo
+                                @elseif($pembelian->status == 'closed')
+                                    Selesai
                                 @endif
                             </button>
                         </h2>
@@ -44,12 +47,15 @@
                             <div class="col-sm-2"><strong>{{ $pembelian->email }}</strong></div>
                             <div class="col-sm-4 d-flex justify-content-end">
                                 <h3>Sisa tagihan Rp. {{ number_format($pembelian->sisa_tagihan, 2, ',', '.') }} <br>
-                                    <a href="#" data-toggle="modal" data-target="#exampleModal">Lihat Jurnal Entry</a></h3>
+                                    @if ($jurnal)
+                                    <a href="#" data-toggle="modal" data-target="#exampleModal">Lihat Jurnal Entry</a>
+                                    @endif
+                                </h3>
                             </div>
                         </div>
                         <hr>
                         <div class="row">
-                            <div class="col-sm-2">Alamat faktur</div>
+                            <div class="col-sm-2">Alamat supplier</div>
                             <div class="col-sm-2"><strong>{{ $pembelian->alamat }}</strong></div>
                             <div class="col-sm-2">Tgl. Transaksi</div>
                             <div class="col-sm-2">
@@ -61,12 +67,32 @@
                         <div class="row my-3">
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2"></div>
-                            <div class="col-sm-2">Tgl. Jatuh Tempo</div>
+                            <div class="col-sm-2">
+                                @if ($pembelian->jenis == 'penagihan' || $pembelian->jenis == 'pemesanan')
+                                    Tgl. Jatuh Tempo
+                                @elseif($pembelian->jenis == 'penawaran')
+                                    Tgl. kedaluarsa
+                                @endif
+                            </div>
                             <div class="col-sm-2">
                                 <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_jatuh_tempo)) }}</strong>
                             </div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
+                            @if($pembelian->penawaran)
+                            <div class="col-sm-2" style="margin-right: -25px !important;">
+                                No. Penawaran
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="{{ url('pembelian/detail').'/'.$pembelian->penawaran->id }}">{{ $pembelian->penawaran->no_str }}</a>
+                            </div>
+                            @endif
+                            @if($pembelian->pemesanan)
+                            <div class="col-sm-2" style="margin-right: -25px !important;">
+                                No. Pemesanan
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="{{ url('pembelian/detail').'/'.$pembelian->pemesanan->id }}">{{ $pembelian->pemesanan->no_str }}</a>
+                            </div>
+                            @endif
                         </div>
                         <div class="table-responsive">
                             <table class="table my-4">
@@ -105,6 +131,7 @@
                                         <h4>Rp. {{ number_format($pembelian->subtotal, 2, ',', '.') }}</h4>
                                     </div>
                                 </div>
+                                @if($pembelian->ppn)
                                 <div class="row my-3">
                                     <div class="col-sm-6">
                                         <h4>PPN 11%</h4>
@@ -113,6 +140,7 @@
                                         <h4>Rp. {{ number_format($pembelian->ppn, 2, ',', '.') }}</h4>
                                     </div>
                                 </div>
+                                @endif
                                 <hr>
                                 <div class="row my-3">
                                     <div class="col-sm-6">
@@ -132,6 +160,7 @@
                                     </div>
                                 </div>
                                 @endif
+                                <hr>
                                 <div class="row my-3">
                                     <div class="col-sm-6">
                                         <h2>Sisa Tagihan</h2>
@@ -176,8 +205,6 @@
                             @else
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
-                                <a href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}" class="btn btn-primary">Kirim
-                                    Pembayaran</a>
                                 <div class="btn-group dropup">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
                                         aria-expanded="false">
@@ -199,6 +226,7 @@
                             </div>
                             @endif
                         </div>
+                        @if(count($pembelian->detail_pembayaran_pembelian) != 0)
                         <div class="table-responsive">
                             Pembayaran
                             <table class="table my-4">
@@ -232,12 +260,59 @@
                                 </tbody>
                             </table>
                         </div>
+                        @endif
+                        @if(isset($faktur))
+                        <div class="table-responsive">
+                            Faktur Pembelian
+                            <table class="table my-4">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>No.</th>
+                                        <th>Tgl. jatuh tempo</th>
+                                        <th>Status</th>
+                                        <th>Jumlah</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($faktur as $v)
+                                        <tr>
+                                            <td>{{ $v->tanggal_transaksi }}</td>
+                                            <td>
+                                                <div>
+                                                    <div class="row"><a
+                                                            href="{{ url('pembelian/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
+                                                    </div>
+                                                    <div class="row text-xs">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{ $v->tanggal_jatuh_tempo }}</td>
+                                            <td>
+                                                <button class="btn btn-sm 
+                                                @if ($v->status == 'open') btn-warning
+                                                @elseif($v->status == 'partial') btn-info
+                                                @elseif($v->status == 'paid') btn-success
+                                                @elseif($v->status == 'overdue') btn-danger 
+                                                @elseif($v->status == 'closed') btn-dark @endif
+                                                ml-2">
+                                                    {{ $v->status }}
+                                                </button>
+                                            </td>
+                                            <td>Rp {{ number_format($v->total, 2, ',', '.') }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- Modal -->
+    @if ($jurnal)
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -283,6 +358,7 @@
             </div>
         </div>
     </div>
+    @endif
     <script>
         function confirmDelete(event) {
             event.preventDefault();

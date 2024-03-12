@@ -88,7 +88,12 @@ Route::controller(PembelianController::class)->prefix('pembelian')->group(functi
 	Route::post('/faktur', 'insert_faktur');
 	Route::post('/faktur/{id}', 'update_faktur');
 	
+	Route::post('/penawaran', 'insert_penawaran');
+	Route::post('/penawaran/{id}', 'update_penawaran');
+	Route::post('/penawaran/pemesanan/{id}', 'insert_penawaran_pemesanan');
+	Route::post('/pemesanan/faktur/{id}', 'insert_pemesanan_faktur');
 
+	Route::post('/pemesanan', 'insert_pemesanan');
 });
 
 Route::controller(PenjualanController::class)->prefix('penjualan')->group(function () {
@@ -115,6 +120,9 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::post('/pemesanan/penagihan/{id}', 'insert_pemesanan_penagihan');
 
 	Route::post('/pemesanan', 'insert_pemesanan');
+
+	Route::get('/cetak/surat_jalan/{id}','cetak_surat_jalan');
+	Route::get('/cetak/penagihan/{id}','cetak_penagihan');
 	// Route::post('/{id}', 'edit');
 });
 

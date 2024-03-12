@@ -127,7 +127,7 @@
                                                 <td>{{ $v->nama_supplier }}</td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
                                                 <td>{{ $v->status }}</td>
-                                                <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
+                                                <td>Rp {{ number_format($v->dp,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
                                             </tr>
                                             @endforeach

@@ -88,7 +88,7 @@
                                 <div class="form-group col-md-3 pr-4">
                                     @if(isset($penawaran))
                                     <label for="nomor_penawaran_penjualan">No Penawaran Penjualan</label> <br>
-                                    <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->$penawaran->no_str }}</a>
+                                    <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
                                     @endif
                                 </div>
                             </div>
