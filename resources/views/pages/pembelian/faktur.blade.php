@@ -16,7 +16,7 @@
                         </div>
                         <div class="row text-sm">
                             <div class="col">
-                                <h2>@if(isset($pembelian)) Ubah @else Buat @endif Faktur Pembelian</h2>
+                                <h2>Buat Faktur Pembelian</h2>
                             </div>
                             <div class="col-sm-3 d-flex justify-content-end">
                                 <select class="form-control" onchange="location = this.value;" @if(isset($pembelian)) disabled @endif>
@@ -317,6 +317,12 @@
             hapus(x);
 
             
+        });
+        @endif
+
+        @if(isset($pemesanan))
+        $('#form').submit(function() {
+            $('.form-control').removeAttr('disabled');
         });
         @endif
     </script>

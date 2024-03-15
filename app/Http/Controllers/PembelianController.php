@@ -85,6 +85,7 @@ class PembelianController extends Controller
         $data['akun'] = Akun::where('id_kategori',3)->get();
         $data['pembelian'] = Pembelian::where('id',$id)->first();
         $data['pembayaran'] = Kontak::with(['pembelian' => function ($query){
+                                        $query->where('jenis','penagihan');
                                         $query->orderBy('id', 'desc');
                                     }])
                                     ->select('kontak.*','kontak.nama as nama_supplier')
@@ -93,7 +94,7 @@ class PembelianController extends Controller
                                     ->first();
         return view('pages.pembelian.pembayaran', $data);
     }
-
+    
     public function faktur($id=null)
     {
         $data['sidebar'] = 'pembelian';
