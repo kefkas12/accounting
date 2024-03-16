@@ -42,16 +42,22 @@
                     `)
                     $.each(value_1, function(key_2, value_2) {
                         if(value_2.saldo != 0){
+                            if(value_2.id_akun != ''){
+                                var akun_nomor = "<a href='{{ url('akun/detail') }}/"+value_2.id_akun+"'>&nbsp;&nbsp;"+value_2.nomor+"</a>";
+                                var akun_nama = "<a href='{{ url('akun/detail') }}/"+value_2.id_akun+"'>&nbsp;&nbsp;"+value_2.nama+"</a>";
+                            }else{
+                                var akun_nomor = "&nbsp;&nbsp;"+value_2.nomor;
+                                var akun_nama = "&nbsp;&nbsp;"+value_2.nama;
+                            }
                             $('#'+key_1.replace(/ /g,"_")).parent().append(`
                                 <tr >
-                                    <td><a href="{{ url('akun/detail') }}/${value_2.id_akun}">&nbsp;&nbsp; ${value_2.nomor}</a></td>
-                                    <td><a href="{{ url('akun/detail') }}/${value_2.id_akun}">&nbsp;&nbsp; ${value_2.nama}</a></td>
+                                    <td>${ akun_nomor }</td>
+                                    <td>${ akun_nama }</td>
                                     <td class="text-right">&nbsp;&nbsp; ${rupiah(value_2.saldo)}</td>
                                 </tr>
                             `)
                             total += value_2.saldo;
                         }
-                        
                     });
                     $('#'+key_1.replace(/ /g,"_")).parent().append(`
                         <tr >

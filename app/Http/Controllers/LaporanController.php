@@ -44,6 +44,11 @@ class LaporanController extends Controller
         $kategori_aset_tetap = array(5);
         $kategori_liabilitas_jangka_pendek = array(8, 10);
         $kategori_modal = array(12);
+        $kategori_pendapatan_lainnya = array(14);
+        $kategori_beban = array(16, 17);
+
+        $pendapatan_lainnya = 0;
+        $beban = 0;
 
         foreach($akun as $v){
             if (in_array($v->id_kategori, $kategori_aset_lancar)){
@@ -70,7 +75,7 @@ class LaporanController extends Controller
                     'id_akun' => $v->id_akun,
                     'nomor' => $v->nomor,
                     'nama' => $v->nama,
-                    'saldo' => $v->saldo,
+                    'saldo' => -1*$v->saldo,
                 ];
             }
             if (in_array($v->id_kategori, $kategori_modal)){
@@ -79,10 +84,24 @@ class LaporanController extends Controller
                     'id_akun' => $v->id_akun,
                     'nomor' => $v->nomor,
                     'nama' => $v->nama,
-                    'saldo' => $v->saldo,
+                    'saldo' => -1*$v->saldo,
                 ];
             }
+            if (in_array($v->id_kategori, $kategori_pendapatan_lainnya)){
+                $pendapatan_lainnya += $v->saldo;
+            }
+            if (in_array($v->id_kategori, $kategori_beban)){
+                $beban += $v->saldo;
+            }
         }
+
+        $modal[] = 
+        [
+            'id_akun' => '',
+            'nomor' => '',
+            'nama' => 'Pendapatan Periode ini',
+            'saldo' => -1*$pendapatan_lainnya - $beban,
+        ];
 
         $neraca = [
             'aset' => [
@@ -96,7 +115,6 @@ class LaporanController extends Controller
         ];
 
         $data['neraca'] = json_encode($neraca);
-
                                 
         return view('pages.laporan.neraca',$data);
     }

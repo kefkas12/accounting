@@ -34,9 +34,8 @@ class JurnalController extends Controller
                 $detail_jurnal->id_jurnal = $jurnal->id;
                 $detail_jurnal->id_akun = $_POST['akun'][$i];
                 $detail_jurnal->deskripsi = $_POST['deskripsi'][$i];
-                $detail_jurnal->debit = $_POST['debit'][$i];
-                $detail_jurnal->kredit = $_POST['kredit'][$i];
-                $detail_jurnal->save();
+                $detail_jurnal->debit = $_POST['debit'][$i] != '' || $_POST['debit'][$i] != null ? $_POST['debit'][$i] : 0;
+                $detail_jurnal->kredit = $_POST['kredit'][$i] != '' || $_POST['kredit'][$i] != null ? $_POST['kredit'][$i] : 0;
 
                 $akun_company = Akun_company::where('id_akun',$_POST['akun'][$i])
                                             ->where('id_company',Auth::user()->id_company)
@@ -46,6 +45,8 @@ class JurnalController extends Controller
                 $akun_company = Akun_company::where('id_akun', $_POST['akun'][$i])
                                             ->where('id_company', Auth::user()->id_company)
                                             ->update(['saldo' => $saldo + $detail_jurnal->debit - $detail_jurnal->kredit]);
+
+                $detail_jurnal->save();
             }
         }
 

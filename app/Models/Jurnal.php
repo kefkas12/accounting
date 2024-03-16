@@ -16,7 +16,10 @@ class Jurnal extends Model
 
     function no($kategori)
     {
-        $no = Jurnal::select('no')->where('kategori',$kategori)->orderBy('id', 'DESC')->first();
+        $no = Jurnal::select('no')->where('kategori',$kategori)
+                                  ->where('id_company',Auth::user()->id_company)
+                                  ->orderBy('id', 'DESC')
+                                  ->first();
         if ($no) {
             $no = $no->no;
             $no++;
