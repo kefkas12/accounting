@@ -31,7 +31,7 @@
             $.each(jsonData, function(key, value) {
                 $('#neraca').append(`
                     <tr class="bg-secondary" id="${key.replace(/ /g,"_")}">
-                        <th colspan="3">${key_string}</th>
+                        <th colspan="3">${key}</th>
                     </tr>
                 `)
                 $.each(value, function(key_1, value_1) {
