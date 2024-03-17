@@ -169,6 +169,7 @@ Route::controller(LaporanController::class)->prefix('laporan')->group(function (
 	Route::get('/', 'index');
 	Route::get('/jurnal', 'jurnal');
 	Route::get('/neraca', 'neraca');
+	Route::get('/laba_rugi', 'laba_rugi');
 });
 
 /*

@@ -104,9 +104,9 @@ class LaporanController extends Controller
         ];
 
         $neraca = [
-            'aset' => [
-                'aset lancar' => $aset_lancar,
-                'aset tetap' => $aset_tetap,
+            'Aset' => [
+                'Aset lancar' => $aset_lancar,
+                'Aset tetap' => $aset_tetap,
             ],
             'Liabilitas dan modal' => [
                 'Liabilitas jangka pendek' => $liabilitas_jangka_pendek,
@@ -117,5 +117,66 @@ class LaporanController extends Controller
         $data['neraca'] = json_encode($neraca);
                                 
         return view('pages.laporan.neraca',$data);
+    }
+
+    public function laba_rugi(){
+        $data['sidebar'] = 'laporan';
+
+        $akun = Akun_company::join('akun','akun_company.id_akun','=','akun.id')
+                            ->where('akun_company.id_company',Auth::user()->id_company)
+                            ->get();
+        $kategori_pendapatan = array(13);
+        $kategori_pendapatan_lainnya = array(14);
+        $kategori_beban = array(16, 17);
+
+        foreach($akun as $v){
+            if (in_array($v->id_kategori, $kategori_pendapatan)){
+                $saldo = $v->saldo * $v->pengali;
+                $pendapatan[] = 
+                [
+                    'id_akun' => $v->id_akun,
+                    'nomor' => $v->nomor,
+                    'nama' => $v->nama,
+                    'saldo' => $saldo,
+                ];
+            }
+            if (in_array($v->id_kategori, $kategori_beban)){
+                $beban[] = 
+                [
+                    'id_akun' => $v->id_akun,
+                    'nomor' => $v->nomor,
+                    'nama' => $v->nama,
+                    'saldo' => $v->saldo,
+                ];
+            }
+            if (in_array($v->id_kategori, $kategori_pendapatan_lainnya)){
+                $pendapatan_lainnya[] = 
+                [
+                    'id_akun' => $v->id_akun,
+                    'nomor' => $v->nomor,
+                    'nama' => $v->nama,
+                    'saldo' => -1*$v->saldo,
+                ];
+            }
+        }
+
+
+        $laba_rugi = [
+            'Revenue' => [
+                'Pendapatan' => $pendapatan
+            ],
+            'Cost of sales' => [],
+            'Operational expense' => [
+                'Biaya Operasional' => $beban
+            ],
+            'Other income' => [
+                'Other income' => $pendapatan_lainnya,
+                'Other expense' => ''
+            ]
+        ];
+
+        $data['laba_rugi'] = json_encode($laba_rugi);
+                                
+        return view('pages.laporan.laba_rugi',$data);
     }
 }
