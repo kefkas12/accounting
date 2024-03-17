@@ -45,7 +45,7 @@
                 $.each(value, function(key_1, value_1) {
                     $('#'+key.replace(/ /g,"_")).parent().append(`
                         <tr id="${key_1.replace(/ /g,"_")}">
-                            <th colspan="3">&nbsp;&nbsp;&nbsp; ${key_1}</th>
+                            <th colspan="3">&nbsp;&nbsp;&nbsp;&nbsp; ${key_1}</th>
                         </tr>
                     `)
                     $.each(value_1, function(key_2, value_2) {
