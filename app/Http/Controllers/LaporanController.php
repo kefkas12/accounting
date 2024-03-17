@@ -44,9 +44,11 @@ class LaporanController extends Controller
         $kategori_aset_tetap = array(5);
         $kategori_liabilitas_jangka_pendek = array(8, 10);
         $kategori_modal = array(12);
+        $kategori_pendapatan = array(13);
         $kategori_pendapatan_lainnya = array(14);
         $kategori_beban = array(16, 17);
 
+        $pendapatan = 0;
         $pendapatan_lainnya = 0;
         $beban = 0;
 
@@ -87,8 +89,11 @@ class LaporanController extends Controller
                     'saldo' => -1*$v->saldo,
                 ];
             }
+            if (in_array($v->id_kategori, $kategori_pendapatan)){
+                $pendapatan += $v->saldo * $v->pengali;
+            }
             if (in_array($v->id_kategori, $kategori_pendapatan_lainnya)){
-                $pendapatan_lainnya += $v->saldo;
+                $pendapatan_lainnya += $v->saldo * $v->pengali;
             }
             if (in_array($v->id_kategori, $kategori_beban)){
                 $beban += $v->saldo;
@@ -100,7 +105,7 @@ class LaporanController extends Controller
             'id_akun' => '',
             'nomor' => '',
             'nama' => 'Pendapatan Periode ini',
-            'saldo' => -1*$pendapatan_lainnya - $beban,
+            'saldo' => $pendapatan + $pendapatan_lainnya - $beban,
         ];
 
         $neraca = [
