@@ -84,7 +84,7 @@
                 }
                 $('#'+key.replace(/ /g,"_")).parent().append(`
                     <tr >
-                        <th colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;Total dari ${key_string}</th>
+                        <th colspan="2">&nbsp;&nbsp;&nbsp;Total dari ${key_string}</th>
                         <th class="text-right"> ${rupiah(subtotal)}</th>
                     </tr>
                 `)
