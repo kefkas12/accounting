@@ -61,7 +61,7 @@
                                 <tr >
                                     <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${ akun_nomor }</td>
                                     <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${ akun_nama }</td>
-                                    <td class="text-right">&nbsp;&nbsp;&nbsp;&nbsp; ${rupiah(value_2.saldo)}</td>
+                                    <td class="text-right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${rupiah(value_2.saldo)}</td>
                                 </tr>
                             `)
                             total += value_2.saldo;
