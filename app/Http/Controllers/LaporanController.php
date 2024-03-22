@@ -96,7 +96,7 @@ class LaporanController extends Controller
                 $pendapatan_lainnya += $v->saldo * $v->pengali;
             }
             if (in_array($v->id_kategori, $kategori_beban)){
-                $beban += $v->saldo;
+                $beban += $v->saldo * $v->pengali;
             }
         }
 
@@ -105,7 +105,7 @@ class LaporanController extends Controller
             'id_akun' => '',
             'nomor' => '',
             'nama' => 'Pendapatan Periode ini',
-            'saldo' => $pendapatan + $pendapatan_lainnya - $beban,
+            'saldo' => $pendapatan + $pendapatan_lainnya + $beban,
         ];
 
         $neraca = [

@@ -46,13 +46,13 @@ class Jurnal extends Model
         $this->save();
 
         $this->createDetailJurnal($this->id, $request->input('setor_ke'), $request->input('subtotal'), 0);
-        $this->updateAkunBalance($request->input('setor_ke'), $request->input('subtotal'));
+        $this->updateAkunBalance($request->input('setor_ke'), $request->input('subtotal'), 0);
 
         for ($i = 0; $i < count($request->input('id_penjualan')); $i++) {
             if($request->input('total')[$i] != '' && $request->input('total')[$i] != null ){
 
                 $this->createDetailJurnal($this->id, 4, 0, $request->input('total')[$i]);
-                $this->updateAkunBalance(4, $request->input('total')[$i]);
+                $this->updateAkunBalance(4, 0, $request->input('total')[$i]);
             }
         }
     }
@@ -72,12 +72,12 @@ class Jurnal extends Model
             if($request->input('total')[$i] != '' && $request->input('total')[$i] != null ){
 
                 $this->createDetailJurnal($this->id, 33, $request->input('total')[$i], 0);
-                $this->updateAkunBalance(33, $request->input('total')[$i]);
+                $this->updateAkunBalance(33, $request->input('total')[$i], 0);
             }
         }
 
         $this->createDetailJurnal($this->id, $request->input('setor_ke'), 0, $request->input('subtotal'));
-        $this->updateAkunBalance($request->input('setor_ke'), $request->input('subtotal'));
+        $this->updateAkunBalance($request->input('setor_ke'), 0, $request->input('subtotal'));
 
         
     }
@@ -94,19 +94,19 @@ class Jurnal extends Model
         $this->save();
 
         $this->createDetailJurnal($this->id, 4, $request->input('input_total'), 0, $id);
-        $this->updateAkunBalance(4, $request->input('input_total'));
+        $this->updateAkunBalance(4, $request->input('input_total'), 0);
 
         if($request->input('input_diskon_per_baris')){
             $this->createDetailJurnal($this->id, 59, $request->input('input_diskon_per_baris'), 0, $id);
-            $this->updateAkunBalance(59, $request->input('input_diskon_per_baris'));
+            $this->updateAkunBalance(59, $request->input('input_diskon_per_baris'), 0);
         }
 
         $this->createDetailJurnal($this->id, 58, 0, $request->input('input_subtotal'), $id);
-        $this->updateAkunBalance(58, $request->input('input_subtotal'));
+        $this->updateAkunBalance(58, 0, $request->input('input_subtotal'));
         
         if($request->input('input_ppn')){
             $this->createDetailJurnal($this->id, 43, 0, $request->input('input_ppn'), $id);
-            $this->updateAkunBalance(43, $request->input('input_ppn'));
+            $this->updateAkunBalance(43, 0, $request->input('input_ppn'));
         }
     }
 
@@ -122,15 +122,15 @@ class Jurnal extends Model
         $this->save();
 
         $this->createDetailJurnal($this->id, 62, $request->input('input_subtotal'), 0, $id);
-        $this->updateAkunBalance(62, $request->input('input_subtotal'));
+        $this->updateAkunBalance(62, $request->input('input_subtotal'), 0);
 
         if($request->input('input_ppn')){
             $this->createDetailJurnal($this->id, 13, $request->input('input_ppn'), 0, $id);
-            $this->updateAkunBalance(13, $request->input('input_ppn'));
+            $this->updateAkunBalance(13, $request->input('input_ppn'), 0);
         }
 
         $this->createDetailJurnal($this->id, 33, 0, $request->input('input_total'), $id);
-        $this->updateAkunBalance(33, $request->input('input_total'));
+        $this->updateAkunBalance(33, 0, $request->input('input_total'));
         
     }
 
@@ -152,7 +152,7 @@ class Jurnal extends Model
         $detail_jurnal->save();
     }
 
-    private function updateAkunBalance($idAkun, $amount)
+    private function updateAkunBalance($idAkun, $debit, $kredit)
     {
         $akun_company = Akun_company::where('id_akun',$idAkun)
                                     ->where('id_company',Auth::user()->id_company)
@@ -161,6 +161,6 @@ class Jurnal extends Model
 
         $akun_company = Akun_company::where('id_akun', $idAkun)
                                     ->where('id_company', Auth::user()->id_company)
-                                    ->update(['saldo' => $saldo + $amount]);
+                                    ->update(['saldo' => $saldo + $debit - $kredit]);
     }
 }
