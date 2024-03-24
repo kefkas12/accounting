@@ -44,7 +44,6 @@ class CompanyController extends Controller
                 $d[] = $w->debit.'-'.$w->kredit;
 
             }
-            dd($d);
             
             DB::beginTransaction();
             $update_akun = Akun_company::find($v->id);
