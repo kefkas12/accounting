@@ -43,7 +43,8 @@
                                         @else
                                         <a href="{{ url('jurnal/detail').'/'.$v->id }}">{{ $v->no_str }}</a>
                                         @endif
-                                         | {{ $v->tanggal_transaksi }} (created on {{ $v->created_at }})
+                                         | @if($v->tanggal_transaksi) {{ date('d-M-Y',strtotime($v->tanggal_transaksi)) }} @else - @endif
+                                         (created on {{ $v->created_at }})
                                     </strong></h4></td>
                                 </tr>
                                 @foreach($v->detail_jurnal as $w)

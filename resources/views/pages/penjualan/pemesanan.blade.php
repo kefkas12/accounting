@@ -43,7 +43,7 @@
                                 <div class="form-group col-md-3 pr-4">
                                     <label for="pelanggan">Pelanggan</label>
                                     <select class="form-control" id="pelanggan" name="pelanggan" required @if(isset($penawaran)) disabled @endif>
-                                        <option selected disabled>Pilih kontak</option>
+                                        <option selected disabled @if(!isset($penawaran)) value="" @endif>Pilih kontak</option>
                                         @foreach ($pelanggan as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>

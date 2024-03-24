@@ -193,11 +193,13 @@ class PenjualanController extends Controller
     {
         $data['sidebar'] = 'penjualan';
         
+        DB::beginTransaction();
         $jurnal = new Jurnal;
         $jurnal->pembayaran_penjualan($request);
 
         $pembayaran_penjualan = new Pembayaran_penjualan;
         $pembayaran_penjualan->insert($request, $jurnal->id);
+        DB::commit();
 
         return redirect('penjualan/receive_payment/'.$pembayaran_penjualan->id);
     }
@@ -218,63 +220,78 @@ class PenjualanController extends Controller
 
     public function insert_penagihan(Request $request)
     {
+        DB::beginTransaction();
         $jurnal = new Jurnal;
         $jurnal->penjualan($request);
         
         $penjualan = new Penjualan;
         $penjualan->insert($request, $jurnal->id, 'penagihan');
+        DB::commit();
 
         return redirect('penjualan');
     }
 
     public function update_penagihan(Request $request, $id)
-    {        
+    {
+        DB::beginTransaction();
         $penjualan = Penjualan::find($id);
         $jurnal = Jurnal::find($penjualan->id_jurnal);
         $jurnal->penjualan($request, $id);
         $penjualan->edit($request);
+        DB::commit();
 
         return redirect('penjualan');
     }
 
     public function insert_penawaran(Request $request)
     {
+        DB::beginTransaction();
         $penjualan = new Penjualan;
         $penjualan->insert($request, null, 'penawaran');
+        DB::commit();
 
         return redirect('penjualan');
     }
 
     public function update_penawaran(Request $request, $id)
     {
+        DB::beginTransaction();
         $penjualan = Penjualan::find($id);
         $penjualan->edit($request);
+        DB::commit();
 
         return redirect('penjualan');
     }
 
     public function insert_penawaran_pemesanan(Request $request, $id)
     {
+        DB::beginTransaction();
         $penjualan = new Penjualan;
         $penjualan->insert($request, null, 'pemesanan', $id);
+        DB::commit();
 
         return redirect('penjualan');
     }
 
     public function insert_pemesanan_penagihan(Request $request, $id)
     {
+        DB::beginTransaction();
         $jurnal = new Jurnal;
         $jurnal->penjualan($request);
         
         $penjualan = new Penjualan;
         $penjualan->insert($request, $jurnal->id, 'penagihan', $id);
+        DB::commit();
 
         return redirect('penjualan');
     }
 
     public function hapus($id){
-        Penjualan::find($id)->delete();
-        Detail_penjualan::where('id_penjualan',$id)->delete();
+        // DB::beginTransaction();
+        // $penjualan = Penjualan::find($id);
+        // $jurnal Jurnal::find($penjualan->id_jurnal);
+        // Detail_penjualan::where('id_penjualan',$id)->delete();
+        // DB::commit();
         
         return redirect('penjualan');
     }

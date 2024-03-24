@@ -20,6 +20,7 @@ class JurnalController extends Controller
     }
     public function insert(Request $request)
     {
+        DB::beginTransaction();
         $jurnal = new Jurnal;
         $jurnal->id_company = Auth::user()->id_company;
         $jurnal->tanggal_transaksi = $_POST['tanggal_transaksi'];
@@ -37,8 +38,8 @@ class JurnalController extends Controller
                 $detail_jurnal->id_jurnal = $jurnal->id;
                 $detail_jurnal->id_akun = $_POST['akun'][$i];
                 $detail_jurnal->deskripsi = $_POST['deskripsi'][$i];
-                $detail_jurnal->debit = $_POST['debit'][$i] != '' || $_POST['debit'][$i] != null ? $_POST['debit'][$i] : 0;
-                $detail_jurnal->kredit = $_POST['kredit'][$i] != '' || $_POST['kredit'][$i] != null ? $_POST['kredit'][$i] : 0;
+                $detail_jurnal->debit = $_POST['debit'][$i] != '' || $_POST['debit'][$i] != null ? number_format((float)str_replace(",", "", $_POST['debit'][$i]), 2, '.', '') : 0;
+                $detail_jurnal->kredit = $_POST['kredit'][$i] != '' || $_POST['kredit'][$i] != null ? number_format((float)str_replace(",", "", $_POST['kredit'][$i]), 2, '.', '') : 0;
 
                 $akun_company = Akun_company::where('id_akun',$_POST['akun'][$i])
                                             ->where('id_company',Auth::user()->id_company)
@@ -52,7 +53,7 @@ class JurnalController extends Controller
                 $detail_jurnal->save();
             }
         }
-
+        DB::commit();
         return redirect('laporan/jurnal');
     }
 
@@ -86,8 +87,8 @@ class JurnalController extends Controller
 
                 $detail_jurnal->id_akun = $_POST['akun'][$i];
                 $detail_jurnal->deskripsi = $_POST['deskripsi'][$i];
-                $detail_jurnal->debit = $_POST['debit'][$i];
-                $detail_jurnal->kredit = $_POST['kredit'][$i];
+                $detail_jurnal->debit = number_format((float)str_replace(",", "", $_POST['debit'][$i]), 2, '.', '');
+                $detail_jurnal->kredit = number_format((float)str_replace(",", "", $_POST['kredit'][$i]), 2, '.', '');
                 $detail_jurnal->save();
 
                 $akun_company = Akun_company::where('id_akun',$_POST['akun'][$i])

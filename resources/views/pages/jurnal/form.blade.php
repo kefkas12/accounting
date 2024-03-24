@@ -131,6 +131,7 @@
         </div>
     </div>
     <script>
+        var x = 0;
         var i = 2;
         var result_debit = 0;
         var result_kredit = 0;
@@ -138,17 +139,22 @@
         $(document).ready(function() {
             @if (isset($jurnal))
                 $('#tanggal_transaksi').val('{{ $jurnal->tanggal_transaksi }}')
+                x = 1;
                 @foreach ($jurnal->detail_jurnal as $v)
-                    load_select_2(i);
+                    if(x < 3){
+                        load_select_2(x);
+                    }
                     $('#id_detail_jurnal_' + x).val('{{ $v->id }}').trigger('change');
                     $('#akun_' + x).val('{{ $v->id_akun }}').trigger('change');
                     $('#deskripsi_' + x).val(`{{ $v->deskripsi }}`);
-                    $('#debit_' + x).val('{{ $v->debit }}').trigger('keyup');
-                    $('#kredit_' + x).val('{{ $v->kredit }}').trigger('keyup');
-                    i++;
-                    create_row();
+                    change_debit(x, {{ $v->debit }});
+                    change_kredit(x, {{ $v->kredit }});
+                    x++;
+                    if(x>2){
+                        create_row();
+                    }
                 @endforeach
-                hapus(x)
+                hapus(x+1)
             @else
                 load_select_2(1);
                 load_select_2(2);
@@ -176,12 +182,21 @@
             });
             if(id > 1){
                 $('#akun_'+id).on('select2:select', function (e) {
-                    create_row();
+                    if(id >= x){
+                        x += 1;
+                        create_row();
+                    }
                 });
             }
             
-            new AutoNumeric("#debit_" + id, 'commaDecimalCharDotSeparator');
-            new AutoNumeric("#kredit_" + id, 'commaDecimalCharDotSeparator');
+            new AutoNumeric("#debit_" + id, {
+                commaDecimalCharDotSeparator: true,
+                watchExternalChanges: true
+            });
+            new AutoNumeric("#kredit_" + id, {
+                commaDecimalCharDotSeparator: true,
+                watchExternalChanges: true
+            });
         }
 
         
@@ -205,14 +220,23 @@
             $('#input_kredit').val(result_kredit);
         }
 
-        function change_debit(no) {
-            AutoNumeric.set('#debit_' + no,AutoNumeric.getNumber('#debit_' + no));
+        function change_debit(no, val_debit = null) {
+            if(val_debit){
+                AutoNumeric.set('#debit_' + no,val_debit);
+            }else{
+                AutoNumeric.set('#debit_' + no,AutoNumeric.getNumber('#debit_' + no));
+            }
+            
             debit[no] = parseFloat(AutoNumeric.getNumber('#debit_' + no));
             load();
         }
 
-        function change_kredit(no) {
-            AutoNumeric.set('#kredit_' + no,AutoNumeric.getNumber('#kredit_' + no));
+        function change_kredit(no, val_kredit = null) {
+            if(val_kredit){
+                AutoNumeric.set('#kredit_' + no,val_kredit);
+            }else{
+                AutoNumeric.set('#kredit_' + no,AutoNumeric.getNumber('#kredit_' + no));
+            }
             kredit[no] = parseFloat(AutoNumeric.getNumber('#kredit_' + no));
             load();
         }

@@ -18,7 +18,11 @@ class Penjualan extends Model
 
     function no($jenis)
     {
-        $no = Penjualan::select('no')->where('jenis',$jenis)->orderBy('id', 'DESC')->first();
+        $no = Penjualan::select('no')
+                        ->where('jenis',$jenis)
+                        ->where('id_company',Auth::user()->id_company)
+                        ->orderBy('id', 'DESC')
+                        ->first();
         if ($no) {
             $no = $no->no;
             $no++;

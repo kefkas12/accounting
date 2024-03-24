@@ -49,10 +49,13 @@ class AkunController extends Controller
             }else if($status == 'detail'){
                 $id_company = Auth::user()->id_company;
                 $data['transaksi_akun'] = Detail_jurnal::with('jurnal')
+                                                        ->join('jurnal','detail_jurnal.id_jurnal','jurnal.id')
+                                                        ->select('detail_jurnal.*')
                                                         ->whereHas('jurnal', function($query) use ($id_company) {
                                                             $query->where('id_company', $id_company);
                                                         })
                                                         ->where('id_akun',$id)
+                                                        ->orderBy('jurnal.tanggal_transaksi','ASC')
                                                         ->get();
                 return view('pages.akun.detail', $data);
             }
