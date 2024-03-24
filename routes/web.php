@@ -3,6 +3,7 @@
 use App\Http\Controllers\AksesController;
 use App\Http\Controllers\AkunController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DeliveryOrderController;
 use App\Http\Controllers\ExportController;
@@ -59,7 +60,7 @@ Route::get('/', function(){
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Auth::routes();
 
 Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
@@ -133,6 +134,7 @@ Route::controller(PelangganController::class)->prefix('pelanggan')->group(functi
 	Route::post('/edit/{id}', 'edit');
 	Route::get('/{status}/{id}', 'detail');
 });
+
 Route::controller(SupplierController::class)->prefix('supplier')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/insert', 'detail');
@@ -163,14 +165,19 @@ Route::controller(JurnalController::class)->prefix('jurnal')->group(function () 
 	Route::post('/insert', 'insert');
 	Route::post('/edit/{id}', 'edit');
 	Route::get('/{status}/{id}', 'detail');
+	Route::post('/{status}/{id}', 'detail');
 });
 
 Route::controller(LaporanController::class)->prefix('laporan')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/jurnal', 'jurnal');
 	Route::get('/neraca', 'neraca');
+	Route::get('/buku_besar', 'buku_besar');
 	Route::get('/laba_rugi', 'laba_rugi');
 });
+
+Route::group([], __DIR__.'/routes_superadmin.php');
+
 
 /*
 Route::controller(KaryawanController::class)->group(function () {

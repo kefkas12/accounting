@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Akun;
 use App\Models\Akun_company;
 use App\Models\Jurnal;
 use App\Models\Produk;
@@ -26,11 +27,11 @@ class LaporanController extends Controller
     public function jurnal(){
         $data['sidebar'] = 'laporan';
         $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
-                                ->select('jurnal.*')
-                                ->where('id_company',Auth::user()->id_company)
+                                ->leftJoin('penjualan','jurnal.id','penjualan.id_jurnal')
+                                ->select('jurnal.*','penjualan.id as id_penjualan')
+                                ->where('jurnal.id_company',Auth::user()->id_company)
                                 ->orderBy('jurnal.id','DESC')
                                 ->get();
-                                
         return view('pages.jurnal.index',$data);
     }
 
@@ -122,6 +123,16 @@ class LaporanController extends Controller
         $data['neraca'] = json_encode($neraca);
                                 
         return view('pages.laporan.neraca',$data);
+    }
+
+    public function buku_besar(){
+        $data['sidebar'] = 'laporan';
+        $data['buku_besar'] = Akun_company::with('detail_jurnal.jurnal')
+                                    ->join('akun','akun_company.id_akun','=','akun.id')
+                                    ->select('akun.*','akun_company.saldo as saldo_akun')
+                                    ->where('akun_company.id_company',Auth::user()->id_company)
+                                    ->get();
+        return view('pages.laporan.buku_besar',$data);
     }
 
     public function laba_rugi(){

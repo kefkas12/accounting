@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Akun_company extends Model
 {
@@ -13,4 +15,10 @@ class Akun_company extends Model
     protected $fillable = [
         'saldo'
     ];
+
+    public function detail_jurnal(): HasMany
+    {
+        return $this->hasMany(Detail_jurnal::class, 'id_akun');
+    }
+
 }

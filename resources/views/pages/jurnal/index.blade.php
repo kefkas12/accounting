@@ -37,7 +37,14 @@
                                     $kredit = 0;
                                 @endphp
                                 <tr>
-                                    <td colspan="3" style="background: #f8f8f8;"><h4><strong><a href="{{ url('jurnal/detail').'/'.$v->id }}">{{ $v->no_str }}</a> | {{ $v->tanggal_transaksi }} (created on {{ $v->created_at }})</strong></h4></td>
+                                    <td colspan="3" style="background: #f8f8f8;"><h4><strong>
+                                        @if($v->kategori == 'sales_invoice' && $v->id_penjualan)
+                                        <a href="{{ url('penjualan/detail').'/'.$v->id_penjualan }}">{{ $v->no_str }}</a>
+                                        @else
+                                        <a href="{{ url('jurnal/detail').'/'.$v->id }}">{{ $v->no_str }}</a>
+                                        @endif
+                                         | {{ $v->tanggal_transaksi }} (created on {{ $v->created_at }})
+                                    </strong></h4></td>
                                 </tr>
                                 @foreach($v->detail_jurnal as $w)
                                 <tr>

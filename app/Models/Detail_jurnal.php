@@ -22,4 +22,9 @@ class Detail_jurnal extends Model
     {
         return $this->belongsTo(Akun::class, 'id_akun');
     }
+
+    public function akun_company(): BelongsTo
+    {
+        return $this->belongsTo(Akun_company::class, 'id_akun');
+    }
 }

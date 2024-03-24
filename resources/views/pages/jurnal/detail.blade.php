@@ -82,8 +82,7 @@
                                 <form id="deleteForm" action="{{ url('jurnal/hapus') . '/' . $jurnal->id }}"
                                     method="post">
                                     @csrf
-                                    <button type="submit"
-                                        class="btn btn-dark" onclick="confirmDelete(event)">Hapus</button>
+                                    <button type="submit" class="btn btn-dark" onclick="confirmDelete(event)">Hapus</button>
                                 </form>
                             </div>
                             <div class="col-sm-6 d-flex justify-content-end">

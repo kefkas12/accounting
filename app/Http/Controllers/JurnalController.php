@@ -6,8 +6,11 @@ use App\Models\Akun;
 use App\Models\Akun_company;
 use App\Models\Detail_jurnal;
 use App\Models\Jurnal;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use PDO;
 
 class JurnalController extends Controller
 {
@@ -115,6 +118,26 @@ class JurnalController extends Controller
                 return view('pages.jurnal.form', $data);
             }else if($status == 'detail'){
                 return view('pages.jurnal.detail', $data);
+            }else if($status == 'hapus'){
+                try{
+                    DB::beginTransaction();
+                    if(count($data['jurnal']->detail_jurnal) > 0){
+                        foreach($data['jurnal']->detail_jurnal as $v){
+                            $akun_company = Akun_company::where('id_akun', $v->id_akun)
+                                                        ->where('id_company', Auth::user()->id_company)
+                                                        ->first();
+                            $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                            $akun_company->save();
+                            Detail_jurnal::find($v->id)->delete();
+                        }
+                    }
+                    Jurnal::find($id)->delete();
+                    DB::commit();
+                }catch(Exception $e){
+                    dd("Message : ". $e->getMessage());
+                }
+                
+                return redirect('laporan/jurnal');
             }
         }else{
             return view('pages.jurnal.form', $data);
