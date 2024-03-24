@@ -41,7 +41,7 @@
                                         @endphp
                                         @foreach($transaksi_akun as $v)
                                         <tr>
-                                            <td>{{ $v->jurnal->tanggal_transaksi }}</td>
+                                            <td>{{ date('d-m-Y',strtotime($v->jurnal->tanggal_transaksi)) }}</td>
                                             <td>
                                                 <div class="d-flex">
                                                     <div class="d-flex flex-column justify-content-center">
