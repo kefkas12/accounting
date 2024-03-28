@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Akun;
+use App\Models\Akun_company;
 use App\Models\Company;
 use App\Models\Detail_jurnal;
 use App\Models\Detail_pembayaran_penjualan;
@@ -287,11 +288,53 @@ class PenjualanController extends Controller
     }
 
     public function hapus($id){
-        // DB::beginTransaction();
-        // $penjualan = Penjualan::find($id);
-        // $jurnal Jurnal::find($penjualan->id_jurnal);
-        // Detail_penjualan::where('id_penjualan',$id)->delete();
-        // DB::commit();
+        DB::beginTransaction();
+        $penjualan = Penjualan::find($id);
+        if($penjualan->jenis == 'penawaran'){
+            Detail_penjualan::where('id_penjualan',$id)->delete();
+            $penjualan->delete();
+        }else if($penjualan->jenis == 'pemesanan'){
+            $penawaran = Penjualan::find($penjualan->id_penawaran);
+            Detail_penjualan::where('id_penjualan',$penawaran->id)->delete();
+            $penawaran->delete();
+            $penjualan->delete();
+        }else if($penjualan->jenis == 'penagihan'){
+            $pemesanan = Penjualan::find($penjualan->id_pemesanan);
+            Detail_penjualan::where('id_penjualan',$pemesanan->id)->delete();
+            $pemesanan->delete();
+            $penawaran = Penjualan::find($pemesanan->id_penawaran);
+            Detail_penjualan::where('id_penjualan',$penawaran->id)->delete();
+            $penawaran->delete();
+
+            $detail_jurnal = Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->get();
+            foreach($detail_jurnal as $v){
+                $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                            ->where('id_akun',$v->id_akun)->first();
+                $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                $akun_company->save();
+            }
+
+            $detail_pembayaran_penjualan = Detail_pembayaran_penjualan::where('id_penjualan',$id)->get();
+            foreach($detail_pembayaran_penjualan as $v){
+                $pembayaran_penjualan = Pembayaran_penjualan::find($v->id_pembayaran_penjualan);
+                $detail_jurnal = Detail_jurnal::where('id_jurnal',$pembayaran_penjualan->id_jurnal)->get();
+                foreach($detail_jurnal as $v){
+                    $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                                ->where('id_akun',$v->id_akun)->first();
+                    $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                    $akun_company->save();
+                }
+                Detail_jurnal::where('id_jurnal',$pembayaran_penjualan->id_jurnal)->delete();
+                $pembayaran_penjualan->delete();
+            }
+            Detail_pembayaran_penjualan::where('id_penjualan',$id)->delete();
+
+            Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->delete();
+            Jurnal::find($penjualan->id_jurnal)->delete();
+
+            $penjualan->delete();
+        }
+        DB::commit();
         
         return redirect('penjualan');
     }

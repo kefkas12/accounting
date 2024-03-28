@@ -124,6 +124,8 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 
 	Route::get('/cetak/surat_jalan/{id}','cetak_surat_jalan');
 	Route::get('/cetak/penagihan/{id}','cetak_penagihan');
+	Route::post('hapus/{id}','hapus');
+
 	// Route::post('/{id}', 'edit');
 });
 

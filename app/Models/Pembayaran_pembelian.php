@@ -16,7 +16,10 @@ class Pembayaran_pembelian extends Model
 
     function no()
     {
-        $no = Pembayaran_pembelian::select('no')->orderBy('id', 'DESC')->first();
+        $no = Pembayaran_pembelian::select('no')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->orderBy('id', 'DESC')
+                                    ->first();
         if ($no) {
             $no = $no->no;
             $no++;

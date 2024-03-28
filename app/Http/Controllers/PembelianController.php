@@ -15,6 +15,7 @@ use App\Models\Pembelian;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class PembelianController extends Controller
@@ -184,13 +185,13 @@ class PembelianController extends Controller
 
     public function penerimaan_pembayaran(Request $request)
     {
-        $data['sidebar'] = 'pembelian';
-        
+        DB::beginTransaction();        
         $jurnal = new Jurnal;
         $jurnal->pembayaran_pembelian($request);
 
         $pembayaran_pembelian = new Pembayaran_pembelian;
         $pembayaran_pembelian->insert($request, $jurnal->id);
+        DB::commit();
 
         return redirect('pembelian/receive_payment/'.$pembayaran_pembelian->id);
     }
@@ -212,63 +213,77 @@ class PembelianController extends Controller
 
     public function insert_faktur(Request $request)
     {
+        DB::beginTransaction();
         $jurnal = new Jurnal;
         $jurnal->pembelian($request);
 
         $pembelian = new Pembelian;
         $pembelian->insert($request, $jurnal->id, 'faktur');
+        DB::commit();
 
         return redirect('pembelian');
     }
 
     public function update_faktur(Request $request, $id)
     {
+        DB::beginTransaction();
         $pembelian = Pembelian::find($id);
         $jurnal = Jurnal::find($pembelian->id_jurnal);
         $jurnal->pembelian($request);
         $pembelian->edit($request);
+        DB::commit();
 
         return redirect('pembelian');
     }
 
     public function insert_penawaran(Request $request)
     {
+        DB::beginTransaction();
         $pembelian = new Pembelian;
         $pembelian->insert($request, null, 'penawaran');
+        DB::commit();
 
         return redirect('pembelian');
     }
 
     public function update_penawaran(Request $request, $id)
     {
+        DB::beginTransaction();
         $pembelian = Pembelian::find($id);
         $pembelian->edit($request);
+        DB::commit();
 
         return redirect('pembelian');
     }
 
     public function insert_penawaran_pemesanan(Request $request, $id)
     {
+        DB::beginTransaction();
         $pembelian = new Pembelian;
         $pembelian->insert($request, null, 'pemesanan', $id);
+        DB::commit();
 
         return redirect('pembelian');
     }
 
     public function insert_pemesanan_faktur(Request $request, $id)
     {
+        DB::beginTransaction();
         $jurnal = new Jurnal;
         $jurnal->pembelian($request);
         
         $pembelian = new Pembelian;
         $pembelian->insert($request, $jurnal->id, 'faktur', $id);
+        DB::commit();
 
         return redirect('pembelian');
     }
 
     public function hapus($id){
+        DB::beginTransaction();
         Pembelian::find($id)->delete();
         Detail_pembelian::where('id_pembelian',$id)->delete();
+        DB::commit();
         
         return redirect('pembelian');
     }
