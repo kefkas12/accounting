@@ -91,7 +91,7 @@
 
                                             </div>
                                             <div class="card-footer">
-                                                <a href="#" class="btn btn-primary">Lihat Laporan</a>
+                                                <a href="{{ url('laporan/penjualan/penagihan') }}" class="btn btn-primary">Lihat Laporan</a>
                                             </div>
                                         </div>
                                     </div>
@@ -107,7 +107,7 @@
 
                                             </div>
                                             <div class="card-footer">
-                                                <a href="#" class="btn btn-primary">Lihat Laporan</a>
+                                                <a href="{{ url('laporan/pembelian/faktur') }}" class="btn btn-primary">Lihat Laporan</a>
                                             </div>
                                         </div>
                                     </div>

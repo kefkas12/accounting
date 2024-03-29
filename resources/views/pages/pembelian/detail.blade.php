@@ -10,7 +10,7 @@
                     <div class="card-header bg-transparent border-0">
                         <h2>
                         @if ($pembelian->jenis == 'faktur')
-                            Penagihan 
+                            Faktur 
                         @elseif($pembelian->jenis == 'penawaran')
                             Penawaran 
                         @elseif($pembelian->jenis == 'pemesanan')
@@ -68,7 +68,7 @@
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2">
-                                @if ($pembelian->jenis == 'penagihan' || $pembelian->jenis == 'pemesanan')
+                                @if ($pembelian->jenis == 'faktur' || $pembelian->jenis == 'pemesanan')
                                     Tgl. Jatuh Tempo
                                 @elseif($pembelian->jenis == 'penawaran')
                                     Tgl. kedaluarsa

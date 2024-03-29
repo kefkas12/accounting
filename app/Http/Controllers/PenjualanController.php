@@ -286,7 +286,6 @@ class PenjualanController extends Controller
 
         return redirect('penjualan');
     }
-
     public function hapus($id){
         DB::beginTransaction();
         $penjualan = Penjualan::find($id);
@@ -325,6 +324,7 @@ class PenjualanController extends Controller
                     $akun_company->save();
                 }
                 Detail_jurnal::where('id_jurnal',$pembayaran_penjualan->id_jurnal)->delete();
+                Jurnal::find($pembayaran_penjualan->id_jurnal)->delete();
                 $pembayaran_penjualan->delete();
             }
             Detail_pembayaran_penjualan::where('id_penjualan',$id)->delete();

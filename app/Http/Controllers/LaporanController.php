@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Akun;
 use App\Models\Akun_company;
 use App\Models\Jurnal;
+use App\Models\Pembelian;
+use App\Models\Penjualan;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,10 +50,12 @@ class LaporanController extends Controller
         $kategori_pendapatan = array(13);
         $kategori_pendapatan_lainnya = array(14);
         $kategori_beban = array(16, 17);
+        $kategori_harga_pokok_pendapatan = array(15);
 
         $pendapatan = 0;
         $pendapatan_lainnya = 0;
         $beban = 0;
+        $harga_pokok_pendapatan = 0;
 
         foreach($akun as $v){
             if (in_array($v->id_kategori, $kategori_aset_lancar)){
@@ -99,6 +103,9 @@ class LaporanController extends Controller
             if (in_array($v->id_kategori, $kategori_beban)){
                 $beban += $v->saldo * $v->pengali;
             }
+            if (in_array($v->id_kategori, $kategori_harga_pokok_pendapatan)){
+                $harga_pokok_pendapatan += $v->saldo * $v->pengali;
+            }
         }
 
         $modal[] = 
@@ -106,7 +113,7 @@ class LaporanController extends Controller
             'id_akun' => '',
             'nomor' => '',
             'nama' => 'Pendapatan Periode ini',
-            'saldo' => $pendapatan + $pendapatan_lainnya + $beban,
+            'saldo' => $pendapatan + $pendapatan_lainnya + $beban - $harga_pokok_pendapatan,
         ];
 
         $neraca = [
@@ -194,5 +201,29 @@ class LaporanController extends Controller
         $data['laba_rugi'] = json_encode($laba_rugi);
                                 
         return view('pages.laporan.laba_rugi',$data);
+    }
+
+    public function penjualan($jenis){
+        $data['sidebar'] = 'laporan';
+
+        $data['penjualan'] = Penjualan::join('kontak','penjualan.id_pelanggan','=','kontak.id')
+                            ->select('penjualan.*', 'kontak.nama')
+                            ->where('penjualan.id_company',Auth::user()->id_company)
+                            ->where('penjualan.jenis', $jenis)
+                            ->get();
+                                
+        return view('pages.laporan.penjualan',$data);
+    }
+
+    public function pembelian($jenis){
+        $data['sidebar'] = 'laporan';
+
+        $data['pembelian'] = Pembelian::join('kontak','pembelian.id_supplier','=','kontak.id')
+                            ->select('pembelian.*', 'kontak.nama')
+                            ->where('pembelian.id_company',Auth::user()->id_company)
+                            ->where('pembelian.jenis', $jenis)
+                            ->get();
+                                
+        return view('pages.laporan.pembelian',$data);
     }
 }

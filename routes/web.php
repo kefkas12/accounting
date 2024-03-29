@@ -176,6 +176,10 @@ Route::controller(LaporanController::class)->prefix('laporan')->group(function (
 	Route::get('/neraca', 'neraca');
 	Route::get('/buku_besar', 'buku_besar');
 	Route::get('/laba_rugi', 'laba_rugi');
+
+	Route::get('/penjualan/{jenis}', 'penjualan');
+
+	Route::get('/pembelian/{jenis}', 'pembelian');
 });
 
 Route::group([], __DIR__.'/routes_superadmin.php');
