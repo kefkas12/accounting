@@ -105,18 +105,20 @@ class Penjualan extends Model
     protected function insertDetailPenjualan(Request $request)
     {
         for ($i = 0; $i < count($request->input('produk')); $i++) {
-            $detail_penjualan = new Detail_penjualan;
+            $harga_satuan = $request->input('harga_satuan')[$i] != '' || $request->input('harga_satuan')[$i] != null ? number_format((float)str_replace(",", "", $_POST['harga_satuan'][$i]), 2, '.', '') : 0;
+            $jumlah = $request->input('jumlah')[$i] != '' || $request->input('jumlah')[$i] != null ? number_format((float)str_replace(",", "", $_POST['jumlah'][$i]), 2, '.', '') : 0;
+            $pajak = $request->input('pajak')[$i] != '' || $request->input('pajak')[$i] != null ? number_format((float)str_replace(",", "", $_POST['pajak'][$i]), 2, '.', '') : 0;
 
+            $detail_penjualan = new Detail_penjualan;
             $detail_penjualan->id_company = Auth::user()->id_company;
             $detail_penjualan->id_penjualan = $this->id;
             $detail_penjualan->id_produk = $request->input('produk')[$i];
             $detail_penjualan->deskripsi = $request->input('deskripsi')[$i];
             $detail_penjualan->kuantitas = $request->input('kuantitas')[$i];
-            $detail_penjualan->harga_satuan = $request->input('harga_satuan')[$i];
-            $detail_penjualan->diskon_per_baris = $request->input('diskon_per_baris')[$i];
-            $detail_penjualan->pajak = $request->input('jumlah')[$i] * $request->input('pajak')[$i] / 100;
-            $detail_penjualan->jumlah = $request->input('jumlah')[$i];
-
+            $detail_penjualan->harga_satuan = $harga_satuan;
+            $detail_penjualan->diskon_per_baris = $request->input('diskon_per_baris')[$i];            
+            $detail_penjualan->jumlah = $jumlah;
+            $detail_penjualan->pajak = $jumlah * $pajak / 100;
             $detail_penjualan->save();
         }
     }
@@ -133,6 +135,11 @@ class Penjualan extends Model
         $this->total = $request->input('input_total');
         $this->alamat = $request->input('alamat');
         $this->email = $request->input('email');
+        if($this->sisa_tagihan > 0){
+            $this->status = 'partial';
+        }else{
+            $this->status = 'paid';
+        }
         $this->save();
 
         $this->editDetailPenjualan($request);
@@ -142,17 +149,21 @@ class Penjualan extends Model
     {
         $detail_penjualan = Detail_penjualan::where('id_penjualan',$this->id)->delete();
         for ($i = 0; $i < count($request->input('produk')); $i++) {
-            $detail_penjualan = new Detail_penjualan;
+            $harga_satuan = $request->input('harga_satuan')[$i] != '' || $request->input('harga_satuan')[$i] != null ? number_format((float)str_replace(",", "", $_POST['harga_satuan'][$i]), 2, '.', '') : 0;
+            $jumlah = $request->input('jumlah')[$i] != '' || $request->input('jumlah')[$i] != null ? number_format((float)str_replace(",", "", $_POST['jumlah'][$i]), 2, '.', '') : 0;
+            $pajak = $request->input('pajak')[$i] != '' || $request->input('pajak')[$i] != null ? number_format((float)str_replace(",", "", $_POST['pajak'][$i]), 2, '.', '') : 0;
 
+
+            $detail_penjualan = new Detail_penjualan;
             $detail_penjualan->id_company = Auth::user()->id_company;
             $detail_penjualan->id_penjualan = $this->id;
             $detail_penjualan->id_produk = $request->input('produk')[$i];
             $detail_penjualan->deskripsi = $request->input('deskripsi')[$i];
             $detail_penjualan->kuantitas = $request->input('kuantitas')[$i];
-            $detail_penjualan->harga_satuan = $request->input('harga_satuan')[$i];
+            $detail_penjualan->harga_satuan = $harga_satuan;
             $detail_penjualan->diskon_per_baris = $request->input('diskon_per_baris')[$i];
-            $detail_penjualan->pajak = $request->input('jumlah')[$i] * $request->input('pajak')[$i] / 100;
-            $detail_penjualan->jumlah = $request->input('jumlah')[$i];
+            $detail_penjualan->pajak = $jumlah * $pajak / 100;
+            $detail_penjualan->jumlah = $jumlah;
 
             $detail_penjualan->save();
         }

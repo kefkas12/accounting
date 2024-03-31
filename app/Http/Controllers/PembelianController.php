@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Akun;
 use App\Models\Akun_company;
 use App\Models\Company;
+use App\Models\Detail_jurnal;
 use App\Models\Detail_pembayaran_pembelian;
 use App\Models\Detail_pembelian;
 use App\Models\Jurnal;
@@ -221,7 +222,7 @@ class PembelianController extends Controller
         $pembelian->insert($request, $jurnal->id, 'faktur');
         DB::commit();
 
-        return redirect('pembelian');
+        return redirect('pembelian/detail/'.$pembelian->id);
     }
 
     public function update_faktur(Request $request, $id)
@@ -229,11 +230,11 @@ class PembelianController extends Controller
         DB::beginTransaction();
         $pembelian = Pembelian::find($id);
         $jurnal = Jurnal::find($pembelian->id_jurnal);
-        $jurnal->pembelian($request);
+        $jurnal->pembelian($request, $id);
         $pembelian->edit($request);
         DB::commit();
 
-        return redirect('pembelian');
+        return redirect('pembelian/detail/'.$pembelian->id);
     }
 
     public function insert_penawaran(Request $request)
@@ -243,7 +244,7 @@ class PembelianController extends Controller
         $pembelian->insert($request, null, 'penawaran');
         DB::commit();
 
-        return redirect('pembelian');
+        return redirect('pembelian/detail/'.$pembelian->id);
     }
 
     public function update_penawaran(Request $request, $id)
@@ -253,7 +254,7 @@ class PembelianController extends Controller
         $pembelian->edit($request);
         DB::commit();
 
-        return redirect('pembelian');
+        return redirect('pembelian/detail/'.$pembelian->id);
     }
 
     public function insert_penawaran_pemesanan(Request $request, $id)
@@ -263,7 +264,7 @@ class PembelianController extends Controller
         $pembelian->insert($request, null, 'pemesanan', $id);
         DB::commit();
 
-        return redirect('pembelian');
+        return redirect('pembelian/detail/'.$pembelian->id);
     }
 
     public function insert_pemesanan_faktur(Request $request, $id)
@@ -276,15 +277,63 @@ class PembelianController extends Controller
         $pembelian->insert($request, $jurnal->id, 'faktur', $id);
         DB::commit();
 
-        return redirect('pembelian');
+        return redirect('pembelian/detail/'.$pembelian->id);
     }
 
     public function hapus($id){
         DB::beginTransaction();
-        Pembelian::find($id)->delete();
-        Detail_pembelian::where('id_pembelian',$id)->delete();
-        DB::commit();
-        
-        return redirect('pembelian');
+        $pembelian = Pembelian::find($id);
+        if($pembelian->jenis == 'penawaran'){
+            Detail_pembelian::where('id_pembelian',$id)->delete();
+            $pembelian->delete();
+            DB::commit();
+            return redirect('pembelian');
+        }else if($pembelian->jenis == 'pemesanan'){
+            Detail_pembelian::where('id_pembelian',$pembelian->id)->delete();
+
+            $penawaran = Pembelian::find($pembelian->id_penawaran);
+            $penawaran->status = 'open';
+            $penawaran->save();
+
+            $pembelian->delete();
+            DB::commit();
+            return redirect('pembelian/detail/'.$penawaran->id);
+        }else if($pembelian->jenis == 'faktur'){
+            $detail_jurnal = Detail_jurnal::where('id_jurnal',$pembelian->id_jurnal)->get();
+            foreach($detail_jurnal as $v){
+                $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                            ->where('id_akun',$v->id_akun)->first();
+                $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                $akun_company->save();
+            }
+
+            $detail_pembayaran_pembelian = Detail_pembayaran_pembelian::where('id_pembelian',$id)->get();
+            foreach($detail_pembayaran_pembelian as $v){
+                $pembayaran_pembelian = Pembayaran_pembelian::find($v->id_pembayaran_pembelian);
+                $detail_jurnal = Detail_jurnal::where('id_jurnal',$pembayaran_pembelian->id_jurnal)->get();
+                foreach($detail_jurnal as $v){
+                    $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                                ->where('id_akun',$v->id_akun)->first();
+                    $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                    $akun_company->save();
+                }
+                Detail_jurnal::where('id_jurnal',$pembayaran_pembelian->id_jurnal)->delete();
+                Jurnal::find($pembayaran_pembelian->id_jurnal)->delete();
+                $pembayaran_pembelian->delete();
+            }
+            Detail_pembayaran_pembelian::where('id_pembelian',$id)->delete();
+
+            Detail_jurnal::where('id_jurnal',$pembelian->id_jurnal)->delete();
+            Jurnal::find($pembelian->id_jurnal)->delete();
+
+            $pemesanan = Pembelian::find($pembelian->id_pemesanan);
+            $pemesanan->status = 'open';
+            $pemesanan->save();
+
+            $pembelian->delete();
+            
+            DB::commit();
+            return redirect('pembelian/detail/'.$pemesanan->id);
+        }
     }
 }

@@ -58,50 +58,52 @@ class JurnalController extends Controller
     }
 
     public function edit($id){
+        DB::beginTransaction();
         $jurnal = Jurnal::find($id);
         $jurnal->tanggal_transaksi = $_POST['tanggal_transaksi'];
         $jurnal->debit = $_POST['total_debit'];
         $jurnal->kredit = $_POST['total_kredit'];
         $jurnal->save();
 
+        $detail_jurnal = Detail_jurnal::where('id_jurnal',$id)->get();
+        foreach($detail_jurnal as $v){
+            $akun_company = Akun_company::where('id_akun',$v->id_akun)
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->first();
+            $saldo = $akun_company ? $akun_company->saldo : 0;
+            $debit = $v->debit ? $v->debit : 0;
+            $kredit = $v->kredit ? $v->kredit : 0;
+
+            $akun_company = Akun_company::where('id_akun', $v->id_akun)
+                                        ->where('id_company', Auth::user()->id_company)
+                                        ->update(['saldo' => $saldo - $debit + $kredit]);
+        }
+        Detail_jurnal::where('id_jurnal',$id)->delete();
+        
         for($i=0; $i<count($_POST['akun']) ; $i++){
             if($_POST['akun'][$i] != ''){
-                if($_POST['id_detail_jurnal'][$i] != ''){
-                    $detail_jurnal = Detail_jurnal::find((int)$_POST['id_detail_jurnal'][$i]);
-                    $akun_company = Akun_company::where('id_akun',$_POST['akun'][$i])
-                                            ->where('id_company',Auth::user()->id_company)
-                                            ->first();
-                    $saldo = $akun_company ? $akun_company->saldo : 0;
-                    $debit = $detail_jurnal->debit ? $detail_jurnal->debit : 0;
-                    $kredit = $detail_jurnal->kredit ? $detail_jurnal->kredit : 0;
-
-                    $akun_company = Akun_company::where('id_akun', $_POST['akun'][$i])
-                                                ->where('id_company', Auth::user()->id_company)
-                                                ->update(['saldo' => $saldo - $debit + $kredit]);
-
-                }else{
-                    $detail_jurnal = new Detail_jurnal;
-                    $detail_jurnal->id_company = Auth::user()->id_company;
-                    $detail_jurnal->id_jurnal = $jurnal->id;
-                }
-
+                $detail_jurnal = new Detail_jurnal;
+                $detail_jurnal->id_company = Auth::user()->id_company;
+                $detail_jurnal->id_jurnal = $jurnal->id;
                 $detail_jurnal->id_akun = $_POST['akun'][$i];
                 $detail_jurnal->deskripsi = $_POST['deskripsi'][$i];
-                $detail_jurnal->debit = number_format((float)str_replace(",", "", $_POST['debit'][$i]), 2, '.', '');
-                $detail_jurnal->kredit = number_format((float)str_replace(",", "", $_POST['kredit'][$i]), 2, '.', '');
-                $detail_jurnal->save();
+                $detail_jurnal->debit = $_POST['debit'][$i] != '' || $_POST['debit'][$i] != null ? number_format((float)str_replace(",", "", $_POST['debit'][$i]), 2, '.', '') : 0;
+                $detail_jurnal->kredit = $_POST['kredit'][$i] != '' || $_POST['kredit'][$i] != null ? number_format((float)str_replace(",", "", $_POST['kredit'][$i]), 2, '.', '') : 0;
 
                 $akun_company = Akun_company::where('id_akun',$_POST['akun'][$i])
-                                                ->where('id_company',Auth::user()->id_company)
-                                                ->first();
+                                            ->where('id_company',Auth::user()->id_company)
+                                            ->first();
                 $saldo = $akun_company ? $akun_company->saldo : 0;
 
                 $akun_company = Akun_company::where('id_akun', $_POST['akun'][$i])
                                             ->where('id_company', Auth::user()->id_company)
                                             ->update(['saldo' => $saldo + $detail_jurnal->debit - $detail_jurnal->kredit]);
-                
+
+                $detail_jurnal->save();
             }
         }
+
+        DB::commit();
 
         return redirect('laporan/jurnal');
     }

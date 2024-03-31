@@ -91,13 +91,13 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ $sidebar == 'pembelian' ? 'active' : '' }}" href="{{ url('pembelian') }}">
-                        <i class="fa fa-store text-primary"></i> {{ __('Pembelian') }}
+                    <a class="nav-link {{ $sidebar == 'penjualan' ? 'active' : '' }}" href="{{ url('penjualan') }}">
+                        <i class="fa fa-store text-primary"></i> {{ __('Penjualan') }}
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ $sidebar == 'penjualan' ? 'active' : '' }}" href="{{ url('penjualan') }}">
-                        <i class="fa fa-store text-primary"></i> {{ __('Penjualan') }}
+                    <a class="nav-link {{ $sidebar == 'pembelian' ? 'active' : '' }}" href="{{ url('pembelian') }}">
+                        <i class="fa fa-store text-primary"></i> {{ __('Pembelian') }}
                     </a>
                 </li>
                 <li class="nav-item {{ $sidebar == 'supplier' || $sidebar == 'pelanggan' ? 'active' : '' }}">

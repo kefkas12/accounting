@@ -125,6 +125,11 @@ class Pembelian extends Model
         $this->total = $request->input('input_total');
         $this->alamat = $request->input('alamat');
         $this->email = $request->input('email');
+        if($this->sisa_tagihan > 0){
+            $this->status = 'partial';
+        }else{
+            $this->status = 'paid';
+        }
         $this->save();
 
         $this->editDetailPembelian($request);

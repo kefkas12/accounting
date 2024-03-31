@@ -88,14 +88,17 @@
                         <th class="text-right"> ${rupiah(subtotal)}</th>
                     </tr>
                 `)
-                grandtotal += subtotal
+                
+                if(key == 'Revenue') {
+                    revenue = subtotal;
+                }
 
                 if(key == 'Cost of sales'){
-                    gross_profit = grandtotal;
+                    cost_of_sales = subtotal;
                     $('#laba_rugi').append(`
                         <tr>
                             <th colspan="2">Gross profit</th>
-                            <th class="text-right"> ${rupiah([gross_profit])}</th>
+                            <th class="text-right"> ${rupiah([revenue-cost_of_sales])}</th>
                         </tr>
                     `)
                     grandtotal = 0;

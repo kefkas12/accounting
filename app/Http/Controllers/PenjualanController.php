@@ -229,7 +229,7 @@ class PenjualanController extends Controller
         $penjualan->insert($request, $jurnal->id, 'penagihan');
         DB::commit();
 
-        return redirect('penjualan');
+        return redirect('penjualan/detail/'.$penjualan->id);
     }
 
     public function update_penagihan(Request $request, $id)
@@ -241,7 +241,7 @@ class PenjualanController extends Controller
         $penjualan->edit($request);
         DB::commit();
 
-        return redirect('penjualan');
+        return redirect('penjualan/detail/'.$penjualan->id);
     }
 
     public function insert_penawaran(Request $request)
@@ -251,7 +251,7 @@ class PenjualanController extends Controller
         $penjualan->insert($request, null, 'penawaran');
         DB::commit();
 
-        return redirect('penjualan');
+        return redirect('penjualan/detail/'.$penjualan->id);
     }
 
     public function update_penawaran(Request $request, $id)
@@ -261,7 +261,7 @@ class PenjualanController extends Controller
         $penjualan->edit($request);
         DB::commit();
 
-        return redirect('penjualan');
+        return redirect('penjualan/detail/'.$penjualan->id);
     }
 
     public function insert_penawaran_pemesanan(Request $request, $id)
@@ -271,7 +271,7 @@ class PenjualanController extends Controller
         $penjualan->insert($request, null, 'pemesanan', $id);
         DB::commit();
 
-        return redirect('penjualan');
+        return redirect('penjualan/detail/'.$penjualan->id);
     }
 
     public function insert_pemesanan_penagihan(Request $request, $id)
@@ -284,7 +284,7 @@ class PenjualanController extends Controller
         $penjualan->insert($request, $jurnal->id, 'penagihan', $id);
         DB::commit();
 
-        return redirect('penjualan');
+        return redirect('penjualan/detail/'.$penjualan->id);
     }
     public function hapus($id){
         DB::beginTransaction();
@@ -292,19 +292,19 @@ class PenjualanController extends Controller
         if($penjualan->jenis == 'penawaran'){
             Detail_penjualan::where('id_penjualan',$id)->delete();
             $penjualan->delete();
+            DB::commit();
+            return redirect('penjualan');
         }else if($penjualan->jenis == 'pemesanan'){
-            $penawaran = Penjualan::find($penjualan->id_penawaran);
-            Detail_penjualan::where('id_penjualan',$penawaran->id)->delete();
-            $penawaran->delete();
+            Detail_penjualan::where('id_penjualan',$penjualan->id)->delete();
             $penjualan->delete();
-        }else if($penjualan->jenis == 'penagihan'){
-            $pemesanan = Penjualan::find($penjualan->id_pemesanan);
-            Detail_penjualan::where('id_penjualan',$pemesanan->id)->delete();
-            $pemesanan->delete();
-            $penawaran = Penjualan::find($pemesanan->id_penawaran);
-            Detail_penjualan::where('id_penjualan',$penawaran->id)->delete();
-            $penawaran->delete();
+            DB::commit();
 
+            $penawaran = Penjualan::find($penjualan->id_penawaran);
+            $penawaran->status = 'open';
+            $penawaran->save();
+
+            return redirect('penjualan/detail/'.$penawaran->id);
+        }else if($penjualan->jenis == 'penagihan'){
             $detail_jurnal = Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->get();
             foreach($detail_jurnal as $v){
                 $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
@@ -332,11 +332,14 @@ class PenjualanController extends Controller
             Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->delete();
             Jurnal::find($penjualan->id_jurnal)->delete();
 
+            $pemesanan = Penjualan::find($penjualan->id_pemesanan);
+            $pemesanan->status = 'open';
+            $pemesanan->save();
+
             $penjualan->delete();
+            DB::commit();
+            return redirect('penjualan/detail/'.$pemesanan->id);
         }
-        DB::commit();
-        
-        return redirect('penjualan');
     }
 
     public function cetak_surat_jalan($id){

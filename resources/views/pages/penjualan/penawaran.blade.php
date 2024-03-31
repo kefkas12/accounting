@@ -28,13 +28,7 @@
                             </div>
                         </div>
                     </div>
-                    <form method="POST"
-                        @if(isset($penjualan)) 
-                            action="{{ url('penjualan/penawaran').'/'.$penjualan->id }}" 
-                        @else 
-                            action="{{ url('penjualan/penawaran') }}" 
-                        @endif
-                    >
+                    <form method="POST" @if(isset($penjualan)) action="{{ url('penjualan/penawaran').'/'.$penjualan->id }}" @else action="{{ url('penjualan/penawaran') }}" @endif id="insertForm">
                         @csrf
                         <div class="card-body">
                             <div class="form-row">
@@ -112,11 +106,9 @@
                                                 <textarea class="form-control" name="deskripsi[]" id="deskripsi_1" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                                             </td>
                                             <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_1"
-                                                    name="kuantitas[]" value="1" onkeyup="change_jumlah(1)"
-                                                    onblur="check_null(this)" step="any"></td>
-                                            <td style="padding: 10px !important;"><input type="number" class="form-control" id="harga_satuan_1"
-                                                    name="harga_satuan[]" value="0" onkeyup="change_jumlah(1)"
-                                                    onblur="check_null(this)" step="any"></td>
+                                                    name="kuantitas[]" value="1" onkeyup="change_harga(1)" onblur="check_null(this)" step="any"></td>
+                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_1"
+                                                    name="harga_satuan[]" value="0" onblur="change_harga(1)" ></td>
                                             <td style="padding: 10px !important;">
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
@@ -135,10 +127,11 @@
                                                     <option value="11" data-persen="11">PPN</option>
                                                 </select>
                                             </td>
-                                            <td style="padding: 10px !important;"><input type="number" class="form-control" id="jumlah_1"
-                                                    name="jumlah[]" value="0" step="any"></td>
-                                            <td style="padding: 10px !important;"><a href="javascript:;" onclick="create_row()"><i
-                                                        class="fa fa-plus text-primary"></i></a></td>
+                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_1"
+                                                    name="jumlah[]" value="0" onblur="change_jumlah(1)"></td>
+                                            <td style="padding: 10px !important;">
+                                                <a href="javascript:;" onclick="clear_row(1)"><i class="fa fa-trash text-primary"></i></a>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -198,7 +191,7 @@
                                     <div class="row my-5">
                                         <div class="col d-flex justify-content-end">
                                             <a href="{{ url('penjualan') }}" class="btn btn-light">Batalkan</a>
-                                            <button type="submit" class="btn btn-primary">@if(isset($penjualan)) Simpan perubahan @else Buat @endif</button>
+                                            <button type="submit" class="btn btn-primary" onclick="buat();">@if(isset($penjualan)) Simpan perubahan @else Buat @endif</button>
                                         </div>
                                     </div>
                                 </div>
@@ -210,6 +203,7 @@
         </div>
     </div>
     <script>
+        var x = 1;
         var i = 1;
         var ppn = {};
         var subtotal = {};
@@ -217,7 +211,13 @@
         var result_subtotal = 0;
         var result_ppn = 0;
         var result_diskon_per_baris = 0;
-
+        
+        function buat() {
+            success = $('#pelanggan').val() != null ? true : false;
+            if(success == true){
+                $('#insertForm').submit();
+            }
+        }
 
         function load() {
 
@@ -251,10 +251,35 @@
             $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris);
         }
 
+        function load_select_2(id) {
+            $("#produk_" + id).select2({
+                allowClear: true,
+                placeholder: 'Pilih produk'
+            });
+            $('#produk_'+id).on('select2:select', function (e) {
+                if(id >= x){
+                    x += 1;
+                    create_row();
+                }
+            });
+            
+            new AutoNumeric("#harga_satuan_" + id, {
+                commaDecimalCharDotSeparator: true,
+                watchExternalChanges: true
+            });
+            new AutoNumeric("#jumlah_" + id, {
+                commaDecimalCharDotSeparator: true,
+                watchExternalChanges: true
+            });
+        }
+
         function get_data(thisElement, no) {
             var selected = $(thisElement).find('option:selected').data('harga_jual');
-            $('#harga_satuan_' + no).val(selected);
-            $('#jumlah_' + no).val(selected);
+            // $('#harga_satuan_' + no).val(selected);
+            // $('#jumlah_' + no).val(selected);
+            AutoNumeric.set('#harga_satuan_' + no,selected);
+            AutoNumeric.set('#jumlah_' + no,selected);
+
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
             subtotal[no] = kuantitas * parseFloat(selected);
             diskon_per_baris[no] = subtotal[no] * parseFloat($('#diskon_per_baris_' + no).val()) / 100;
@@ -265,7 +290,7 @@
             var selected = parseFloat($(thisElement).find('option:selected').data('persen'));
 
             if (selected != 0) {
-                ppn[no] = selected * $('#jumlah_' + no).val() / 100;
+                ppn[no] = selected * parseFloat(AutoNumeric.getNumber('#jumlah_' + no)) / 100;
             } else {
                 ppn[no] = 0;
             }
@@ -273,26 +298,44 @@
             load();
         }
 
-        function change_jumlah(no) {
+        function change_harga(no, val_harga_satuan = null) {
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
-            harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
-            subtotal[no] = kuantitas * harga_satuan;
+            if(val_harga_satuan){
+                AutoNumeric.set('#harga_satuan_' + no,val_harga_satuan);
+            }else{
+                console.log(no);
+                AutoNumeric.set('#harga_satuan_' + no,AutoNumeric.getNumber('#harga_satuan_' + no));
+            }
+            subtotal[no] = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
             diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
             diskon_per_baris[no] = subtotal[no] * diskon / 100;
-            $('#jumlah_' + no).val(subtotal[no] - diskon_per_baris[no]);
-
+            AutoNumeric.set('#jumlah_' + no,subtotal[no] - diskon_per_baris[no]);
             get_pajak($('#pajak_' + no), no);
+            load();
+        }
 
+        function change_jumlah(no) {
+            AutoNumeric.set('#jumlah_' + no,AutoNumeric.getNumber('#jumlah_' + no));
+            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
+
+            AutoNumeric.set('#harga_satuan_' + no, (100/(100-diskon)) * AutoNumeric.getNumber('#jumlah_' + no));
+
+            subtotal[no] = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
+            diskon_per_baris[no] = subtotal[no] * diskon / 100;
+            get_pajak($('#pajak_' + no), no);
             load();
         }
 
         function change_diskon_per_baris(no) {
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
-            harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
-            var subtotal = kuantitas * harga_satuan;
+            // harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
+            var subtotal = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
             diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
             diskon_per_baris[no] = subtotal * diskon / 100;
-            $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
+            
+            // $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
+            AutoNumeric.set('#jumlah_' + no,subtotal - diskon_per_baris[no]);
 
             get_pajak($('#pajak_' + no), no);
 
@@ -315,6 +358,20 @@
             load();
         }
 
+        function clear_row(no) {
+            $('#produk_'+no).val('').trigger('change');
+            $('#deskripsi_'+no).val('');
+            $('#kuantitas_'+no).val('');
+            AutoNumeric.set('#harga_satuan_' + no,0);
+            $('#diskon_per_baris_'+no).val(0);
+            $('#pajak_'+no).val(0).trigger('change');
+            AutoNumeric.set('#jumlah_' + no,0);
+            subtotal[no] = 0;
+            ppn[no] = 0;
+            diskon_per_baris[no] = 0;
+            load();
+        }
+
         function create_row() {
             i++;
             $('#list').append(`
@@ -330,8 +387,8 @@
                     <td style="padding: 10px !important;">
                         <textarea class="form-control" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                     </td>
-                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
-                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onblur="change_harga(${i})"></td>
                     <td style="padding: 10px !important;">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -346,41 +403,46 @@
                             <option value="11" data-persen="11">PPN</option>
                         </select>
                     </td>
-                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" step="any"></td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})"></td>
                     <td style="padding: 10px !important;"><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>
                 </tr>
             `);
-
+            load_select_2(i);
         };
 
-        @if(isset($penjualan))
         $( document ).ready(function() {
-            $('#pelanggan').val('{{ $penjualan->id_pelanggan }}')
-            $('#email').val('{{ $penjualan->email }}')
-            $('#alamat').val('{{ $penjualan->alamat }}')
-            $('#tanggal_transaksi').val('{{ $penjualan->tanggal_transaksi }}')
-            $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
+            // $("#pelanggan").select2({
+            //     allowClear: true,
+            //     placeholder: 'Pilih kontak'
+            // });
+            @if(isset($penjualan))
+                $('#pelanggan').val('{{ $penjualan->id_pelanggan }}')
+                $('#email').val('{{ $penjualan->email }}')
+                $('#alamat').val('{{ $penjualan->alamat }}')
+                $('#tanggal_transaksi').val('{{ $penjualan->tanggal_transaksi }}')
+                $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
 
-            var x = 1;
-            @foreach($detail_penjualan as $v)
-                $('#produk_'+x).val('{{ $v->id_produk }}');
-                $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
-                $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
-                $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').trigger('keyup');
-                $('#diskon_per_baris_'+x).val('{{ $v->diskon_per_baris }}').trigger('keyup');
-                @if($v->pajak != 0)
-                    $('#pajak_'+x).val('11').trigger('change');
-                @else
-                    $('#pajak_'+x).val('0').trigger('change');
-                @endif
-                create_row();
-                x++;
-            @endforeach
-            hapus(x);
-
-            
+                var x = 1;
+                load_select_2(x);
+                @foreach($detail_penjualan as $v)
+                    $('#produk_'+x).val('{{ $v->id_produk }}');
+                    $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
+                    $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
+                    change_harga(x, {{ $v->harga_satuan }});
+                    $('#diskon_per_baris_'+x).val('{{ $v->diskon_per_baris }}').trigger('keyup');
+                    @if($v->pajak != 0)
+                        $('#pajak_'+x).val('11').trigger('change');
+                    @else
+                        $('#pajak_'+x).val('0').trigger('change');
+                    @endif
+                    create_row();
+                    x++;
+                @endforeach
+                hapus(x);
+            @else
+                load_select_2(1);
+            @endif
         });
-        @endif
 
         // document.getElementById('myForm').addEventListener('submit', function() {
         //     document.getElementById('mySelect').removeAttribute('disabled');

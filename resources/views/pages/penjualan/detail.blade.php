@@ -27,7 +27,7 @@
                         @elseif($penjualan->status == 'closed') btn-dark @endif
                         ml-2">
                             @if ($penjualan->status == 'open')
-                                Belum Dibayar
+                                Belum ditagih
                             @elseif($penjualan->status == 'partial')
                                 Terbayar Sebagian
                             @elseif($penjualan->status == 'paid')
@@ -205,7 +205,6 @@
                                 </div>
                             </div>
                         </div>
-                        @if($penjualan->status != 'closed')
                         <div class="row my-4">
                             <div class="col-sm-6">
                                 <form id="deleteForm" action="{{ url('penjualan/hapus') . '/' . $penjualan->id }}"
@@ -280,7 +279,6 @@
                             </div>
                             @endif
                         </div>
-                        @endif
                         @if(count($penjualan->detail_pembayaran_penjualan) != 0)
                         <div class="table-responsive">
                             Pembayaran
@@ -426,8 +424,9 @@
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Hapus',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById('deleteForm').submit();

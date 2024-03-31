@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Akun;
 use App\Models\Akun_company;
+use App\Models\Detail_jurnal;
 use App\Models\Jurnal;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
@@ -148,39 +149,78 @@ class LaporanController extends Controller
         $akun = Akun_company::join('akun','akun_company.id_akun','=','akun.id')
                             ->where('akun_company.id_company',Auth::user()->id_company)
                             ->get();
+
+        $akun = Detail_jurnal::join('jurnal','detail_jurnal.id_jurnal','=','jurnal.id')
+                            ->join('akun','detail_jurnal.id_akun','=','akun.id')
+                            ->select('detail_jurnal.*','akun.id_kategori','akun.pengali','akun.nama','akun.nomor','jurnal.tanggal_transaksi')
+                            ->where('detail_jurnal.id_company',Auth::user()->id_company)
+                            ->where('jurnal.tanggal_transaksi','>=','2024-01-01')
+                            ->get();
+        
         $kategori_pendapatan = array(13);
         $kategori_pendapatan_lainnya = array(14);
+        $kategori_harga_pokok_pendapatan = array(15);
         $kategori_beban = array(16, 17);
+        $pendapatan = []; 
+        $pendapatan_lainnya = [];
+        $harga_pokok_pendapatan = [];
+        $beban = [];
 
         foreach($akun as $v){
             if (in_array($v->id_kategori, $kategori_pendapatan)){
-                $saldo = $v->saldo * $v->pengali;
-                $pendapatan[] = 
-                [
-                    'id_akun' => $v->id_akun,
-                    'nomor' => $v->nomor,
-                    'nama' => $v->nama,
-                    'saldo' => $saldo,
-                ];
-            }
-            if (in_array($v->id_kategori, $kategori_beban)){
-                $beban[] = 
-                [
-                    'id_akun' => $v->id_akun,
-                    'nomor' => $v->nomor,
-                    'nama' => $v->nama,
-                    'saldo' => $v->saldo,
-                ];
+                if(isset($pendapatan[$v->id_akun])){
+                    $pendapatan[$v->id_akun]['saldo'] += ($v->debit - $v->kredit)*$v->pengali;
+                }else{
+                    $pendapatan[$v->id_akun] = 
+                    [
+                        'id_akun' => $v->id_akun,
+                        'nomor' => $v->nomor,
+                        'nama' => $v->nama,
+                        'saldo' => ($v->debit - $v->kredit)*$v->pengali,
+                    ];
+                }
             }
             if (in_array($v->id_kategori, $kategori_pendapatan_lainnya)){
-                $pendapatan_lainnya[] = 
-                [
-                    'id_akun' => $v->id_akun,
-                    'nomor' => $v->nomor,
-                    'nama' => $v->nama,
-                    'saldo' => -1*$v->saldo,
-                ];
+                if(isset($pendapatan_lainnya[$v->id_akun])){
+                    $pendapatan_lainnya[$v->id_akun]['saldo'] += ($v->debit - $v->kredit)*$v->pengali;
+                }else{
+                    $pendapatan_lainnya[$v->id_akun] = 
+                    [
+                        'id_akun' => $v->id_akun,
+                        'nomor' => $v->nomor,
+                        'nama' => $v->nama,
+                        'saldo' => ($v->debit - $v->kredit)*$v->pengali,
+                    ];
+                }
             }
+            if (in_array($v->id_kategori, $kategori_harga_pokok_pendapatan)){
+                if(isset($harga_pokok_pendapatan[$v->id_akun])){
+                    $harga_pokok_pendapatan[$v->id_akun]['saldo'] += ($v->debit - $v->kredit)*$v->pengali;
+                }else{
+                    $harga_pokok_pendapatan[$v->id_akun] = 
+                    [
+                        'id_akun' => $v->id_akun,
+                        'nomor' => $v->nomor,
+                        'nama' => $v->nama,
+                        'saldo' => ($v->debit - $v->kredit)*$v->pengali,
+                    ];
+                }
+            }
+            if (in_array($v->id_kategori, $kategori_beban)){
+                if(isset($beban[$v->id_akun])){
+                    $beban[$v->id_akun]['saldo'] += ($v->debit - $v->kredit);
+                }else{
+                    $beban[$v->id_akun] = 
+                    [
+                        'id_akun' => $v->id_akun,
+                        'nomor' => $v->nomor,
+                        'nama' => $v->nama,
+                        'saldo' => ($v->debit - $v->kredit),
+                    ];
+                }
+                
+            }
+            
         }
 
 
@@ -188,7 +228,9 @@ class LaporanController extends Controller
             'Revenue' => [
                 'Pendapatan' => $pendapatan
             ],
-            'Cost of sales' => [],
+            'Cost of sales' => [
+                'Pembelian' => $harga_pokok_pendapatan
+            ],
             'Operational expense' => [
                 'Biaya Operasional' => $beban
             ],

@@ -61,20 +61,20 @@
                     <div class='container'>
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                <button class="nav-link active" id="nav-penagihan-penjualan-tab" data-toggle="tab" data-target="#nav-penagihan-penjualan"
-                                    type="button" role="tab" aria-controls="nav-penagihan-penjualan"
-                                    aria-selected="true">Faktur Penjualan</button>
-                                <button class="nav-link" id="nav-pesanan-penjualan-tab" data-toggle="tab" data-target="#nav-pesanan-penjualan"
-                                    type="button" role="tab" aria-controls="nav-pesanan-penjualan"
-                                    aria-selected="false">Pesanan Penjualan</button>
+                                <button class="nav-link active" id="nav-penagihan-tab" data-toggle="tab" data-target="#nav-penagihan"
+                                    type="button" role="tab" aria-controls="nav-penagihan"
+                                    aria-selected="true">Penagihan</button>
+                                <button class="nav-link" id="nav-pesanan-tab" data-toggle="tab" data-target="#nav-pesanan"
+                                    type="button" role="tab" aria-controls="nav-pesanan"
+                                    aria-selected="false">Pesanan</button>
                                 <button class="nav-link" id="nav-penawaran-tab" data-toggle="tab" data-target="#nav-penawaran"
                                     type="button" role="tab" aria-controls="nav-penawaran"
                                     aria-selected="false">Penawaran</button>
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
-                            <div class="tab-pane fade show active" id="nav-penagihan-penjualan" role="tabpanel"
-                                aria-labelledby="nav-penagihan-penjualan-tab">
+                            <div class="tab-pane fade show active" id="nav-penagihan" role="tabpanel"
+                                aria-labelledby="nav-penagihan-tab">
                                 <div class="table-responsive">
                                     <table class="table align-items-center table-flush">
                                         <thead>
@@ -104,8 +104,8 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="nav-pesanan-penjualan" role="tabpanel"
-                                aria-labelledby="nav-pesanan-penjualan-tab">
+                            <div class="tab-pane fade" id="nav-pesanan" role="tabpanel"
+                                aria-labelledby="nav-pesanan-tab">
                                 <div class="table-responsive">
                                     <table class="table align-items-center table-flush">
                                         <thead>

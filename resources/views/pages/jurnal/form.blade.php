@@ -174,7 +174,6 @@
             }
             // 
         }
-
         function load_select_2(id) {
             $("#akun_" + id).select2({
                 allowClear: true,

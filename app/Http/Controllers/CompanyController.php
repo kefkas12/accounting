@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Akun_company;
 use App\Models\Company;
 use App\Models\Detail_jurnal;
+use App\Models\Jurnal;
 use App\Models\Kontak;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +30,14 @@ class CompanyController extends Controller
 
     public function refresh_akun($id)
     {
+        //delete detail jurnal yang tidak ada id jurnal
+        $detail_jurnal = Detail_jurnal::where('id_company',$id)->get();
+        $jurnal = Jurnal::where('id_company',$id)->get();
+        $detailJurnalIds = $detail_jurnal->pluck('id_jurnal');
+        $jurnalIds = $jurnal->pluck('id');
+        $missingIds = $detailJurnalIds->diff($jurnalIds);
+        Detail_jurnal::whereIn('id_jurnal', $missingIds)->delete();
+
         //base jurnal
         $akun = Akun_company::where('id_company',$id)->get();
         
@@ -42,7 +51,6 @@ class CompanyController extends Controller
                 $debit += $w->debit;
                 $kredit += $w->kredit;
                 $d[] = $w->debit.'-'.$w->kredit;
-
             }
             
             DB::beginTransaction();
