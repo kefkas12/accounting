@@ -47,6 +47,8 @@ class PembelianController extends Controller
                                         ->orderBy('id','DESC')
                                         ->get();
         $data['belum_dibayar'] = number_format(Pembelian::where('tanggal_jatuh_tempo','>',date('Y-m-d'))
+                                        ->where('pembelian.jenis','faktur')
+                                        ->where('pembelian.id_company',Auth::user()->id_company)
                                         ->sum('sisa_tagihan'),2,',','.');
 
         return view('pages.pembelian.index', $data);

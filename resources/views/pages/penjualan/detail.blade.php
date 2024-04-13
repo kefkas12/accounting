@@ -68,7 +68,7 @@
                             </div>
                             <div class="col-sm-2">Tgl. Transaksi</div>
                             <div class="col-sm-2">
-                                <strong>{{ date('d/M/Y', strtotime($penjualan->tanggal_transaksi)) }}</strong>
+                                <strong>{{ date('d/m/Y', strtotime($penjualan->tanggal_transaksi)) }}</strong>
                             </div>
                             <div class="col-sm-2" style="margin-right: -25px !important;">No Transaksi </div>
                             <div class="col-sm-2"><strong>{{ $penjualan->no_str }}</strong></div>
@@ -84,7 +84,7 @@
                                 @endif
                             </div>
                             <div class="col-sm-2">
-                                <strong>{{ date('d/M/Y', strtotime($penjualan->tanggal_jatuh_tempo)) }}</strong>
+                                <strong>{{ date('d/m/Y', strtotime($penjualan->tanggal_jatuh_tempo)) }}</strong>
                             </div>
                             @if($penjualan->penawaran)
                             <div class="col-sm-2" style="margin-right: -25px !important;">
@@ -296,7 +296,7 @@
                                 <tbody>
                                     @foreach ($penjualan->detail_pembayaran_penjualan as $v)
                                         <tr>
-                                            <td>{{ $v->pembayaran_penjualan->tanggal_transaksi }}</td>
+                                            <td>{{ date('d/m/Y', strtotime($v->pembayaran_penjualan->tanggal_transaksi)) }}</td>
                                             <td>
                                                 <div>
                                                     <div class="row"><a

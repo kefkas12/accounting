@@ -7,6 +7,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DeliveryOrderController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\GudangController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JobRequestController;
 use App\Http\Controllers\JurnalController;
@@ -105,6 +106,7 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 
 	Route::get('/penawaran/{id}', 'penawaran');
 	Route::get('/penawaran/pemesanan/{id}', 'penawaran_pemesanan');
+	Route::get('/pemesanan/pengiriman/{id}', 'pemesanan_pengiriman');
 	Route::get('/pemesanan/penagihan/{id}', 'pemesanan_penagihan');
 	Route::get('/penagihan/{id}', 'penagihan');
 
@@ -118,6 +120,8 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::post('/penawaran', 'insert_penawaran');
 	Route::post('/penawaran/{id}', 'update_penawaran');
 	Route::post('/penawaran/pemesanan/{id}', 'insert_penawaran_pemesanan');
+	Route::post('/penawaran/pengiriman/{id}', 'insert_penawaran_pengiriman');
+	Route::post('/pemesanan/pengiriman/{id}', 'insert_pemesanan_pengiriman');
 	Route::post('/pemesanan/penagihan/{id}', 'insert_pemesanan_penagihan');
 
 	Route::post('/pemesanan', 'insert_pemesanan');
@@ -153,6 +157,13 @@ Route::controller(ProdukController::class)->prefix('produk')->group(function () 
 	Route::get('/{status}/{id}', 'detail');	
 });
 
+Route::controller(GudangController::class)->prefix('gudang')->group(function () {
+	Route::get('/insert', 'detail');
+	Route::post('/insert', 'insert');
+	Route::post('/edit/{id}', 'edit');
+	Route::get('/{status}/{id}', 'detail');	
+});
+
 Route::controller(AkunController::class)->prefix('akun')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/insert', 'detail');
@@ -173,7 +184,8 @@ Route::controller(JurnalController::class)->prefix('jurnal')->group(function () 
 Route::controller(LaporanController::class)->prefix('laporan')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/jurnal', 'jurnal');
-	Route::get('/neraca', 'neraca');
+	Route::get('/neraca_old', 'neraca');
+	Route::get('/neraca', 'neraca_new');
 	Route::get('/buku_besar', 'buku_besar');
 	Route::get('/laba_rugi', 'laba_rugi');
 

@@ -51,7 +51,7 @@
                         <div class="row my-4">
                             <div class="col-sm-2">Stok</div>
                             <div class="col-sm-4">
-                                @if (isset($produk) && $produk->stok != null)
+                                @if (isset($produk) )
                                     {{ $produk->stok }}
                                 @else
                                     -

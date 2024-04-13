@@ -48,9 +48,20 @@ class AkunController extends Controller
                 return view('pages.akun.form', $data);
             }else if($status == 'detail'){
                 $id_company = Auth::user()->id_company;
+                $select = [
+                    'detail_jurnal.*',
+                    'penjualan.id as id_penjualan',
+                    'pembelian.id as id_pembelian',
+                    'pembayaran_pembelian.id as id_pembayaran_pembelian',
+                    'pembayaran_penjualan.id as id_pembayaran_penjualan'];
+
                 $data['transaksi_akun'] = Detail_jurnal::with('jurnal','akun')
                                                         ->join('jurnal','detail_jurnal.id_jurnal','jurnal.id')
-                                                        ->select('detail_jurnal.*')
+                                                        ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')
+                                                        ->leftJoin('pembelian', 'jurnal.id', 'pembelian.id_jurnal')
+                                                        ->leftJoin('pembayaran_pembelian', 'jurnal.id', 'pembayaran_pembelian.id_jurnal')
+                                                        ->leftJoin('pembayaran_penjualan', 'jurnal.id', 'pembayaran_penjualan.id_jurnal')
+                                                        ->select($select)
                                                         ->whereHas('jurnal', function($query) use ($id_company) {
                                                             $query->where('id_company', $id_company);
                                                         })

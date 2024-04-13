@@ -41,12 +41,22 @@
                                         @endphp
                                         @foreach($transaksi_akun as $v)
                                         <tr>
-                                            <td>{{ date('d-M-Y',strtotime($v->jurnal->tanggal_transaksi)) }}</td>
+                                            <td>{{ date('d/m/Y',strtotime($v->jurnal->tanggal_transaksi)) }}</td>
                                             <td>
                                                 <div class="d-flex">
                                                     <div class="d-flex flex-column justify-content-center">
                                                     <h6 class="mb-0 text-xs">
-                                                        <a href="{{ url('jurnal/detail').'/'.$v->jurnal->id  }}" >{{ $v->jurnal->no_str }}</a>
+                                                        @if($v->jurnal->kategori == 'sales_invoice')
+                                                        <a href="{{ url('penjualan/detail').'/'.$v->id_penjualan }}">{{ $v->jurnal->no_str }}</a>
+                                                        @elseif($v->jurnal->kategori == 'purchase_invoice')
+                                                        <a href="{{ url('pembelian/detail').'/'.$v->id_pembelian }}">{{ $v->jurnal->no_str }}</a>
+                                                        @elseif($v->jurnal->kategori == 'receive_payment')
+                                                        <a href="{{ url('penjualan/receive_payment').'/'.$v->id_pembayaran_penjualan }}">{{ $v->jurnal->no_str }}</a>
+                                                        @elseif($v->jurnal->kategori == 'purchase_payment')
+                                                        <a href="{{ url('pembelian/receive_payment').'/'.$v->id_pembayaran_pembelian }}">{{ $v->jurnal->no_str }}</a>
+                                                        @else
+                                                        <a href="{{ url('jurnal/detail').'/'.$v->jurnal->id }}">{{ $v->jurnal->no_str }}</a>
+                                                        @endif
                                                     </h6>
                                                     <p class="text-xs mb-0 email">{{ $v->deskripsi }}</p>
                                                 </div>

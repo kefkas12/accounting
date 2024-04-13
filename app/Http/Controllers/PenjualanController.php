@@ -47,8 +47,15 @@ class PenjualanController extends Controller
                                         ->where('penjualan.jenis','pemesanan')
                                         ->orderBy('id','DESC')
                                         ->get();
+        $data['pengiriman'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan')
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->where('penjualan.jenis','pengiriman')
+                                        ->orderBy('id','DESC')
+                                        ->get();
         $data['belum_dibayar'] = number_format(Penjualan::where('tanggal_jatuh_tempo','>',date('Y-m-d'))
                                         ->where('penjualan.jenis','penagihan')
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->sum('sisa_tagihan'),2,',','.');
         return view('pages.penjualan.index', $data);
     }
@@ -175,6 +182,21 @@ class PenjualanController extends Controller
         return view('pages.penjualan.penagihan', $data);
     }
 
+    public function pemesanan_pengiriman($id)
+    {
+        $data['sidebar'] = 'penjualan';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['pelanggan'] = Kontak::where('tipe','pelanggan')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        if($id != null){
+            $data['pemesanan'] = true;
+            $data['penjualan'] = Penjualan::where('id',$id)->first();
+            $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
+        }
+        return view('pages.penjualan.pengiriman', $data);
+    }
+
     public function pemesanan_penagihan($id)
     {
         $data['sidebar'] = 'penjualan';
@@ -274,6 +296,18 @@ class PenjualanController extends Controller
         return redirect('penjualan/detail/'.$penjualan->id);
     }
 
+    public function insert_pemesanan_pengiriman(Request $request, $id)
+    {
+        DB::beginTransaction();
+        $jurnal = new Jurnal;
+        $jurnal->penjualan($request);
+        
+        $penjualan = new Penjualan;
+        $penjualan->insert($request, $jurnal->id, 'pengiriman', $id);
+        DB::commit();
+
+        return redirect('penjualan/detail/'.$penjualan->id);
+    }
     public function insert_pemesanan_penagihan(Request $request, $id)
     {
         DB::beginTransaction();

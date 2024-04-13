@@ -38,8 +38,14 @@
                                 @endphp
                                 <tr>
                                     <td colspan="3" style="background: #f8f8f8;"><h4><strong>
-                                        @if($v->kategori == 'sales_invoice' && $v->id_penjualan)
+                                        @if($v->kategori == 'sales_invoice')
                                         <a href="{{ url('penjualan/detail').'/'.$v->id_penjualan }}">{{ $v->no_str }}</a>
+                                        @elseif($v->kategori == 'purchase_invoice')
+                                        <a href="{{ url('pembelian/detail').'/'.$v->id_pembelian }}">{{ $v->no_str }}</a>
+                                        @elseif($v->kategori == 'receive_payment')
+                                        <a href="{{ url('penjualan/receive_payment').'/'.$v->id_pembayaran_penjualan }}">{{ $v->no_str }}</a>
+                                        @elseif($v->kategori == 'purchase_payment')
+                                        <a href="{{ url('pembelian/receive_payment').'/'.$v->id_pembayaran_pembelian }}">{{ $v->no_str }}</a>
                                         @else
                                         <a href="{{ url('jurnal/detail').'/'.$v->id }}">{{ $v->no_str }}</a>
                                         @endif

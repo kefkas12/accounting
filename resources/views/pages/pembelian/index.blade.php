@@ -58,7 +58,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class='container'>
+                    <div class='container-fluid'>
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                                 <button class="nav-link active" id="nav-faktur-pembelian-tab" data-toggle="tab" data-target="#nav-faktur-pembelian"

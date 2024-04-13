@@ -64,6 +64,8 @@ class Penjualan extends Model
         $this->no = $this->no($jenis);
         if($jenis == 'penagihan'){
             $this->no_str = 'Sales Invoice #' . $this->no;
+        }else if($jenis == 'pengiriman'){
+            $this->no_str = 'Sales Delivery #' . $this->no;
         }else if($jenis == 'penawaran'){
             $this->no_str = 'Sales Quote #' . $this->no;
         }else if($jenis == 'pemesanan'){

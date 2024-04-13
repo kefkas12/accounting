@@ -18,7 +18,7 @@
                                       <a class="dropdown-item" href="{{ url('penjualan/pemesanan') }}">Pemesanan Penjualan</a>
                                       <a class="dropdown-item" href="{{ url('penjualan/penawaran') }}">Penawaran Penjualan</a>
                                     </div>
-                                  </div>
+                                </div>
                             </div>
                         </div>
                         
@@ -58,12 +58,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class='container'>
+                    <div class='container-fluid'>
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                                 <button class="nav-link active" id="nav-penagihan-tab" data-toggle="tab" data-target="#nav-penagihan"
                                     type="button" role="tab" aria-controls="nav-penagihan"
                                     aria-selected="true">Penagihan</button>
+                                <button class="nav-link" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
+                                    type="button" role="tab" aria-controls="nav-pengiriman"
+                                    aria-selected="true">Pengiriman</button>
                                 <button class="nav-link" id="nav-pesanan-tab" data-toggle="tab" data-target="#nav-pesanan"
                                     type="button" role="tab" aria-controls="nav-pesanan"
                                     aria-selected="false">Pesanan</button>
@@ -91,10 +94,41 @@
                                         <tbody class="list">
                                             @foreach($penagihan as $v)
                                             <tr>
-                                                <td>{{ $v->tanggal_transaksi }}</td>
+                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->nama_pelanggan }}</td>
-                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
+                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d/m/Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
+                                                <td>{{ $v->status }}</td>
+                                                <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
+                                                <td>Rp {{ number_format($v->total,2,',','.') }}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="nav-pengiriman" role="tabpanel"
+                                aria-labelledby="nav-pengiriman-tab">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center table-flush">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Tanggal</th>
+                                                <th scope="col">No</th>
+                                                <th scope="col">Pelanggan </th>
+                                                <th scope="col">Tgl. Jatuh Tempo</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Sisa Tagihan</th>
+                                                <th scope="col">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                            @foreach($pengiriman as $v)
+                                            <tr>
+                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td>{{ $v->nama_pelanggan }}</td>
+                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d/m/Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
                                                 <td>{{ $v->status }}</td>
                                                 <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
@@ -122,10 +156,10 @@
                                         <tbody class="list">
                                             @foreach($pemesanan as $v)
                                             <tr>
-                                                <td>{{ $v->tanggal_transaksi }}</td>
+                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->nama_pelanggan }}</td>
-                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
+                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d/m/Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
                                                 <td>{{ $v->status }}</td>
                                                 <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
