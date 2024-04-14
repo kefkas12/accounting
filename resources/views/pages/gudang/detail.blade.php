@@ -28,13 +28,13 @@
                             </div>
                         </div>
                         <div class="row my-3">
-                            <div class="col-sm-2"><i class="fa fa-store text-primary mr-4"></i><strong>Info gudang</strong></div>
+                            <div class="col-sm-4"><i class="fa fa-store text-primary mr-4"></i><strong>Info gudang</strong></div>
                             <div class="col-sm-4">
                                 
                             </div>  
                         </div>
                         <div class="row my-3">
-                            <div class="col-sm-2">Kode gudang</div>
+                            <div class="col-sm-4">Kode gudang</div>
                             <div class="col-sm-4">
                                 @if (isset($gudang) && $gudang->kode != null)
                                     {{ $gudang->kode }}
@@ -44,7 +44,7 @@
                             </div>
                         </div>
                         <div class="row my-3">
-                            <div class="col-sm-2">Alamat</div>
+                            <div class="col-sm-4">Alamat</div>
                             <div class="col-sm-4">
                                 @if (isset($gudang) && $gudang->alamat != null)
                                     {{ $gudang->alamat }}
@@ -54,7 +54,7 @@
                             </div>
                         </div>
                         <div class="row my-3">
-                            <div class="col-sm-2">Keterangan</div>
+                            <div class="col-sm-4">Keterangan</div>
                             <div class="col-sm-4">
                                 @if (isset($gudang) && $gudang->keterangan != null)
                                     {{ $gudang->keterangan }}

@@ -172,6 +172,14 @@ Route::controller(AkunController::class)->prefix('akun')->group(function () {
 	Route::get('/{status}/{id}', 'detail');	
 });
 
+Route::controller(AkunController::class)->prefix('akun')->group(function () {
+	Route::get('/', 'index');
+	Route::get('/insert', 'detail');
+	Route::post('/insert', 'insert');
+	Route::post('/edit/{id}', 'edit');
+	Route::get('/{status}/{id}', 'detail');	
+});
+
 Route::controller(JurnalController::class)->prefix('jurnal')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/insert', 'detail');

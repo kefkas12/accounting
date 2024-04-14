@@ -166,11 +166,57 @@ class LaporanController extends Controller
     public function buku_besar()
     {
         $data['sidebar'] = 'laporan';
-        $data['buku_besar'] = Akun_company::with('detail_jurnal.jurnal')
-            ->join('akun', 'akun_company.id_akun', '=', 'akun.id')
-            ->select('akun.*', 'akun_company.saldo as saldo_akun')
-            ->where('akun_company.id_company', Auth::user()->id_company)
+
+        // $data['buku_besar'] = Akun_company::with('detail_jurnal.jurnal')
+        //     ->join('akun', 'akun_company.id_akun', '=', 'akun.id')
+        //     ->select('akun.*', 'akun_company.saldo as saldo_akun')
+        //     ->where('akun_company.id_company', Auth::user()->id_company)
+        //     ->get();
+        
+
+        $akun = Detail_jurnal::join('jurnal', 'detail_jurnal.id_jurnal', '=', 'jurnal.id')
+            ->join('akun', 'detail_jurnal.id_akun', '=', 'akun.id')
+            ->select('detail_jurnal.*', 'akun.id_kategori', 'akun.pengali', 'akun.nama', 'akun.nomor', 'jurnal.tanggal_transaksi', 'jurnal.kategori', 'jurnal.no', 'jurnal.no_str')
+            ->where('detail_jurnal.id_company', Auth::user()->id_company)
             ->get();
+        $saldo = null;
+        foreach ($akun as $v) {
+            if (!isset($buku_besar[$v->id_akun])) {
+                $saldo[$v->id_akun] = ($v->debit - $v->kredit);
+                
+                $buku_besar[$v->id_akun]['nama'] = $v->nama;
+                $buku_besar[$v->id_akun]['nomor'] = $v->nomor;
+                $buku_besar[$v->id_akun]['detail'] = [];
+                $detail = 
+                    [
+                        'tanggal_transaksi' => $v->tanggal_transaksi,
+                        'kategori' => $v->kategori,
+                        'no' => $v->no,
+                        'no_str' => $v->no_str,
+                        'debit' => $v->debit,
+                        'kredit' => $v->kredit,
+                        'saldo' => $saldo[$v->id_akun],
+                    ];
+                array_push($buku_besar[$v->id_akun]['detail'], $detail);
+                
+            }else{
+                $saldo[$v->id_akun] += ($v->debit - $v->kredit);
+                $detail = 
+                    [
+                        'tanggal_transaksi' => $v->tanggal_transaksi,
+                        'kategori' => $v->kategori,
+                        'no' => $v->no,
+                        'no_str' => $v->no_str,
+                        'debit' => $v->debit,
+                        'kredit' => $v->kredit,
+                        'saldo' => $saldo[$v->id_akun],
+                    ];
+                array_push($buku_besar[$v->id_akun]['detail'], $detail);
+            }
+        }
+
+        $data['buku_besar'] = json_encode($buku_besar);
+
         return view('pages.laporan.buku_besar', $data);
     }
 

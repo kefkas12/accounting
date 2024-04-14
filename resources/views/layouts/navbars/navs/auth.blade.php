@@ -1,8 +1,13 @@
 <!-- Top navbar -->
 <nav class="navbar navbar-top navbar-expand-md navbar-dark" id="navbar-main" tabindex="0">
-    <div class="container-fluid">
+    <div class="container-fluid" style="padding-left: 1rem !important;">
         <!-- Brand -->
-        <a class="h4 mb-0 text-white text-uppercase d-none d-lg-inline-block" href="{{ route('home') }}">{{ __('Dashboard') }}</a>
+        <a class=" text-white border-white d-none d-lg-inline-block btn btn-sm" href="{{ url('penjualan/penagihan') }}">
+            <i class="fa fa-tag"></i> &nbsp; Jual
+        </a>
+        <a class=" text-white border-white d-none d-lg-inline-block btn btn-sm" href="{{ url('pembelian/faktur') }}">
+            <i class="ni ni-cart"></i> &nbsp; Beli
+        </a>
         <!-- Form -->
         <form class="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
             <div class="form-group mb-0">

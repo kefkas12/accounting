@@ -131,6 +131,11 @@
                         <i class="fa fa-address-book text-primary"></i> {{ __('Daftar Akun') }}
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $sidebar == 'pengaturan' ? 'active' : '' }}" href="{{ url('pengaturan') }}">
+                        <i class="fa fa-address-book text-primary"></i> {{ __('Pengaturan') }}
+                    </a>
+                </li>
             </ul>
             @endif
         </div>

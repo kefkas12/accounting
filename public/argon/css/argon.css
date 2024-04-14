@@ -17620,7 +17620,7 @@ a.btn-icon-only
 {
     .navbar-vertical.navbar-expand-md.fixed-left + .main-content
     {
-        margin-left: 250px;
+        margin-left: 170px;
     }
     .navbar-vertical.navbar-expand-md.fixed-right + .main-content
     {
@@ -19507,8 +19507,8 @@ textarea[resize='horizontal']
         display: block;
         overflow-y: auto; 
 
-        width: 100%;
-        max-width: 250px;
+        /* width: 100%; */
+        max-width: 170px;
         padding-right: 1.5rem;
         padding-left: 1.5rem;
     }

@@ -20,41 +20,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" hidden>
-                            <div class="col">
-                                <div class="card border-success">
-                                    <div class="card-header border-success">
-                                        Stok Tersedia
-                                    </div>
-                                    <div class="card-body">
-                                        <p>Total Produk</p>
-                                        <b>0</b>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card border-warning">
-                                    <div class="card-header border-warning">
-                                        Stok segera habis
-                                    </div>
-                                    <div class="card-body">
-                                        <p>Total Produk</p>
-                                        <b>0</b>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card border-danger">
-                                    <div class="card-header border-danger">
-                                        Stok habis
-                                    </div>
-                                    <div class="card-body">
-                                        <p>Total Produk</p>
-                                        <b>0</b>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <div class="card-body">
                         <nav>
@@ -70,6 +35,48 @@
                         <div class="tab-content mt-3" id="nav-tabContent">
                             <div class="tab-pane fade show active" id="nav-barang-dan-jasa" role="tabpanel"
                                 aria-labelledby="nav-barang-dan-jasa-tab">
+                                <div class="row mb-3" >
+                                    <div class="col-sm-3" style="padding-right: 0px !important;">
+                                        <div class="card border-success">
+                                            <div class="card-header border-success" style="padding: 0.5rem 0.75rem !important; background:#E8F5EB">
+                                                Stok Tersedia
+                                            </div>
+                                            <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
+                                                Total produk<br> <span style="font-weight:900">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3" style="padding-right: 0px !important;">
+                                        <div class="card border-warning">
+                                            <div class="card-header border-warning" style="padding: 0.5rem 0.75rem !important; background:#FBF3DD">
+                                                Stok segera habis
+                                            </div>
+                                            <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
+                                                Total produk<br> <span style="font-weight:900">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3" style="padding-right: 0px !important;">
+                                        <div class="card border-danger">
+                                            <div class="card-header border-danger" style="padding: 0.5rem 0.75rem !important; background:#FDECEE">
+                                                Stok habis
+                                            </div>
+                                            <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
+                                                Total produk<br> <span style="font-weight:900">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3" style="padding-right: 0px !important;">
+                                        <div class="card border-primary">
+                                            <div class="card-header border-primary" style="padding: 0.5rem 0.75rem !important;">
+                                                Gudang
+                                            </div>
+                                            <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
+                                                Terdaftar<br> <span style="font-weight:900">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div style="overflow: auto">
                                     <table id="example" class="table table-striped table-bordered" style="width:100%">
                                         <thead>
@@ -113,6 +120,48 @@
                             </div>
                             <div class="tab-pane fade" id="nav-gudang" role="tabpanel"
                                 aria-labelledby="nav-gudang-tab">
+                                <div class="row mb-3" >
+                                    <div class="col-sm-3" style="padding-right: 0px !important;">
+                                        <div class="card border-success">
+                                            <div class="card-header border-success" style="padding: 0.5rem 0.75rem !important; background:#E8F5EB;">
+                                                Stok Tersedia
+                                            </div>
+                                            <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
+                                                Total produk<br> <span style="font-weight:900">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3" style="padding-right: 0px !important;">
+                                        <div class="card border-warning">
+                                            <div class="card-header border-warning" style="padding: 0.5rem 0.75rem !important; background:#FBF3DD;">
+                                                Stok segera habis
+                                            </div>
+                                            <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
+                                                Total produk<br> <span style="font-weight:900">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3" style="padding-right: 0px !important;">
+                                        <div class="card border-danger">
+                                            <div class="card-header border-danger" style="padding: 0.5rem 0.75rem !important; background:#FDECEE;">
+                                                Stok habis
+                                            </div>
+                                            <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
+                                                Total produk<br> <span style="font-weight:900">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3" style="padding-right: 0px !important;">
+                                        <div class="card border-primary">
+                                            <div class="card-header border-primary" style="padding: 0.5rem 0.75rem !important;">
+                                                Gudang
+                                            </div>
+                                            <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
+                                                Terdaftar<br> <span style="font-weight:900">0</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div style="overflow: auto">
                                     <table id="table_gudang" class="table table-striped table-bordered" style="width:100%">
                                         <thead>

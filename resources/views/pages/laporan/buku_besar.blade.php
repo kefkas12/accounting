@@ -17,41 +17,16 @@
                     </div>
                     <table class="table">
                         <thead>
-                            <tr>
-                                <th>Nama Akun / Tanggal</th>
-                                <th>Transaksi</th>
-                                <th>No.</th>
-                                <th>Deskripsi</th>
-                                <th>Debit</th>
-                                <th>Kredit</th>
-                                <th>Saldo</th>
-                            </tr>
+                            <th>Nama Akun / Tanggal</th>
+                            <th>Transaksi</th>
+                            <th>No.</th>
+                            <th>Deskripsi</th>
+                            <th>Debit</th>
+                            <th>Kredit</th>
+                            <th>Saldo</th>
                         </thead>
-                        <tbody >
-                            @foreach($buku_besar as $v)
-                            <tr>
-                                <td colspan="7" class="bg-secondary">({{ $v->nomor }}) {{ $v->nama }}</td>
-                            </tr>
-                            @php
-                            $saldo = 0;
-                            @endphp
-                            @foreach($v->detail_jurnal as $w)
-                            @if($w->jurnal && $w->jurnal->id_company == Auth::user()->id_company)
-                            @php
-                            $saldo += $w->debit - $w->kredit;
-                            @endphp
-                            <tr>
-                                <td>{{ $w->jurnal->tanggal_transaksi }}</td>
-                                <td>{{ $w->jurnal->kategori }}</td>
-                                <td>{{ $w->jurnal->no }}</td>
-                                <td>{{ $w->jurnal->no_str }}</td>
-                                <td>{{ number_format($w->debit,2,',','.') }}</td>
-                                <td>{{ number_format($w->kredit,2,',','.') }}</td>
-                                <td>{{ number_format($saldo,2,',','.') }}</td>
-                            </tr>
-                            @endif
-                            @endforeach
-                            @endforeach
+                        <tbody id="buku_besar">
+                            
                         </tbody>
                     </table>
                 </div>
@@ -59,60 +34,57 @@
         </div>
     </div>
     <script>
-        
-        $( document ).ready(function() {
-            const jsonData = {!! $buku_besar !!}
-            var total = 0;
-            var subtotal = 0;
+        $(document).ready(function() {
+            const jsonData = {!! $buku_besar !!};
 
-            // $.each(jsonData, function(key, value) {
-            //     $('#neraca').append(`
-            //         <tr class="bg-secondary" id="${key.replace(/ /g,"_")}">
-            //             <th colspan="3">${key}</th>
-            //         </tr>
-            //     `)
-            //     $.each(value, function(key_1, value_1) {
-            //         $('#'+key.replace(/ /g,"_")).parent().append(`
-            //             <tr id="${key_1.replace(/ /g,"_")}">
-            //                 <th colspan="3">&nbsp; ${key_1}</th>
-            //             </tr>
-            //         `)
-            //         $.each(value_1, function(key_2, value_2) {
-            //             if(value_2.saldo != 0){
-            //                 if(value_2.id_akun != ''){
-            //                     var akun_nomor = "<a href='{{ url('akun/detail') }}/"+value_2.id_akun+"'>&nbsp;&nbsp;"+value_2.nomor+"</a>";
-            //                     var akun_nama = "<a href='{{ url('akun/detail') }}/"+value_2.id_akun+"'>&nbsp;&nbsp;"+value_2.nama+"</a>";
-            //                 }else{
-            //                     var akun_nomor = "&nbsp;&nbsp;"+value_2.nomor;
-            //                     var akun_nama = "&nbsp;&nbsp;"+value_2.nama;
-            //                 }
-            //                 $('#'+key_1.replace(/ /g,"_")).parent().append(`
-            //                     <tr >
-            //                         <td>${ akun_nomor }</td>
-            //                         <td>${ akun_nama }</td>
-            //                         <td class="text-right">&nbsp;&nbsp; ${rupiah(value_2.saldo)}</td>
-            //                     </tr>
-            //                 `)
-            //                 total += value_2.saldo;
-            //             }
-            //         });
-            //         $('#'+key_1.replace(/ /g,"_")).parent().append(`
-            //             <tr >
-            //                 <th colspan="2">&nbsp;Total ${key_1}</th>
-            //                 <th class="text-right">&nbsp;&nbsp; ${rupiah(total)}</th>
-            //             </tr>
-            //         `)
-            //         subtotal += total;
-            //         total = 0;
-            //     });
-            //     $('#'+key.replace(/ /g,"_")).parent().append(`
-            //         <tr >
-            //             <th colspan="2">Total ${key}</th>
-            //             <th class="text-right">&nbsp;&nbsp; ${rupiah(subtotal)}</th>
-            //         </tr>
-            //     `)
-            //     subtotal = 0;
-            // });
+            $.each(jsonData, function(key, value) {
+                debit = 0;
+                kredit = 0;
+                $('#buku_besar').append(`
+                    <tr class="header" style="cursor: pointer;">
+                        <td colspan="7" class="bg-secondary">
+                            (${value.nomor}) ${value.nama}</td>
+                    </tr>
+                `);
+                $.each(value.detail, function(key2, value2) {
+                    $('#buku_besar').append(`
+                        <tr>
+                            <td>${ value2.tanggal_transaksi }</td>
+                            <td>${ value2.kategori }</td>
+                            <td>${ value2.no }</td>
+                            <td>${ value2.no_str }</td>
+                            <td>${ rupiah(value2.debit) }</td>
+                            <td>${ rupiah(value2.kredit) }</td>
+                            <td>${ rupiah(value2.saldo) }</td>
+                        </tr>
+                    `);
+                    debit += value2.debit
+                    kredit += value2.kredit
+                    saldo = value2.saldo
+                });
+                $('#buku_besar').append(`
+                    <tr class="total">
+                        <td colspan="4">(${value.nomor}) ${value.nama} | Saldo akhir</td>
+                        <td>${ rupiah(debit) }</td>
+                        <td>${ rupiah(kredit) }</td>
+                        <td>${ rupiah(saldo) }</td>
+                    </tr>
+                `);
+            });
+
+            $('tr:not(.header)').hide();
+            $('.total').show();
+
+            $('tr.header').click(function() {
+                console.log(1);
+                $(this).find('span').text(function(_, value) {
+                    return value == '-' ? '+' : '-'
+                });
+
+                $(this).nextUntil('tr.header').slideToggle(100, function() {});
+            });
         });
+
+
     </script>
 @endsection

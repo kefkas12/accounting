@@ -8,9 +8,12 @@
         <div class="row">
             <div class="col">
                 <div class="card mb-5">
-                    <div class="card-header border-0">
+                    <div class="card-header border-0" style="padding: 1rem 0.5rem">
                         <div class="row mb-3">
                             <div class="col">
+                                <b>Pembelian</b>
+                            </div>
+                            <div class="col d-flex justify-content-end">
                                 <div class="input-group-prepend">
                                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Buat pembelian</button>
                                     <div class="dropdown-menu">
@@ -23,42 +26,41 @@
                         </div>
                         
                         <div class="row">
-                            <div class="col">
+                            <div class="col-sm-3" style="padding-right: 0px !important;">
                                 <div class="card border-warning">
-                                    <div class="card-header border-warning">
+                                    <div class="card-header border-warning" style="padding: 0.5rem 0.75rem !important;background:#FBF3DD;">
                                         Belum dibayar
                                     </div>
-                                    <div class="card-body">
-                                        <p>Total</p>
-                                        <b>Rp. {{ $belum_dibayar }}</b>
+                                    <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
+                                        Total <br> <span style="font-weight:900">Rp {{ $belum_dibayar }}</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col">
+                            <div class="col-sm-3" style="padding-right: 0px !important;">
                                 <div class="card border-danger">
-                                    <div class="card-header border-danger">
+                                    <div class="card-header border-danger"  style="padding: 0.5rem 0.75rem !important; background:#FDECEE;">
                                         Jatuh tempo
                                     </div>
-                                    <div class="card-body">
-                                        <p>Total</p>
-                                        <b>Rp. 0,00</b>
+                                    <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
+                                        Total <br> <span style="font-weight:900">Rp. 0,00</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col">
-                                <div class="card border-primary">
-                                    <div class="card-header border-primary">
+                            <div class="col-sm-3" style="padding-right: 0px !important;">
+                                <div class="card border-success">
+                                    <div class="card-header border-success" style="padding: 0.5rem 0.75rem !important; background:#E8F5EB;">
                                         Pelunasan 30 hari terakhir
                                     </div>
-                                    <div class="card-body">
-                                        <p>Total</p>
-                                        <b>Rp. 0,00</b>
+                                    <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
+                                        Total <br> <span style="font-weight:900">Rp. 0,00</span>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-sm-3" style="padding-right: 0px !important;">
                             </div>
                         </div>
                     </div>
-                    <div class='container-fluid'>
+                    <div class='container-fluid' style="padding-left: 1.45rem !important;">
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                                 <button class="nav-link active" id="nav-faktur-pembelian-tab" data-toggle="tab" data-target="#nav-faktur-pembelian"
