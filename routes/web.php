@@ -40,6 +40,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProdukController;
 
@@ -200,6 +201,14 @@ Route::controller(LaporanController::class)->prefix('laporan')->group(function (
 	Route::get('/penjualan/{jenis}', 'penjualan');
 
 	Route::get('/pembelian/{jenis}', 'pembelian');
+});
+
+Route::controller(PengaturanController::class)->prefix('pengaturan')->group(function () {
+	Route::get('/', 'index');
+	Route::get('/perusahaan', 'perusahaan');
+
+	Route::get('/pengguna', 'pengguna');
+	Route::get('/pengguna/insert', 'form_pengguna');
 });
 
 Route::group([], __DIR__.'/routes_superadmin.php');

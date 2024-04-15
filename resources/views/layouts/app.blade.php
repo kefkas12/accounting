@@ -259,7 +259,7 @@
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap4.min.js"></script>
 </head>
 
-<body class="{{ $class ?? '' }}" style="color: #000000 !important;">
+<body class="{{ $class ?? '' }}" style="color: #000000 !important; background:#F1F5F9 !important">
     @auth()
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
             @csrf
