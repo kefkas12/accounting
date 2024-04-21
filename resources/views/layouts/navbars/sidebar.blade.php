@@ -5,9 +5,9 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <!-- Brand -->
-        <a class="navbar-brand pt-0" href="{{ url('/') }}">
-            {{ Auth::user()->nama_perusahaan }}
-        </a>
+        <div class="d-flex justify-content-center">
+            <img width="75px" src="@if(Auth::user()->logo_perusahaan) {{ asset('argon/img/brand').'/'.Auth::user()->logo_perusahaan }} @else {{ asset('argon') }}/img/theme/team-4-800x800.jpg @endif" alt="">
+        </div>
         <!-- User -->
         <ul class="nav align-items-center d-md-none">
             <li class="nav-item dropdown">

@@ -86,6 +86,14 @@ class PenjualanController extends Controller
                                             ->where('jenis','penagihan')
                                             ->get();
         }
+        $count_pengiriman = Penjualan::where('id_pemesanan',$data['penjualan']->id_pemesanan)
+                                            ->where('jenis','pengiriman')
+                                            ->count();
+        if($data['penjualan']->jenis == 'penagihan' && $count_pengiriman > 0){
+            $data['pengiriman'] = Penjualan::where('id_pemesanan',$data['penjualan']->id_pemesanan)
+                                            ->where('jenis','pengiriman')
+                                            ->get();
+        }
         $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
                                 ->leftJoin('penjualan','jurnal.id','=','penjualan.id_jurnal')
                                 ->select('jurnal.*')
@@ -212,6 +220,21 @@ class PenjualanController extends Controller
         return view('pages.penjualan.penagihan', $data);
     }
 
+    public function pengiriman_penagihan($id)
+    {
+        $data['sidebar'] = 'penjualan';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['pelanggan'] = Kontak::where('tipe','pelanggan')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        if($id != null){
+            $data['pengiriman'] = true;
+            $data['penjualan'] = Penjualan::where('id',$id)->first();
+            $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
+        }
+        return view('pages.penjualan.penagihan', $data);
+    }
+
     public function penerimaan_pembayaran(Request $request)
     {
         $data['sidebar'] = 'penjualan';
@@ -300,7 +323,7 @@ class PenjualanController extends Controller
     {
         DB::beginTransaction();
         $jurnal = new Jurnal;
-        $jurnal->penjualan($request);
+        $jurnal->pengiriman_penjualan($request);
         
         $penjualan = new Penjualan;
         $penjualan->insert($request, $jurnal->id, 'pengiriman', $id);
@@ -313,6 +336,18 @@ class PenjualanController extends Controller
         DB::beginTransaction();
         $jurnal = new Jurnal;
         $jurnal->penjualan($request);
+        
+        $penjualan = new Penjualan;
+        $penjualan->insert($request, $jurnal->id, 'penagihan', $id);
+        DB::commit();
+
+        return redirect('penjualan/detail/'.$penjualan->id);
+    }
+    public function insert_pengiriman_penagihan(Request $request, $id)
+    {
+        DB::beginTransaction();
+        $jurnal = new Jurnal;
+        $jurnal->pengiriman_penagihan($request);
         
         $penjualan = new Penjualan;
         $penjualan->insert($request, $jurnal->id, 'penagihan', $id);

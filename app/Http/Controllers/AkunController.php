@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Akun;
+use App\Models\Akun_company;
+use App\Models\Company;
 use App\Models\Detail_jurnal;
+use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AkunController extends Controller
@@ -35,7 +39,20 @@ class AkunController extends Controller
     {
         $akun = new Akun();
         $akun->nama = $_POST['nama'];
+        $akun->nomor = $_POST['nomor'];
+        $akun->id_kategori = $_POST['kategori'];
+        $akun->nama_kategori = Kategori::find($_POST['kategori'])->nama;
+        $akun->pengali = Kategori::find($_POST['kategori'])->pengali;
         $akun->save();
+
+        $company = Company::get();
+        foreach($company as $v){
+            $akun_company = new Akun_company;
+            $akun_company->id_company = $v->id;
+            $akun_company->id_akun = $akun->id;
+            $akun_company->saldo = 0;
+            $akun_company->save();
+        }
 
         return redirect('akun');
     }
@@ -45,6 +62,7 @@ class AkunController extends Controller
         if($id){
             $data['akun'] = Akun::where('id', $id)->first();
             if($status == 'edit'){
+                
                 return view('pages.akun.form', $data);
             }else if($status == 'detail'){
                 $id_company = Auth::user()->id_company;
@@ -71,6 +89,10 @@ class AkunController extends Controller
                 return view('pages.akun.detail', $data);
             }
         }else{
+            $data['kategori'] = Kategori::leftJoin('akun', 'kategori.id','=','akun.id_kategori')
+                                        ->select('kategori.*',DB::raw('max(akun.nomor) AS next_nomor'))
+                                        ->groupBy('kategori.id')
+                                        ->get();
             return view('pages.akun.form', $data);
         }
     }

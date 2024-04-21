@@ -83,6 +83,86 @@ class Jurnal extends Model
         
     }
 
+    public function pengiriman_penjualan($request, $id = null)
+    {
+        $this->id_company = Auth::user()->id_company;
+        $this->tanggal_transaksi = $request->input('tanggal_transaksi');
+        $this->kategori = 'sales_delivery';
+        if(!$id){
+            $this->no = $this->no('sales_delivery');
+            $this->no_str = 'Sales Delivery #' . $this->no('sales_delivery');
+        }
+        $this->debit = $request->input('input_subtotal');
+        $this->kredit = $request->input('input_subtotal');
+        $this->save();
+
+        if($id){
+            $detail_jurnal = Detail_jurnal::where('id_jurnal',$this->id)->get();
+            foreach($detail_jurnal as $v){
+                $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                            ->where('id_akun',$v->id_akun)->first();
+                $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                $akun_company->save();
+            }
+            
+        }
+        Detail_jurnal::where('id_jurnal',$this->id)->delete();
+        
+        $this->createDetailJurnal($this->id, 5, $request->input('input_subtotal'), 0);
+        $this->updateAkunBalance(5, $request->input('input_subtotal'), 0);
+
+        $this->createDetailJurnal($this->id, 61, 0, $request->input('input_subtotal'));
+        $this->updateAkunBalance(61, 0, $request->input('input_subtotal'));
+    }
+
+    public function pengiriman_penagihan($request, $id = null)
+    {
+        $this->id_company = Auth::user()->id_company;
+        $this->tanggal_transaksi = $request->input('tanggal_transaksi');
+        $this->kategori = 'sales_invoice';
+        if(!$id){
+            $this->no = $this->no('sales_invoice');
+            $this->no_str = 'Sales Invoice #' . $this->no('sales_invoice');
+        }
+        $this->debit = $request->input('input_total') + $request->input('input_subtotal');
+        $this->kredit = $request->input('input_total') + $request->input('input_subtotal');
+        $this->save();
+
+        if($id){
+            $detail_jurnal = Detail_jurnal::where('id_jurnal',$this->id)->get();
+            foreach($detail_jurnal as $v){
+                $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                            ->where('id_akun',$v->id_akun)->first();
+                $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                $akun_company->save();
+            }
+            
+        }
+        Detail_jurnal::where('id_jurnal',$this->id)->delete();
+
+        $this->createDetailJurnal($this->id, 4, $request->input('input_total'), 0);
+        $this->updateAkunBalance(4, $request->input('input_total'), 0);
+
+        $this->createDetailJurnal($this->id, 61, $request->input('input_subtotal'), 0);
+        $this->updateAkunBalance(61, $request->input('input_subtotal'), 0);
+
+        if($request->input('input_diskon_per_baris')){
+            $this->createDetailJurnal($this->id, 59, $request->input('input_diskon_per_baris'), 0);
+            $this->updateAkunBalance(59, $request->input('input_diskon_per_baris'), 0);
+        }
+
+        $this->createDetailJurnal($this->id, 58, 0, $request->input('input_subtotal'));
+        $this->updateAkunBalance(58, 0, $request->input('input_subtotal'));
+
+        $this->createDetailJurnal($this->id, 5, 0, $request->input('input_subtotal'));
+        $this->updateAkunBalance(5, 0, $request->input('input_subtotal'));
+        
+        if($request->input('input_ppn')){
+            $this->createDetailJurnal($this->id, 43, 0, $request->input('input_ppn'));
+            $this->updateAkunBalance(43, 0, $request->input('input_ppn'));
+        }
+    }
+
     public function penjualan($request, $id = null)
     {
         $this->id_company = Auth::user()->id_company;

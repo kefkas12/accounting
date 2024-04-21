@@ -109,6 +109,7 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::get('/penawaran/pemesanan/{id}', 'penawaran_pemesanan');
 	Route::get('/pemesanan/pengiriman/{id}', 'pemesanan_pengiriman');
 	Route::get('/pemesanan/penagihan/{id}', 'pemesanan_penagihan');
+	Route::get('/pengiriman/penagihan/{id}', 'pengiriman_penagihan');
 	Route::get('/penagihan/{id}', 'penagihan');
 
 	Route::get('/detail/{id}', 'detail');
@@ -124,6 +125,7 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::post('/penawaran/pengiriman/{id}', 'insert_penawaran_pengiriman');
 	Route::post('/pemesanan/pengiriman/{id}', 'insert_pemesanan_pengiriman');
 	Route::post('/pemesanan/penagihan/{id}', 'insert_pemesanan_penagihan');
+	Route::post('/pengiriman/penagihan/{id}', 'insert_pengiriman_penagihan');
 
 	Route::post('/pemesanan', 'insert_pemesanan');
 
@@ -173,14 +175,6 @@ Route::controller(AkunController::class)->prefix('akun')->group(function () {
 	Route::get('/{status}/{id}', 'detail');	
 });
 
-Route::controller(AkunController::class)->prefix('akun')->group(function () {
-	Route::get('/', 'index');
-	Route::get('/insert', 'detail');
-	Route::post('/insert', 'insert');
-	Route::post('/edit/{id}', 'edit');
-	Route::get('/{status}/{id}', 'detail');	
-});
-
 Route::controller(JurnalController::class)->prefix('jurnal')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/insert', 'detail');
@@ -205,10 +199,14 @@ Route::controller(LaporanController::class)->prefix('laporan')->group(function (
 
 Route::controller(PengaturanController::class)->prefix('pengaturan')->group(function () {
 	Route::get('/', 'index');
-	Route::get('/perusahaan', 'perusahaan');
-
+	
 	Route::get('/pengguna', 'pengguna');
 	Route::get('/pengguna/insert', 'form_pengguna');
+	Route::post('/pengguna/insert', 'insert_form_pengguna');
+
+	Route::get('/perusahaan', 'perusahaan');
+	Route::get('/perusahaan/insert', 'form_perusahaan');
+	Route::post('/perusahaan/insert', 'insert_form_perusahaan');
 });
 
 Route::group([], __DIR__.'/routes_superadmin.php');

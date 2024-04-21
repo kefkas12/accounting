@@ -10,9 +10,13 @@
                 <div class="card ">
                     <div class="card-header border-0">
                         <div class="row mb-3">
-                            <div class="col">
+                            <div class="col" style="padding: 0">Daftar Akun</div>
+                            <div class="col d-flex justify-content-end">
                                 <a href="{{ url('jurnal/insert') }}"class="btn btn-primary" >
                                     Buat Jurnal Umum
+                                </a>
+                                <a href="{{ url('akun/insert') }}"class="btn btn-primary" >
+                                    Buat Akun Umum
                                 </a>
                             </div>
                         </div>

@@ -82,15 +82,23 @@ class Penjualan extends Model
         $this->alamat = $request->input('alamat');
         $this->email = $request->input('email');
         $this->jenis = $jenis;
+        if($request->input('kirim_melalui'))
+            $this->kirim_melalui = $request->input('kirim_melalui');
+        if($request->input('no_pelacakan'))
+            $this->no_pelacakan = $request->input('no_pelacakan');
         $this->id_jurnal = $idJurnal;
         if($jenis == 'pemesanan'){
             $this->id_penawaran = $id_jenis;
-        }elseif($jenis == 'penagihan' && $id_jenis != null){
-            $this->id_pemesanan = $id_jenis;
+        }elseif(($jenis == 'penagihan' || $jenis == 'pengiriman') && $id_jenis != null){
+            if(Penjualan::find($id_jenis)->jenis == 'pengiriman'){
+                $this->id_pemesanan = Penjualan::find($id_jenis)->id_pemesanan;
+            }else{
+                $this->id_pemesanan = $id_jenis;
+            }
         }
         $this->save();
 
-        if($jenis == 'pemesanan'){
+        if($jenis == 'pemesanan' || $jenis == 'pengiriman'){
             $penjualan = Penjualan::find($id_jenis);
             $penjualan->id_pemesanan = $this->id;
             $penjualan->status = 'closed';

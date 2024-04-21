@@ -15,6 +15,8 @@
                             Penawaran
                         @elseif($penjualan->jenis == 'pemesanan')
                             Pemesanan
+                        @elseif($penjualan->jenis == 'pengiriman')
+                            Pengiriman
                         @endif
                         Penjualan #{{ $penjualan->no }}
                         
@@ -47,7 +49,7 @@
                             <div class="col-sm-2">Email</div>
                             <div class="col-sm-2"><strong>{{ $penjualan->email }}</strong></div>
                             <div class="col-sm-4 d-flex justify-content-end">
-                                <h3>Sisa tagihan Rp. {{ number_format($penjualan->sisa_tagihan, 2, ',', '.') }} <br>
+                                <h3>@if($penjualan->jenis != 'pengiriman')Sisa tagihan Rp. {{ number_format($penjualan->sisa_tagihan, 2, ',', '.') }} <br>@endif
                                     @if ($jurnal)
                                         <a href="#" data-toggle="modal" data-target="#exampleModal">Lihat Jurnal
                                             Entry</a>
@@ -81,10 +83,20 @@
                                     Tgl. Jatuh Tempo
                                 @elseif($penjualan->jenis == 'penawaran')
                                     Tgl. kedaluarsa
+                                @elseif($penjualan->jenis == 'pengiriman')
+                                    Kirim melalui
                                 @endif
                             </div>
                             <div class="col-sm-2">
+                                @if ($penjualan->jenis == 'pengiriman')
+                                @if($penjualan->kirim_melalui)
+                                {{ $penjualan->kirim_melalui }}
+                                @else
+                                -
+                                @endif
+                                @else 
                                 <strong>{{ date('d/m/Y', strtotime($penjualan->tanggal_jatuh_tempo)) }}</strong>
+                                @endif
                             </div>
                             @if($penjualan->penawaran)
                             <div class="col-sm-2" style="margin-right: -25px !important;">
@@ -94,6 +106,7 @@
                                 <a href="{{ url('penjualan/detail').'/'.$penjualan->penawaran->id }}">{{ $penjualan->penawaran->no_str }}</a>
                             </div>
                             @endif
+                            @if($penjualan->jenis != 'pengiriman')
                             @if($penjualan->pemesanan)
                             <div class="col-sm-2" style="margin-right: -25px !important;">
                                 No. Pemesanan
@@ -101,6 +114,43 @@
                             <div class="col-sm-2">
                                 <a href="{{ url('penjualan/detail').'/'.$penjualan->pemesanan->id }}">{{ $penjualan->pemesanan->no_str }}</a>
                             </div>
+                            @endif
+                            @endif
+                        </div>
+                        <div class="row my-3">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2">
+                                @if($penjualan->jenis == 'pengiriman')
+                                    No. pelacakan
+                                @endif
+                            </div>
+                            <div class="col-sm-2">
+                                @if ($penjualan->jenis == 'pengiriman')
+                                @if($penjualan->no_pelacakan)
+                                {{ $penjualan->no_pelacakan }}
+                                @else
+                                -
+                                @endif
+                                @endif
+                            </div>
+                            @if($penjualan->penawaran)
+                            <div class="col-sm-2" style="margin-right: -25px !important;">
+                                No. Penawaran
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="{{ url('penjualan/detail').'/'.$penjualan->penawaran->id }}">{{ $penjualan->penawaran->no_str }}</a>
+                            </div>
+                            @endif
+                            @if($penjualan->jenis == 'pengiriman')
+                            @if($penjualan->pemesanan)
+                            <div class="col-sm-2" style="margin-right: -25px !important;">
+                                No. Pemesanan
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="{{ url('penjualan/detail').'/'.$penjualan->pemesanan->id }}">{{ $penjualan->pemesanan->no_str }}</a>
+                            </div>
+                            @endif
                             @endif
                         </div>
                         <div class="table-responsive">
@@ -111,10 +161,12 @@
                                         <th>Deskripsi</th>
                                         <th>Kuantitas</th>
                                         <th>Unit</th>
+                                        @if($penjualan->jenis != 'pengiriman')
                                         <th>Harga Satuan</th>
                                         <th>Diskon</th>
                                         <th>Pajak</th>
                                         <th>Jumlah</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -124,6 +176,7 @@
                                             <td>{{ $v->deskripsi }}</td>
                                             <td>{{ $v->kuantitas }}</td>
                                             <td>Buah</td>
+                                            @if($penjualan->jenis != 'pengiriman')
                                             <td>Rp. {{ number_format($v->harga_satuan, 2, ',', '.') }}</td>
                                             <td>
                                                 @if ($v->diskon_per_baris)
@@ -138,11 +191,13 @@
                                                 @endif
                                             </td>
                                             <td>Rp. {{ number_format($v->jumlah, 2, ',', '.') }}</td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
+                        @if($penjualan->jenis != 'pengiriman')
                         <div class="row">
                             <div class="col-sm-7"></div>
                             <div class="col-sm-5">
@@ -205,6 +260,48 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
+                        @if(isset($pengiriman))
+                        <div class="table-responsive">
+                            Pengiriman
+                            <table class="table my-4">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Tgl. pengiriman</th>
+                                        <th>No.</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($pengiriman as $v)
+                                        <tr>
+                                            <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
+                                            <td>
+                                                <div>
+                                                    <div class="row"><a
+                                                            href="{{ url('penjualan/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
+                                                    </div>
+                                                    <div class="row text-xs">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm 
+                                                @if ($v->status == 'open') btn-warning
+                                                @elseif($v->status == 'partial') btn-info
+                                                @elseif($v->status == 'paid') btn-success
+                                                @elseif($v->status == 'overdue') btn-danger 
+                                                @elseif($v->status == 'closed') btn-dark @endif
+                                                ml-2">
+                                                    {{ $v->status }}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @endif
                         <div class="row my-4">
                             <div class="col-sm-6">
                                 <form id="deleteForm" action="{{ url('penjualan/hapus') . '/' . $penjualan->id }}"
@@ -258,6 +355,7 @@
                             @else
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
+                                @if($penjualan->jenis != 'pengiriman')
                                 <div class="btn-group dropup">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
                                         aria-expanded="false">
@@ -276,6 +374,10 @@
                                         @endif
                                     </div>
                                 </div>
+                                @else
+                                <a class="btn btn-outline-primary" href="{{ url('penjualan/cetak/surat_jalan') . '/' . $penjualan->id }}" target="_blank">Cetak Surat Jalan</a>
+                                <a href="{{ url('penjualan').'/pengiriman/penagihan/'.$penjualan->id }}" class="btn btn-primary">Buat penagihan</a>
+                                @endif
                             </div>
                             @endif
                         </div>

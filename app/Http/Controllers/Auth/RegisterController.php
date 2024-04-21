@@ -79,8 +79,7 @@ class RegisterController extends Controller
             $akun_company->saldo = 0;
             $akun_company->save();
         }
-
-        return User::create([
+        $user = User::create([
             'id_company' => $company->id,
             'nama_perusahaan' => $data['nama_perusahaan'],
             'name' => $data['name'],
@@ -88,5 +87,8 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
             'role' => 0
         ]);
+        $user->assignRole('pemilik');
+
+        return $user;
     }
 }
