@@ -67,6 +67,9 @@ Auth::routes();
 
 Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
 
+Route::get('/cloud/jarak', 'App\Http\Controllers\ApiController@jarak');
+Route::get('/cloud/suhu', 'App\Http\Controllers\ApiController@suhu');
+
 Route::group(['middleware' => 'auth'], function () {
 	Route::resource('user', 'App\Http\Controllers\UserController', ['except' => ['show']]);
 	Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'App\Http\Controllers\ProfileController@password']);

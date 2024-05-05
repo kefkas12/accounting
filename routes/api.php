@@ -20,7 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/user', [ApiController::class, 'user_read']);
-
-Route::get('/job_request', [ApiController::class, 'job_request_read']);
-Route::post('/job_request', [ApiController::class, 'job_request_create']);
+Route::get('/iot/{alat}', [ApiController::class, 'iot_read']);
+Route::post('/iot/{alat}', [ApiController::class, 'iot_create']);
