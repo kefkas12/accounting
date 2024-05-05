@@ -228,6 +228,7 @@ class LaporanController extends Controller
             ->join('akun', 'detail_jurnal.id_akun', '=', 'akun.id')
             ->select('detail_jurnal.*', 'akun.id_kategori', 'akun.pengali', 'akun.nama', 'akun.nomor', 'jurnal.tanggal_transaksi')
             ->where('detail_jurnal.id_company', Auth::user()->id_company)
+            // ->whereBetween('jurnal.tanggal_transaksi',['2024-12-01','2023-12-31'])
             ->get();
 
         $kategori_aset_lancar = array(1, 2, 3, 4);
@@ -307,6 +308,13 @@ class LaporanController extends Controller
                 }
             }
             //tes
+            // $pendapatan['periode_ini'] = 0;
+            // $pendapatan_lainnya['periode_ini'] = 0;
+            // $harga_pokok_pendapatan['periode_ini'] = 0;
+            // $beban['periode_ini'] = 0;
+            // $harga_pokok_pendapatan['periode_ini'] = 0;
+
+
             if (in_array($v->id_kategori, $kategori_pendapatan)) {
                 if (strtotime($v->tanggal_transaksi) > strtotime(date("Y") . '-01-01')) {
                     if (isset($pendapatan['periode_ini'])) {
