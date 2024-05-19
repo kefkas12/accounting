@@ -48,9 +48,11 @@
                                             <input type="text" class="form-control" id="npwp" name="npwp" placeholder="Contoh: 12.3765.748.0-132.546" value="{{ isset($pelanggan) ? $pelanggan->npwp : '' }}">
                                         </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="alamat"><strong>Alamat</strong></label>
-                                        <textarea class="form-control" id="alamat" name="alamat" placeholder="Contoh: Jalan Indonesia Block C No. 22"> {{ isset($pelanggan) ? $pelanggan->alamat : '' }}</textarea>
+                                    <div class="form-group" id="additional_alamat">
+                                        
+                                        <label for="alamat" class="mb-2"><strong>Alamat</strong><button type="button" id="tambah_alamat" class="btn btn-primary ml-3" onclick="additional_alamat()">Tambah</button></label>
+                                        <textarea class="form-control mb-2" id="alamat" name="alamat" placeholder="Contoh: Jalan Indonesia Block C No. 22">{{ isset($pelanggan) ? $pelanggan->alamat : '' }}</textarea>
+                                        
                                     </div>
                                     <div class="d-flex justify-content-end">
                                         <a href="{{ url('pelanggan') }}" class="btn btn-light">Batalkan</a>
@@ -74,7 +76,20 @@
     </div>
     @if(isset($pelanggan))
     <script>
+    $( document ).ready(function() {
         $('#form').attr('action','{{ url("pelanggan/edit")."/".$pelanggan->id }}')
+        @foreach($additional_alamat as $v)
+        additional_alamat('{{ $v->alamat }}');
+        @endforeach
+    });
     </script>
     @endif
+    <script>
+        var value = '';
+        function additional_alamat(value = null){
+            $('#additional_alamat').append(
+                `<textarea class="form-control mb-2" name="additional_alamat[]">${value}</textarea>`
+            );
+        }
+    </script>
 @endsection

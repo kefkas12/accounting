@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Akun;
 use App\Models\Akun_company;
+use App\Models\Approval;
 use App\Models\Company;
 use App\Models\Detail_jurnal;
 use App\Models\Detail_pembayaran_penjualan;
 use App\Models\Detail_penjualan;
+use App\Models\Gudang;
 use App\Models\Jurnal;
 use App\Models\Kontak;
 use App\Models\Pembayaran_penjualan;
@@ -33,6 +35,7 @@ class PenjualanController extends Controller
                                         ->select('penjualan.*','kontak.nama as nama_pelanggan')
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->where('penjualan.jenis','penagihan')
+                                        ->whereNot('penjualan.status','draf')
                                         ->orderBy('id','DESC')
                                         ->get();
         $data['penawaran'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
@@ -51,6 +54,12 @@ class PenjualanController extends Controller
                                         ->select('penjualan.*','kontak.nama as nama_pelanggan')
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->where('penjualan.jenis','pengiriman')
+                                        ->orderBy('id','DESC')
+                                        ->get();
+        $data['membutuhkan_persetujuan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan')
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->where('penjualan.status','draf')
                                         ->orderBy('id','DESC')
                                         ->get();
         $data['belum_dibayar'] = number_format(Penjualan::where('tanggal_jatuh_tempo','>',date('Y-m-d'))
@@ -138,6 +147,8 @@ class PenjualanController extends Controller
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
                                     ->get();
         if($id != null){
             $data['penjualan'] = Penjualan::where('id',$id)->first();
@@ -266,12 +277,15 @@ class PenjualanController extends Controller
 
     public function insert_penagihan(Request $request)
     {
+        $approval = new Approval;
+        $is_requester = $approval->check_requester('Faktur Penjualan');
+
         DB::beginTransaction();
         $jurnal = new Jurnal;
-        $jurnal->penjualan($request);
+        $jurnal->penjualan($is_requester,$request);
         
         $penjualan = new Penjualan;
-        $penjualan->insert($request, $jurnal->id, 'penagihan');
+        $penjualan->insert($is_requester,$request, $jurnal->id, 'penagihan');
         DB::commit();
 
         return redirect('penjualan/detail/'.$penjualan->id);
@@ -291,9 +305,12 @@ class PenjualanController extends Controller
 
     public function insert_penawaran(Request $request)
     {
+        $approval = new Approval;
+        $is_requester = $approval->check_requester('Penawaran Penjualan');
+
         DB::beginTransaction();
         $penjualan = new Penjualan;
-        $penjualan->insert($request, null, 'penawaran');
+        $penjualan->insert($is_requester,$request, null, 'penawaran');
         DB::commit();
 
         return redirect('penjualan/detail/'.$penjualan->id);
@@ -319,6 +336,29 @@ class PenjualanController extends Controller
         return redirect('penjualan/detail/'.$penjualan->id);
     }
 
+    public function insert_pemesanan(Request $request)
+    {
+        // $approval = new Approval;
+        // $is_requester = $approval->check_requester('Penawaran Penjualan');
+
+        DB::beginTransaction();
+        $penjualan = new Penjualan;
+        $penjualan->insert($request, null, 'pemesanan');
+        DB::commit();
+
+        return redirect('penjualan/detail/'.$penjualan->id);
+    }
+
+    public function update_pemesanan(Request $request, $id)
+    {
+        DB::beginTransaction();
+        $penjualan = Penjualan::find($id);
+        $penjualan->edit($request);
+        DB::commit();
+
+        return redirect('penjualan/detail/'.$penjualan->id);
+    }
+
     public function insert_pemesanan_pengiriman(Request $request, $id)
     {
         DB::beginTransaction();
@@ -333,12 +373,15 @@ class PenjualanController extends Controller
     }
     public function insert_pemesanan_penagihan(Request $request, $id)
     {
+        $approval = new Approval;
+        $is_requester = $approval->check_requester('Faktur Penjualan');
+
         DB::beginTransaction();
         $jurnal = new Jurnal;
-        $jurnal->penjualan($request);
+        $jurnal->penjualan($is_requester,$request);
         
         $penjualan = new Penjualan;
-        $penjualan->insert($request, $jurnal->id, 'penagihan', $id);
+        $penjualan->insert($is_requester,$request, $jurnal->id, 'penagihan', $id);
         DB::commit();
 
         return redirect('penjualan/detail/'.$penjualan->id);

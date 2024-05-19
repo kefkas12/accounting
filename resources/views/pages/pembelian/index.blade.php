@@ -63,19 +63,28 @@
                     <div class='container-fluid' style="padding-left: 1.45rem !important;">
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                @hasanyrole('pemilik')
                                 <button class="nav-link active" id="nav-faktur-pembelian-tab" data-toggle="tab" data-target="#nav-faktur-pembelian"
                                     type="button" role="tab" aria-controls="nav-faktur-pembelian"
                                     aria-selected="true">Faktur Pembelian</button>
+                                @endhasallroles
+                                @hasanyrole('pemilik|pergudangan')
+                                <button class="nav-link @if(auth()->user()->hasRole('pergudangan')) active @endif" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
+                                    type="button" role="tab" aria-controls="nav-pengiriman"
+                                    aria-selected="false">Pengiriman</button>
                                 <button class="nav-link" id="nav-pemesanan-pembelian-tab" data-toggle="tab" data-target="#nav-pemesanan-pembelian"
                                     type="button" role="tab" aria-controls="nav-pemesanan-pembelian"
                                     aria-selected="false">Pemesanan Pembelian</button>
+                                @endhasallroles
+                                @hasanyrole('pemilik')
                                 <button class="nav-link" id="nav-penawaran-pembelian-tab" data-toggle="tab" data-target="#nav-penawaran-pembelian"
                                     type="button" role="tab" aria-controls="nav-penawaran-pembelian"
                                     aria-selected="false">Penawaran Pembelian</button>
+                                @endhasallroles
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
-                            <div class="tab-pane fade show active" id="nav-faktur-pembelian" role="tabpanel"
+                            <div class="tab-pane fade @if(!auth()->user()->hasRole('pergudangan')) show active @endif" id="nav-faktur-pembelian" role="tabpanel"
                                 aria-labelledby="nav-faktur-pembelian-tab">
                                 <div class="table-responsive">
                                     <table class="table align-items-center table-flush">
@@ -100,6 +109,31 @@
                                                 <td>{{ $v->status }}</td>
                                                 <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade @if(auth()->user()->hasRole('pergudangan')) show active @endif" id="nav-pengiriman" role="tabpanel"
+                                aria-labelledby="nav-pengiriman-tab">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center table-flush">
+                                        <thead >
+                                            <tr>
+                                                <th scope="col">Tanggal</th>
+                                                <th scope="col">No</th>
+                                                <th scope="col">Supplier </th>
+                                                <th scope="col">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                            @foreach($pengiriman as $v)
+                                            <tr>
+                                                <td>{{ $v->tanggal_transaksi }}</td>
+                                                <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td>{{ $v->nama_supplier }}</td>
+                                                <td>{{ $v->status }}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>

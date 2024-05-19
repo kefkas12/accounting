@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Approval;
+use App\Models\Approver;
 use App\Models\Company;
 use App\Models\Kontak;
+use App\Models\Requester;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class PengaturanController extends Controller
 {
@@ -31,11 +35,23 @@ class PengaturanController extends Controller
         $data['sidebar'] = 'pengaturan';
         $data['pengguna'] = User::where('id_company',Auth::user()->id_company)
                                 ->get();
+        
+       
+        // User::find(9)->assignRole('pergudangan');
+        // $role = Role::create(['name' => 'pergudangan']);
+        // $permission = Permission::create(['name' => 'create produk']);
+        // $permission = Permission::create(['name' => 'read produk']);
+        // $permission = Permission::create(['name' => 'update produk']);
+        // $permission = Permission::create(['name' => 'delete produk']);
+
+        // Role::find(3)->givePermissionTo(4);
+
         return view('pages.pengaturan.pengguna', $data);
     }
     public function form_pengguna()
     {
         $data['sidebar'] = 'pengaturan';
+        $data['role'] = Role::get();
         return view('pages.pengaturan.form_pengguna', $data);
     }
 
@@ -50,9 +66,17 @@ class PengaturanController extends Controller
         $user->role = 0;
         $user->save();
 
-        $user->assignRole('pemilik');
+        for($i= 0;$i<count($_POST['role']); $i++){
+            $user->assignRole($_POST['role'][$i]);
+
+        }
 
         return redirect('pengaturan/pengguna');
+    }
+
+    public function delete_form_pengguna()
+    {
+        
     }
 
     public function perusahaan()
@@ -99,5 +123,44 @@ class PengaturanController extends Controller
         $user->save();
 
         return redirect('pengaturan/perusahaan');
+    }
+
+    public function approval()
+    {
+        $data['sidebar'] = 'pengaturan';
+        $data['approval'] = Approval::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        return view('pages.pengaturan.approval', $data);
+    }
+
+    public function form_approval()
+    {
+        $data['sidebar'] = 'pengaturan';
+        $data['requester'] = User::where('id_company',Auth::user()->id_company)->whereNot('id',Auth::id())->get();
+        $data['approver'] = User::where('id_company',Auth::user()->id_company)->get();
+        $data['approval'] = Company::where('id',Auth::user()->id_company)
+                                    ->first();
+        return view('pages.pengaturan.form_approval', $data);
+    }
+
+    public function insert_form_approval()
+    {
+        $approval = new Approval;
+        $approval->nama = $_POST['nama'];
+        $approval->tipe_transaksi = $_POST['tipe_transaksi'];
+        $approval->id_company = Auth::user()->id_company;
+        $approval->save();
+
+        $requester = new Requester;
+        $requester->id_approval = $approval->id;
+        $requester->id_user = $_POST['requester'];
+        $requester->save();
+        
+        $approver = new Approver;
+        $approver->id_approval = $approval->id;
+        $approver->id_user = $_POST['approver'];
+        $approver->save();
+
+        return redirect('pengaturan/approval');
     }
 }

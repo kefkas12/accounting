@@ -76,6 +76,9 @@
                                 <button class="nav-link" id="nav-penawaran-tab" data-toggle="tab" data-target="#nav-penawaran"
                                     type="button" role="tab" aria-controls="nav-penawaran"
                                     aria-selected="false">Penawaran</button>
+                                <button class="nav-link" id="nav-membutuhkan-persetujuan-tab" data-toggle="tab" data-target="#nav-membutuhkan-persetujuan"
+                                    type="button" role="tab" aria-controls="nav-membutuhkan-persetujuan"
+                                    aria-selected="false">Membutuhkan persetujuan</button>
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
@@ -189,6 +192,37 @@
                                         </thead>
                                         <tbody class="list">
                                             @foreach($penawaran as $v)
+                                            <tr>
+                                                <td>{{ $v->tanggal_transaksi }}</td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td>{{ $v->nama_pelanggan }}</td>
+                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
+                                                <td>{{ $v->status }}</td>
+                                                <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
+                                                <td>Rp {{ number_format($v->total,2,',','.') }}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="nav-membutuhkan-persetujuan" role="tabpanel"
+                                aria-labelledby="nav-membutuhkan-persetujuan-tab">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center table-flush">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Tanggal</th>
+                                                <th scope="col">No</th>
+                                                <th scope="col">Pelanggan </th>
+                                                <th scope="col">Tgl. kedaluarsa</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Sisa Tagihan</th>
+                                                <th scope="col">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                            @foreach($membutuhkan_persetujuan as $v)
                                             <tr>
                                                 <td>{{ $v->tanggal_transaksi }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>

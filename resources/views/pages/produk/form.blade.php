@@ -34,7 +34,10 @@
                                         <label for="kategori">Kategori</label>
                                         <input type="text" class="form-control" id="kategori" name="kategori" value="{{ isset($produk) ? $produk->kategori : '' }}">
                                     </div>
-                                   
+                                    <div class="form-group">
+                                        <label for="deskripsi">Deskripsi</label>
+                                        <textarea class="form-control" name="deskripsi" id="deskripsi">{{ isset($produk) ? $produk->deskripsi : '' }}</textarea>
+                                    </div>
                                     <div class="form-row">
                                         <div class="form-group col-md-8">
                                             <label for="harga_beli">Harga Beli Satuan</label>

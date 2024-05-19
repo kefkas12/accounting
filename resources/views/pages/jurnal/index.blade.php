@@ -15,6 +15,22 @@
                             </div>
                         </div>
                     </div>
+                    <div class="card-body">
+                        <form action="{{ url('laporan/jurnal') }}">
+                            @csrf
+                        <div class="row">
+                            <div class="col-2">Tanggal Mulai
+                                <input type="date" name="tanggal_mulai" class="form-control" @if(isset($_GET['tanggal_mulai'])) value="{{ $_GET['tanggal_mulai'] }}" @endif>
+                            </div>
+                            <div class="col-2">Tanggal Selesai
+                                <input type="date" name="tanggal_selesai" class="form-control" @if(isset($_GET['tanggal_selesai'])) value="{{ $_GET['tanggal_selesai'] }}" @endif>
+                            </div>
+                            <div class="col-2">
+                                <button type="submit" class="btn btn-primary">Filter</button>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
                     <div class="table-responsive">
                         
                         <table class="table align-items-center table-flush">

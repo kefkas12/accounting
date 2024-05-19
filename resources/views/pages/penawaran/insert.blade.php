@@ -11,24 +11,17 @@
                     <div class="card-header border-0">
                         <div class="row">
                             <div class="col">
-                                <a href="{{ url('penjualan') }}">Penjualan</a>
+                                <a href="{{ url('penawaran') }}">Penawaran</a>
                             </div>
                         </div>
                         <div class="row text-sm">
                             <div class="col">
                                 <h2>Buat Penawaran Penjualan</h2>
                             </div>
-                            <div class="col-sm-3 d-flex justify-content-end">
-                                <select class="form-control" onchange="location = this.value;">
-                                    <option selected disabled hidden>Penawaran Penjualan</option>
-                                    <option value="{{ url('penjualan/penagihan') }}">Penagihan Penjualan</option>
-                                    <option value="{{ url('penjualan/penawaran') }}">Penawaran Penjualan</option>
-                                    <option value="{{ url('penjualan/pemesanan') }}">Pemesanan Penjualan</option>
-                                </select>
-                            </div>
+                            
                         </div>
                     </div>
-                    <form method="POST" @if(isset($penjualan)) action="{{ url('penjualan/penawaran').'/'.$penjualan->id }}" @else action="{{ url('penjualan/penawaran') }}" @endif id="insertForm">
+                    <form method="POST" @if(isset($penjualan)) action="{{ url('penawaran').'/'.$penjualan->id }}" @else action="{{ url('penawaran') }}" @endif id="insertForm">
                         @csrf
                         <div class="card-body">
                             <div class="form-row">
@@ -54,8 +47,11 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-3 pr-4">
-                                    <label for="alamat">Alamat Penagihan</label><br>
-                                    <textarea class="form-control" name="alamat" id="alamat"></textarea>
+                                    <label for="alamat">Alamat Penawaran</label><br>
+                                    <select class="form-control" id="alamat" name="alamat" required>
+                                        <option selected disabled value="">Pilih Alamat</option>
+                                    </select>
+                                    {{-- <textarea class="form-control" name="alamat" id="alamat"></textarea> --}}
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group pr-4">
@@ -108,7 +104,7 @@
                                             <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_1"
                                                     name="kuantitas[]" value="1" onkeyup="change_harga(1)" onblur="check_null(this)" step="any"></td>
                                             <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_1"
-                                                    name="harga_satuan[]" value="0" onblur="change_harga(1)" ></td>
+                                                    name="harga_satuan[]" value="0" onblur="change_harga(1)"></td>
                                             <td style="padding: 10px !important;">
                                                 <div class="input-group">
                                                     <div class="input-group-prepend">
@@ -411,8 +407,10 @@
             `);
             load_select_2(i);
         };
-
+        var alamat
         $( document ).ready(function() {
+            alamat = {!! $additional_alamat !!};
+            // console.log(alamat)
             // $("#pelanggan").select2({
             //     allowClear: true,
             //     placeholder: 'Pilih kontak'
@@ -449,5 +447,19 @@
         // document.getElementById('myForm').addEventListener('submit', function() {
         //     document.getElementById('mySelect').removeAttribute('disabled');
         // });
+
+        $('#pelanggan').on( "change", function() {
+            var id = Number($(this).val());
+            var filterAlamat = alamat.filter(function(item) {
+                console.log(id)
+                return item.id_kontak === id ;
+            });
+            $('#alamat').empty();
+            filterAlamat.forEach(function(item) {
+                $('#alamat').append(
+                    `<option>${item.alamat}</option>`
+                );
+            });
+        });
     </script>
 @endsection

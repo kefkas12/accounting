@@ -73,18 +73,32 @@ class Pembelian extends Model
         $this->ppn = $request->input('input_ppn');
         $this->sisa_tagihan = $request->input('input_sisa_tagihan');
         $this->total = $request->input('input_total');
-        $this->alamat = $request->input('alamat');
+        $this->alamat = $request->input('alamat_penagihan');
         $this->email = $request->input('email');
         $this->jenis = $jenis;
         $this->id_jurnal = $idJurnal;
         if($jenis == 'pemesanan'){
-            $this->id_penawaran = $id_jenis;
+            if($id_jenis != null){
+                $this->id_penawaran = $id_jenis;
+            }else{
+                $this->info_pengiriman = $request->input('info_pengiriman') ? $request->input('info_pengiriman') : null;
+                $this->sama_dengan_penagihan = $request->input('sama_dengan_penagihan');
+                $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : null;
+                $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
+                $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
+                $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
+            }
+            if($request->input('gudang')){
+                $gudang = Gudang::find((int)$request->input('gudang'));
+                $this->id_gudang = $gudang->id;
+                $this->nama_gudang = $gudang->nama;
+            }
         }elseif($jenis == 'faktur' && $id_jenis != null){
             $this->id_pemesanan = $id_jenis;
         }
         $this->save();
 
-        if($jenis == 'pemesanan'){
+        if($jenis == 'pemesanan' && $id_jenis != null){
             $pembelian = Pembelian::find($id_jenis);
             $pembelian->id_pemesanan = $this->id;
             $pembelian->status = 'closed';
@@ -115,7 +129,7 @@ class Pembelian extends Model
         }
     }
 
-    public function edit($request)
+    public function ubah($request, $jenis = null)
     {
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
@@ -130,6 +144,23 @@ class Pembelian extends Model
         }else{
             $this->status = 'paid';
         }
+        if($jenis == 'pemesanan'){
+            $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
+            $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
+            $this->info_pengiriman = $request->input('info_pengiriman');
+            $this->sama_dengan_penagihan = $request->input('sama_dengan_penagihan');
+            $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : null;
+            $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
+            if($request->input('gudang')){
+                $gudang = Gudang::find((int)$request->input('gudang'));
+                $this->id_gudang = $gudang->id;
+                $this->nama_gudang = $gudang->nama;
+            }else{
+                $this->id_gudang = null;
+                $this->nama_gudang = null;
+            }
+        }
+
         $this->save();
 
         $this->editDetailPembelian($request);

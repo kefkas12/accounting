@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Alamat;
 use App\Models\Kontak;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,6 +54,8 @@ class PelangganController extends Controller
             $data['pelanggan'] = Kontak::where('id', $id)
                                         ->where('id_company',Auth::user()->id_company)
                                         ->first();
+            $data['additional_alamat'] = Alamat::where('id_kontak', $id)
+                                                ->get();
             if($status == 'edit'){
                 return view('pages.pelanggan.form', $data);
             }else if($status == 'detail'){
@@ -64,6 +67,18 @@ class PelangganController extends Controller
     }
     public function edit($id, Request $request)
     {
+        $additional_alamat = Alamat::where('id_kontak',$id);
+        if(count($additional_alamat->get()) > 0){
+            $additional_alamat->delete();
+        }
+
+        for($i = 0; $i < count($_POST['additional_alamat']); $i++){
+                $additional_alamat = new Alamat;
+                $additional_alamat->id_kontak = $id;
+                $additional_alamat->alamat = $_POST['additional_alamat'][$i];
+                $additional_alamat->save();
+        }
+
         $pelanggan =  Kontak::find($id);
         $pelanggan->id_company = Auth::user()->id_company;
         $pelanggan->nama = $_POST['nama'];
@@ -76,6 +91,8 @@ class PelangganController extends Controller
         $pelanggan->npwp = $_POST['npwp'];
         $pelanggan->tipe = 'pelanggan';
         $pelanggan->save();
+
+        
 
         return redirect('pelanggan');
     }

@@ -32,9 +32,15 @@
                                 </div>
                             </div>
                         </td>
-                        <td>-</td>
+                        <td>{{ $v->getRoleNames()->implode(', ') }}</td>
                         <td>Aktif</td>
-                        <td></td>
+                        <td>
+                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Aksi</button>
+                            <div class="dropdown-menu">
+                              <a class="dropdown-item" href="{{ url('penjualan/penagihan') }}">Ubah</a>
+                              <a class="dropdown-item" href="{{ url('penjualan/pemesanan') }}">Hapus</a>
+                            </div>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>

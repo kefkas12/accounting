@@ -82,7 +82,13 @@
                                     <label for="gudang" class="mt-3">Gudang</label>
                                     <select class="form-control" id="gudang" name="gudang">
                                         <option selected disabled hidden>Pilih Gudang</option>
+                                        @if(isset($gudang))
+                                        @foreach($gudang as $v)
+                                        <option>{{ $v->nama }}</option>
+                                        @endforeach
+                                        @else
                                         <option disabled>No result found</option>
+                                        @endif
                                     </select>
                                 </div>
                                 <div class="form-group col-md-3 pr-4">

@@ -47,7 +47,7 @@ class ProdukController extends Controller
         $produk->harga_jual = $_POST['harga_jual'] ? $_POST['harga_jual'] : 0;
         $produk->save();
 
-        return redirect('produk');
+        return redirect('produk/detail/'.$produk->id);
     }
     public function detail($status=null,$id=null)
     {
@@ -56,6 +56,8 @@ class ProdukController extends Controller
             $data['produk'] = Produk::where('id', $id)
                                     ->where('id_company',Auth::user()->id_company)
                                     ->first();
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
             if($status == 'edit'){
                 return view('pages.produk.form', $data);
             }else if($status == 'detail'){

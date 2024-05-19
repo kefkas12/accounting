@@ -73,7 +73,11 @@ class Penjualan extends Model
         }
         $this->id_pelanggan = $request->input('pelanggan');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
-        $this->status = 'open';
+        // if($is_requester){
+        //     $this->status = 'draf';
+        // }else{
+        //     $this->status = 'open';
+        // }
         $this->subtotal = $request->input('input_subtotal');
         $this->diskon_per_baris = $request->input('input_diskon_per_baris');
         $this->ppn = $request->input('input_ppn');
@@ -88,7 +92,9 @@ class Penjualan extends Model
             $this->no_pelacakan = $request->input('no_pelacakan');
         $this->id_jurnal = $idJurnal;
         if($jenis == 'pemesanan'){
-            $this->id_penawaran = $id_jenis;
+            if($id_jenis != null){
+                $this->id_penawaran = $id_jenis;
+            }
         }elseif(($jenis == 'penagihan' || $jenis == 'pengiriman') && $id_jenis != null){
             if(Penjualan::find($id_jenis)->jenis == 'pengiriman'){
                 $this->id_pemesanan = Penjualan::find($id_jenis)->id_pemesanan;
@@ -98,7 +104,7 @@ class Penjualan extends Model
         }
         $this->save();
 
-        if($jenis == 'pemesanan' || $jenis == 'pengiriman'){
+        if(($jenis == 'pemesanan' && $id_jenis != null) || ($jenis == 'pengiriman' && $id_jenis != null)){
             $penjualan = Penjualan::find($id_jenis);
             $penjualan->id_pemesanan = $this->id;
             $penjualan->status = 'closed';

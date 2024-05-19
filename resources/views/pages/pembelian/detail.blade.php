@@ -26,7 +26,11 @@
                             @elseif($pembelian->status == 'closed') btn-dark @endif
                             ml-2">
                                 @if ($pembelian->status == 'open')
+                                @if ($pembelian->jenis == 'pemesanan')
+                                    Belum ditagih
+                                @else
                                     Belum Dibayar
+                                @endif
                                 @elseif($pembelian->status == 'partial')
                                     Terbayar Sebagian
                                 @elseif($pembelian->status == 'paid')
@@ -45,6 +49,7 @@
                             <div class="col-sm-2"><strong>{{ $pembelian->nama_supplier }}</strong></div>
                             <div class="col-sm-2">Email</div>
                             <div class="col-sm-2"><strong>{{ $pembelian->email }}</strong></div>
+                            @hasanyrole('pemilik')
                             <div class="col-sm-4 d-flex justify-content-end">
                                 <h3>Sisa tagihan Rp. {{ number_format($pembelian->sisa_tagihan, 2, ',', '.') }} <br>
                                     @if ($jurnal)
@@ -52,6 +57,7 @@
                                     @endif
                                 </h3>
                             </div>
+                            @endhasallroles
                         </div>
                         <hr>
                         <div class="row">
@@ -64,9 +70,9 @@
                             <div class="col-sm-2" style="margin-right: -25px !important;">No Transaksi </div>
                             <div class="col-sm-2"><strong>{{ $pembelian->no_str }}</strong></div>
                         </div>
-                        <div class="row my-3">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
+                        <div class="row my-2">
+                            <div class="col-sm-2">@if($pembelian->alamat_pengiriman) Alamat pengiriman @endif</div>
+                            <div class="col-sm-2"><strong>@if($pembelian->alamat_pengiriman) {{ $pembelian->alamat_pengiriman }} @endif </strong></div>
                             <div class="col-sm-2">
                                 @if ($pembelian->jenis == 'faktur' || $pembelian->jenis == 'pemesanan')
                                     Tgl. Jatuh Tempo
@@ -94,34 +100,73 @@
                             </div>
                             @endif
                         </div>
+                        <div class="row my-2">
+                            <div class="col-sm-4"></div>
+                            <div class="col-sm-2">Tgl. pengiriman</div>
+                            <div class="col-sm-2">
+                                <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_pengiriman)) }}</strong> 
+                            </div>
+                            <div class="col-sm-2" style="margin-right: -25px !important;">Gudang</div>
+                            <div class="col-sm-2"><a href="{{ url('gudang/detail').'/'.$pembelian->id_gudang }}">{{ $pembelian->nama_gudang }}</a></div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="col-sm-4"></div>
+                            <div class="col-sm-2">Kirim Melalui</div>
+                            <div class="col-sm-2">
+                                <strong>{{ $pembelian->kirim_melalui }}</strong> 
+                            </div>
+                        </div>
+                        <div class="row my-2">
+                            <div class="col-sm-4"></div>
+                            <div class="col-sm-2">No. pelacakan</div>
+                            <div class="col-sm-2">
+                                <strong>{{ $pembelian->no_pelacakan }}</strong> 
+                            </div>
+                        </div>
                         <div class="table-responsive">
                             <table class="table my-4">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Produk</th>
+                                        <th>Deskripsi</th>
                                         <th>Kuantitas</th>
                                         <th>Unit</th>
+                                        @hasanyrole('pemilik')
                                         <th>Harga Satuan</th>
                                         <th>Pajak</th>
                                         <th>Jumlah</th>
+                                        @endhasallroles
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($pembelian->detail_pembelian as $v)
                                         <tr>
                                             <th>{{ $v->produk->nama }}</th>
+                                            <td>{{ $v->deskripsi }}</td>
                                             <td>{{ $v->kuantitas }}</td>
                                             <td>Buah</td>
+                                            @hasanyrole('pemilik')
                                             <td>Rp. {{ number_format($v->harga_satuan, 2, ',', '.') }}</td>
                                             <td>@if($v->pajak != 0) PPN @endif</td>
                                             <td>Rp. {{ number_format($v->jumlah, 2, ',', '.') }}</td>
+                                            @endhasallroles
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
-                        <div class="row">
-                            <div class="col-sm-7"></div>
+                        <div class="row mb-3">
+                            <div class="col-sm-7">
+                                <div class="row my-3">
+                                    <div class="col-sm-3">Pesan</div>
+                                    <div class="col-sm-3">-</div>
+                                </div>
+                                <div class="row my-3">
+                                    <div class="col-sm-3">Memo</div>
+                                    <div class="col-sm-3">-</div>
+                                </div>
+                            </div>
+                            @hasanyrole('pemilik')
                             <div class="col-sm-5">
                                 <div class="row my-3">
                                     <div class="col-sm-6">
@@ -170,15 +215,22 @@
                                     </div>
                                 </div>
                             </div>
+                            @endhasallroles
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-sm-7">Terakhir diubah oleh pada {{ $pembelian->updated_at }}</div>
                         </div>
                         <div class="row my-4">
                             <div class="col-sm-6">
+                                @hasanyrole('pemilik')
                                 <form id="deleteForm" action="{{ url('pembelian/hapus') . '/' . $pembelian->id }}"
                                     method="post">
                                     @csrf
                                     <button type="submit"
                                         class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
                                 </form>
+                                @endhasallroles
                             </div>
                             @if($pembelian->jenis == 'faktur' && $pembelian->status != 'paid')
                             <div class="col-sm-6 d-flex justify-content-end">
@@ -212,6 +264,7 @@
                                     </button>
                                     <div class="dropdown-menu">
                                         <!-- Dropdown menu links -->
+                                        @hasanyrole('pemilik')
                                         @if($pembelian->jenis == 'faktur')
                                             <a class="dropdown-item" href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}">Terima Pembayaran</a>
                                         @elseif($pembelian->jenis == 'penawaran')
@@ -221,6 +274,10 @@
                                         <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
                                         <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
                                         @endif
+                                        @endhasallroles
+                                        @hasanyrole('pergudangan')
+                                        <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                        @endhasallroles
                                     </div>
                                 </div>
                             </div>

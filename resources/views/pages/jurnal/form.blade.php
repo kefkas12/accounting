@@ -190,11 +190,13 @@
             
             new AutoNumeric("#debit_" + id, {
                 commaDecimalCharDotSeparator: true,
-                watchExternalChanges: true
+                watchExternalChanges: true,
+                modifyValueOnWheel : false
             });
             new AutoNumeric("#kredit_" + id, {
                 commaDecimalCharDotSeparator: true,
-                watchExternalChanges: true
+                watchExternalChanges: true,
+                modifyValueOnWheel : false
             });
         }
 

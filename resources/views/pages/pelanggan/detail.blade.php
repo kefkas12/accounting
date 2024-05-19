@@ -30,10 +30,13 @@
                             <div class="col-sm-2">Alamat</div>
                             <div class="col-sm-4">
                                 @if (isset($pelanggan))
-                                    {{ $pelanggan->alamat }}
+                                    1. {{ $pelanggan->alamat }} <br>
                                 @else
                                     -
                                 @endif
+                                @foreach($additional_alamat as $v)
+                                    {{ $loop->index+2 }}. {{ $v->alamat }} <br>
+                                @endforeach
                             </div>
                         </div>
                         <div class="row my-4">

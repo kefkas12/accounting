@@ -24,36 +24,45 @@
                         <label for="confirm_password">Confirm Password</label>
                         <input type="password" class="form-control" id="confirm_password" required>
                     </div>
+                    <div class="form-group col-md-5">
+                        <label for="confirm_password">Role</label><br>
+                        @foreach($role as $v)
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="role[]" id="role_{{ $loop->index+1 }}" value="{{ $v->name }}">
+                            <label class="form-check-label" for="role_{{ $loop->index+1 }}">{{ $v->name }}</label>
+                        </div>
+                        @endforeach
+                    </div>
                     <div class="form-group col-md-10 d-flex justify-content-end">
                         <a href="{{ url('pengaturan/pengguna') }}" class="btn btn-light">Batalkan</a>
                         <button type="button" class="btn btn-primary" onclick="check_password()">Undang</button>
                     </div>
                 </div>
-                
+
             </form>
         </div>
     </div>
     <script>
         function check_password() {
             event.preventDefault();
-            if(!$('#name').val() || !$('#email').val() ){
+            if (!$('#name').val() || !$('#email').val()) {
                 Swal.fire({
                     title: 'Name and email didn`t match',
-                    text: 'Nama dan email harus harus di isi',
-                    icon: 'error'
-                })
-            }else{
-                if($('#password').val()){
-                    if ($('#password').val() != $('#confirm_password').val()) {
-                        Swal.fire({
-                            title: 'Password didn`t match',
+                text: 'Nama dan email harus harus di isi',
+                icon: 'error'
+            })
+        } else {
+            if ($('#password').val()) {
+                if ($('#password').val() != $('#confirm_password').val()) {
+                    Swal.fire({
+                        title: 'Password didn`t match',
                             text: 'Password harus sama dengan Confirm Password.',
                             icon: 'error'
                         })
                     } else {
                         $('#insertForm').submit();
                     }
-                }else{
+                } else {
                     Swal.fire({
                         title: 'Password didn`t match',
                         text: 'Password dan confirm harus harus di isi',
@@ -61,9 +70,9 @@
                     })
                 }
             }
-            
-            
-            
+
+
+
             // 
         }
     </script>

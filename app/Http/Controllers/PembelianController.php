@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\Detail_jurnal;
 use App\Models\Detail_pembayaran_pembelian;
 use App\Models\Detail_pembelian;
+use App\Models\Gudang;
 use App\Models\Jurnal;
 use App\Models\Kontak;
 use App\Models\Pembayaran_pembelian;
@@ -44,6 +45,12 @@ class PembelianController extends Controller
                                         ->select('pembelian.*','kontak.nama as nama_supplier')
                                         ->where('pembelian.id_company',Auth::user()->id_company)
                                         ->where('pembelian.jenis','pemesanan')
+                                        ->orderBy('id','DESC')
+                                        ->get();
+        $data['pengiriman'] = Pembelian::leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
+                                        ->select('pembelian.*','kontak.nama as nama_supplier')
+                                        ->where('pembelian.id_company',Auth::user()->id_company)
+                                        ->where('pembelian.jenis','pengiriman')
                                         ->orderBy('id','DESC')
                                         ->get();
         $data['belum_dibayar'] = number_format(Pembelian::where('tanggal_jatuh_tempo','>',date('Y-m-d'))
@@ -120,6 +127,8 @@ class PembelianController extends Controller
         $data['supplier'] = Kontak::where('tipe','supplier')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
         if($id != null){
             $data['pembelian'] = Pembelian::where('id',$id)->first();
             $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
@@ -169,6 +178,21 @@ class PembelianController extends Controller
             $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
         }
         return view('pages.pembelian.faktur', $data);
+    }
+
+    public function pemesanan_pengiriman($id)
+    {
+        $data['sidebar'] = 'pembelian';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['pelanggan'] = Kontak::where('tipe','pelanggan')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        if($id != null){
+            $data['pemesanan'] = true;
+            $data['pembelian'] = Pembelian::where('id',$id)->first();
+            $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
+        }
+        return view('pages.pembelian.pengiriman', $data);
     }
 
     public function pemesanan_faktur($id)
@@ -264,6 +288,39 @@ class PembelianController extends Controller
         DB::beginTransaction();
         $pembelian = new Pembelian;
         $pembelian->insert($request, null, 'pemesanan', $id);
+        DB::commit();
+
+        return redirect('pembelian/detail/'.$pembelian->id);
+    }
+
+    public function insert_pemesanan(Request $request)
+    {
+        DB::beginTransaction();
+        $pembelian = new Pembelian;
+        $pembelian->insert($request, null, 'pemesanan');
+        DB::commit();
+
+        return redirect('pembelian/detail/'.$pembelian->id);
+    }
+
+    public function update_pemesanan(Request $request, $id)
+    {
+        DB::beginTransaction();
+        $pembelian = Pembelian::find($id);
+        $pembelian->ubah($request, 'pemesanan');
+        DB::commit();
+
+        return redirect('pembelian/detail/'.$pembelian->id);
+    }
+
+    public function insert_pemesanan_pengiriman(Request $request, $id)
+    {
+        DB::beginTransaction();
+        $jurnal = new Jurnal;
+        $jurnal->pengiriman_pembelian($request);
+        
+        $pembelian = new Pembelian;
+        $pembelian->insert($request, $jurnal->id, 'pengiriman', $id);
         DB::commit();
 
         return redirect('pembelian/detail/'.$pembelian->id);

@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
+use PDO;
 
 class LaporanController extends Controller
 {
@@ -29,6 +30,7 @@ class LaporanController extends Controller
 
     public function jurnal()
     {
+        
         $data['sidebar'] = 'laporan';
         $select = [
                     'jurnal.*',
@@ -36,8 +38,19 @@ class LaporanController extends Controller
                     'pembelian.id as id_pembelian',
                     'pembayaran_pembelian.id as id_pembayaran_pembelian',
                     'pembayaran_penjualan.id as id_pembayaran_penjualan'];
-
-        $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+        if(isset($_GET['tanggal_mulai'])){
+            $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+            ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')
+            ->leftJoin('pembelian', 'jurnal.id', 'pembelian.id_jurnal')
+            ->leftJoin('pembayaran_pembelian', 'jurnal.id', 'pembayaran_pembelian.id_jurnal')
+            ->leftJoin('pembayaran_penjualan', 'jurnal.id', 'pembayaran_penjualan.id_jurnal')
+            ->select($select)
+            ->where('jurnal.id_company', Auth::user()->id_company)
+            ->whereBetween('jurnal.tanggal_transaksi',[$_GET['tanggal_mulai'],$_GET['tanggal_selesai']])
+            ->orderBy('jurnal.id', 'DESC')
+            ->get();
+        }else{
+            $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
             ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')
             ->leftJoin('pembelian', 'jurnal.id', 'pembelian.id_jurnal')
             ->leftJoin('pembayaran_pembelian', 'jurnal.id', 'pembayaran_pembelian.id_jurnal')
@@ -46,6 +59,9 @@ class LaporanController extends Controller
             ->where('jurnal.id_company', Auth::user()->id_company)
             ->orderBy('jurnal.id', 'DESC')
             ->get();
+        }
+
+        
         return view('pages.jurnal.index', $data);
     }
 
@@ -228,7 +244,7 @@ class LaporanController extends Controller
             ->join('akun', 'detail_jurnal.id_akun', '=', 'akun.id')
             ->select('detail_jurnal.*', 'akun.id_kategori', 'akun.pengali', 'akun.nama', 'akun.nomor', 'jurnal.tanggal_transaksi')
             ->where('detail_jurnal.id_company', Auth::user()->id_company)
-            // ->whereBetween('jurnal.tanggal_transaksi',['2024-12-01','2023-12-31'])
+            ->whereBetween('jurnal.tanggal_transaksi',['2023-10-01','2024-03-01'])
             ->get();
 
         $kategori_aset_lancar = array(1, 2, 3, 4);

@@ -78,6 +78,70 @@
                     </a>
                 </li>
             </ul>
+            @elseif(Auth::user()->id_company == '9')
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('/') }}">
+                        <i class="ni ni-tv-2 text-primary"></i> {{ __('Dashboard') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $sidebar == 'penawaran' ? 'active' : '' }}" href="{{ url('penawaran') }}">
+                        <i class="fa fa-store text-primary"></i> {{ __('Penawaran') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $sidebar == 'penjualan' ? 'active' : '' }}" href="{{ url('penjualan') }}">
+                        <i class="fa fa-store text-primary"></i> {{ __('Penjualan') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $sidebar == 'pembelian' ? 'active' : '' }}" href="{{ url('pembelian') }}">
+                        <i class="fa fa-store text-primary"></i> {{ __('Pembelian') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $sidebar == 'laporan' ? 'active' : '' }}" href="{{ url('laporan') }}">
+                        <i class="fa fa-store text-primary"></i> {{ __('Laporan') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $sidebar == 'produk' ? 'active' : '' }}" href="{{ url('produk') }}">
+                        <i class="fa fa-address-book text-primary"></i> {{ __('Produk') }}
+                    </a>
+                </li>
+                <li class="nav-item {{ $sidebar == 'supplier' || $sidebar == 'pelanggan' ? 'active' : '' }}">
+                    <a class="nav-link" href="#navbar_kontak" data-toggle="collapse" role="button" aria-expanded="{{ $sidebar == 'supplier' || $sidebar == 'pelanggan' ? 'true' : 'false' }}" aria-controls="navbar_kontak">
+                        <i class="fa fa-address-book text-primary"></i>
+                        <span class="nav-link-text">{{ __('Kontak') }}</span>
+                    </a>
+
+                    <div class="collapse {{ $sidebar == 'supplier' || $sidebar == 'pelanggan' ? 'show' : '' }}" id="navbar_kontak">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'supplier' ? 'active' : '' }}" href="{{ url('supplier') }}">
+                                    {{ __('Supplier') }}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'pelanggan' ? 'active' : '' }}" href="{{ url('pelanggan') }}">
+                                    {{ __('Pelanggan') }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $sidebar == 'akun' ? 'active' : '' }}" href="{{ url('akun') }}">
+                        <i class="fa fa-address-book text-primary"></i> {{ __('Daftar Akun') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $sidebar == 'pengaturan' ? 'active' : '' }}" href="{{ url('pengaturan') }}">
+                        <i class="fa fa-address-book text-primary"></i> {{ __('Pengaturan') }}
+                    </a>
+                </li>
+            </ul>
             @else
             <ul class="navbar-nav">
                 <li class="nav-item">

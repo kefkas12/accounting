@@ -28,7 +28,7 @@ class GudangController extends Controller
         $gudang->status = 'aktif';
         $gudang->save();
 
-        return redirect('produk');
+        return redirect('gudang/detail/'.$gudang->id);
     }
     public function detail($status=null,$id=null)
     {
