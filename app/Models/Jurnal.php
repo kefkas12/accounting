@@ -117,34 +117,34 @@ class Jurnal extends Model
     //update skt
     public function pengiriman_pembelian($request, $id = null)
     {
-        // $this->id_company = Auth::user()->id_company;
-        // $this->tanggal_transaksi = $request->input('tanggal_transaksi');
-        // $this->kategori = 'sales_delivery';
-        // if(!$id){
-        //     $this->no = $this->no('sales_delivery');
-        //     $this->no_str = 'Sales Delivery #' . $this->no('sales_delivery');
-        // }
-        // $this->debit = $request->input('input_subtotal');
-        // $this->kredit = $request->input('input_subtotal');
-        // $this->save();
+        $this->id_company = Auth::user()->id_company;
+        $this->tanggal_transaksi = $request->input('tanggal_transaksi');
+        $this->kategori = 'purchase_delivery';
+        if(!$id){
+            $this->no = $this->no('purchase_delivery');
+            $this->no_str = 'Purchase Delivery #' . $this->no('purchase_delivery');
+        }
+        $this->debit = $request->input('input_subtotal');
+        $this->kredit = $request->input('input_subtotal');
+        $this->save();
 
-        // if($id){
-        //     $detail_jurnal = Detail_jurnal::where('id_jurnal',$this->id)->get();
-        //     foreach($detail_jurnal as $v){
-        //         $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
-        //                     ->where('id_akun',$v->id_akun)->first();
-        //         $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
-        //         $akun_company->save();
-        //     }
+        if($id){
+            $detail_jurnal = Detail_jurnal::where('id_jurnal',$this->id)->get();
+            foreach($detail_jurnal as $v){
+                $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                            ->where('id_akun',$v->id_akun)->first();
+                $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                $akun_company->save();
+            }
             
-        // }
-        // Detail_jurnal::where('id_jurnal',$this->id)->delete();
+        }
+        Detail_jurnal::where('id_jurnal',$this->id)->delete();
         
-        // $this->createDetailJurnal($this->id, 5, $request->input('input_subtotal'), 0);
-        // $this->updateAkunBalance(5, $request->input('input_subtotal'), 0);
+        $this->createDetailJurnal($this->id, 6, $request->input('input_subtotal'), 0);
+        $this->updateAkunBalance(6, $request->input('input_subtotal'), 0);
 
-        // $this->createDetailJurnal($this->id, 61, 0, $request->input('input_subtotal'));
-        // $this->updateAkunBalance(61, 0, $request->input('input_subtotal'));
+        $this->createDetailJurnal($this->id, 34, 0, $request->input('input_subtotal'));
+        $this->updateAkunBalance(34, 0, $request->input('input_subtotal'));
     }
 
     public function pengiriman_penagihan($request, $id = null)

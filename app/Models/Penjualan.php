@@ -104,7 +104,7 @@ class Penjualan extends Model
         }
         $this->save();
 
-        if(($jenis == 'pemesanan' && $id_jenis != null) || ($jenis == 'pengiriman' && $id_jenis != null)){
+        if(($jenis == 'pemesanan' || $jenis == 'pengiriman') && $id_jenis != null){
             $penjualan = Penjualan::find($id_jenis);
             $penjualan->id_pemesanan = $this->id;
             $penjualan->status = 'closed';

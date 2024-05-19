@@ -15,6 +15,8 @@
                             Penawaran 
                         @elseif($pembelian->jenis == 'pemesanan')
                             Pemesanan 
+                        @elseif($pembelian->jenis == 'pengiriman')
+                            Pengiriman
                         @endif
                         Pembelian #{{ $pembelian->no }}
                             <button

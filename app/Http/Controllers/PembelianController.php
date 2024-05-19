@@ -184,13 +184,15 @@ class PembelianController extends Controller
     {
         $data['sidebar'] = 'pembelian';
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
-        $data['pelanggan'] = Kontak::where('tipe','pelanggan')
+        $data['supplier'] = Kontak::where('tipe','supplier')
                                     ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
                                     ->get();
         if($id != null){
             $data['pemesanan'] = true;
-            $data['pembelian'] = Pembelian::where('id',$id)->first();
-            $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
+            $data['pembelian'] = Pembelian::join('kontak','id_supplier','=','kontak.id')->select('pembelian.*','kontak.nama')->where('pembelian.id',$id)->first();
+            $data['detail_pembelian'] = Detail_pembelian::join('produk','detail_pembelian.id_produk','=','produk.id')->select('detail_pembelian.*','produk.unit')->where('detail_pembelian.id_pembelian',$id)->get();
         }
         return view('pages.pembelian.pengiriman', $data);
     }
