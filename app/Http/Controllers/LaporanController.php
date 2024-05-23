@@ -244,7 +244,8 @@ class LaporanController extends Controller
             ->join('akun', 'detail_jurnal.id_akun', '=', 'akun.id')
             ->select('detail_jurnal.*', 'akun.id_kategori', 'akun.pengali', 'akun.nama', 'akun.nomor', 'jurnal.tanggal_transaksi')
             ->where('detail_jurnal.id_company', Auth::user()->id_company)
-            ->whereBetween('jurnal.tanggal_transaksi',['2023-10-01','2024-03-01'])
+            ->where('jurnal.status','!=','draf')
+            ->whereBetween('jurnal.tanggal_transaksi',['2023-01-01','2024-12-31'])
             ->get();
 
         $kategori_aset_lancar = array(1, 2, 3, 4);
@@ -256,6 +257,16 @@ class LaporanController extends Controller
         $kategori_pendapatan_lainnya = array(14);
         $kategori_beban = array(16, 17);
         $kategori_harga_pokok_pendapatan = array(15);
+
+        $aset_lancar = [];
+        $aset_tetap = [];
+        $depresiasi_dan_amortisasi = [];
+        $liabilitas_jangka_pendek = [];
+        $modal = [];
+        $pendapatan = [];
+        $pendapatan_lainnya = [];
+        $harga_pokok_pendapatan = [];
+        $beban = [];
 
         foreach ($akun as $v) {
             if (in_array($v->id_kategori, $kategori_aset_lancar)) {
@@ -329,8 +340,6 @@ class LaporanController extends Controller
             // $harga_pokok_pendapatan['periode_ini'] = 0;
             // $beban['periode_ini'] = 0;
             // $harga_pokok_pendapatan['periode_ini'] = 0;
-
-
             if (in_array($v->id_kategori, $kategori_pendapatan)) {
                 if (strtotime($v->tanggal_transaksi) > strtotime(date("Y") . '-01-01')) {
                     if (isset($pendapatan['periode_ini'])) {
@@ -392,20 +401,20 @@ class LaporanController extends Controller
                 }
             }
         }
-
         $modal[] =
-            [
-                'id_akun' => '',
-                'nomor' => '',
-                'nama' => 'Pendapatan sampai Tahun lalu',
-                'saldo' => $pendapatan['tahun_lalu'] + $pendapatan_lainnya['tahun_lalu'] + $beban['tahun_lalu'] - $harga_pokok_pendapatan['tahun_lalu'],
-            ];
+        [
+            'id_akun' => '',
+            'nomor' => '',
+            'nama' => 'Pendapatan sampai Tahun lalu',
+            'saldo' => (isset($pendapatan['tahun_lalu'])?$pendapatan['tahun_lalu']:0) + (isset($pendapatan_lainnya['tahun_lalu'])?$pendapatan_lainnya['tahun_lalu']:0) + (isset($beban['tahun_lalu'])?$beban['tahun_lalu']:0) - (isset($harga_pokok_pendapatan['tahun_lalu'])?$harga_pokok_pendapatan['tahun_lalu']:0),
+        ];
+        
         $modal[] =
             [
                 'id_akun' => '',
                 'nomor' => '',
                 'nama' => 'Pendapatan Periode ini',
-                'saldo' => $pendapatan['periode_ini'] + $pendapatan_lainnya['periode_ini'] + $beban['periode_ini'] - $harga_pokok_pendapatan['periode_ini'],
+                'saldo' => (isset($pendapatan['periode_ini'])?$pendapatan['periode_ini']:0) + (isset($pendapatan_lainnya['periode_ini'])?$pendapatan_lainnya['periode_ini'] : 0) + (isset($beban['periode_ini'])?$beban['periode_ini']:0) - (isset($harga_pokok_pendapatan['periode_ini'])?$harga_pokok_pendapatan['periode_ini']:0),
             ];
 
         $neraca = [

@@ -195,7 +195,7 @@ class Jurnal extends Model
         }
     }
 
-    public function penjualan($is_requester,$request, $id = null)
+    public function penjualan($request, $id = null, $is_requester = null)
     {
         $this->id_company = Auth::user()->id_company;
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');

@@ -13,7 +13,7 @@
                             <div class="col">
                                 <b>Penjualan</b>
                             </div>
-                            <div class="col d-flex justify-content-end">
+                            <div class="col d-flex justify-content-end " style="z-index: 0">
                                 <div class="input-group-prepend">
                                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Buat penjualan baru</button>
                                     <div class="dropdown-menu">
@@ -78,7 +78,7 @@
                                     aria-selected="false">Penawaran</button>
                                 <button class="nav-link" id="nav-membutuhkan-persetujuan-tab" data-toggle="tab" data-target="#nav-membutuhkan-persetujuan"
                                     type="button" role="tab" aria-controls="nav-membutuhkan-persetujuan"
-                                    aria-selected="false">Membutuhkan persetujuan</button>
+                                    aria-selected="false">Membutuhkan persetujuan @php $count_membutuhkan_persetujuan = 0; if(count($membutuhkan_persetujuan) > 0) $count_membutuhkan_persetujuan = count($membutuhkan_persetujuan); @endphp @if($count_membutuhkan_persetujuan > 0) <span class="badge badge-primary">{{ $count_membutuhkan_persetujuan }} </span> @else <span class="badge badge-secondary">{{ $count_membutuhkan_persetujuan }} </span> @endif</button>
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
@@ -104,7 +104,7 @@
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->nama_pelanggan }}</td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d/m/Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
-                                                <td>{{ $v->status }}</td>
+                                                <td>@if($v->status =='open') <span class="badge badge-warning">Menunggu pembayaran</span> @else {{ $v->status }} @endif</td>
                                                 <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
                                             </tr>
@@ -219,18 +219,20 @@
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Sisa Tagihan</th>
                                                 <th scope="col">Total</th>
+                                                <th scope="col"></th>
                                             </tr>
                                         </thead>
                                         <tbody class="list">
                                             @foreach($membutuhkan_persetujuan as $v)
                                             <tr>
-                                                <td>{{ $v->tanggal_transaksi }}</td>
+                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
-                                                <td>{{ $v->nama_pelanggan }}</td>
+                                                <td><a href="{{ url('pelanggan/detail').'/'.$v->id }}">{{ $v->nama_pelanggan }}</a></td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
                                                 <td>{{ $v->status }}</td>
                                                 <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
+                                                <td>@if($is_approver)<a class="btn btn-outline-primary btn-sm" href="{{ url('penjualan/approve').'/'.$v->id }}">Setujui</a>@endif</td>
                                             </tr>
                                             @endforeach
                                         </tbody>

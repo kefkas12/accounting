@@ -136,7 +136,7 @@ class PengaturanController extends Controller
     public function form_approval()
     {
         $data['sidebar'] = 'pengaturan';
-        $data['requester'] = User::where('id_company',Auth::user()->id_company)->whereNot('id',Auth::id())->get();
+        $data['requester'] = User::where('id_company',Auth::user()->id_company)->get();
         $data['approver'] = User::where('id_company',Auth::user()->id_company)->get();
         $data['approval'] = Company::where('id',Auth::user()->id_company)
                                     ->first();

@@ -44,6 +44,7 @@ use App\Http\Controllers\PenawaranController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\ProfilController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,9 +72,14 @@ Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
 Route::get('/cloud/jarak', 'App\Http\Controllers\ApiController@jarak');
 Route::get('/cloud/suhu', 'App\Http\Controllers\ApiController@suhu');
 
-Route::group(['middleware' => 'auth'], function () {
-	Route::resource('user', 'App\Http\Controllers\UserController', ['except' => ['show']]);
-	Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'App\Http\Controllers\ProfileController@password']);
+Route::controller(ProfilController::class)->prefix('profil')->group(function () {
+	Route::get('/', 'index');
+	Route::get('/password', 'password');
+	Route::get('/company', 'company');
+
+	Route::post('/', 'create');
+	Route::post('/password', 'create_password');
+	Route::post('/company', 'create_company');
 });
 
 Route::controller(PembelianController::class)->prefix('pembelian')->group(function () {
@@ -165,6 +171,7 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::get('/cetak/penagihan/{id}','cetak_penagihan');
 	Route::post('hapus/{id}','hapus');
 
+	Route::get('/approve/{id}','approve');
 	// Route::post('/{id}', 'edit');
 });
 

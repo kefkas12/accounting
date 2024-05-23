@@ -13,14 +13,16 @@
                             <div class="col">
                                 <b>Pembelian</b>
                             </div>
-                            <div class="col d-flex justify-content-end">
+                            <div class="col d-flex justify-content-end" style="z-index: 0">
                                 <div class="input-group-prepend">
+                                    @hasanyrole('pemilik')
                                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Buat pembelian</button>
                                     <div class="dropdown-menu">
                                       <a class="dropdown-item" href="{{ url('pembelian/faktur') }}">Faktur Pembelian</a>
                                       <a class="dropdown-item" href="{{ url('pembelian/pemesanan') }}">Pemesanan Pembelian</a>
                                       <a class="dropdown-item" href="{{ url('pembelian/penawaran') }}">Penawaran Pembelian</a>
                                     </div>
+                                    @endhasanyrole
                                   </div>
                             </div>
                         </div>

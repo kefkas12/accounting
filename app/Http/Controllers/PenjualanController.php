@@ -66,6 +66,10 @@ class PenjualanController extends Controller
                                         ->where('penjualan.jenis','penagihan')
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->sum('sisa_tagihan'),2,',','.');
+
+        $approval = new Approval;
+        $data['is_approver'] = $approval->check_approver('penjualan');
+
         return view('pages.penjualan.index', $data);
     }
     public function detail($id)
@@ -282,10 +286,10 @@ class PenjualanController extends Controller
 
         DB::beginTransaction();
         $jurnal = new Jurnal;
-        $jurnal->penjualan($is_requester,$request);
+        $jurnal->penjualan($request,null,$is_requester);
         
         $penjualan = new Penjualan;
-        $penjualan->insert($is_requester,$request, $jurnal->id, 'penagihan');
+        $penjualan->insert($request, $jurnal->id, 'penagihan', null,$is_requester);
         DB::commit();
 
         return redirect('penjualan/detail/'.$penjualan->id);
@@ -468,5 +472,17 @@ class PenjualanController extends Controller
         $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
 
         return view('pages.penjualan.cetak.penagihan',$data);
+    }
+
+    public function approve($id){
+        $penjualan = Penjualan::find($id);
+        $penjualan->status = 'open';
+        $penjualan->save();
+
+        $jurnal = Jurnal::find($penjualan->id_jurnal);
+        $jurnal->status = 'approved';
+        $jurnal->save();
+
+        return redirect('penjualan');
     }
 }

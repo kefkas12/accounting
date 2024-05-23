@@ -57,7 +57,7 @@ class Penjualan extends Model
         return $this->belongsTo(Penjualan::class, 'id_pemesanan');
     }
 
-    public function insert($request, $idJurnal, $jenis, $id_jenis=null)
+    public function insert($request, $idJurnal, $jenis, $id_jenis=null, $is_requester=null)
     {
         $this->id_company = Auth::user()->id_company;
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');
@@ -73,11 +73,11 @@ class Penjualan extends Model
         }
         $this->id_pelanggan = $request->input('pelanggan');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
-        // if($is_requester){
-        //     $this->status = 'draf';
-        // }else{
-        //     $this->status = 'open';
-        // }
+        if($is_requester){
+            $this->status = 'draf';
+        }else{
+            $this->status = 'open';
+        }
         $this->subtotal = $request->input('input_subtotal');
         $this->diskon_per_baris = $request->input('input_diskon_per_baris');
         $this->ppn = $request->input('input_ppn');
@@ -96,6 +96,7 @@ class Penjualan extends Model
                 $this->id_penawaran = $id_jenis;
             }
         }elseif(($jenis == 'penagihan' || $jenis == 'pengiriman') && $id_jenis != null){
+            dd($id_jenis);
             if(Penjualan::find($id_jenis)->jenis == 'pengiriman'){
                 $this->id_pemesanan = Penjualan::find($id_jenis)->id_pemesanan;
             }else{

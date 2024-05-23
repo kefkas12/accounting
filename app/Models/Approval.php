@@ -22,4 +22,16 @@ class Approval extends Model
         }
         return $is_requester;
     }
+
+    function check_approver($jenis){
+        $is_approver = false;
+        $approval = Approval::where('id_company',Auth::user()->id_company)->where('tipe_transaksi','like','%'.$jenis.'%')->get();
+        foreach($approval as $v){
+            $approver = Approver::where('id_approval',$v->id)->where('id_user',Auth::id())->first();
+            if($approver){
+                $is_approver = true;
+            }
+        }
+        return $is_approver;
+    }
 }

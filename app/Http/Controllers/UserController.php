@@ -27,19 +27,20 @@ class UserController extends Controller
     }
     public function index()
     {
-        $data['perusahaan'] = Perusahaan::all();
-        $data['role'] = Role::orderBy('id', 'asc')->get();
-        $data['sidebar'] = 'user';
+        // $data['perusahaan'] = Perusahaan::all();
+        // $data['role'] = Role::orderBy('id', 'asc')->get();
+        // $data['sidebar'] = 'user';
 
-        $access = User::find(Auth::id())->getPermissionsViaRoles()->pluck('name')->toArray();
+        // $access = User::find(Auth::id())->getPermissionsViaRoles()->pluck('name')->toArray();
 
-        $data['cabang'] = Cabang::whereIn('nama',User::getCabangByAccess('create','user',$access))->get();
-        $data['cabang_edit'] = Cabang::whereIn('nama',User::getCabangByAccess('update','user',$access))->get();
-        $data['user'] = User::whereIn('cabang', User::getCabangByAccess('read','user',$access))->orderBy('id', 'desc')->paginate(10);
+        // $data['cabang'] = Cabang::whereIn('nama',User::getCabangByAccess('create','user',$access))->get();
+        // $data['cabang_edit'] = Cabang::whereIn('nama',User::getCabangByAccess('update','user',$access))->get();
+        // $data['user'] = User::whereIn('cabang', User::getCabangByAccess('read','user',$access))->orderBy('id', 'desc')->paginate(10);
 
-        if (isset($_GET['search'])) {
-            $data['user'] = User::search(User::getCabangByAccess('read','user',$access), $_GET['search']);
-        }
+        // if (isset($_GET['search'])) {
+        //     $data['user'] = User::search(User::getCabangByAccess('read','user',$access), $_GET['search']);
+        // }
+        $data[''] = '';
         return view('pages.user', $data);
     }
     public function cari($id)

@@ -17,8 +17,6 @@
                             Pemesanan
                         @elseif($penjualan->jenis == 'pengiriman')
                             Pengiriman
-                        @elseif($penjualan->status == 'draf')
-                            Draf
                         @endif
                         Penjualan #{{ $penjualan->no }}
                         
@@ -28,7 +26,8 @@
                         @elseif($penjualan->status == 'partial') btn-info
                         @elseif($penjualan->status == 'paid') btn-success
                         @elseif($penjualan->status == 'overdue') btn-danger 
-                        @elseif($penjualan->status == 'closed') btn-dark @endif
+                        @elseif($penjualan->status == 'closed') btn-dark 
+                        @elseif($penjualan->status == 'draft') btn-secondary @endif
                         ml-2">
                             @if ($penjualan->status == 'open')
                                 Belum ditagih
@@ -40,6 +39,8 @@
                                 Lewat Jatuh Tempo
                             @elseif($penjualan->status == 'closed')
                                 Selesai
+                            @elseif($penjualan->status == 'draf')
+                                Draf
                             @endif
                         </button>
                     </h2>
@@ -473,15 +474,18 @@
     <!-- Modal -->
     @if ($jurnal)
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog @if($penjualan->status != 'draf') modal-lg @else modal-sm text-center @endif">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">{{ $jurnal->no_str }}</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">@if($penjualan->status == 'draf')Journal entry belum tersedia @else {{ $jurnal->no_str }} @endif</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
+                        @if($penjualan->status == 'draf')
+                        Anda dapat melihat journal entry setelah transaksi ini disetujui.
+                        @else
                         <table class="table">
                             <thead>
                                 <tr>
@@ -513,6 +517,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        @endif
                     </div>
                 </div>
             </div>

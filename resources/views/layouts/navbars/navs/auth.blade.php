@@ -24,12 +24,14 @@
                     </div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-right">
-                    <div class=" dropdown-header noti-title">
+                    <div hidden class=" dropdown-header noti-title">
                         <h6 class="text-overflow m-0">{{ __('Welcome!') }}</h6>
                     </div>
+                    <a href="{{ url('profil') }}" class="dropdown-item">
+                        <span>Profil Akun</span>
+                    </a>
                     <a href="#" class="dropdown-item">
-                        <i class="ni ni-settings-gear-65"></i>
-                        <span>{{ Auth::user()->nama.' - '.Auth::user()->jabatan }}</span>
+                        <span>{{ Auth::user()->nama_perusahaan }}</span>
                     </a>
                     <div class="dropdown-divider"></div>
                     <a href="{{ route('logout') }}" class="dropdown-item" onclick="event.preventDefault();
