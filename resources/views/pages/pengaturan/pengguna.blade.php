@@ -35,11 +35,13 @@
                         <td>{{ $v->getRoleNames()->implode(', ') }}</td>
                         <td>Aktif</td>
                         <td>
+                            @if(Auth::user()->id != $v->id)
                             <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Aksi</button>
                             <div class="dropdown-menu">
-                              <a class="dropdown-item" href="{{ url('penjualan/penagihan') }}">Ubah</a>
-                              <a class="dropdown-item" href="{{ url('penjualan/pemesanan') }}">Hapus</a>
+                              <a class="dropdown-item" href="{{ url('pengaturan/pengguna/edit').'/'.$v->id }}">Ubah</a>
+                              <a class="dropdown-item" href="{{ url('pengaturan/pengguna/hapus').'/'.$v->id }}">Hapus</a>
                             </div>
+                            @endif
                         </td>
                     </tr>
                     @endforeach

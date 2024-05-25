@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Alamat;
 use App\Models\Approval;
 use App\Models\Detail_penjualan;
+use App\Models\Gudang;
 use App\Models\Kontak;
 use App\Models\Penjualan;
 use App\Models\Produk;

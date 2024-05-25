@@ -248,6 +248,18 @@ class PembelianController extends Controller
 
         $pembelian = new Pembelian;
         $pembelian->insert($request, $jurnal->id, 'faktur');
+
+        //gudang
+        for ($i = 0; $i < count($request->input('produk')); $i++) {
+            $produk = Produk::find($request->input('produk')[$i]);
+            if($produk->batas_stok_minimum){
+                $produk->stok = $produk->stok + $request->input('kuantitas')[$i];
+                $produk->save();
+
+                $gudang = Gudang::
+            }
+        }
+
         DB::commit();
 
         return redirect('pembelian/detail/'.$pembelian->id);

@@ -227,7 +227,10 @@ Route::controller(LaporanController::class)->prefix('laporan')->group(function (
 	Route::get('/', 'index');
 	Route::get('/jurnal', 'jurnal');
 	Route::get('/neraca_old', 'neraca');
+
 	Route::get('/neraca', 'neraca_new');
+	Route::post('/neraca', 'neraca_new');
+
 	Route::get('/buku_besar', 'buku_besar');
 	Route::get('/laba_rugi', 'laba_rugi');
 
@@ -242,6 +245,11 @@ Route::controller(PengaturanController::class)->prefix('pengaturan')->group(func
 	Route::get('/pengguna', 'pengguna');
 	Route::get('/pengguna/insert', 'form_pengguna');
 	Route::post('/pengguna/insert', 'insert_form_pengguna');
+
+	Route::get('/pengguna/edit/{id}', 'form_pengguna');
+	Route::post('/pengguna/edit/{id}', 'edit_form_pengguna');
+
+	Route::get('/pengguna/hapus/{id}', 'hapus_form_pengguna');
 
 	Route::get('/perusahaan', 'perusahaan');
 	Route::get('/perusahaan/insert', 'form_perusahaan');

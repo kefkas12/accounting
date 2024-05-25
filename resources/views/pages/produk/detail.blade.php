@@ -40,6 +40,12 @@
                             </div>
                         </div>
                         <div class="row my-4">
+                            <div class="col-sm-2">Harga rata-rata</div>
+                            <div class="col-sm-4">
+                                Rp {{ $produk->harga_beli }}
+                            </div>
+                        </div>
+                        <div class="row my-4">
                             <div class="col-sm-2">Stok di gudang</div>
                             <div class="col-sm-4">
                                 {{ $produk->stok }} {{ $produk->unit }}

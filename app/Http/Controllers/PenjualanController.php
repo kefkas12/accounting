@@ -448,13 +448,21 @@ class PenjualanController extends Controller
             Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->delete();
             Jurnal::find($penjualan->id_jurnal)->delete();
 
-            $pemesanan = Penjualan::find($penjualan->id_pemesanan);
-            $pemesanan->status = 'open';
-            $pemesanan->save();
+            if(isset($penjualan->id_pemesanan)){
+                $pemesanan = Penjualan::find($penjualan->id_pemesanan);
+                $pemesanan->status = 'open';
+                $pemesanan->save();
+                $penjualan->delete();
+                DB::commit();
+                return redirect('penjualan/detail/'.$pemesanan->id);
+            }else{
+                $penjualan->delete();
+                DB::commit();
+                return redirect('penjualan');
+            }
+            
 
-            $penjualan->delete();
-            DB::commit();
-            return redirect('penjualan/detail/'.$pemesanan->id);
+            
         }
     }
 

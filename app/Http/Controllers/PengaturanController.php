@@ -48,10 +48,16 @@ class PengaturanController extends Controller
 
         return view('pages.pengaturan.pengguna', $data);
     }
-    public function form_pengguna()
+    public function form_pengguna($id = null)
     {
         $data['sidebar'] = 'pengaturan';
         $data['role'] = Role::get();
+        if($id){
+            $data['is_edit'] = true;
+            $data['user'] = User::where('id',$id)->first();
+            $data['my_role'] = $data['user']->getRoleNames()->toArray();
+        }
+        
         return view('pages.pengaturan.form_pengguna', $data);
     }
 
@@ -68,15 +74,28 @@ class PengaturanController extends Controller
 
         for($i= 0;$i<count($_POST['role']); $i++){
             $user->assignRole($_POST['role'][$i]);
-
         }
 
         return redirect('pengaturan/pengguna');
     }
 
-    public function delete_form_pengguna()
+    public function edit_form_pengguna($id){
+        $user = User::find($id);
+        $user->syncRoles([]);
+        for($i= 0;$i<count($_POST['role']); $i++){
+            $user->assignRole($_POST['role'][$i]);
+        }
+
+        return redirect('pengaturan/pengguna');
+    }
+
+    public function hapus_form_pengguna($id)
     {
-        
+        $user = User::find($id);
+        $user->syncRoles([]);
+        $user->delete();
+
+        return redirect('pengaturan/pengguna');
     }
 
     public function perusahaan()

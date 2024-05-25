@@ -13,14 +13,12 @@
                             <div class="col">
                                 <b>Penjualan</b>
                             </div>
-                            <div class="col d-flex justify-content-end " style="z-index: 0">
-                                <div class="input-group-prepend">
-                                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Buat penjualan baru</button>
-                                    <div class="dropdown-menu">
-                                      <a class="dropdown-item" href="{{ url('penjualan/penagihan') }}">Penagihan Penjualan</a>
-                                      <a class="dropdown-item" href="{{ url('penjualan/pemesanan') }}">Pemesanan Penjualan</a>
-                                      <a class="dropdown-item" href="{{ url('penjualan/penawaran') }}">Penawaran Penjualan</a>
-                                    </div>
+                            <div class="col d-flex justify-content-end ">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Buat penjualan baru</button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{{ url('penjualan/penagihan') }}">Penagihan Penjualan</a>
+                                    <a class="dropdown-item" href="{{ url('penjualan/pemesanan') }}">Pemesanan Penjualan</a>
+                                    <a class="dropdown-item" href="{{ url('penjualan/penawaran') }}">Penawaran Penjualan</a>
                                 </div>
                             </div>
                         </div>
