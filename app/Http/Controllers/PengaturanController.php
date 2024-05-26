@@ -39,10 +39,11 @@ class PengaturanController extends Controller
        
         // User::find(9)->assignRole('pergudangan');
         // $role = Role::create(['name' => 'pergudangan']);
-        // $permission = Permission::create(['name' => 'create produk']);
-        // $permission = Permission::create(['name' => 'read produk']);
-        // $permission = Permission::create(['name' => 'update produk']);
-        // $permission = Permission::create(['name' => 'delete produk']);
+
+        // $permission = Permission::create(['name' => 'create jurnal']);
+        // $permission = Permission::create(['name' => 'read jurnal']);
+        // $permission = Permission::create(['name' => 'update jurnal']);
+        // $permission = Permission::create(['name' => 'delete jurnal']);
 
         // Role::find(3)->givePermissionTo(4);
 

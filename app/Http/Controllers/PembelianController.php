@@ -256,7 +256,7 @@ class PembelianController extends Controller
                 $produk->stok = $produk->stok + $request->input('kuantitas')[$i];
                 $produk->save();
 
-                $gudang = Gudang::
+                // $gudang = Gudang::
             }
         }
 

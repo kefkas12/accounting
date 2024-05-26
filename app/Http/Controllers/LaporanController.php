@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Akun;
 use App\Models\Akun_company;
+use App\Models\Approval;
 use App\Models\Detail_jurnal;
 use App\Models\Jurnal;
 use App\Models\Pembelian;
@@ -46,6 +47,10 @@ class LaporanController extends Controller
             ->leftJoin('pembayaran_penjualan', 'jurnal.id', 'pembayaran_penjualan.id_jurnal')
             ->select($select)
             ->where('jurnal.id_company', Auth::user()->id_company)
+            ->where(function($query) {
+                $query->whereNot('jurnal.status','draf')
+                      ->orWhere('jurnal.status',null);
+            })
             ->whereBetween('jurnal.tanggal_transaksi',[$_GET['tanggal_mulai'],$_GET['tanggal_selesai']])
             ->orderBy('jurnal.id', 'DESC')
             ->get();
@@ -57,10 +62,26 @@ class LaporanController extends Controller
             ->leftJoin('pembayaran_penjualan', 'jurnal.id', 'pembayaran_penjualan.id_jurnal')
             ->select($select)
             ->where('jurnal.id_company', Auth::user()->id_company)
+            ->where(function($query) {
+                $query->whereNot('jurnal.status','draf')
+                      ->orWhere('jurnal.status',null);
+            })
             ->orderBy('jurnal.id', 'DESC')
             ->get();
         }
-
+        $data['membutuhkan_persetujuan'] = Jurnal::with('detail_jurnal.akun')
+            ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')
+            ->leftJoin('pembelian', 'jurnal.id', 'pembelian.id_jurnal')
+            ->leftJoin('pembayaran_pembelian', 'jurnal.id', 'pembayaran_pembelian.id_jurnal')
+            ->leftJoin('pembayaran_penjualan', 'jurnal.id', 'pembayaran_penjualan.id_jurnal')
+            ->select($select)
+            ->where('jurnal.id_company', Auth::user()->id_company)
+            ->where('jurnal.status', 'draf')
+            ->where('jurnal.kategori','journal_entry')
+            ->orderBy('jurnal.id', 'DESC')
+            ->get();
+        $approval = new Approval;
+        $data['is_approver'] = $approval->check_approver('jurnal');
         
         return view('pages.jurnal.index', $data);
     }

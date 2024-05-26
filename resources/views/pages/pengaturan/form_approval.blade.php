@@ -30,6 +30,12 @@
                             <option>Penawaran Pembelian</option>
                             <option>Pengiriman Pembelian</option>
                             <option>Permintaan Pembelian</option>
+                            
+                            <option>Jurnal</option>
+                            <option>Tambah Jurnal</option>
+                            <option>Ubah Jurnal</option>
+                            <option>Hapus Jurnal</option>
+
                         </select>
                     </div>
                 </div>

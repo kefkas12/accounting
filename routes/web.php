@@ -219,6 +219,9 @@ Route::controller(JurnalController::class)->prefix('jurnal')->group(function () 
 	Route::get('/insert', 'detail');
 	Route::post('/insert', 'insert');
 	Route::post('/edit/{id}', 'edit');
+	Route::get('/approve/{id}', 'approve');
+	Route::get('/approve/{id}/{status}', 'approve');
+	Route::get('/cancel/{id}', 'cancel');
 	Route::get('/{status}/{id}', 'detail');
 	Route::post('/{status}/{id}', 'detail');
 });
