@@ -200,6 +200,11 @@
                         <i class="fa fa-address-book text-primary"></i> {{ __('Pengaturan') }}
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $sidebar == 'laporan' ? 'active' : '' }}" href="{{ url('laporan/jurnal') }}">
+                        <i class="fa fa-address-book text-primary"></i> {{ __('Approval Jurnal') }}
+                    </a>
+                </li>
             </ul>
             @endif
         </div>

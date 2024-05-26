@@ -128,7 +128,7 @@
                                                     <option selected disabled hidden>Pilih produk</option>
                                                     @foreach ($produk as $v)
                                                         <option value="{{ $v->id }}"
-                                                            data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}
+                                                            data-harga_beli="{{ $v->harga_beli }}">{{ $v->nama }}
                                                         </option>
                                                     @endforeach
                                                 </select>
@@ -258,7 +258,7 @@
         }
 
         function get_data(thisElement, no) {
-            var selected = $(thisElement).find('option:selected').data('harga_jual');
+            var selected = $(thisElement).find('option:selected').data('harga_beli');
             $('#harga_satuan_' + no).val(selected);
             $('#jumlah_' + no).val(selected);
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0 ;
@@ -312,7 +312,7 @@
                         <select class="form-control" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
                             <option selected disabled hidden>Pilih produk</option>
                             @foreach ($produk as $v)
-                                <option value="{{ $v->id }}" data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}</option>
+                                <option value="{{ $v->id }}" data-harga_beli="{{ $v->harga_beli }}">{{ $v->nama }}</option>
                             @endforeach
                         </select>
                     </th>

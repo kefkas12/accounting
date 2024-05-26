@@ -96,7 +96,6 @@ class Penjualan extends Model
                 $this->id_penawaran = $id_jenis;
             }
         }elseif(($jenis == 'penagihan' || $jenis == 'pengiriman') && $id_jenis != null){
-            dd($id_jenis);
             if(Penjualan::find($id_jenis)->jenis == 'pengiriman'){
                 $this->id_pemesanan = Penjualan::find($id_jenis)->id_pemesanan;
             }else{

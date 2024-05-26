@@ -167,7 +167,7 @@
                                                         <div class="col-sm-2">
                                                             @if($is_approver)
                                                             <a @if($v->is_delete) href="{{ url('/jurnal/approve').'/'.$v->id.'/delete' }}" @else href="{{ url('/jurnal/approve').'/'.$v->id }}" @endif class="btn @if($v->is_delete) btn-outline-danger @else btn-outline-primary @endif btn-sm">@if($v->is_delete) Approve Delete @else Approve @endif</a>
-                                                            <a href="{{ url('/jurnal/cancel').'/'.$v->id }}" class="btn btn-outline-secondary btn-sm">Cancel</a>
+                                                            <a hidden href="{{ url('/jurnal/cancel').'/'.$v->id }}" class="btn btn-outline-secondary btn-sm">Cancel</a>
                                                             @endif
                                                         </div>
                                                     </div>

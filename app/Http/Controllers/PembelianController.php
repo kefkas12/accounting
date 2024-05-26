@@ -364,13 +364,16 @@ class PembelianController extends Controller
         }else if($pembelian->jenis == 'pemesanan'){
             Detail_pembelian::where('id_pembelian',$pembelian->id)->delete();
 
-            $penawaran = Pembelian::find($pembelian->id_penawaran);
-            $penawaran->status = 'open';
-            $penawaran->save();
-
-            $pembelian->delete();
-            DB::commit();
-            return redirect('pembelian/detail/'.$penawaran->id);
+            if($pembelian->id_penawaran){
+                $penawaran = Pembelian::find($pembelian->id_penawaran);
+                $penawaran->status = 'open';
+                $penawaran->save();
+                $pembelian->delete();
+                DB::commit();
+                return redirect('pembelian/detail/'.$penawaran->id);
+            }else{
+                return redirect('pembelian');
+            }
         }else if($pembelian->jenis == 'faktur'){
             $detail_jurnal = Detail_jurnal::where('id_jurnal',$pembelian->id_jurnal)->get();
             foreach($detail_jurnal as $v){

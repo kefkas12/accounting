@@ -314,7 +314,7 @@ class PenjualanController extends Controller
 
         DB::beginTransaction();
         $penjualan = new Penjualan;
-        $penjualan->insert($is_requester,$request, null, 'penawaran');
+        $penjualan->insert($request, null, 'penawaran',null,$is_requester);
         DB::commit();
 
         return redirect('penjualan/detail/'.$penjualan->id);
@@ -322,6 +322,9 @@ class PenjualanController extends Controller
 
     public function update_penawaran(Request $request, $id)
     {
+        $approval = new Approval;
+        $is_requester = $approval->check_requester('Penawaran Penjualan');
+        
         DB::beginTransaction();
         $penjualan = Penjualan::find($id);
         $penjualan->edit($request);
@@ -382,10 +385,10 @@ class PenjualanController extends Controller
 
         DB::beginTransaction();
         $jurnal = new Jurnal;
-        $jurnal->penjualan($is_requester,$request);
+        $jurnal->penjualan($request, null, $is_requester);
         
         $penjualan = new Penjualan;
-        $penjualan->insert($is_requester,$request, $jurnal->id, 'penagihan', $id);
+        $penjualan->insert($request, $jurnal->id, 'penagihan', $id, $is_requester);
         DB::commit();
 
         return redirect('penjualan/detail/'.$penjualan->id);
@@ -487,10 +490,12 @@ class PenjualanController extends Controller
         $penjualan->status = 'open';
         $penjualan->save();
 
-        $jurnal = Jurnal::find($penjualan->id_jurnal);
-        $jurnal->status = 'approved';
-        $jurnal->save();
-
+        if($penjualan->id_jurnal){
+            $jurnal = Jurnal::find($penjualan->id_jurnal);
+            $jurnal->status = 'approved';
+            $jurnal->save();
+        }
+        
         return redirect('penjualan');
     }
 }

@@ -56,4 +56,13 @@
         </div>
     </div>
 </div>
+<script>
+    @if (session('msg'))
+    sweetalert("{{ session('msg') }}")
+    @endif
+
+    function sweetalert(msg){
+        Swal.fire(msg, '', 'success');
+    }
+</script>
 @endsection

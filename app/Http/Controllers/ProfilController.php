@@ -47,7 +47,7 @@ class ProfilController extends Controller
             $user->password = Hash::make($_POST['konfirmasi_password']);
             $user->save();
         }
-        return redirect('profil/password');
+        return redirect('profil/password')->with('msg', 'Password Berhasil diubah');
     }
 
     public function create_company(){
