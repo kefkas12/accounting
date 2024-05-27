@@ -479,12 +479,28 @@ class LaporanController extends Controller
             ->where('akun_company.id_company', Auth::user()->id_company)
             ->get();
 
-        $akun = Detail_jurnal::join('jurnal', 'detail_jurnal.id_jurnal', '=', 'jurnal.id')
+        if(isset($_POST['periode_dari'])){
+            $akun = Detail_jurnal::join('jurnal', 'detail_jurnal.id_jurnal', '=', 'jurnal.id')
             ->join('akun', 'detail_jurnal.id_akun', '=', 'akun.id')
             ->select('detail_jurnal.*', 'akun.id_kategori', 'akun.pengali', 'akun.nama', 'akun.nomor', 'jurnal.tanggal_transaksi')
             ->where('detail_jurnal.id_company', Auth::user()->id_company)
-            ->where('jurnal.tanggal_transaksi', '>=', '2024-01-01')
+            ->where(function($query) {
+                $query->whereNot('jurnal.status','draf')
+                        ->orWhere('jurnal.status',null);
+            })
+            ->whereBetween('jurnal.tanggal_transaksi',[$_POST['periode_dari'],$_POST['periode_sampai']])
             ->get();
+        }else{
+            $akun = Detail_jurnal::join('jurnal', 'detail_jurnal.id_jurnal', '=', 'jurnal.id')
+            ->join('akun', 'detail_jurnal.id_akun', '=', 'akun.id')
+            ->select('detail_jurnal.*', 'akun.id_kategori', 'akun.pengali', 'akun.nama', 'akun.nomor', 'jurnal.tanggal_transaksi')
+            ->where('detail_jurnal.id_company', Auth::user()->id_company)
+            ->where(function($query) {
+                $query->whereNot('jurnal.status','draf')
+                        ->orWhere('jurnal.status',null);
+            })
+            ->get();
+        }
 
         $kategori_pendapatan = array(13);
         $kategori_pendapatan_lainnya = array(14);

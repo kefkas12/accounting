@@ -14,6 +14,30 @@
                                 <strong><span style="font-size: 1.5rem;">Laporan Laba-Rugi</span></strong> (dalam IDR)
                             </div>
                         </div>
+                        <form method="POST" action="{{ url('laporan/neraca') }}">
+                            @csrf
+                            <div class="row">
+                                <div class="col-2">
+                                    <label for="periode_dari">Periode dari</label>
+                                </div>
+                                <div class="col-2">
+                                    <label for="periode_sampai">Periode sampai</label>
+                                </div>
+                                <div class="col-2">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-2">
+                                    <input type="date" class="form-control" name="periode_dari" @if(isset($_POST['periode_dari'])) value="{{ $_POST['periode_dari'] }}" @endif>
+                                </div>
+                                <div class="form-group col-2">
+                                    <input type="date" class="form-control" name="periode_sampai" @if(isset($_POST['periode_sampai'])) value="{{ $_POST['periode_sampai'] }}" @endif>
+                                </div>
+                                <div class="form-group col-2">
+                                    <input type="submit" class="btn btn-primary" value="Filter">
+                                </div>
+                            </div>
+                        </form>
                     </div>
                     <table class="table" id="laba_rugi">
                     </table>
