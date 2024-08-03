@@ -61,12 +61,16 @@ class Pembelian extends Model
         $this->no = $this->no($jenis);
         if($jenis == 'faktur'){
             $this->no_str = 'Purchase Invoice #' . $this->no;
+            $tipe = 'Faktur Pembelian #' . $this->no;
         }else if($jenis == 'pengiriman'){
             $this->no_str = 'Purchase Delivery #' . $this->no;
+            $tipe = 'Pengiriman Pembelian #' . $this->no;
         }else if($jenis == 'penawaran'){
             $this->no_str = 'Purchase Quote #' . $this->no;
+            $tipe = 'Penawaran Pembelian #' . $this->no;
         }else if($jenis == 'pemesanan'){
             $this->no_str = 'Purchase Order #' . $this->no;
+            $tipe = 'Pesanan Pembelian #' . $this->no;
         }
         $this->id_supplier = $request->input('supplier');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
@@ -114,10 +118,10 @@ class Pembelian extends Model
             $pembelian->save();
         }
 
-        $this->insertDetailPembelian($request);
+        $this->insertDetailPembelian($request, $tipe);
     }
 
-    protected function insertDetailPembelian(Request $request)
+    protected function insertDetailPembelian(Request $request, $tipe)
     {
         for ($i = 0; $i < count($request->input('produk')); $i++) {
             $detail_pembelian = new Detail_pembelian;
@@ -131,6 +135,20 @@ class Pembelian extends Model
             $detail_pembelian->jumlah = $request->input('jumlah')[$i];
 
             $detail_pembelian->save();
+
+            $transaksi_produk = new Transaksi_produk;
+            $transaksi_produk->id_company = Auth::user()->id_company;
+            $transaksi_produk->id_transaksi = $this->id;
+            $transaksi_produk->id_produk = $request->input('produk')[$i];
+            $transaksi_produk->tanggal = $request->input('tanggal_transaksi');
+            $transaksi_produk->tipe = $tipe;
+            $transaksi_produk->jenis = 'pembelian';
+            $transaksi_produk->qty = $request->input('kuantitas')[$i];
+
+            $produk = Produk::where('id',$request->input('produk')[$i])->first();
+            $transaksi_produk->unit = $produk->unit;
+            $transaksi_produk->save();
+
         }
     }
 

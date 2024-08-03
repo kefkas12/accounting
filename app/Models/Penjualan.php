@@ -64,12 +64,16 @@ class Penjualan extends Model
         $this->no = $this->no($jenis);
         if($jenis == 'penagihan'){
             $this->no_str = 'Sales Invoice #' . $this->no;
+            $tipe = 'Penagihan Penjualan #' . $this->no;
         }else if($jenis == 'pengiriman'){
             $this->no_str = 'Sales Delivery #' . $this->no;
+            $tipe = 'Pengiriman Penjualan #' . $this->no;
         }else if($jenis == 'penawaran'){
             $this->no_str = 'Sales Quote #' . $this->no;
+            $tipe = 'Penawaran Penjualan #' . $this->no;
         }else if($jenis == 'pemesanan'){
             $this->no_str = 'Sales Order #' . $this->no;
+            $tipe = 'Pemesanan Penjualan #' . $this->no;
         }
         $this->id_pelanggan = $request->input('pelanggan');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
@@ -115,10 +119,10 @@ class Penjualan extends Model
             $penjualan->save();
         }
 
-        $this->insertDetailPenjualan($request);
+        $this->insertDetailPenjualan($request, $tipe);
     }
 
-    protected function insertDetailPenjualan(Request $request)
+    protected function insertDetailPenjualan(Request $request, $tipe)
     {
         for ($i = 0; $i < count($request->input('produk')); $i++) {
             $harga_satuan = $request->input('harga_satuan')[$i] != '' || $request->input('harga_satuan')[$i] != null ? number_format((float)str_replace(",", "", $_POST['harga_satuan'][$i]), 2, '.', '') : 0;
@@ -132,10 +136,23 @@ class Penjualan extends Model
             $detail_penjualan->deskripsi = $request->input('deskripsi')[$i];
             $detail_penjualan->kuantitas = $request->input('kuantitas')[$i];
             $detail_penjualan->harga_satuan = $harga_satuan;
-            $detail_penjualan->diskon_per_baris = $request->input('diskon_per_baris')[$i];            
+            $detail_penjualan->diskon_per_baris = $request->input('diskon_per_baris')[$i];
             $detail_penjualan->jumlah = $jumlah;
             $detail_penjualan->pajak = $jumlah * $pajak / 100;
             $detail_penjualan->save();
+
+            $transaksi_produk = new Transaksi_produk;
+            $transaksi_produk->id_company = Auth::user()->id_company;
+            $transaksi_produk->id_transaksi = $this->id;
+            $transaksi_produk->id_produk = $request->input('produk')[$i];
+            $transaksi_produk->tanggal = $request->input('tanggal_transaksi');
+            $transaksi_produk->tipe = $tipe;
+            $transaksi_produk->jenis = 'penjualan';
+            $transaksi_produk->qty = $request->input('kuantitas')[$i];
+
+            $produk = Produk::where('id',$request->input('produk')[$i])->first();
+            $transaksi_produk->unit = $produk->unit;
+            $transaksi_produk->save();
         }
     }
 

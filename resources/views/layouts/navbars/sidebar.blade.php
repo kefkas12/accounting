@@ -101,6 +101,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ $sidebar == 'gudang' ? 'active' : '' }}" href="{{ url('gudang') }}">
+                        <i class="fa fa-store text-primary"></i> {{ __('Gudang') }}
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {{ $sidebar == 'laporan' ? 'active' : '' }}" href="{{ url('laporan') }}">
                         <i class="fa fa-store text-primary"></i> {{ __('Laporan') }}
                     </a>

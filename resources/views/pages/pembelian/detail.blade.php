@@ -102,15 +102,18 @@
                             </div>
                             @endif
                         </div>
+                        @if($pembelian->tanggal_pengiriman)
                         <div class="row my-2">
                             <div class="col-sm-4"></div>
                             <div class="col-sm-2">Tgl. pengiriman</div>
                             <div class="col-sm-2">
-                                <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_pengiriman)) }}</strong> 
+                                <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_pengiriman)) }}</strong>
                             </div>
                             <div class="col-sm-2" style="margin-right: -25px !important;">Gudang</div>
                             <div class="col-sm-2"><a href="{{ url('gudang/detail').'/'.$pembelian->id_gudang }}">{{ $pembelian->nama_gudang }}</a></div>
                         </div>
+                        @endif
+                        @if($pembelian->kirim_melalui)
                         <div class="row my-2">
                             <div class="col-sm-4"></div>
                             <div class="col-sm-2">Kirim Melalui</div>
@@ -118,6 +121,8 @@
                                 <strong>{{ $pembelian->kirim_melalui }}</strong> 
                             </div>
                         </div>
+                        @endif
+                        @if($pembelian->no_pelacakan)
                         <div class="row my-2">
                             <div class="col-sm-4"></div>
                             <div class="col-sm-2">No. pelacakan</div>
@@ -125,6 +130,7 @@
                                 <strong>{{ $pembelian->no_pelacakan }}</strong> 
                             </div>
                         </div>
+                        @endif
                         <div class="table-responsive">
                             <table class="table my-4">
                                 <thead class="thead-light">
@@ -143,7 +149,7 @@
                                 <tbody>
                                     @foreach ($pembelian->detail_pembelian as $v)
                                         <tr>
-                                            <th>{{ $v->produk->nama }}</th>
+                                            <th><a href="{{ url('produk').'/detail/'.$v->produk->id }}">{{ $v->produk->nama }}</a></th>
                                             <td>{{ $v->deskripsi }}</td>
                                             <td>{{ $v->kuantitas }}</td>
                                             <td>Buah</td>
@@ -259,6 +265,15 @@
                             @else
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
+                                <div class="btn-group dropup mr-2">
+                                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                        Cetak
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="{{ url('pembelian/penawaran/cetak') . '/' . $pembelian->id }}">Cetak Penawaran</a>
+                                    </div>
+                                </div>
                                 <div class="btn-group dropup">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
                                         aria-expanded="false">

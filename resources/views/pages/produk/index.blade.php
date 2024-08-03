@@ -11,13 +11,16 @@
                     <div class="card-header border-0">
                         <div class="row">
                             <div class="col">
+                                <b>Produk</b>
+                            </div>
+                            <div class="col d-flex justify-content-end">
                                 <div class="input-group-prepend">
                                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Tindakan</button>
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="{{ url('produk/insert') }}">Tambah produk baru</a>
                                         <a class="dropdown-item" href="{{ url('gudang/insert') }}">Tambah gudang baru</a>
                                     </div>
-                                </div>
+                                  </div>
                             </div>
                         </div>
                     </div>
@@ -52,7 +55,7 @@
                                                 Stok segera habis
                                             </div>
                                             <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                                Total produk<br> <span style="font-weight:900">0</span>
+                                                Total produk<br> <span style="font-weight:900">{{ $produk_segera_habis }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -62,7 +65,7 @@
                                                 Stok habis
                                             </div>
                                             <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                                Total produk<br> <span style="font-weight:900">0</span>
+                                                Total produk<br> <span style="font-weight:900">{{ $produk_habis }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -72,7 +75,7 @@
                                                 Gudang
                                             </div>
                                             <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                                Terdaftar<br> <span style="font-weight:900">0</span>
+                                                Terdaftar<br> <span style="font-weight:900">{{ $gudang_terdaftar }}</span>
                                             </div>
                                         </div>
                                     </div>

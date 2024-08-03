@@ -24,7 +24,6 @@
                                   </div>
                             </div>
                         </div>
-                        
                         <div class="row">
                             <div class="col-sm-3" style="padding-right: 0px !important;">
                                 <div class="card border-warning">

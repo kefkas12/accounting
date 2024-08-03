@@ -17,8 +17,8 @@
                             <div class="row">
                                 <div class="col-sm-10">
                                     <div class="form-group">
-                                        <label for="nama">Nama Produk</label>
-                                        <input type="text" class="form-control" id="nama" name="nama" value="{{ isset($produk) ? $produk->nama : '' }}">
+                                        <label for="nama">Nama Produk <span class="text-red">*</span></label>
+                                        <input type="text" class="form-control" id="nama" name="nama" value="{{ isset($produk) ? $produk->nama : '' }}" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="kode">Kode produk / SKU</label>

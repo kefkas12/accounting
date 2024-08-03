@@ -15,10 +15,13 @@ use App\Models\Kontak;
 use App\Models\Pembayaran_pembelian;
 use App\Models\Pembelian;
 use App\Models\Produk;
+use App\Models\Transaksi_produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Browsershot\Browsershot;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 class PembelianController extends Controller
 {
@@ -150,12 +153,32 @@ class PembelianController extends Controller
         return view('pages.pembelian.penawaran', $data);
     }
 
+    public function cetak_penawaran($id){
+        $data['pembelian'] = Pembelian::leftJoin('kontak','pembelian.id_supplier','kontak.id')
+                                        ->where('pembelian.id',$id)
+                                        ->first();
+        $data['detail_pembelian'] = Detail_pembelian::leftjoin('produk','detail_pembelian.id_produk','produk.id')
+                                                    ->where('detail_pembelian.id_pembelian',$id)
+                                                    ->get();
+
+        $data['company'] = Company::leftJoin('users','company.id','users.id_company')
+                                    ->where('company.id', $data['pembelian']->id_company)
+                                    ->first();
+
+        // return view('pdf.pembelian.penawaran' , $data);
+
+        return Pdf::view('pdf.pembelian.penawaran' , $data)->format('a4')
+                ->name('penawaran_pembelian.pdf');
+    }
+
     public function penawaran_pemesanan($id)
     {
         $data['sidebar'] = 'pembelian';
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
         $data['supplier'] = Kontak::where('tipe','supplier')
                                     ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
                                     ->get();
         if($id != null){
             $data['penawaran'] = true;
@@ -359,11 +382,12 @@ class PembelianController extends Controller
         if($pembelian->jenis == 'penawaran'){
             Detail_pembelian::where('id_pembelian',$id)->delete();
             $pembelian->delete();
+            Transaksi_produk::where('id_transaksi',$id)->delete();
             DB::commit();
             return redirect('pembelian');
         }else if($pembelian->jenis == 'pemesanan'){
             Detail_pembelian::where('id_pembelian',$pembelian->id)->delete();
-
+            Transaksi_produk::where('id_transaksi',$id)->delete();
             if($pembelian->id_penawaran){
                 $penawaran = Pembelian::find($pembelian->id_penawaran);
                 $penawaran->status = 'open';
@@ -407,6 +431,7 @@ class PembelianController extends Controller
             $pemesanan->save();
 
             $pembelian->delete();
+            Transaksi_produk::where('id_transaksi',$id)->delete();
             
             DB::commit();
             return redirect('pembelian/detail/'.$pemesanan->id);

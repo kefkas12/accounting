@@ -15,7 +15,7 @@
                         <form action="{{ url('gudang/insert') }}" method ="POST" id="form">
                             @csrf
                             <div class="row">
-                                <div class="col-sm-6">
+                                <div class="col-sm-11">
                                     <div class="form-row">
                                         <div class="form-group col-md-8">
                                             <label for="nama">Nama gudang <span class="text-red">*</span></label>

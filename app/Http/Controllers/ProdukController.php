@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Gudang;
+use App\Models\Pembelian;
 use App\Models\Produk;
+use App\Models\Transaksi_produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -18,6 +20,15 @@ class ProdukController extends Controller
     public function index()
     {
         $data['sidebar'] = 'produk';
+        $data['produk_segera_habis'] = Produk::whereColumn('stok','<','batas_stok_minimum')
+                                            ->where('id_company',Auth::user()->id_company)
+                                            ->count();
+        $data['produk_habis'] = Produk::where('stok','=',0)
+                                            ->where('id_company',Auth::user()->id_company)
+                                            ->count();
+        $data['gudang_terdaftar'] = Gudang::where('status','aktif')
+                                            ->where('id_company',Auth::user()->id_company)
+                                            ->count();
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)
                                 ->get();
         $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
@@ -61,6 +72,10 @@ class ProdukController extends Controller
             if($status == 'edit'){
                 return view('pages.produk.form', $data);
             }else if($status == 'detail'){
+                $data['transaksi_produk'] = Transaksi_produk::where('id_produk',$id)
+                                                ->where('id_company',Auth::user()->id_company)
+                                                ->get();
+
                 return view('pages.produk.detail', $data);
             }
         }else{

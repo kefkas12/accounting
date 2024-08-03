@@ -19,7 +19,7 @@
                 <a class="nav-link pr-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <div class="media align-items-center">
                         <div class="media-body ml-2 d-none d-lg-block">
-                            <span class="mb-0 text-sm  font-weight-bold">{{ auth()->user()->nama_perusahaan }}</span>
+                            <span class="mb-0 text-sm  font-weight-bold">{{ auth()->user()->email }} - {{ auth()->user()->nama_perusahaan }}</span>
                         </div>
                     </div>
                 </a>

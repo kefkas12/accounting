@@ -16,6 +16,7 @@ use App\Models\Kontak;
 use App\Models\Pembayaran_penjualan;
 use App\Models\Penjualan;
 use App\Models\Produk;
+use App\Models\Transaksi_produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -411,11 +412,13 @@ class PenjualanController extends Controller
         if($penjualan->jenis == 'penawaran'){
             Detail_penjualan::where('id_penjualan',$id)->delete();
             $penjualan->delete();
+            Transaksi_produk::where('id_transaksi',$id)->delete();
             DB::commit();
             return redirect('penjualan');
         }else if($penjualan->jenis == 'pemesanan'){
             Detail_penjualan::where('id_penjualan',$penjualan->id)->delete();
             $penjualan->delete();
+            Transaksi_produk::where('id_transaksi',$id)->delete();
             DB::commit();
 
             $penawaran = Penjualan::find($penjualan->id_penawaran);
@@ -450,6 +453,8 @@ class PenjualanController extends Controller
 
             Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->delete();
             Jurnal::find($penjualan->id_jurnal)->delete();
+
+            Transaksi_produk::where('id_transaksi',$id)->delete();
 
             if(isset($penjualan->id_pemesanan)){
                 $pemesanan = Penjualan::find($penjualan->id_pemesanan);
