@@ -237,7 +237,7 @@ class PembelianController extends Controller
 
     public function penerimaan_pembayaran(Request $request)
     {
-        DB::beginTransaction();        
+        DB::beginTransaction();
         $jurnal = new Jurnal;
         $jurnal->pembayaran_pembelian($request);
 
@@ -395,6 +395,20 @@ class PembelianController extends Controller
                 $pembelian->delete();
                 DB::commit();
                 return redirect('pembelian/detail/'.$penawaran->id);
+            }else{
+                return redirect('pembelian');
+            }
+        }else if($pembelian->jenis == 'pengiriman'){
+            Detail_pembelian::where('id_pembelian',$pembelian->id)->delete();
+            Transaksi_produk::where('id_transaksi',$id)->delete();
+            if($pembelian->id_pemesanan){
+                $pemesanan = Pembelian::find($pembelian->id_pemesanan);
+                $pemesanan->id_pemesanan = null;
+                $pemesanan->status = 'open';
+                $pemesanan->save();
+                $pembelian->delete();
+                DB::commit();
+                return redirect('pembelian/detail/'.$pemesanan->id);
             }else{
                 return redirect('pembelian');
             }

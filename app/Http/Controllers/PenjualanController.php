@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use PDO;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 class PenjualanController extends Controller
 {
@@ -176,12 +177,30 @@ class PenjualanController extends Controller
         return view('pages.penjualan.penawaran', $data);
     }
 
+    public function cetak_penawaran($id){
+        $data['penjualan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','kontak.id')
+                                        ->where('penjualan.id',$id)
+                                        ->first();
+        $data['detail_penjualan'] = Detail_penjualan::leftjoin('produk','detail_penjualan.id_produk','produk.id')
+                                                    ->where('detail_penjualan.id_penjualan',$id)
+                                                    ->get();
+
+        $data['company'] = Company::leftJoin('users','company.id','users.id_company')
+                                    ->where('company.id', $data['penjualan']->id_company)
+                                    ->first();
+
+        return Pdf::view('pdf.penjualan.penawaran' , $data)->format('a4')
+                ->name('penawaran_penjualan.pdf');
+    }
+
     public function penawaran_pemesanan($id)
     {
         $data['sidebar'] = 'penjualan';
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
                                     ->get();
         if($id != null){
             $data['penawaran'] = true;

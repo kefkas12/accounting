@@ -20,4 +20,9 @@ class Kontak extends Model
     {
         return $this->hasMany(Pembelian::class, 'id_supplier');
     }
+
+    public function alamat(): HasMany
+    {
+        return $this->hasMany(Pembelian::class, 'id_supplier');
+    }
 }

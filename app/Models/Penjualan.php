@@ -90,14 +90,30 @@ class Penjualan extends Model
         $this->alamat = $request->input('alamat');
         $this->email = $request->input('email');
         $this->jenis = $jenis;
+        $this->id_jurnal = $idJurnal;
         if($request->input('kirim_melalui'))
             $this->kirim_melalui = $request->input('kirim_melalui');
         if($request->input('no_pelacakan'))
             $this->no_pelacakan = $request->input('no_pelacakan');
-        $this->id_jurnal = $idJurnal;
         if($jenis == 'pemesanan'){
             if($id_jenis != null){
                 $this->id_penawaran = $id_jenis;
+            }
+
+            $this->info_pengiriman = $request->input('info_pengiriman') ? $request->input('info_pengiriman') : null;
+            $this->sama_dengan_penagihan = $request->input('info_pengiriman') == 'on' ? $request->input('sama_dengan_penagihan') : null;
+
+            if($request->input('info_pengiriman') == 'on'){
+                $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : null;
+                $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
+                $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
+                $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
+            }
+
+            if($request->input('gudang')){
+                $gudang = Gudang::find((int)$request->input('gudang'));
+                $this->id_gudang = $gudang->id;
+                $this->nama_gudang = $gudang->nama;
             }
         }elseif(($jenis == 'penagihan' || $jenis == 'pengiriman') && $id_jenis != null){
             if(Penjualan::find($id_jenis)->jenis == 'pengiriman'){
@@ -148,7 +164,7 @@ class Penjualan extends Model
             $transaksi_produk->tanggal = $request->input('tanggal_transaksi');
             $transaksi_produk->tipe = $tipe;
             $transaksi_produk->jenis = 'penjualan';
-            $transaksi_produk->qty = $request->input('kuantitas')[$i];
+            $transaksi_produk->qty = -$request->input('kuantitas')[$i];
 
             $produk = Produk::where('id',$request->input('produk')[$i])->first();
             $transaksi_produk->unit = $produk->unit;

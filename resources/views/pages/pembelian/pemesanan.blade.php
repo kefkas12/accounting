@@ -100,7 +100,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-2 pr-2">
-                                    <div class="form-group">
+                                    <div class="form-group info_pengiriman" style="display:none">
                                         <label for="tanggal_pengiriman">Tgl. pengiriman</label>
                                         <input type="date" class="form-control" id="tanggal_pengiriman"
                                             name="tanggal_pengiriman" value="{{ date('Y-m-d') }}">

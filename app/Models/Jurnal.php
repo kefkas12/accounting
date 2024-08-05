@@ -140,11 +140,18 @@ class Jurnal extends Model
         }
         Detail_jurnal::where('id_jurnal',$this->id)->delete();
         
+        if($request->input('input_ongkos_kirim')){
+            $this->createDetailJurnal($this->id, 65, $request->input('input_ongkos_kirim'), 0);
+            $this->updateAkunBalance(65, $request->input('input_ongkos_kirim'), 0);
+        }
+
         $this->createDetailJurnal($this->id, 6, $request->input('input_subtotal'), 0);
         $this->updateAkunBalance(6, $request->input('input_subtotal'), 0);
 
-        $this->createDetailJurnal($this->id, 34, 0, $request->input('input_subtotal'));
-        $this->updateAkunBalance(34, 0, $request->input('input_subtotal'));
+        $subtotal = $request->input('input_ongkos_kirim')? $request->input('input_ongkos_kirim') + $request->input('input_subtotal') : $request->input('input_subtotal');
+
+        $this->createDetailJurnal($this->id, 34, 0, $subtotal);
+        $this->updateAkunBalance(34, 0, $subtotal);
     }
 
     public function pengiriman_penagihan($request, $id = null)

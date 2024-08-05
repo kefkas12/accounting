@@ -49,7 +49,7 @@
         <tr>
           <td>{{ $loop->index+1 }}</td>
           <td>{{ $v->nama }}</td>
-          <td>{{ $v->kuantitas }}</td>
+          <td>{{ $v->kuantitas }} {{ $v->unit }}</td>
           <td>{{ $v->harga_satuan }}</td>
           <td>{{ $v->jumlah }}</td>
         </tr>

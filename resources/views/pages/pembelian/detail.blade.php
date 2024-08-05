@@ -19,14 +19,18 @@
                             Pengiriman
                         @endif
                         Pembelian #{{ $pembelian->no }}
-                            <button
-                                class="btn btn-sm 
-                            @if ($pembelian->status == 'open') btn-warning
-                            @elseif($pembelian->status == 'partial') btn-info
-                            @elseif($pembelian->status == 'paid') btn-success
-                            @elseif($pembelian->status == 'overdue') btn-danger 
-                            @elseif($pembelian->status == 'closed') btn-dark @endif
-                            ml-2">
+                            @if($pembelian->status == 'open')
+                            <button class="btn btn-sm btn-warning ml-2" style="background-color: #F59E0B">
+                            @elseif($pembelian->status == 'partial')
+                            <button class="btn btn-sm btn-info ml-2">
+                            @elseif($pembelian->status == 'paid')
+                            <button class="btn btn-sm btn-success ml-2">
+                            @elseif($pembelian->status == 'overdue')
+                            <button class="btn btn-sm btn-danger ml-2">
+                            @elseif($pembelian->status == 'closed')
+                            <button class="btn btn-sm btn-dark ml-2">
+                            @endif
+                             
                                 @if ($pembelian->status == 'open')
                                 @if ($pembelian->jenis == 'pemesanan')
                                     Belum ditagih
@@ -63,7 +67,7 @@
                         </div>
                         <hr>
                         <div class="row">
-                            <div class="col-sm-2">Alamat supplier</div>
+                            <div class="col-sm-2">@if($pembelian->jenis == 'pengiriman') Alamat pengiriman @else Alamat supplier @endif</div>
                             <div class="col-sm-2"><strong>{{ $pembelian->alamat }}</strong></div>
                             <div class="col-sm-2">Tgl. Transaksi</div>
                             <div class="col-sm-2">
@@ -83,7 +87,9 @@
                                 @endif
                             </div>
                             <div class="col-sm-2">
+                                @if($pembelian->tanggal_jatuh_tempo)
                                 <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_jatuh_tempo)) }}</strong>
+                                @endif
                             </div>
                             @if($pembelian->penawaran)
                             <div class="col-sm-2" style="margin-right: -25px !important;">
@@ -109,6 +115,12 @@
                             <div class="col-sm-2">
                                 <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_pengiriman)) }}</strong>
                             </div>
+                        </div>
+                        @else
+                        <div class="row my-2">
+                            <div class="col-sm-4"></div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
                             <div class="col-sm-2" style="margin-right: -25px !important;">Gudang</div>
                             <div class="col-sm-2"><a href="{{ url('gudang/detail').'/'.$pembelian->id_gudang }}">{{ $pembelian->nama_gudang }}</a></div>
                         </div>
@@ -118,7 +130,7 @@
                             <div class="col-sm-4"></div>
                             <div class="col-sm-2">Kirim Melalui</div>
                             <div class="col-sm-2">
-                                <strong>{{ $pembelian->kirim_melalui }}</strong> 
+                                <strong>{{ $pembelian->kirim_melalui }}</strong>
                             </div>
                         </div>
                         @endif
@@ -139,11 +151,13 @@
                                         <th>Deskripsi</th>
                                         <th>Kuantitas</th>
                                         <th>Unit</th>
+                                        @if($pembelian->jenis != 'pengiriman')
                                         @hasanyrole('pemilik')
                                         <th>Harga Satuan</th>
                                         <th>Pajak</th>
                                         <th>Jumlah</th>
                                         @endhasallroles
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -153,11 +167,13 @@
                                             <td>{{ $v->deskripsi }}</td>
                                             <td>{{ $v->kuantitas }}</td>
                                             <td>Buah</td>
+                                            @if($pembelian->jenis != 'pengiriman')
                                             @hasanyrole('pemilik')
                                             <td>Rp. {{ number_format($v->harga_satuan, 2, ',', '.') }}</td>
                                             <td>@if($v->pajak != 0) PPN @endif</td>
                                             <td>Rp. {{ number_format($v->jumlah, 2, ',', '.') }}</td>
                                             @endhasallroles
+                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -174,6 +190,18 @@
                                     <div class="col-sm-3">-</div>
                                 </div>
                             </div>
+                            @if($pembelian->jenis == 'pengiriman')
+                            <div class="col-sm-5">
+                                <div class="row my-3">
+                                    <div class="col-sm-6">
+                                        <h4>Ongkos kirim</h4>
+                                    </div>
+                                    <div class="col-sm-6 d-flex justify-content-end">
+                                        <h4>Rp. {{ number_format($pembelian->ongkos_kirim, 2, ',', '.') }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            @else
                             @hasanyrole('pemilik')
                             <div class="col-sm-5">
                                 <div class="row my-3">
@@ -224,6 +252,7 @@
                                 </div>
                             </div>
                             @endhasallroles
+                            @endif
                         </div>
                         
                         <div class="row">

@@ -105,7 +105,15 @@
                                                 <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->nama_supplier }}</td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
-                                                <td>{{ $v->status }}</td>
+                                                <td>
+                                                    @if($v->status == 'closed')
+                                                    <button class="btn btn-sm" style="background-color:#D0D6DD;">
+                                                    @elseif($v->status == 'open')
+                                                    <button class="btn btn-sm" style="background-color:#FBF3DD; color:#DB8000;">
+                                                    @endif
+                                                    {{ $v->status }}
+                                                    </button>
+                                                </td>
                                                 <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
                                             </tr>
@@ -132,7 +140,15 @@
                                                 <td>{{ $v->tanggal_transaksi }}</td>
                                                 <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->nama_supplier }}</td>
-                                                <td>{{ $v->status }}</td>
+                                                <td>
+                                                    @if($v->status == 'closed')
+                                                    <button class="btn btn-sm" style="background-color:#D0D6DD;">
+                                                    @elseif($v->status == 'open')
+                                                    <button class="btn btn-sm" style="background-color:#FBF3DD; color:#DB8000;">
+                                                    @endif
+                                                    {{ $v->status }}
+                                                    </button>
+                                                </td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -161,7 +177,15 @@
                                                 <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->nama_supplier }}</td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
-                                                <td>{{ $v->status }}</td>
+                                                <td>
+                                                    @if($v->status == 'closed')
+                                                    <button class="btn btn-sm" style="background-color:#D0D6DD;">
+                                                    @elseif($v->status == 'open')
+                                                    <button class="btn btn-sm" style="background-color:#FBF3DD; color:#DB8000;">
+                                                    @endif
+                                                    {{ $v->status }}
+                                                    </button>
+                                                </td>
                                                 <td>Rp {{ number_format($v->dp,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
                                             </tr>
@@ -191,7 +215,15 @@
                                                 <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->nama_supplier }}</td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
-                                                <td>{{ $v->status }}</td>
+                                                <td>
+                                                    @if($v->status == 'closed')
+                                                    <button class="btn btn-sm" style="background-color:#D0D6DD;">
+                                                    @elseif($v->status == 'open')
+                                                    <button class="btn btn-sm" style="background-color:#FBF3DD; color:#DB8000;">
+                                                    @endif
+                                                    {{ $v->status }}
+                                                    </button>
+                                                </td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
                                             </tr>
                                             @endforeach

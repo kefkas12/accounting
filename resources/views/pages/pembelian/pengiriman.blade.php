@@ -65,8 +65,7 @@
                                 <div class="col-md-3 pr-2">
                                     <div class="form-group">
                                         <label for="tanggal_transaksi">Tgl. pengiriman</label>
-                                        <input type="date" class="form-control" id="tanggal_transaksi"
-                                            name="tanggal_transaksi">
+                                        <input type="date" class="form-control" id="tanggal_transaksi" name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="kirim_melalui">Kirim melalui</label>
@@ -334,12 +333,20 @@
             `);
         };
 
+        // $('#input_ongkos_kirim').on("keyup", function() {
+        //     $('#total_faktur').text(rupiah(result_subtotal + result_ppn +(int)$(this).val()));
+        // })
+
         @if(isset($pembelian))
         $( document ).ready(function() {
             $('#supplier').val('{{ $pembelian->id_supplier }}')
             $('#email').val('{{ $pembelian->email }}')
             $('#alamat_pengiriman').val('{{ $pembelian->alamat_pengiriman }}')
+            @if($pembelian->tanggal_pengiriman)
             $('#tanggal_transaksi').val('{{ $pembelian->tanggal_pengiriman }}')
+            @else
+            $('#tanggal_transaksi').val('{{ date("Y-m-d") }}')
+            @endif
             $('#tanggal_jatuh_tempo').val('{{ $pembelian->tanggal_jatuh_tempo }}')
             $('#kirim_melalui').val('{{ $pembelian->kirim_melalui }}')
             $('#no_pelacakan').val('{{ $pembelian->no_pelacakan }}')
@@ -376,5 +383,7 @@
             $('.form-control').removeAttr('disabled');
         });
         @endif
+
+
     </script>
 @endsection

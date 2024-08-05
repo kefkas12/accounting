@@ -84,16 +84,23 @@ class Pembelian extends Model
         $this->jenis = $jenis;
         $this->id_jurnal = $idJurnal;
         if($jenis == 'pemesanan' || $jenis == 'pengiriman'){
-            if($id_jenis != null){
+            if($id_jenis != null && $jenis == 'pemesanan'){
                 $this->id_penawaran = $id_jenis;
+            }else if($id_jenis != null && $jenis == 'pengiriman'){
+                $this->id_pemesanan = $id_jenis;
+                $this->ongkos_kirim = $request->input('input_ongkos_kirim');
             }else{
                 $this->info_pengiriman = $request->input('info_pengiriman') ? $request->input('info_pengiriman') : null;
-                $this->sama_dengan_penagihan = $request->input('sama_dengan_penagihan');
+                $this->sama_dengan_penagihan = $request->input('info_pengiriman') == 'on' ? $request->input('sama_dengan_penagihan') : null;
             }
-            $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : null;
-            $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
-            $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
-            $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
+
+            if($request->input('info_pengiriman') == 'on'){
+                $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : null;
+                $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
+                $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
+                $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
+            }
+            
             if($request->input('gudang')){
                 $gudang = Gudang::find((int)$request->input('gudang'));
                 $this->id_gudang = $gudang->id;

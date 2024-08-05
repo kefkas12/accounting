@@ -32,7 +32,7 @@
                         @if(isset($pembelian)) 
                             action="{{ url('pembelian/penawaran').'/'.$pembelian->id }}" 
                         @else 
-                            action="{{ url('pembelian/penawaran') }}" 
+                            action="{{ url('pembelian/penawaran') }}"
                         @endif
                     >
                         @csrf

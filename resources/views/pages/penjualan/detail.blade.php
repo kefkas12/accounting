@@ -19,16 +19,20 @@
                             Pengiriman
                         @endif
                         Penjualan #{{ $penjualan->no }}
+                        @if ($penjualan->status == 'open') 
+                        <button class="btn btn-sm text-white ml-2" style="background-color: #F59E0B">
+                        @elseif($penjualan->status == 'partial')
+                        <button class="btn btn-sm btn-info ml-2">
+                        @elseif($penjualan->status == 'paid')
+                        <button class="btn btn-sm btn-success ml-2">
+                        @elseif($penjualan->status == 'overdue')
+                        <button class="btn btn-sm btn-danger ml-2">
+                        @elseif($penjualan->status == 'closed')
+                        <button class="btn btn-sm btn-dark ml-2">
+                        @elseif($penjualan->status == 'draft')
+                        <button class="btn btn-sm btn-secondary ml-2">
+                        @endif
                         
-                        <button
-                            class="btn btn-sm 
-                        @if ($penjualan->status == 'open') btn-warning
-                        @elseif($penjualan->status == 'partial') btn-info
-                        @elseif($penjualan->status == 'paid') btn-success
-                        @elseif($penjualan->status == 'overdue') btn-danger 
-                        @elseif($penjualan->status == 'closed') btn-dark 
-                        @elseif($penjualan->status == 'draft') btn-secondary @endif
-                        ml-2">
                             @if ($penjualan->status == 'open')
                                 Belum ditagih
                             @elseif($penjualan->status == 'partial')
@@ -79,8 +83,16 @@
                             <div class="col-sm-2"><strong>{{ $penjualan->no_str }}</strong></div>
                         </div>
                         <div class="row my-3">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2">@if($penjualan->jenis == 'pemesanan') Alamat pengiriman @endif</div>
+                            <div class="col-sm-2">
+                            @if($penjualan->jenis == 'pemesanan')
+                                @if ($penjualan->alamat_pengiriman)
+                                    <strong>{{ $penjualan->alamat_pengiriman }}</strong>
+                                @else
+                                    -
+                                @endif
+                            @endif
+                            </div>
                             <div class="col-sm-2">
                                 @if ($penjualan->jenis == 'penagihan' || $penjualan->jenis == 'pemesanan')
                                     Tgl. Jatuh Tempo
@@ -126,6 +138,8 @@
                             <div class="col-sm-2">
                                 @if($penjualan->jenis == 'pengiriman')
                                     No. pelacakan
+                                @elseif($penjualan->jenis == 'pemesanan')
+                                    Tgl. pengiriman
                                 @endif
                             </div>
                             <div class="col-sm-2">
@@ -135,14 +149,24 @@
                                 @else
                                 -
                                 @endif
+                                @elseif($penjualan->jenis == 'pemesanan')
+                                {{ date('d/m/Y',strtotime($penjualan->tanggal_pengiriman)) }}
                                 @endif
                             </div>
-                            @if($penjualan->penawaran)
+                            <!-- @if($penjualan->penawaran)
                             <div class="col-sm-2" style="margin-right: -25px !important;">
                                 No. Penawaran
                             </div>
                             <div class="col-sm-2">
                                 <a href="{{ url('penjualan/detail').'/'.$penjualan->penawaran->id }}">{{ $penjualan->penawaran->no_str }}</a>
+                            </div>
+                            @endif -->
+                            @if($penjualan->jenis == 'pemesanan')
+                            <div class="col-sm-2" style="margin-right: -25px !important;">
+                                Gudang
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="{{ url('gudang/detail').'/'.$penjualan->id_gudang }}">{{ $penjualan->nama_gudang }}</a>
                             </div>
                             @endif
                             @if($penjualan->jenis == 'pengiriman')
@@ -156,6 +180,31 @@
                             @endif
                             @endif
                         </div>
+                        @if($penjualan->jenis == 'pemesanan')
+                        <div class="row my-3">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"> Kirim melalui
+                            </div>
+                            <div class="col-sm-2">
+                            {{ $penjualan->kirim_melalui }}
+                            </div>
+                            <!-- @if($penjualan->penawaran)
+                            <div class="col-sm-2" style="margin-right: -25px !important;">
+                                No. Penawaran
+                            </div>
+                            <div class="col-sm-2">
+                                <a href="{{ url('penjualan/detail').'/'.$penjualan->penawaran->id }}">{{ $penjualan->penawaran->no_str }}</a>
+                            </div>
+                            @endif -->
+                            <div class="col-sm-2" style="margin-right: -25px !important;">
+                                No. pelacakan
+                            </div>
+                            <div class="col-sm-2">
+                            {{ $penjualan->no_pelacakan }}
+                            </div>
+                        </div>
+                        @endif
                         <div class="table-responsive">
                             <table class="table my-4">
                                 <thead class="thead-light">
@@ -175,7 +224,7 @@
                                 <tbody>
                                     @foreach ($penjualan->detail_penjualan as $v)
                                         <tr>
-                                            <th>{{ $v->produk->nama }}</th>
+                                            <th><a href="{{ url('produk').'/detail/'.$v->produk->id }}">{{ $v->produk->nama }}</a></th>
                                             <td>{{ $v->deskripsi }}</td>
                                             <td>{{ $v->kuantitas }}</td>
                                             <td>Buah</td>
@@ -200,9 +249,18 @@
                                 </tbody>
                             </table>
                         </div>
-                        @if($penjualan->jenis != 'pengiriman')
-                        <div class="row">
-                            <div class="col-sm-7"></div>
+                        <div class="row mb-3">
+                            <div class="col-sm-7">
+                                <div class="row my-3">
+                                    <div class="col-sm-3">Pesan</div>
+                                    <div class="col-sm-3">-</div>
+                                </div>
+                                <div class="row my-3">
+                                    <div class="col-sm-3">Memo</div>
+                                    <div class="col-sm-3">-</div>
+                                </div>
+                            </div>
+                            @if($penjualan->jenis != 'pengiriman')
                             <div class="col-sm-5">
                                 <div class="row my-2">
                                     <div class="col-sm-6">
@@ -264,6 +322,9 @@
                             </div>
                         </div>
                         @endif
+                        <div class="row">
+                            <div class="col-sm-7">Terakhir diubah oleh pada {{ $penjualan->updated_at }}</div>
+                        </div>
                         @if(isset($pengiriman))
                         <div class="table-responsive">
                             Pengiriman
@@ -358,6 +419,15 @@
                             @else
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
+                                <div class="btn-group dropup mr-2">
+                                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                        Cetak
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="{{ url('penjualan/penawaran/cetak') . '/' . $penjualan->id }}">Cetak Penawaran</a>
+                                    </div>
+                                </div>
                                 @if($penjualan->jenis != 'pengiriman')
                                 <div class="btn-group dropup">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
