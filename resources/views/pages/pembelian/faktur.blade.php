@@ -277,6 +277,12 @@
             
             @if(isset($pengiriman))
                 $('#info_pengiriman').prop('checked',true).trigger('change');
+                @if(isset($pembelian->kirim_melalui))
+                $('#kirim_melalui').val('{{ $pembelian->kirim_melalui }}')
+                @endif
+                @if(isset($pembelian->no_pelacakan))
+                $('#no_pelacakan').val('{{ $pembelian->no_pelacakan }}')
+                @endif
             @endif
         }
 

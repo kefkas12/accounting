@@ -68,7 +68,7 @@
                         <hr>
                         <div class="row">
                             <div class="col-sm-2">@if($pembelian->jenis == 'pengiriman') Alamat pengiriman @else Alamat supplier @endif</div>
-                            <div class="col-sm-2"><strong>{{ $pembelian->alamat }}</strong></div>
+                            <div class="col-sm-2"><strong>@if($pembelian->jenis == 'pengiriman') {{ $pembelian->alamat_pengiriman }} @else {{ $pembelian->alamat }} @endif</strong></div>
                             <div class="col-sm-2">Tgl. Transaksi</div>
                             <div class="col-sm-2">
                                 <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_transaksi)) }}</strong>
@@ -77,8 +77,8 @@
                             <div class="col-sm-2"><strong>{{ $pembelian->no_str }}</strong></div>
                         </div>
                         <div class="row my-2">
-                            <div class="col-sm-2">@if($pembelian->alamat_pengiriman) Alamat pengiriman @endif</div>
-                            <div class="col-sm-2"><strong>@if($pembelian->alamat_pengiriman) {{ $pembelian->alamat_pengiriman }} @endif </strong></div>
+                            <div class="col-sm-2">@if($pembelian->jenis == 'pemesanan')@if($pembelian->alamat_pengiriman) Alamat pengiriman @endif @endif</div>
+                            <div class="col-sm-2"><strong>@if($pembelian->jenis == 'pemesanan') @if($pembelian->alamat_pengiriman) {{ $pembelian->alamat_pengiriman }} @endif  @endif </strong></div>
                             <div class="col-sm-2">
                                 @if($pembelian->jenis == 'pengiriman')
                                     Kirim Melalui
@@ -121,12 +121,24 @@
                             @endif
                         </div>
                         @if($pembelian->tanggal_pengiriman)
-                        @if($pembelian->jenis != 'pengiriman')
+                        @if($pembelian->jenis == 'pemesanan')
                         <div class="row my-2">
                             <div class="col-sm-4"></div>
                             <div class="col-sm-2">Tgl. pengiriman</div>
                             <div class="col-sm-2">
                                 <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_pengiriman)) }}</strong>
+                            </div>
+                        </div>
+                        @elseif($pembelian->jenis == 'pengiriman')
+                        <div class="row my-2">
+                            <div class="col-sm-4"></div>
+                            <div class="col-sm-2">No. Pelacakan</div>
+                            <div class="col-sm-2">
+                                @if($pembelian->no_pelacakan)
+                                <strong>{{ $pembelian->no_pelacakan }}</strong>
+                                @else
+                                -
+                                @endif
                             </div>
                         </div>
                         @endif
@@ -140,9 +152,8 @@
                             </div>
                             <div class="col-sm-2">
                                 @if($pembelian->jenis == 'pengiriman')
-                                    <strong>{{ $pembelian->no_pelacakan }}</strong>
                                     @if($pembelian->no_pelacakan)
-                                    {{ $pembelian->no_pelacakan }}
+                                    <strong>{{ $pembelian->no_pelacakan }}</strong>
                                     @else
                                     -
                                     @endif
@@ -153,7 +164,7 @@
                         </div>
                         @endif
                         @if($pembelian->kirim_melalui)
-                        @if($pembelian->jenis != 'pengiriman')
+                        @if($pembelian->jenis == 'pemesanan')
                         <div class="row my-2">
                             <div class="col-sm-4"></div>
                             <div class="col-sm-2">Kirim Melalui</div>
@@ -164,7 +175,7 @@
                         @endif
                         @endif
                         @if($pembelian->no_pelacakan)
-                        @if($pembelian->jenis != 'pengiriman')
+                        @if($pembelian->jenis == 'pemesanan')
                         <div class="row my-2">
                             <div class="col-sm-4"></div>
                             <div class="col-sm-2">No. pelacakan</div>

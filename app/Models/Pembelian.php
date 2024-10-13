@@ -85,30 +85,36 @@ class Pembelian extends Model
         $this->ppn = $request->input('input_ppn');
         $this->sisa_tagihan = $request->input('input_sisa_tagihan');
         $this->total = $request->input('input_total');
-        $this->alamat = $request->input('alamat_penagihan');
+        $this->alamat = $request->input('alamat_penagihan') ? $request->input('alamat_penagihan') : $request->input('alamat');
         $this->email = $request->input('email');
         $this->jenis = $jenis;
         $this->id_jurnal = $idJurnal;
+        //update
+        $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : null;
+        $this->ongkos_kirim = $request->input('input_ongkos_kirim') ? $request->input('input_ongkos_kirim') : null;
+        $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
+        $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
+        
+        $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
+        $this->alamat = $this->alamat ? $this->alamat : $this->alamat_pengiriman;
         if($jenis == 'pemesanan' || $jenis == 'pengiriman'){
             if($id_jenis != null && $jenis == 'pemesanan'){
                 $this->id_penawaran = $id_jenis;
             }else if($id_jenis != null && $jenis == 'pengiriman'){
                 $this->id_pemesanan = $id_jenis;
-                $this->ongkos_kirim = $request->input('input_ongkos_kirim');
+                $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : $request->input('tanggal_transaksi');
+
+                $this->info_pengiriman = Pembelian::find($id_jenis)->info_pengiriman;
+                $this->sama_dengan_penagihan = Pembelian::find($id_jenis)->sama_dengan_penagihan;
             }else{
                 $this->info_pengiriman = $request->input('info_pengiriman') ? $request->input('info_pengiriman') : null;
                 $this->sama_dengan_penagihan = $request->input('info_pengiriman') == 'on' ? $request->input('sama_dengan_penagihan') : null;
             }
-
-            if($request->input('info_pengiriman') == 'on'){
-                $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : null;
-                $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
-                $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
-                $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
-            }
         }elseif(($jenis == 'faktur' || $jenis == 'pengiriman') && $id_jenis != null){
             if(Pembelian::find($id_jenis)->jenis == 'pengiriman'){
                 $this->id_pemesanan = Pembelian::find($id_jenis)->id_pemesanan;
+                $this->info_pengiriman = Pembelian::find($id_jenis)->info_pengiriman;
+                $this->sama_dengan_penagihan = Pembelian::find($id_jenis)->sama_dengan_penagihan;
             }else{
                 $this->id_pemesanan = $id_jenis;
             }
