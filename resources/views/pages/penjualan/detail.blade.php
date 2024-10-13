@@ -29,8 +29,8 @@
                         <button class="btn btn-sm btn-danger ml-2">
                         @elseif($penjualan->status == 'closed')
                         <button class="btn btn-sm btn-dark ml-2">
-                        @elseif($penjualan->status == 'draft')
-                        <button class="btn btn-sm btn-secondary ml-2">
+                        @elseif($penjualan->status == 'draf')
+                        <button class="btn btn-sm ml-2 text-white" style="background-color: #71717A;">
                         @endif
                         
                             @if ($penjualan->status == 'open')
@@ -132,6 +132,7 @@
                             @endif
                             @endif
                         </div>
+                        @if($penjualan->jenis != 'penagihan')
                         <div class="row my-3">
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2"></div>
@@ -139,7 +140,9 @@
                                 @if($penjualan->jenis == 'pengiriman')
                                     No. pelacakan
                                 @elseif($penjualan->jenis == 'pemesanan')
+                                @if(isset($penjualan->tanggal_pengiriman))
                                     Tgl. pengiriman
+                                @endif
                                 @endif
                             </div>
                             <div class="col-sm-2">
@@ -150,7 +153,9 @@
                                 -
                                 @endif
                                 @elseif($penjualan->jenis == 'pemesanan')
+                                @if(isset($penjualan->tanggal_pengiriman))
                                 {{ date('d/m/Y',strtotime($penjualan->tanggal_pengiriman)) }}
+                                @endif
                                 @endif
                             </div>
                             <!-- @if($penjualan->penawaran)
@@ -180,14 +185,33 @@
                             @endif
                             @endif
                         </div>
+                        @else
+                        @if(isset($penjualan->nama_gudang))
+                        <div class="row my-3">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2" style="margin-right: -25px !important;">Gudang</div>
+                            <div class="col-sm-2">
+                                <a href="{{ url('gudang/detail').'/'.$penjualan->id_gudang }}">{{ $penjualan->nama_gudang }}</a>
+                            </div>
+                        </div>
+                        @endif
+                        @endif
                         @if($penjualan->jenis == 'pemesanan')
                         <div class="row my-3">
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2"></div>
-                            <div class="col-sm-2"> Kirim melalui
+                            <div class="col-sm-2">
+                            @if(isset($penjualan->kirim_melalui))
+                            Kirim melalui
+                            @endif
                             </div>
                             <div class="col-sm-2">
+                            @if(isset($penjualan->kirim_melalui))
                             {{ $penjualan->kirim_melalui }}
+                            @endif
                             </div>
                             <!-- @if($penjualan->penawaran)
                             <div class="col-sm-2" style="margin-right: -25px !important;">
@@ -198,10 +222,26 @@
                             </div>
                             @endif -->
                             <div class="col-sm-2" style="margin-right: -25px !important;">
+                            @if(isset($penjualan->no_pelacakan))
                                 No. pelacakan
+                            @endif
                             </div>
                             <div class="col-sm-2">
+                            @if(isset($penjualan->no_pelacakan))
                             {{ $penjualan->no_pelacakan }}
+                            @endif
+                            </div>
+                            
+                        </div>
+                        @elseif($penjualan->jenis == 'pengiriman' && isset($penjualan->nama_gudang))
+                        <div class="row my-3">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2" style="margin-right: -25px !important;">Gudang</div>
+                            <div class="col-sm-2">
+                                <a href="{{ url('gudang/detail').'/'.$penjualan->id_gudang }}">{{ $penjualan->nama_gudang }}</a>
                             </div>
                         </div>
                         @endif
@@ -250,7 +290,11 @@
                             </table>
                         </div>
                         <div class="row mb-3">
+                            @if($penjualan->jenis == 'pengiriman')
+                            <div class="col-sm-12">
+                            @else
                             <div class="col-sm-7">
+                            @endif
                                 <div class="row my-3">
                                     <div class="col-sm-3">Pesan</div>
                                     <div class="col-sm-3">-</div>
@@ -320,14 +364,22 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                         </div>
-                        @endif
+                        
+                        @if($penjualan->jenis != 'pengiriman')
                         <div class="row">
                             <div class="col-sm-7">Terakhir diubah oleh pada {{ $penjualan->updated_at }}</div>
                         </div>
+                        @else
+                        <div class="col-sm-7">Terakhir diubah oleh pada {{ $penjualan->updated_at }}</div>
+                        @endif
+                        <hr>
                         @if(isset($pengiriman))
-                        <div class="table-responsive">
-                            Pengiriman
+                        <div class="table-responsive mt-3">
+                            <div class="row">
+                                <div class="col">Pengiriman</div>
+                            </div>
                             <table class="table my-4">
                                 <thead class="thead-light">
                                     <tr>
@@ -397,6 +449,7 @@
                                         @endif
                                     </div>
                                 </div>
+                                @if($penjualan->status != 'draf')
                                 <div class="btn-group dropup">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
                                         aria-expanded="false">
@@ -415,19 +468,27 @@
                                         @endif
                                     </div>
                                 </div>
+                                @endif
                             </div>
                             @else
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
+                                @if($penjualan->jenis == 'penawaran' || $penjualan->jenis == 'pemesanan')
                                 <div class="btn-group dropup mr-2">
                                     <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
                                         aria-expanded="false">
                                         Cetak
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="{{ url('penjualan/penawaran/cetak') . '/' . $penjualan->id }}">Cetak Penawaran</a>
+                                        @if($penjualan->jenis == 'penawaran')
+                                        <a target="_blank" class="dropdown-item" href="{{ url('penjualan/penawaran/cetak') . '/' . $penjualan->id }}">Cetak Penawaran</a>
+                                        @elseif($penjualan->jenis == 'pemesanan')
+                                        <a target="_blank" class="dropdown-item" href="{{ url('penjualan/pemesanan/cetak') . '/' . $penjualan->id }}">Cetak Pemesanan</a>
+                                        @endif
                                     </div>
                                 </div>
+                                @endif
+                                @if($penjualan->status != 'draf')
                                 @if($penjualan->jenis != 'pengiriman')
                                 <div class="btn-group dropup">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
@@ -450,6 +511,7 @@
                                 @else
                                 <a class="btn btn-outline-primary" href="{{ url('penjualan/cetak/surat_jalan') . '/' . $penjualan->id }}" target="_blank">Cetak Surat Jalan</a>
                                 <a href="{{ url('penjualan').'/pengiriman/penagihan/'.$penjualan->id }}" class="btn btn-primary">Buat penagihan</a>
+                                @endif
                                 @endif
                             </div>
                             @endif
@@ -491,7 +553,7 @@
                             </table>
                         </div>
                         @endif
-                        @if(isset($penagihan))
+                        @if(isset($penagihan) && count($penagihan) > 0)
                         <div class="table-responsive">
                             Penagihan Penjualan
                             <table class="table my-4">

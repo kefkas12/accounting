@@ -5,7 +5,7 @@
     <meta content='IE=edge' http-equiv='X-UA-Compatible'>
     <meta content='width=device-width, initial-scale=1.0,user-scalable=no' name='viewport'>
     <title>
-        JURNAL
+        Faktur
     </title>
     <link href="{{ asset('argon') }}/img/brand/favicon.png" rel="icon" type="image/png">
     <link rel="stylesheet" media="all"
@@ -84,7 +84,7 @@
 
                         </div>
                         <div class='row'>
-                            ko Aci
+                            {{ $penjualan->nama_pelanggan }}
                         </div>
                         <div class='row'>
 

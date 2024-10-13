@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gudang;
+use App\Models\Stok_gudang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GudangController extends Controller
 {
@@ -28,7 +30,7 @@ class GudangController extends Controller
         $gudang->status = 'aktif';
         $gudang->save();
 
-        return redirect('gudang/detail/'.$gudang->id);
+        return redirect('produk/gudang');
     }
     public function detail($status=null,$id=null)
     {
@@ -40,6 +42,12 @@ class GudangController extends Controller
             if($status == 'edit'){
                 return view('pages.gudang.form', $data);
             }else if($status == 'detail'){
+                $data['daftar_produk'] = Stok_gudang::leftJoin('produk','stok_gudang.id_produk','=','produk.id')
+                                                ->select('produk.id','produk.kode','produk.nama',DB::raw('SUM(stok_gudang.stok) AS stok'))
+                                                ->where('id_gudang',$id)
+                                                ->groupBy('stok_gudang.id_produk')
+                                                ->get();
+                $data['daftar_transaksi'] = Stok_gudang::where('id_gudang',$id)->get();
                 return view('pages.gudang.detail', $data);
             }
         }else{

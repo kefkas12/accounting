@@ -15,6 +15,7 @@ use App\Models\Kontak;
 use App\Models\Pembayaran_pembelian;
 use App\Models\Pembelian;
 use App\Models\Produk;
+use App\Models\Stok_gudang;
 use App\Models\Transaksi_produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -56,10 +57,21 @@ class PembelianController extends Controller
                                         ->where('pembelian.jenis','pengiriman')
                                         ->orderBy('id','DESC')
                                         ->get();
-        $data['belum_dibayar'] = number_format(Pembelian::where('tanggal_jatuh_tempo','>',date('Y-m-d'))
+        $data['belum_dibayar'] = number_format(Pembelian::where('status','open')
                                         ->where('pembelian.jenis','faktur')
                                         ->where('pembelian.id_company',Auth::user()->id_company)
                                         ->sum('sisa_tagihan'),2,',','.');
+        $data['telat_dibayar'] = number_format(Pembelian::where('status','open')
+                                        ->where('pembelian.tanggal_jatuh_tempo','<',date('Y-m-d'))
+                                        ->where('pembelian.jenis','faktur')
+                                        ->where('pembelian.id_company',Auth::user()->id_company)
+                                        ->sum('sisa_tagihan'),2,',','.');
+        $data['pelunasan_30_hari_terakhir'] = number_format(Pembelian::leftJoin('detail_pembayaran_pembelian','pembelian.id','=','detail_pembayaran_pembelian.id_pembelian')
+                                        ->leftJoin('pembayaran_pembelian','detail_pembayaran_pembelian.id_pembayaran_pembelian','=','pembayaran_pembelian.id')
+                                        ->where('pembayaran_pembelian.tanggal_transaksi','>',now()->subDays(30)->endOfDay())
+                                        ->where('pembelian.jenis','faktur')
+                                        ->where('pembelian.id_company',Auth::user()->id_company)
+                                        ->sum('jumlah_terbayar'),2,',','.');
 
         return view('pages.pembelian.index', $data);
     }
@@ -116,6 +128,8 @@ class PembelianController extends Controller
         $data['supplier'] = Kontak::where('tipe','supplier')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
         if($id != null){
             $data['pembelian'] = Pembelian::where('id',$id)->first();
             $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
@@ -169,6 +183,24 @@ class PembelianController extends Controller
 
         return Pdf::view('pdf.pembelian.penawaran' , $data)->format('a4')
                 ->name('penawaran_pembelian.pdf');
+    }
+
+    public function cetak_pemesanan($id){
+        $data['pembelian'] = Pembelian::leftJoin('kontak','pembelian.id_supplier','kontak.id')
+                                        ->where('pembelian.id',$id)
+                                        ->first();
+        $data['detail_pembelian'] = Detail_pembelian::leftjoin('produk','detail_pembelian.id_produk','produk.id')
+                                                    ->where('detail_pembelian.id_pembelian',$id)
+                                                    ->get();
+
+        $data['company'] = Company::leftJoin('users','company.id','users.id_company')
+                                    ->where('company.id', $data['pembelian']->id_company)
+                                    ->first();
+
+        // return view('pdf.pembelian.penawaran' , $data);
+
+        return Pdf::view('pdf.pembelian.pemesanan' , $data)->format('a4')
+                ->name('pemesanan_pembelian.pdf');
     }
 
     public function penawaran_pemesanan($id)
@@ -227,8 +259,27 @@ class PembelianController extends Controller
         $data['supplier'] = Kontak::where('tipe','supplier')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
         if($id != null){
             $data['pemesanan'] = true;
+            $data['pembelian'] = Pembelian::where('id',$id)->first();
+            $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
+        }
+        return view('pages.pembelian.faktur', $data);
+    }
+
+    public function pengiriman_faktur($id)
+    {
+        $data['sidebar'] = 'pembelian';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['supplier'] = Kontak::where('tipe','supplier')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        if($id != null){
+            $data['pengiriman'] = true;
             $data['pembelian'] = Pembelian::where('id',$id)->first();
             $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
         }
@@ -375,7 +426,19 @@ class PembelianController extends Controller
 
         return redirect('pembelian/detail/'.$pembelian->id);
     }
+    public function insert_pengiriman_faktur(Request $request, $id)
+    {
+        DB::beginTransaction();
+        $jurnal = new Jurnal;
+        $jurnal->pengiriman_faktur($request);
+        
+        $pembelian = new Pembelian;
+        $pembelian->insert($request, $jurnal->id, 'faktur', $id);
+        DB::commit();
 
+
+        return redirect('pembelian/detail/'.$pembelian->id);
+    }
     public function hapus($id){
         DB::beginTransaction();
         $pembelian = Pembelian::find($id);
@@ -396,9 +459,30 @@ class PembelianController extends Controller
                 DB::commit();
                 return redirect('pembelian/detail/'.$penawaran->id);
             }else{
+                $pembelian->delete();
+                DB::commit();
                 return redirect('pembelian');
             }
         }else if($pembelian->jenis == 'pengiriman'){
+            //updated
+            $detail_jurnal = Detail_jurnal::where('id_jurnal',$pembelian->id_jurnal)->get();
+            foreach($detail_jurnal as $v){
+                $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                            ->where('id_akun',$v->id_akun)->first();
+                $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                $akun_company->save();
+            }
+
+            Detail_jurnal::where('id_jurnal',$pembelian->id_jurnal)->delete();
+            Jurnal::find($pembelian->id_jurnal)->delete();
+
+            $detail_pembelian = Detail_pembelian::where('id_pembelian',$pembelian->id)->get();
+            foreach($detail_pembelian as $v){
+                $produk = Produk::find($v->id_produk);
+                $produk->stok = $produk->stok - $v->kuantitas;
+                $produk->save();
+            }
+
             Detail_pembelian::where('id_pembelian',$pembelian->id)->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
             if($pembelian->id_pemesanan){
@@ -440,15 +524,30 @@ class PembelianController extends Controller
             Detail_jurnal::where('id_jurnal',$pembelian->id_jurnal)->delete();
             Jurnal::find($pembelian->id_jurnal)->delete();
 
-            $pemesanan = Pembelian::find($pembelian->id_pemesanan);
-            $pemesanan->status = 'open';
-            $pemesanan->save();
-
-            $pembelian->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
-            
-            DB::commit();
-            return redirect('pembelian/detail/'.$pemesanan->id);
+
+            $pengiriman = Pembelian::find($pembelian->id_pemesanan);
+            Stok_gudang::where('id_transaksi',$id)->delete();
+            if(isset($pengiriman->id_pemesanan) && $pembelian->jenis == 'faktur'){
+                $pengiriman = Pembelian::find($pengiriman->id_pemesanan);
+                $pengiriman->status = 'open';
+                $pengiriman->save();
+                $pembelian->delete();
+                DB::commit();
+                return redirect('pembelian/detail/'.$pengiriman->id);
+            }else if(isset($pembelian->id_pemesanan)){
+                $pemesanan = Pembelian::find($pembelian->id_pemesanan);
+                $pemesanan->status = 'open';
+                $pemesanan->save();
+                $pembelian->delete();
+                DB::commit();
+                return redirect('pembelian/detail/'.$pemesanan->id);
+            }else{
+                $pembelian->delete();
+                DB::commit();
+                return redirect('pembelian');
+            }
         }
+
     }
 }

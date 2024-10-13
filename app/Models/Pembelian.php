@@ -56,6 +56,8 @@ class Pembelian extends Model
 
     public function insert($request, $idJurnal, $jenis, $id_jenis=null)
     {
+        $ongkos_kirim = 0;
+
         $this->id_company = Auth::user()->id_company;
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');
         $this->no = $this->no($jenis);
@@ -75,6 +77,10 @@ class Pembelian extends Model
         $this->id_supplier = $request->input('supplier');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
         $this->status = 'open';
+        if($request->input('input_ongkos_kirim')){
+            $ongkos_kirim = $request->input('input_ongkos_kirim');
+            $this->ongkos_kirim = $request->input('input_ongkos_kirim');
+        }
         $this->subtotal = $request->input('input_subtotal');
         $this->ppn = $request->input('input_ppn');
         $this->sisa_tagihan = $request->input('input_sisa_tagihan');
@@ -100,18 +106,17 @@ class Pembelian extends Model
                 $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
                 $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
             }
-            
-            if($request->input('gudang')){
-                $gudang = Gudang::find((int)$request->input('gudang'));
-                $this->id_gudang = $gudang->id;
-                $this->nama_gudang = $gudang->nama;
-            }
         }elseif(($jenis == 'faktur' || $jenis == 'pengiriman') && $id_jenis != null){
             if(Pembelian::find($id_jenis)->jenis == 'pengiriman'){
                 $this->id_pemesanan = Pembelian::find($id_jenis)->id_pemesanan;
             }else{
                 $this->id_pemesanan = $id_jenis;
             }
+        }
+        if($request->input('gudang')){
+            $gudang = Gudang::find((int)$request->input('gudang'));
+            $this->id_gudang = $gudang->id;
+            $this->nama_gudang = $gudang->nama;
         }
         $this->save();
         if(($jenis == 'pemesanan' || $jenis == 'pengiriman') && $id_jenis != null){
@@ -125,10 +130,10 @@ class Pembelian extends Model
             $pembelian->save();
         }
 
-        $this->insertDetailPembelian($request, $tipe);
+        $this->insertDetailPembelian($request, $tipe, $jenis,$this->id_gudang);
     }
 
-    protected function insertDetailPembelian(Request $request, $tipe)
+    protected function insertDetailPembelian(Request $request, $tipe, $jenis, $id_gudang)
     {
         for ($i = 0; $i < count($request->input('produk')); $i++) {
             $detail_pembelian = new Detail_pembelian;
@@ -156,7 +161,40 @@ class Pembelian extends Model
             $transaksi_produk->unit = $produk->unit;
             $transaksi_produk->save();
 
+            if($jenis == 'pengiriman'){
+                $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i]);
+            }else if($jenis == 'faktur'){
+                $this->updateStokGudang(
+                    $this->id,
+                    $request->input('produk')[$i],
+                    $id_gudang,
+                    $request->input('kuantitas')[$i],
+                    $request->input('tanggal_transaksi'),
+                    $tipe,
+                    $transaksi_produk->jenis
+                );
+            }
         }
+    }
+
+    public function updateStok($produk, $kuantitas)
+    {
+        $produk = Produk::find($produk);
+        $produk->stok = $produk->stok + $kuantitas;
+        $produk->save();
+    }
+
+    public function updateStokGudang($id_transaksi, $produk, $gudang, $kuantitas, $tanggal, $tipe, $jenis)
+    {
+        $stok_gudang = new Stok_gudang;
+        $stok_gudang->id_transaksi = $id_transaksi;
+        $stok_gudang->id_produk = $produk;
+        $stok_gudang->id_gudang = $gudang;
+        $stok_gudang->stok = $stok_gudang->stok + $kuantitas;
+        $stok_gudang->tanggal = $tanggal;
+        $stok_gudang->tipe = $tipe;
+        $stok_gudang->jenis = $jenis;
+        $stok_gudang->save();
     }
 
     public function ubah($request, $jenis = null)

@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </div>
-                    <form method="POST"
+                    <form method="POST" id="insertForm"
                         @if(isset($pembelian)) 
                             action="{{ url('pembelian/penawaran').'/'.$pembelian->id }}" 
                         @else 
@@ -176,7 +176,7 @@
                                     <div class="row my-5">
                                         <div class="col d-flex justify-content-end">
                                             <a href="{{ url('pembelian') }}" class="btn btn-light">Batalkan</a>
-                                            <button type="submit" class="btn btn-primary">@if(isset($pembelian)) Simpan perubahan @else Buat @endif</button>
+                                            <button type="submit" class="btn btn-primary" onclick="buat();">@if(isset($pembelian)) Simpan perubahan @else Buat @endif</button>
                                         </div>
                                     </div>
                                 </div>
@@ -218,6 +218,13 @@
             $('#input_ppn').val(result_ppn);
             $('#input_total').val(result_subtotal + result_ppn);
             $('#input_sisa_tagihan').val(result_subtotal + result_ppn);
+        }
+
+        function buat() {
+            success = $('#supplier').val() != null ? true : false;
+            if(success == true){
+                $('#insertForm').submit();
+            }
         }
 
         function get_data(thisElement, no) {

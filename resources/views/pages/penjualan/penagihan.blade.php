@@ -82,9 +82,15 @@
                                     <input type="date" class="form-control" id="tanggal_jatuh_tempo"
                                         name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
                                     <label for="gudang" class="mt-3">Gudang</label>
-                                    <select class="form-control" id="gudang" name="gudang">
+                                    <select class="form-control" id="gudang" name="gudang" @if(isset($pengiriman)) disabled @endif>
                                         <option selected disabled hidden>Pilih Gudang</option>
+                                        @if(isset($gudang))
+                                        @foreach($gudang as $v)
+                                        <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                        @endforeach
+                                        @else
                                         <option disabled>No result found</option>
+                                        @endif
                                     </select>
                                 </div>
                                 <div class="form-group col-md-3 pr-4">
@@ -393,6 +399,7 @@
             $('#alamat').val('{{ $penjualan->alamat }}')
             $('#tanggal_transaksi').val('{{ $penjualan->tanggal_transaksi }}')
             $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
+            $('#gudang').val('{{ $penjualan->id_gudang }}')
 
             var x = 1;
             @foreach($detail_penjualan as $v)

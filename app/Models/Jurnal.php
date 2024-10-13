@@ -247,6 +247,45 @@ class Jurnal extends Model
         }
     }
 
+    public function pengiriman_faktur($request, $id = null)
+    {
+        $ongkos_kirim = $request->input('input_ongkos_kirim') ? $request->input('input_ongkos_kirim') : 0;
+
+        $this->id_company = Auth::user()->id_company;
+        $this->tanggal_transaksi = $request->input('tanggal_transaksi');
+        $this->kategori = 'purchase_invoice';
+        if(!$id){
+            $this->no = $this->no('purchase_invoice');
+            $this->no_str = 'Purchase Invoice #' . $this->no('purchase_invoice');
+        }
+        $this->debit = $request->input('input_subtotal') + $request->input('input_ppn') + $ongkos_kirim;
+        $this->kredit = $request->input('input_total');
+        $this->save();
+
+        if($id){
+            $detail_jurnal = Detail_jurnal::where('id_jurnal',$this->id)->get();
+            foreach($detail_jurnal as $v){
+                $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                            ->where('id_akun',$v->id_akun)->first();
+                $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                $akun_company->save();
+            }
+            
+        }
+        Detail_jurnal::where('id_jurnal',$this->id)->delete();
+
+        $this->createDetailJurnal($this->id, 34, $request->input('input_subtotal') + $ongkos_kirim, 0);
+        $this->updateAkunBalance(34, $request->input('input_subtotal') + $ongkos_kirim, 0);
+
+        if($request->input('input_ppn')){
+            $this->createDetailJurnal($this->id, 13, $request->input('input_ppn'), 0);
+            $this->updateAkunBalance(13, $request->input('input_ppn'), 0);
+        }
+
+        $this->createDetailJurnal($this->id, 33, 0, $request->input('input_total'));
+        $this->updateAkunBalance(33, 0, $request->input('input_total'));
+    }
+
     public function pembelian(Request $request, $id = null)
     {
         $this->id_company = Auth::user()->id_company;
@@ -272,8 +311,8 @@ class Jurnal extends Model
         }
         Detail_jurnal::where('id_jurnal',$this->id)->delete();
 
-        $this->createDetailJurnal($this->id, 62, $request->input('input_subtotal'), 0);
-        $this->updateAkunBalance(62, $request->input('input_subtotal'), 0);
+        $this->createDetailJurnal($this->id, 6, $request->input('input_subtotal'), 0);
+        $this->updateAkunBalance(6, $request->input('input_subtotal'), 0);
 
         if($request->input('input_ppn')){
             $this->createDetailJurnal($this->id, 13, $request->input('input_ppn'), 0);

@@ -118,24 +118,23 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div hidden style="overflow: auto">
+                                <div style="overflow: auto">
                                     <table id="example" class="table table-striped table-bordered" style="width:100%">
                                         <thead>
                                             <tr>
-                                                <th>Nama produk</th>
-                                                <th>barcode produk</th>
                                                 <th>Kode produk</th>
-                                                <th>Kategori produk</th>
-                                                <th>Total stok</th>
-                                                <th>Batas minimum</th>
-                                                <th>Unit</th>
-                                                <th>Harga rata-rata</th>
-                                                <th>Harga beli terakhir</th>
-                                                <th>Harga beli</th>
-                                                <th>Harga jual</th>
+                                                <th>Nama produk</th>
+                                                <th>Stok di gudang</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            @foreach($daftar_produk as $v)
+                                            <tr>
+                                                <th>{{ $v->kode }}</th>
+                                                <th><a href="{{ url('produk/detail').'/'.$v->id }}">{{ $v->nama }}</a></th>
+                                                <th>{{ $v->stok }}</th>
+                                            </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -188,13 +187,19 @@
                                     <table id="table_gudang" class="table table-striped table-bordered" style="width:100%">
                                         <thead>
                                             <tr>
-                                                <th>Kode gudang</th>
-                                                <th>Nama gudang</th>
-                                                <th>Alamat</th>
-                                                <th>Keterangan</th>
+                                                <th>Tanggal</th>
+                                                <th>Tipe transaksi</th>
+                                                <th>Total produk</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            @foreach($daftar_transaksi as $v)
+                                                <tr>
+                                                    <td>{{ $v->tanggal }}</td>
+                                                    <td><a href="@if($v->jenis == 'pembelian'){{ url('pembelian/detail').'/'.$v->id_transaksi }}@elseif($v->jenis == 'penjualan'){{ url('penjualan/detail').'/'.$v->id_transaksi }}@endif">{{ $v->tipe }}</a></td>
+                                                    <td>{{ $v->stok }}</td>
+                                                </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>

@@ -27,16 +27,16 @@
                     <div class="card-body">
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                <button class="nav-link active" id="nav-barang-dan-jasa-tab" data-toggle="tab" data-target="#nav-barang-dan-jasa"
+                                <button class="nav-link @if(isset($menu) && $menu == 'barang') active @elseif (isset($menu) && $menu == 'gudang') @else active @endif" id="nav-barang-dan-jasa-tab" data-toggle="tab" data-target="#nav-barang-dan-jasa"
                                     type="button" role="tab" aria-controls="nav-barang-dan-jasa"
-                                    aria-selected="true">Barang & jasa</button>
-                                <button class="nav-link" id="nav-gudang-tab" data-toggle="tab" data-target="#nav-gudang"
+                                    @if(isset($menu) && $menu == 'barang') aria-selected="true" @elseif(isset($menu) && $menu == 'gudang') aria-selected="false" @else aria-selected="true" @endif>Barang & jasa</button>
+                                <button class="nav-link @if(isset($menu) && $menu == 'gudang') active @endif" id="nav-gudang-tab" data-toggle="tab" data-target="#nav-gudang"
                                     type="button" role="tab" aria-controls="nav-gudang"
-                                    aria-selected="false">Gudang</button>
+                                    @if(isset($menu) && $menu == 'gudang') aria-selected="true" @elseif(isset($menu) && $menu == 'barang') aria-selected="false" @else aria-selected="false" @endif>Gudang</button>
                             </div>
                         </nav>
                         <div class="tab-content mt-3" id="nav-tabContent">
-                            <div class="tab-pane fade show active" id="nav-barang-dan-jasa" role="tabpanel"
+                            <div class="tab-pane fade @if(isset($menu) && $menu == 'barang') show active @elseif(isset($menu) && $menu == 'gudang') @else show active @endif" id="nav-barang-dan-jasa" role="tabpanel"
                                 aria-labelledby="nav-barang-dan-jasa-tab">
                                 <div class="row mb-3" >
                                     <div class="col-sm-3" style="padding-right: 0px !important;">
@@ -45,7 +45,7 @@
                                                 Stok Tersedia
                                             </div>
                                             <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                                Total produk<br> <span style="font-weight:900">0</span>
+                                                Total produk<br> <span style="font-weight:900">{{ $produk_tersedia }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -121,7 +121,7 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="nav-gudang" role="tabpanel"
+                            <div class="tab-pane fade @if(isset($menu) && $menu == 'gudang') show active @elseif(isset($menu) && $menu == 'barang') @else @endif" id="nav-gudang" role="tabpanel"
                                 aria-labelledby="nav-gudang-tab">
                                 <div class="row mb-3" >
                                     <div class="col-sm-3" style="padding-right: 0px !important;">
@@ -130,7 +130,7 @@
                                                 Stok Tersedia
                                             </div>
                                             <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                                Total produk<br> <span style="font-weight:900">0</span>
+                                                Total produk<br> <span style="font-weight:900">{{ $produk_tersedia }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -140,7 +140,7 @@
                                                 Stok segera habis
                                             </div>
                                             <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                                Total produk<br> <span style="font-weight:900">0</span>
+                                                Total produk<br> <span style="font-weight:900">{{ $produk_segera_habis }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -150,7 +150,7 @@
                                                 Stok habis
                                             </div>
                                             <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                                Total produk<br> <span style="font-weight:900">0</span>
+                                                Total produk<br> <span style="font-weight:900">{{ $produk_habis }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -160,7 +160,7 @@
                                                 Gudang
                                             </div>
                                             <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                                Terdaftar<br> <span style="font-weight:900">0</span>
+                                                Terdaftar<br> <span style="font-weight:900">{{ $gudang_terdaftar }}</span>
                                             </div>
                                         </div>
                                     </div>

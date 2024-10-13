@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Gudang;
 use App\Models\Pembelian;
 use App\Models\Produk;
+use App\Models\Stok_gudang;
 use App\Models\Transaksi_produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,9 +18,11 @@ class ProdukController extends Controller
     {
         $this->middleware('auth');
     }
-    public function index()
+    public function index($menu = null)
     {
         $data['sidebar'] = 'produk';
+        $data['produk_tersedia'] = Produk::where('id_company',Auth::user()->id_company)
+                                            ->count();
         $data['produk_segera_habis'] = Produk::whereColumn('stok','<','batas_stok_minimum')
                                             ->where('id_company',Auth::user()->id_company)
                                             ->count();
@@ -33,6 +36,9 @@ class ProdukController extends Controller
                                 ->get();
         $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
                                 ->get();
+        if(isset($menu)){
+            $data['menu'] = $menu;
+        }
         return view('pages.produk.index', $data);
     }
 
@@ -67,8 +73,12 @@ class ProdukController extends Controller
             $data['produk'] = Produk::where('id', $id)
                                     ->where('id_company',Auth::user()->id_company)
                                     ->first();
-            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+            $data['gudang'] = Gudang::leftJoin('stok_gudang','gudang.id','=','stok_gudang.id_gudang')
+                                    ->where('id_company',Auth::user()->id_company)
                                     ->get();
+            $data['stok_gudang'] = Stok_gudang::where('id_produk',$id)
+                                                ->whereNull('id_gudang')
+                                                ->first();
             if($status == 'edit'){
                 return view('pages.produk.form', $data);
             }else if($status == 'detail'){

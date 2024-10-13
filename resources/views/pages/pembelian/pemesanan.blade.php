@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </div>
-                    <form method="POST" id="form"
+                    <form method="POST"
                         @if(isset($penawaran))
                             action="{{ url('pembelian/penawaran').'/pemesanan/'.$pembelian->id }}" 
                         @elseif(isset($pembelian))
@@ -36,14 +36,15 @@
                         @else
                             action="{{ url('pembelian/pemesanan') }}" 
                         @endif
-                    >
+                        id="insertForm"
+                        >
                         @csrf
                         <div class="card-body">
-                            <div class="form-row text-sm">
+                            <div class="form-row">
                                 <div class="form-group col-md-3 pr-4">
-                                    <label for="supplier">Supplier</label>
+                                    <label for="supplier">Supplier <span class="text-danger">*</span></label>
                                     <select class="form-control" id="supplier" name="supplier" required @if(isset($penawaran)) disabled @endif>
-                                        <option selected disabled>Pilih kontak</option>
+                                        <option selected disabled value="">Pilih kontak</option>
                                         @foreach ($supplier as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
@@ -233,7 +234,7 @@
                                     <div class="row my-5">
                                         <div class="col d-flex justify-content-end">
                                             <a href="{{ url('pembelian') }}" class="btn btn-light">Batalkan</a>
-                                            <button type="submit" class="btn btn-primary">Buat</button>
+                                            <button type="submit" class="btn btn-primary" onclick="buat();">Buat</button>
                                         </div>
                                     </div>
                                 </div>
@@ -273,6 +274,13 @@
             $('#input_ppn').val(result_ppn);
             $('#input_total').val(result_subtotal + result_ppn);
             $('#input_sisa_tagihan').val(result_subtotal + result_ppn);
+        }
+
+        function buat() {
+            success = $('#supplier').val() != null ? true : false;
+            if(success == true){
+                $('#insertForm').submit();
+            }
         }
 
         function get_data(thisElement, no) {

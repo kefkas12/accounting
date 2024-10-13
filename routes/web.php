@@ -88,11 +88,14 @@ Route::controller(PembelianController::class)->prefix('pembelian')->group(functi
 	Route::get('/pemesanan', 'pemesanan');
 	Route::get('/penawaran', 'penawaran');
 
-	Route::get('/penawaran/{id}', 'penawaran');
 	Route::get('/penawaran/cetak/{id}', 'cetak_penawaran');
+	Route::get('/pemesanan/cetak/{id}', 'cetak_pemesanan');
+
+	Route::get('/penawaran/{id}', 'penawaran');
 	Route::get('/penawaran/pemesanan/{id}', 'penawaran_pemesanan');
 	Route::get('/pemesanan/pengiriman/{id}', 'pemesanan_pengiriman');
 	Route::get('/pemesanan/faktur/{id}', 'pemesanan_faktur');
+	Route::get('/pengiriman/faktur/{id}', 'pengiriman_faktur');
 	Route::get('/faktur/{id}', 'faktur');
 
 	Route::get('/detail/{id}', 'detail');
@@ -108,35 +111,10 @@ Route::controller(PembelianController::class)->prefix('pembelian')->group(functi
 	Route::post('/penawaran/pemesanan/{id}', 'insert_penawaran_pemesanan');
 	Route::post('/pemesanan/pengiriman/{id}', 'insert_pemesanan_pengiriman');
 	Route::post('/pemesanan/faktur/{id}', 'insert_pemesanan_faktur');
+	Route::post('/pengiriman/faktur/{id}', 'insert_pengiriman_faktur');
 
 	Route::post('/pemesanan', 'insert_pemesanan');
 });
-
-Route::controller(PenawaranController::class)->prefix('penawaran')->group(function () {
-	Route::get('/', 'index');
-	Route::get('/insert', 'penawaran');
-	Route::get('/{id}', 'penawaran');
-	Route::get('/pemesanan/{id}', 'penawaran_pemesanan');
-	Route::post('/', 'insert_penawaran');
-	Route::post('/{id}', 'update_penawaran');
-	Route::post('/pemesanan/{id}', 'insert_penawaran_pemesanan');
-	Route::post('/pengiriman/{id}', 'insert_penawaran_pengiriman');
-
-	Route::get('/detail/{id}', 'detail');
-});
-
-// Route::controller(PenawaranController::class)->prefix('penawaran')->group(function () {
-// 	Route::get('/', 'index');
-// 	Route::get('/insert', 'penawaran');
-// 	Route::get('/{id}', 'penawaran');
-// 	Route::get('/pemesanan/{id}', 'penawaran_pemesanan');
-// 	Route::post('/', 'insert_penawaran');
-// 	Route::post('/{id}', 'update_penawaran');
-// 	Route::post('/pemesanan/{id}', 'insert_penawaran_pemesanan');
-// 	Route::post('/pengiriman/{id}', 'insert_penawaran_pengiriman');
-	
-// 	Route::get('/detail/{id}', 'detail');
-// });
 
 Route::controller(PenjualanController::class)->prefix('penjualan')->group(function () {
 	Route::get('/', 'index');
@@ -145,7 +123,10 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::get('/penagihan', 'penagihan');
 
 	Route::get('/penawaran/{id}', 'penawaran');
+
 	Route::get('/penawaran/cetak/{id}', 'cetak_penawaran');
+	Route::get('/pemesanan/cetak/{id}', 'cetak_pemesanan');
+
 	Route::get('/penawaran/pemesanan/{id}', 'penawaran_pemesanan');
 	Route::get('/pemesanan/pengiriman/{id}', 'pemesanan_pengiriman');
 	Route::get('/pemesanan/penagihan/{id}', 'pemesanan_penagihan');
@@ -177,6 +158,32 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	// Route::post('/{id}', 'edit');
 });
 
+Route::controller(PenawaranController::class)->prefix('penawaran')->group(function () {
+	Route::get('/', 'index');
+	Route::get('/insert', 'penawaran');
+	Route::get('/{id}', 'penawaran');
+	Route::get('/pemesanan/{id}', 'penawaran_pemesanan');
+	Route::post('/', 'insert_penawaran');
+	Route::post('/{id}', 'update_penawaran');
+	Route::post('/pemesanan/{id}', 'insert_penawaran_pemesanan');
+	Route::post('/pengiriman/{id}', 'insert_penawaran_pengiriman');
+
+	Route::get('/detail/{id}', 'detail');
+});
+
+// Route::controller(PenawaranController::class)->prefix('penawaran')->group(function () {
+// 	Route::get('/', 'index');
+// 	Route::get('/insert', 'penawaran');
+// 	Route::get('/{id}', 'penawaran');
+// 	Route::get('/pemesanan/{id}', 'penawaran_pemesanan');
+// 	Route::post('/', 'insert_penawaran');
+// 	Route::post('/{id}', 'update_penawaran');
+// 	Route::post('/pemesanan/{id}', 'insert_penawaran_pemesanan');
+// 	Route::post('/pengiriman/{id}', 'insert_penawaran_pengiriman');
+	
+// 	Route::get('/detail/{id}', 'detail');
+// });
+
 Route::controller(PelangganController::class)->prefix('pelanggan')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/insert', 'detail');
@@ -195,6 +202,8 @@ Route::controller(SupplierController::class)->prefix('supplier')->group(function
 
 Route::controller(ProdukController::class)->prefix('produk')->group(function () {
 	Route::get('/', 'index');
+	Route::get('/barang', 'index');
+	Route::get('/gudang', 'index');
 	Route::get('/insert', 'detail');
 	Route::post('/insert', 'insert');
 	Route::post('/edit/{id}', 'edit');

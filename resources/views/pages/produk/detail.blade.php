@@ -34,12 +34,6 @@
                         </div>
                         @if (isset($produk) && $produk->batas_stok_minimum != null)
                         <div class="row my-4">
-                            <div class="col-sm-2">HPP saat ini</div>
-                            <div class="col-sm-4">
-                                Rp {{ $produk->harga_beli }}
-                            </div>
-                        </div>
-                        <div class="row my-4">
                             <div class="col-sm-2">Harga rata-rata</div>
                             <div class="col-sm-4">
                                 Rp {{ $produk->harga_beli }}
@@ -47,12 +41,6 @@
                         </div>
                         <div class="row my-4">
                             <div class="col-sm-2">Stok di gudang</div>
-                            <div class="col-sm-4">
-                                {{ $produk->stok }} {{ $produk->unit }}
-                            </div>
-                        </div>
-                        <div class="row my-4">
-                            <div class="col-sm-2">Qty tersedia</div>
                             <div class="col-sm-4">
                                 {{ $produk->stok }} {{ $produk->unit }}
                             </div>
@@ -192,14 +180,14 @@
                                         <tbody>
                                             <tr>
                                                 <td>Unassigned</td>
-                                                <td>0</td>
-                                                <td>0</td>
+                                                <td>@if(isset($stok_gudang)){{ $stok_gudang->stok }} @else 0 @endif</td>
+                                                <td>@if(isset($stok_gudang)){{ $stok_gudang->stok }} @else 0 @endif</td>
                                             </tr>
                                             @foreach($gudang as $v)
                                             <tr>
                                                 <td>{{ $v->nama }}</td>
-                                                <td>0</td>
-                                                <td>0</td>
+                                                <td>{{ $v->stok ? $v->stok : 0 }}</td>
+                                                <td>{{ $v->stok ? $v->stok : 0 }}</td>
                                             </tr>
                                             @endforeach
                                         </tbody>

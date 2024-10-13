@@ -80,15 +80,27 @@
                             <div class="col-sm-2">@if($pembelian->alamat_pengiriman) Alamat pengiriman @endif</div>
                             <div class="col-sm-2"><strong>@if($pembelian->alamat_pengiriman) {{ $pembelian->alamat_pengiriman }} @endif </strong></div>
                             <div class="col-sm-2">
-                                @if ($pembelian->jenis == 'faktur' || $pembelian->jenis == 'pemesanan')
-                                    Tgl. Jatuh Tempo
-                                @elseif($pembelian->jenis == 'penawaran')
-                                    Tgl. kedaluarsa
+                                @if($pembelian->jenis == 'pengiriman')
+                                    Kirim Melalui
+                                @else
+                                    @if ($pembelian->jenis == 'faktur' || $pembelian->jenis == 'pemesanan')
+                                        Tgl. Jatuh Tempo
+                                    @elseif($pembelian->jenis == 'penawaran')
+                                        Tgl. kedaluarsa
+                                    @endif
                                 @endif
                             </div>
                             <div class="col-sm-2">
+                                @if($pembelian->jenis == 'pengiriman')
+                                @if($pembelian->kirim_melalui)
+                                {{ $pembelian->kirim_melalui }}
+                                @else
+                                -
+                                @endif
+                                @else
                                 @if($pembelian->tanggal_jatuh_tempo)
                                 <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_jatuh_tempo)) }}</strong>
+                                @endif
                                 @endif
                             </div>
                             @if($pembelian->penawaran)
@@ -109,6 +121,7 @@
                             @endif
                         </div>
                         @if($pembelian->tanggal_pengiriman)
+                        @if($pembelian->jenis != 'pengiriman')
                         <div class="row my-2">
                             <div class="col-sm-4"></div>
                             <div class="col-sm-2">Tgl. pengiriman</div>
@@ -116,16 +129,31 @@
                                 <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_pengiriman)) }}</strong>
                             </div>
                         </div>
+                        @endif
                         @else
                         <div class="row my-2">
                             <div class="col-sm-4"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">Gudang</div>
-                            <div class="col-sm-2"><a href="{{ url('gudang/detail').'/'.$pembelian->id_gudang }}">{{ $pembelian->nama_gudang }}</a></div>
+                            <div class="col-sm-2">
+                                @if($pembelian->jenis == 'pengiriman')
+                                    No. Pelacakan
+                                @endif
+                            </div>
+                            <div class="col-sm-2">
+                                @if($pembelian->jenis == 'pengiriman')
+                                    <strong>{{ $pembelian->no_pelacakan }}</strong>
+                                    @if($pembelian->no_pelacakan)
+                                    {{ $pembelian->no_pelacakan }}
+                                    @else
+                                    -
+                                    @endif
+                                @endif
+                            </div>
+                            <div class="col-sm-2" style="margin-right: -25px !important;">@if($pembelian->nama_gudang) Gudang @endif</div>
+                            <div class="col-sm-2">@if($pembelian->nama_gudang) <a href="{{ url('gudang/detail').'/'.$pembelian->id_gudang }}">{{ $pembelian->nama_gudang }}</a> @endif</div>
                         </div>
                         @endif
                         @if($pembelian->kirim_melalui)
+                        @if($pembelian->jenis != 'pengiriman')
                         <div class="row my-2">
                             <div class="col-sm-4"></div>
                             <div class="col-sm-2">Kirim Melalui</div>
@@ -134,14 +162,17 @@
                             </div>
                         </div>
                         @endif
+                        @endif
                         @if($pembelian->no_pelacakan)
+                        @if($pembelian->jenis != 'pengiriman')
                         <div class="row my-2">
                             <div class="col-sm-4"></div>
                             <div class="col-sm-2">No. pelacakan</div>
                             <div class="col-sm-2">
-                                <strong>{{ $pembelian->no_pelacakan }}</strong> 
+                                {{ $pembelian->no_pelacakan }}
                             </div>
                         </div>
+                        @endif
                         @endif
                         <div class="table-responsive">
                             <table class="table my-4">
@@ -191,6 +222,7 @@
                                 </div>
                             </div>
                             @if($pembelian->jenis == 'pengiriman')
+                            @if($pembelian->ongkos_kirim)
                             <div class="col-sm-5">
                                 <div class="row my-3">
                                     <div class="col-sm-6">
@@ -201,6 +233,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                             @else
                             @hasanyrole('pemilik')
                             <div class="col-sm-5">
@@ -212,6 +245,16 @@
                                         <h4>Rp. {{ number_format($pembelian->subtotal, 2, ',', '.') }}</h4>
                                     </div>
                                 </div>
+                                @if($pembelian->ongkos_kirim)
+                                <div class="row my-3">
+                                    <div class="col-sm-6">
+                                        <h4>Ongkos Kirim</h4>
+                                    </div>
+                                    <div class="col-sm-6 d-flex justify-content-end">
+                                        <h4>Rp. {{ number_format($pembelian->ongkos_kirim, 2, ',', '.') }}</h4>
+                                    </div>
+                                </div>
+                                @endif
                                 @if($pembelian->ppn)
                                 <div class="row my-3">
                                     <div class="col-sm-6">
@@ -285,8 +328,8 @@
                                             <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
                                             <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
                                         @elseif($pembelian->jenis == 'pemesanan')
-                                        <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
-                                        <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
                                         @endif
                                     </div>
                                 </div>
@@ -294,15 +337,21 @@
                             @else
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
+                                @if($pembelian->jenis == 'penawaran' || $pembelian->jenis == 'pemesanan')
                                 <div class="btn-group dropup mr-2">
                                     <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
                                         aria-expanded="false">
                                         Cetak
                                     </button>
                                     <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="{{ url('pembelian/penawaran/cetak') . '/' . $pembelian->id }}">Cetak Penawaran</a>
+                                        @if($pembelian->jenis == 'penawaran')
+                                        <a target="_blank" class="dropdown-item" href="{{ url('pembelian/penawaran/cetak') . '/' . $pembelian->id }}">Cetak Penawaran</a>
+                                        @elseif($pembelian->jenis == 'pemesanan')
+                                        <a target="_blank" class="dropdown-item" href="{{ url('pembelian/pemesanan/cetak') . '/' . $pembelian->id }}">Cetak Pemesanan</a>
+                                        @endif
                                     </div>
                                 </div>
+                                @endif
                                 <div class="btn-group dropup">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
                                         aria-expanded="false">
@@ -317,8 +366,10 @@
                                             <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
                                             <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
                                         @elseif($pembelian->jenis == 'pemesanan')
-                                        <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
-                                        <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
+                                        @elseif($pembelian->jenis == 'pengiriman')
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis. '/faktur/' . $pembelian->id }}">Buat penagihan</a>
                                         @endif
                                         @endhasallroles
                                         @hasanyrole('pergudangan')

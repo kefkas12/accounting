@@ -109,18 +109,18 @@ class Penjualan extends Model
                 $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
                 $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
             }
-
-            if($request->input('gudang')){
-                $gudang = Gudang::find((int)$request->input('gudang'));
-                $this->id_gudang = $gudang->id;
-                $this->nama_gudang = $gudang->nama;
-            }
         }elseif(($jenis == 'penagihan' || $jenis == 'pengiriman') && $id_jenis != null){
             if(Penjualan::find($id_jenis)->jenis == 'pengiriman'){
                 $this->id_pemesanan = Penjualan::find($id_jenis)->id_pemesanan;
             }else{
                 $this->id_pemesanan = $id_jenis;
             }
+        }
+
+        if($request->input('gudang')){
+            $gudang = Gudang::find((int)$request->input('gudang'));
+            $this->id_gudang = $gudang->id;
+            $this->nama_gudang = $gudang->nama;
         }
         $this->save();
 
@@ -135,10 +135,10 @@ class Penjualan extends Model
             $penjualan->save();
         }
 
-        $this->insertDetailPenjualan($request, $tipe);
+        $this->insertDetailPenjualan($request, $tipe, $jenis);
     }
 
-    protected function insertDetailPenjualan(Request $request, $tipe)
+    protected function insertDetailPenjualan(Request $request, $tipe, $jenis)
     {
         for ($i = 0; $i < count($request->input('produk')); $i++) {
             $harga_satuan = $request->input('harga_satuan')[$i] != '' || $request->input('harga_satuan')[$i] != null ? number_format((float)str_replace(",", "", $_POST['harga_satuan'][$i]), 2, '.', '') : 0;
@@ -169,7 +169,18 @@ class Penjualan extends Model
             $produk = Produk::where('id',$request->input('produk')[$i])->first();
             $transaksi_produk->unit = $produk->unit;
             $transaksi_produk->save();
+
+            if($jenis == 'pengiriman'){
+                $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i]);
+            }
         }
+    }
+
+    public function updateStok($produk, $kuantitas)
+    {
+        $produk = Produk::find($produk);
+        $produk->stok = $produk->stok - $kuantitas;
+        $produk->save();
     }
 
     public function edit($request)

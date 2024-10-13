@@ -140,6 +140,8 @@ class PenjualanController extends Controller
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
         if($id != null){
             $data['penjualan'] = Penjualan::where('id',$id)->first();
             $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
@@ -193,6 +195,22 @@ class PenjualanController extends Controller
                 ->name('penawaran_penjualan.pdf');
     }
 
+    public function cetak_pemesanan($id){
+        $data['penjualan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','kontak.id')
+                                        ->where('penjualan.id',$id)
+                                        ->first();
+        $data['detail_penjualan'] = Detail_penjualan::leftjoin('produk','detail_penjualan.id_produk','produk.id')
+                                                    ->where('detail_penjualan.id_penjualan',$id)
+                                                    ->get();
+
+        $data['company'] = Company::leftJoin('users','company.id','users.id_company')
+                                    ->where('company.id', $data['penjualan']->id_company)
+                                    ->first();
+
+        return Pdf::view('pdf.penjualan.pemesanan' , $data)->format('a4')
+                ->name('pemesanan_penjualan.pdf');
+    }
+
     public function penawaran_pemesanan($id)
     {
         $data['sidebar'] = 'penjualan';
@@ -217,6 +235,8 @@ class PenjualanController extends Controller
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
         if($id != null){
             $data['penawaran'] = true;
             $data['penjualan'] = Penjualan::where('id',$id)->first();
@@ -231,6 +251,8 @@ class PenjualanController extends Controller
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
                                     ->get();
         if($id != null){
             $data['pemesanan'] = true;
@@ -247,6 +269,8 @@ class PenjualanController extends Controller
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
         if($id != null){
             $data['pemesanan'] = true;
             $data['penjualan'] = Penjualan::where('id',$id)->first();
@@ -261,6 +285,8 @@ class PenjualanController extends Controller
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
                                     ->get();
         if($id != null){
             $data['pengiriman'] = true;
@@ -436,15 +462,50 @@ class PenjualanController extends Controller
             return redirect('penjualan');
         }else if($penjualan->jenis == 'pemesanan'){
             Detail_penjualan::where('id_penjualan',$penjualan->id)->delete();
+            Transaksi_produk::where('id_transaksi',$id)->delete();
+            if($penjualan->id_penawaran){
+                $penawaran = Penjualan::find($penjualan->id_penawaran);
+                $penawaran->status = 'open';
+                $penawaran->save();
+                $penjualan->delete();
+                DB::commit();
+            }else{
+                $penjualan->delete();
+                DB::commit();
+                return redirect('penjualan');
+            }
+            return redirect('penjualan/detail/'.$penawaran->id);
+        }else if($penjualan->jenis == 'pengiriman'){
+            //updated
+            $detail_jurnal = Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->get();
+            foreach($detail_jurnal as $v){
+                $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                            ->where('id_akun',$v->id_akun)->first();
+                $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                $akun_company->save();
+            }
+
+            Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->delete();
+            Jurnal::find($penjualan->id_jurnal)->delete();
+
+            $detail_penjualan = Detail_penjualan::where('id_penjualan',$penjualan->id)->get();
+            foreach($detail_penjualan as $v){
+                $produk = Produk::find($v->id_produk);
+                $produk->stok = $produk->stok + $v->kuantitas;
+                $produk->save();
+            }
+
+            Detail_penjualan::where('id_penjualan',$penjualan->id)->delete();
             $penjualan->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
             DB::commit();
 
-            $penawaran = Penjualan::find($penjualan->id_penawaran);
-            $penawaran->status = 'open';
-            $penawaran->save();
+            $pemesanan = Penjualan::find($penjualan->id_pemesanan);
+            $pemesanan->status = 'open';
+            $pemesanan->save();
 
-            return redirect('penjualan/detail/'.$penawaran->id);
+            return redirect('penjualan/detail/'.$pemesanan->id);
+
         }else if($penjualan->jenis == 'penagihan'){
             $detail_jurnal = Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->get();
             foreach($detail_jurnal as $v){
@@ -475,7 +536,15 @@ class PenjualanController extends Controller
 
             Transaksi_produk::where('id_transaksi',$id)->delete();
 
-            if(isset($penjualan->id_pemesanan)){
+            $pengiriman = Penjualan::find($penjualan->id_pemesanan);
+            if(isset($pengiriman->id_pemesanan) && $penjualan->jenis == 'penagihan'){
+                $pengiriman = Penjualan::find($pengiriman->id_pemesanan);
+                $pengiriman->status = 'open';
+                $pengiriman->save();
+                $penjualan->delete();
+                DB::commit();
+                return redirect('penjualan/detail/'.$pengiriman->id);
+            }else if(isset($penjualan->id_pemesanan)){
                 $pemesanan = Penjualan::find($penjualan->id_pemesanan);
                 $pemesanan->status = 'open';
                 $pemesanan->save();
@@ -487,9 +556,6 @@ class PenjualanController extends Controller
                 DB::commit();
                 return redirect('penjualan');
             }
-            
-
-            
         }
     }
 

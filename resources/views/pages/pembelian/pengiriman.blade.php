@@ -67,6 +67,11 @@
                                         <label for="tanggal_transaksi">Tgl. pengiriman</label>
                                         <input type="date" class="form-control" id="tanggal_transaksi" name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
                                     </div>
+                                    <div class="form-group" hidden>
+                                        <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
+                                        <input type="date" class="form-control" id="tanggal_jatuh_tempo"
+                                            name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
+                                    </div>
                                     <div class="form-group">
                                         <label for="kirim_melalui">Kirim melalui</label>
                                         <input type="text" class="form-control" id="kirim_melalui"

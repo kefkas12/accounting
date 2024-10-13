@@ -5,7 +5,7 @@
     <meta content='IE=edge' http-equiv='X-UA-Compatible'>
     <meta content='width=device-width, initial-scale=1.0,user-scalable=no' name='viewport'>
     <title>
-        JURNAL
+        Surat Jalan
     </title>
     <link href="{{ asset('argon') }}/img/brand/favicon.png" rel="icon" type="image/png">
     <link rel="stylesheet" media="all" href="https://d2lud967a5orp2.cloudfront.net/assets/prints-20337af3b4793164edb266685154eb22.css" data-turbolinks-track="true" />

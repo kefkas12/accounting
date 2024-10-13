@@ -7,6 +7,7 @@ use App\Models\Akun_company;
 use App\Models\Approval;
 use App\Models\Detail_jurnal;
 use App\Models\Jurnal;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -141,17 +142,39 @@ class JurnalController extends Controller
             }else if($status == 'detail'){
                 return view('pages.jurnal.detail', $data);
             }else if($status == 'hapus'){
+                
                 try{
-                    $approval = new Approval;
-                    $is_requester = $approval->check_requester('Hapus Jurnal');
+                    if(User::find(Auth::id())->hasRole('pemilik')){
+                        $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                                                ->where('id',$id)
+                                                ->where('id_company',Auth::user()->id_company)
+                                                ->first();
+                        DB::beginTransaction();
 
-                    if($is_requester){
-                        $jurnal = Jurnal::find($id);
-                        $jurnal->status = 'draf';
-                        $jurnal->is_delete = 'delete';
-                        $jurnal->save();
+                        if(count($data['jurnal']->detail_jurnal) > 0){
+                            foreach($data['jurnal']->detail_jurnal as $v){
+                                $akun_company = Akun_company::where('id_akun', $v->id_akun)
+                                                            ->where('id_company', Auth::user()->id_company)
+                                                            ->first();
+                                $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                                $akun_company->save();
+                                Detail_jurnal::find($v->id)->delete();
+                            }
+                        }
+                        Jurnal::find($id)->delete();
+
+                        DB::commit();
+                    }else{
+                        $approval = new Approval;
+                        $is_requester = $approval->check_requester('Hapus Jurnal');
+
+                        if($is_requester){
+                            $jurnal = Jurnal::find($id);
+                            $jurnal->status = 'draf';
+                            $jurnal->is_delete = 'delete';
+                            $jurnal->save();
+                        }
                     }
-
                     //delete
 
                 }catch(Exception $e){
