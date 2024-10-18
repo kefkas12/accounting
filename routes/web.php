@@ -114,6 +114,8 @@ Route::controller(PembelianController::class)->prefix('pembelian')->group(functi
 	Route::post('/pengiriman/faktur/{id}', 'insert_pengiriman_faktur');
 
 	Route::post('/pemesanan', 'insert_pemesanan');
+
+	Route::post('/receive_payment/hapus/{id}', 'hapus_pembayaran');
 });
 
 Route::controller(PenjualanController::class)->prefix('penjualan')->group(function () {

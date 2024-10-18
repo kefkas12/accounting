@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </div>
-                    <form method="POST" id="form"
+                    <form method="POST"
                         @if(isset($pemesanan))
                         action="{{ url('pembelian/pemesanan').'/faktur/'.$pembelian->id }}"
                         @elseif(isset($pengiriman))
@@ -38,26 +38,25 @@
                         @else
                             action="{{ url('pembelian/faktur') }}"
                         @endif
-                    >
+                        id="insertForm">
                         @csrf
                         <div class="card-body">
                             <div class="form-row">
                                 <div class="form-group col-md-3 pr-4">
-                                    <label for="supplier">Supplier</label>
+                                    <label for="supplier">Supplier <span class="text-danger">*</span></label>
                                     <select class="form-control" id="supplier" name="supplier" required @if(isset($pembelian)) disabled @endif>
-                                        <option selected disabled>Pilih kontak</option>
+                                        <option selected disabled value="">Pilih kontak</option>
                                         @foreach ($supplier as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-3 pr-4">
+                                <div class="form-group col-md-4 pr-4">
                                     <label for="email">Email</label>
                                     <input type="email" class="form-control" id="email" name="email">
                                 </div>
-                                <div class="form-group col-md-3">
-                                    @if(isset($pengiriman))
+                                <div class="form-group col-md-2">
                                     <label for="email">Pengiriman</label>
                                     <div class="form-check mb-4" >
                                         <input class="form-check-input" type="checkbox" id="info_pengiriman" name="info_pengiriman" >
@@ -65,17 +64,16 @@
                                             Info Pengiriman
                                         </label>
                                     </div>
-                                    @endif
                                 </div>
                                 <div class="form-group col-md-3 d-flex justify-content-end">
                                     Total Rp <span id="total_faktur">0</span>
                                 </div>
                             </div>
                             <div class="form-row">
-                                <div class="col-md-4 pr-4">
+                                <div class="col-md-3 pr-4">
                                     <div class="form-group">
                                         <label for="alamat">Alamat Penagihan</label><br>
-                                        <textarea class="form-control" name="alamat" id="alamat"></textarea>
+                                        <textarea class="form-control" name="alamat" id="alamat" rows="1"></textarea>
                                     </div>
                                     <div class="form-group info_pengiriman" style="display:none">
                                         <label for="alamat_pengiriman">Alamat Pengiriman</label><br>
@@ -231,7 +229,7 @@
                                     <div class="row my-5">
                                         <div class="col d-flex justify-content-end">
                                             <a href="{{ url('pembelian') }}" class="btn btn-light">Batalkan</a>
-                                            <button type="submit" class="btn btn-primary">@if(isset($pembelian)) Simpan perubahan @else Buat Faktur @endif</button>
+                                            <button type="submit" class="btn btn-primary" onclick="buat();">@if(isset($pembelian)) Simpan perubahan @else Buat Faktur @endif</button>
                                         </div>
                                     </div>
                                 </div>
@@ -284,6 +282,13 @@
                 $('#no_pelacakan').val('{{ $pembelian->no_pelacakan }}')
                 @endif
             @endif
+        }
+
+        function buat() {
+            success = $('#supplier').val() != null ? true : false;
+            if(success == true){
+                $('#insertForm').submit();
+            }
         }
 
         function get_data(thisElement, no) {
@@ -416,7 +421,7 @@
         @endif
 
         @if(isset($pemesanan) || isset($pengiriman))
-        $('#form').submit(function() {
+        $('#insertForm').submit(function() {
             $('.form-control').removeAttr('disabled');
         });
         @endif

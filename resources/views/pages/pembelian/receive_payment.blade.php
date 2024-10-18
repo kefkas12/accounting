@@ -105,11 +105,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row my-4" hidden>
-                            <div class="col-sm-6"></div>
+                        <div class="row my-4">
+                            <div class="col-sm-6">
+                                @hasanyrole('pemilik')
+                                <form id="deleteForm" action="{{ url('pembelian/receive_payment/hapus') . '/' . $pembayaran_pembelian->id }}"
+                                    method="post">
+                                    @csrf
+                                    <button type="submit"
+                                        class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
+                                </form>
+                                @endhasallroles
+                            </div>
                             <div class="col-sm-6 d-flex justify-content-end">
-                                <a href="{{ url('pembelian') }}" class="btn btn-outline-danger">Batal</a>
-                                <button class="btn btn-primary">Buat Penerimaan</button>
                             </div>
                         </div>
                     </div>

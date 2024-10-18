@@ -62,7 +62,7 @@ class Pembayaran_pembelian extends Model
                 $detail_pembelian->save();
 
                 $pembelian = Pembelian::find($request->input('id_pembelian')[$i]);
-                $pembelian->jumlah_terbayar = $request->input('total')[$i];
+                $pembelian->jumlah_terbayar = $pembelian->jumlah_terbayar + $request->input('total')[$i];
                 $pembelian->sisa_tagihan = $pembelian->sisa_tagihan - $request->input('total')[$i];
                 if($pembelian->sisa_tagihan == 0){
                     $pembelian->status = 'paid';

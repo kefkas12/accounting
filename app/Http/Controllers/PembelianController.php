@@ -302,10 +302,10 @@ class PembelianController extends Controller
     public function receive_payment(Request $request, $id)
     {
         $data['sidebar'] = 'pembelian';
+        $data['pembayaran_pembelian'] = Pembayaran_pembelian::where('id',$id)->first();
         $data['detail_pembayaran_pembelian'] = Detail_pembayaran_pembelian::with('pembayaran_pembelian', 'pembelian.kontak')
                                             ->where('id_pembayaran_pembelian',$id)
                                             ->get();
-                                            // dd($data);
         $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
                                             ->leftJoin('pembayaran_pembelian','jurnal.id','=','pembayaran_pembelian.id_jurnal')
                                             ->select('jurnal.*')
@@ -323,14 +323,11 @@ class PembelianController extends Controller
         $pembelian = new Pembelian;
         $pembelian->insert($request, $jurnal->id, 'faktur');
 
-        //gudang
         for ($i = 0; $i < count($request->input('produk')); $i++) {
             $produk = Produk::find($request->input('produk')[$i]);
             if($produk->batas_stok_minimum){
                 $produk->stok = $produk->stok + $request->input('kuantitas')[$i];
                 $produk->save();
-
-                // $gudang = Gudang::
             }
         }
 
@@ -524,6 +521,14 @@ class PembelianController extends Controller
             Detail_jurnal::where('id_jurnal',$pembelian->id_jurnal)->delete();
             Jurnal::find($pembelian->id_jurnal)->delete();
 
+            $detail_pembelian = Detail_pembelian::where('id_pembelian',$pembelian->id)->get();
+            foreach($detail_pembelian as $v){
+                $produk = Produk::find($v->id_produk);
+                $produk->stok = $produk->stok - $v->kuantitas;
+                $produk->save();
+            }
+
+            Detail_pembelian::where('id_pembelian',$pembelian->id)->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
 
             $pengiriman = Pembelian::find($pembelian->id_pemesanan);
@@ -549,5 +554,38 @@ class PembelianController extends Controller
             }
         }
 
+    }
+
+    public function hapus_pembayaran($id){
+        DB::beginTransaction();
+
+        $pembayaran_pembelian = Pembayaran_pembelian::find($id);
+
+        $detail_jurnal = Detail_jurnal::where('id_jurnal',$pembayaran_pembelian->id_jurnal)->get();
+        foreach($detail_jurnal as $v){
+            $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                        ->where('id_akun',$v->id_akun)->first();
+            $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+            $akun_company->save();
+        }
+        Detail_jurnal::where('id_jurnal',$pembayaran_pembelian->id_jurnal)->delete();
+        Jurnal::find($pembayaran_pembelian->id_jurnal)->delete();
+
+        $pembayaran_pembelian->delete();
+        $detail_pembayaran_pembelian = Detail_pembayaran_pembelian::where('id_pembayaran_pembelian',$id)->first();
+        $pembelian = Pembelian::find($detail_pembayaran_pembelian->id_pembelian);
+        $pembelian->jumlah_terbayar = $pembelian->jumlah_terbayar - $detail_pembayaran_pembelian->jumlah;
+        $pembelian->sisa_tagihan = $pembelian->sisa_tagihan + $detail_pembayaran_pembelian->jumlah;
+        if($pembelian->total == $pembelian->sisa_tagihan){
+            $pembelian->status = 'open';
+        }else{
+            $pembelian->status = 'partial';
+        }
+        $pembelian->save();
+
+        $detail_pembayaran_pembelian->delete();
+
+        DB::commit();
+        return redirect('pembelian');
     }
 }

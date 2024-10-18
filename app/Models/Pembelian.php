@@ -89,11 +89,14 @@ class Pembelian extends Model
         $this->email = $request->input('email');
         $this->jenis = $jenis;
         $this->id_jurnal = $idJurnal;
+
         //update
-        $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : null;
         $this->ongkos_kirim = $request->input('input_ongkos_kirim') ? $request->input('input_ongkos_kirim') : null;
-        $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
-        $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
+        if($request->input('info_pengiriman') == 'on'){
+            $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : null;
+            $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
+            $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
+        }
         
         $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
         $this->alamat = $this->alamat ? $this->alamat : $this->alamat_pengiriman;
@@ -125,6 +128,7 @@ class Pembelian extends Model
             $this->nama_gudang = $gudang->nama;
         }
         $this->save();
+        
         if(($jenis == 'pemesanan' || $jenis == 'pengiriman') && $id_jenis != null){
             $pembelian = Pembelian::find($id_jenis);
             $pembelian->id_pemesanan = $this->id;

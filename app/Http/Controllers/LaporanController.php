@@ -209,7 +209,7 @@ class LaporanController extends Controller
         //     ->select('akun.*', 'akun_company.saldo as saldo_akun')
         //     ->where('akun_company.id_company', Auth::user()->id_company)
         //     ->get();
-        
+        $buku_besar = [];
 
         $akun = Detail_jurnal::join('jurnal', 'detail_jurnal.id_jurnal', '=', 'jurnal.id')
             ->join('akun', 'detail_jurnal.id_akun', '=', 'akun.id')

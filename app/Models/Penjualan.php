@@ -134,11 +134,10 @@ class Penjualan extends Model
             $penjualan->status = 'closed';
             $penjualan->save();
         }
-
-        $this->insertDetailPenjualan($request, $tipe, $jenis);
+        $this->insertDetailPenjualan($request, $tipe, $jenis,$this->id_gudang);
     }
 
-    protected function insertDetailPenjualan(Request $request, $tipe, $jenis)
+    protected function insertDetailPenjualan(Request $request, $tipe, $jenis, $id_gudang)
     {
         for ($i = 0; $i < count($request->input('produk')); $i++) {
             $harga_satuan = $request->input('harga_satuan')[$i] != '' || $request->input('harga_satuan')[$i] != null ? number_format((float)str_replace(",", "", $_POST['harga_satuan'][$i]), 2, '.', '') : 0;
@@ -172,6 +171,16 @@ class Penjualan extends Model
 
             if($jenis == 'pengiriman'){
                 $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i]);
+            }else if($jenis == 'penagihan'){
+                $this->updateStokGudang(
+                    $this->id,
+                    $request->input('produk')[$i],
+                    $id_gudang,
+                    $request->input('kuantitas')[$i],
+                    $request->input('tanggal_transaksi'),
+                    $tipe,
+                    $transaksi_produk->jenis
+                );
             }
         }
     }
@@ -181,6 +190,19 @@ class Penjualan extends Model
         $produk = Produk::find($produk);
         $produk->stok = $produk->stok - $kuantitas;
         $produk->save();
+    }
+
+    public function updateStokGudang($id_transaksi, $produk, $gudang, $kuantitas, $tanggal, $tipe, $jenis)
+    {
+        $stok_gudang = new Stok_gudang;
+        $stok_gudang->id_transaksi = $id_transaksi;
+        $stok_gudang->id_produk = $produk;
+        $stok_gudang->id_gudang = $gudang;
+        $stok_gudang->stok = $stok_gudang->stok - $kuantitas;
+        $stok_gudang->tanggal = $tanggal;
+        $stok_gudang->tipe = $tipe;
+        $stok_gudang->jenis = $jenis;
+        $stok_gudang->save();
     }
 
     public function edit($request)

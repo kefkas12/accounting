@@ -92,15 +92,15 @@
                             </div>
                             <div class="col-sm-2">
                                 @if($pembelian->jenis == 'pengiriman')
-                                @if($pembelian->kirim_melalui)
-                                {{ $pembelian->kirim_melalui }}
+                                    @if($pembelian->kirim_melalui)
+                                    {{ $pembelian->kirim_melalui }}
+                                    @else
+                                    -
+                                    @endif
                                 @else
-                                -
-                                @endif
-                                @else
-                                @if($pembelian->tanggal_jatuh_tempo)
-                                <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_jatuh_tempo)) }}</strong>
-                                @endif
+                                    @if($pembelian->tanggal_jatuh_tempo)
+                                    <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_jatuh_tempo)) }}</strong>
+                                    @endif
                                 @endif
                             </div>
                             @if($pembelian->penawaran)
@@ -119,9 +119,17 @@
                                 <a href="{{ url('pembelian/detail').'/'.$pembelian->pemesanan->id }}">{{ $pembelian->pemesanan->no_str }}</a>
                             </div>
                             @endif
+                            @if(!$pembelian->pemesanan && !$pembelian->penawaran)
+                            <div class="col-sm-2" style="margin-right: -25px !important;">
+                                @if($pembelian->nama_gudang) Gudang @endif
+                            </div>
+                            <div class="col-sm-2">
+                                @if($pembelian->nama_gudang) <a href="{{ url('gudang/detail').'/'.$pembelian->id_gudang }}">{{ $pembelian->nama_gudang }}</a> @endif
+                            </div>
+                            @endif
                         </div>
                         @if($pembelian->tanggal_pengiriman)
-                        @if($pembelian->jenis == 'pemesanan')
+                        @if($pembelian->jenis == 'pemesanan' || $pembelian->jenis == 'faktur')
                         <div class="row my-2">
                             <div class="col-sm-4"></div>
                             <div class="col-sm-2">Tgl. pengiriman</div>

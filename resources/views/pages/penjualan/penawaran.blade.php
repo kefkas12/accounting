@@ -54,7 +54,7 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-3 pr-4">
-                                    <label for="alamat">Alamat Penagihan</label><br>
+                                    <label for="alamat">Alamat</label><br>
                                     <textarea class="form-control" name="alamat" id="alamat"></textarea>
                                 </div>
                                 <div class="col-md-3">

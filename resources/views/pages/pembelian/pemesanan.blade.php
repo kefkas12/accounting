@@ -70,10 +70,10 @@
                                     Total Rp <span id="total_faktur">0,00</span>
                                 </div>
                             </div>
-                            <div class="form-row text-sm">
+                            <div class="form-row">
                                 <div class="col-md-3 pr-4">
                                     <div class="form-group">
-                                        <label for="alamat_penagihan">Alamat Penagihan</label><br>
+                                        <label for="alamat_penagihan">Alamat Kirim</label><br>
                                         <textarea class="form-control" name="alamat_penagihan" id="alamat_penagihan" rows="1"></textarea>
                                     </div>
                                     <div class="form-group info_pengiriman" style="display:none">
@@ -404,8 +404,8 @@
         @endif
 
         @if(isset($penawaran))
-        document.getElementById('form').addEventListener('submit', function() {
-            document.getElementById('supplier').removeAttribute('disabled');
+        $('#insertForm').submit(function() {
+            $('.form-control').removeAttr('disabled');
         });
         @endif
     </script>

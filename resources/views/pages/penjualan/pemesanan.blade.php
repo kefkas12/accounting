@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </div>
-                    <form method="POST" id="form"
+                    <form method="POST" id="insertForm"
                         @if(isset($penawaran))
                             action="{{ url('penjualan/penawaran').'/pemesanan/'.$penjualan->id }}" 
                         @elseif(isset($penjualan))
@@ -39,9 +39,9 @@
                     >
                         @csrf
                         <div class="card-body">
-                            <div class="form-row text-sm">
+                            <div class="form-row">
                                 <div class="form-group col-md-3 pr-4">
-                                    <label for="pelanggan">Pelanggan</label>
+                                    <label for="pelanggan">Pelanggan <span class="text-danger">*</span></label>
                                     <select class="form-control" id="pelanggan" name="pelanggan" required @if(isset($penawaran)) disabled @endif>
                                         <option selected disabled @if(!isset($penawaran)) value="" @endif>Pilih kontak</option>
                                         @foreach ($pelanggan as $v)
@@ -67,7 +67,7 @@
                                     Total Rp <span id="total_faktur">0</span>
                                 </div>
                             </div>
-                            <div class="form-row text-sm">
+                            <div class="form-row">
                                 <div class="col-md-3 pr-4">
                                     <div class="form-group">
                                         <label for="alamat">Alamat Penagihan</label><br>
@@ -91,7 +91,7 @@
                                             name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
                                     </div>
                                     <div class="form-group">
-                                    <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
+                                        <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
                                         <input type="date" class="form-control" id="tanggal_jatuh_tempo"
                                             name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                     </div>
@@ -427,6 +427,7 @@
             $('#alamat').val('{{ $penjualan->alamat }}')
             $('#tanggal_transaksi').val('{{ $penjualan->tanggal_transaksi }}')
             $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
+            $('#gudang').val('{{ $penjualan->id_gudang }}')
 
             var x = 1;
             @foreach($detail_penjualan as $v)
@@ -450,8 +451,8 @@
         @endif
 
         @if(isset($penawaran))
-        document.getElementById('form').addEventListener('submit', function() {
-            document.getElementById('pelanggan').removeAttribute('disabled');
+        $('#insertForm').submit(function() {
+            $('.form-control').removeAttr('disabled');
         });
         @endif
     </script>

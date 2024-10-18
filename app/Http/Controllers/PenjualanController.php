@@ -16,6 +16,7 @@ use App\Models\Kontak;
 use App\Models\Pembayaran_penjualan;
 use App\Models\Penjualan;
 use App\Models\Produk;
+use App\Models\Stok_gudang;
 use App\Models\Transaksi_produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -333,9 +334,18 @@ class PenjualanController extends Controller
         DB::beginTransaction();
         $jurnal = new Jurnal;
         $jurnal->penjualan($request,null,$is_requester);
-        
+
         $penjualan = new Penjualan;
         $penjualan->insert($request, $jurnal->id, 'penagihan', null,$is_requester);
+
+        for ($i = 0; $i < count($request->input('produk')); $i++) {
+            $produk = Produk::find($request->input('produk')[$i]);
+            if($produk->batas_stok_minimum){
+                $produk->stok = $produk->stok - $request->input('kuantitas')[$i];
+                $produk->save();
+            }
+        }
+
         DB::commit();
 
         return redirect('penjualan/detail/'.$penjualan->id);
@@ -469,12 +479,12 @@ class PenjualanController extends Controller
                 $penawaran->save();
                 $penjualan->delete();
                 DB::commit();
+                return redirect('penjualan/detail/'.$penawaran->id);
             }else{
                 $penjualan->delete();
                 DB::commit();
                 return redirect('penjualan');
             }
-            return redirect('penjualan/detail/'.$penawaran->id);
         }else if($penjualan->jenis == 'pengiriman'){
             //updated
             $detail_jurnal = Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->get();
@@ -496,16 +506,19 @@ class PenjualanController extends Controller
             }
 
             Detail_penjualan::where('id_penjualan',$penjualan->id)->delete();
-            $penjualan->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
-            DB::commit();
 
-            $pemesanan = Penjualan::find($penjualan->id_pemesanan);
-            $pemesanan->status = 'open';
-            $pemesanan->save();
-
-            return redirect('penjualan/detail/'.$pemesanan->id);
-
+            if($penjualan->id_pemesanan){
+                $pemesanan = Penjualan::find($penjualan->id_pemesanan);
+                $pemesanan->id_pemesanan = null;
+                $pemesanan->status = 'open';
+                $pemesanan->save();
+                $penjualan->delete();
+                DB::commit();
+                return redirect('penjualan/detail/'.$pemesanan->id);
+            }else{
+                return redirect('penjualan');
+            }
         }else if($penjualan->jenis == 'penagihan'){
             $detail_jurnal = Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->get();
             foreach($detail_jurnal as $v){
@@ -534,9 +547,18 @@ class PenjualanController extends Controller
             Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->delete();
             Jurnal::find($penjualan->id_jurnal)->delete();
 
+            $detail_penjualan = Detail_penjualan::where('id_penjualan',$penjualan->id)->get();
+            foreach($detail_penjualan as $v){
+                $produk = Produk::find($v->id_produk);
+                $produk->stok = $produk->stok + $v->kuantitas;
+                $produk->save();
+            }
+
+            Detail_penjualan::where('id_penjualan',$penjualan->id)->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
 
             $pengiriman = Penjualan::find($penjualan->id_pemesanan);
+            Stok_gudang::where('id_transaksi',$id)->delete();
             if(isset($pengiriman->id_pemesanan) && $penjualan->jenis == 'penagihan'){
                 $pengiriman = Penjualan::find($pengiriman->id_pemesanan);
                 $pengiriman->status = 'open';

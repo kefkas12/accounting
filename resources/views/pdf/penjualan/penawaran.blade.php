@@ -106,6 +106,10 @@ function terbilang($nilai) {
               <th scope="col">{{ number_format($penjualan->subtotal,0,',','.') }}</th>
             </tr>
             <tr>
+              <th scope="col">PPN (11%)</th>
+              <th scope="col">{{ number_format($penjualan->ppn,0,',','.') }}</th>
+            </tr>
+            <tr>
               <th scope="col">Total</th>
               <th scope="col">{{ number_format($penjualan->total,0,',','.') }}</th>
             </tr>
