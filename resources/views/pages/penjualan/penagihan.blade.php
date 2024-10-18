@@ -105,7 +105,7 @@
                                             name="tanggal_pengiriman" value="{{ date('Y-m-d') }}">
                                     </div>
                                     <div class="form-group">
-                                        <label for="gudang" class="mt-3">Gudang</label>
+                                        <label for="gudang" >Gudang</label>
                                         <select class="form-control" id="gudang" name="gudang" @if(isset($pengiriman)) disabled @endif>
                                             <option selected disabled hidden>Pilih Gudang</option>
                                             @if(isset($gudang))

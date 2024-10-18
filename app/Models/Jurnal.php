@@ -245,6 +245,18 @@ class Jurnal extends Model
             $this->createDetailJurnal($this->id, 43, 0, $request->input('input_ppn'));
             $this->updateAkunBalance(43, 0, $request->input('input_ppn'));
         }
+
+        //potong persediaan
+        for ($i = 0; $i < count($request->input('produk')); $i++) {
+            $produk = Produk::find($request->input('produk')[$i]);
+            $this->createDetailJurnal($this->id, 62, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata, 0);
+            $this->updateAkunBalance(62, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata, 0);
+
+            $this->createDetailJurnal($this->id, 6, 0, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata);
+            $this->updateAkunBalance(6, 0, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata);
+        }
+
+        
     }
 
     public function pengiriman_faktur($request, $id = null)
