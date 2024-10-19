@@ -542,7 +542,7 @@ class PembelianController extends Controller
                                                     ->whereNot('id_pembelian', $id)
                                                     ->select(DB::raw('sum(kuantitas) as kuantitas'),DB::raw('sum(harga_satuan) as harga_satuan'))
                                                     ->first();
-                if($produk->stok> 0){
+                if($produk->stok> 0 && $detail_pembelian_sum->kuantitas > 0){
                     $produk->harga_beli_rata_rata = $detail_pembelian_sum->harga_satuan / $detail_pembelian_sum->kuantitas;
                 }else{
                     $produk->harga_beli_rata_rata = 0;

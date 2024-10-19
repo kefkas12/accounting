@@ -197,6 +197,7 @@ class Pembelian extends Model
     public function updateStokGudang($id_transaksi, $produk, $gudang, $kuantitas, $tanggal, $tipe, $jenis)
     {
         $stok_gudang = new Stok_gudang;
+        $stok_gudang->id_company = Auth::user()->id_company;
         $stok_gudang->id_transaksi = $id_transaksi;
         $stok_gudang->id_produk = $produk;
         $stok_gudang->id_gudang = $gudang;

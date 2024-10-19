@@ -14,6 +14,7 @@ use App\Models\Gudang;
 use App\Models\Jurnal;
 use App\Models\Kontak;
 use App\Models\Pembayaran_penjualan;
+use App\Models\Pengaturan_nama;
 use App\Models\Penjualan;
 use App\Models\Produk;
 use App\Models\Stok_gudang;
@@ -48,13 +49,16 @@ class PenjualanController extends Controller
                                         ->orderBy('id','DESC')
                                         ->get();
         $data['pemesanan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
-                                        ->select('penjualan.*','kontak.nama as nama_pelanggan')
+                                        ->leftJoin('penjualan as penawaran','penjualan.id_penawaran','=','penawaran.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan', 'penawaran.no_str as no_str_penawaran')
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->where('penjualan.jenis','pemesanan')
                                         ->orderBy('id','DESC')
                                         ->get();
         $data['pengiriman'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
-                                        ->select('penjualan.*','kontak.nama as nama_pelanggan')
+                                        ->leftJoin('penjualan as pemesanan','penjualan.id_pemesanan','=','pemesanan.id')
+                                        ->leftJoin('penjualan as penawaran','pemesanan.id_penawaran','=','penawaran.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan', 'penawaran.no_str as no_str_penawaran', 'pemesanan.no_str as no_str_pemesanan', 'pemesanan.id_penawaran')
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->where('penjualan.jenis','pengiriman')
                                         ->orderBy('id','DESC')
@@ -72,6 +76,8 @@ class PenjualanController extends Controller
 
         $approval = new Approval;
         $data['is_approver'] = $approval->check_approver('penjualan');
+
+        $data['pengaturan_nama'] = Pengaturan_nama::where('id_company',Auth::user()->id_company)->get();
 
         return view('pages.penjualan.index', $data);
     }
@@ -547,6 +553,7 @@ class PenjualanController extends Controller
             Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->delete();
             Jurnal::find($penjualan->id_jurnal)->delete();
 
+            //consider karena update stock saat pengiriman
             $detail_penjualan = Detail_penjualan::where('id_penjualan',$penjualan->id)->get();
             foreach($detail_penjualan as $v){
                 $produk = Produk::find($v->id_produk);

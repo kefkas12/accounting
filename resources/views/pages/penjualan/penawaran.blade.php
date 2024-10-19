@@ -46,7 +46,9 @@
                                     <label for="email">Email</label>
                                     <input type="email" class="form-control" id="email" name="email">
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-3 pr-4">
+                                    <label for="no_rfq">No RFQ</label>
+                                    <input type="text" class="form-control" id="no_rfq" name="no_rfq">
                                 </div>
                                 <div class="form-group col-md-3 d-flex justify-content-end">
                                     Total &nbsp; <span id="total_faktur"> Rp 0</span>
@@ -57,15 +59,10 @@
                                     <label for="alamat">Alamat</label><br>
                                     <textarea class="form-control" name="alamat" id="alamat"></textarea>
                                 </div>
-                                <div class="col-md-3">
-                                    <div class="form-group pr-4">
-                                        <label for="tanggal_transaksi">Tgl. transaksi</label>
-                                        <input type="date" class="form-control" id="tanggal_transaksi"
-                                            name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
-                                    </div>
-                                    <div class="form-group">
-
-                                    </div>
+                                <div class="form-group col-md-3 pr-4">
+                                    <label for="tanggal_transaksi">Tgl. transaksi</label>
+                                    <input type="date" class="form-control" id="tanggal_transaksi"
+                                        name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
                                 </div>
                                 <div class="form-group col-md-3 pr-4">
                                     <label for="tanggal_jatuh_tempo">Tgl. kedaluarsa</label>
@@ -420,6 +417,7 @@
             @if(isset($penjualan))
                 $('#pelanggan').val('{{ $penjualan->id_pelanggan }}')
                 $('#email').val('{{ $penjualan->email }}')
+                $('#no_rfq').val('{{ $penjualan->no_rfq }}')
                 $('#alamat').val('{{ $penjualan->alamat }}')
                 $('#tanggal_transaksi').val('{{ $penjualan->tanggal_transaksi }}')
                 $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
@@ -427,7 +425,7 @@
                 var x = 1;
                 load_select_2(x);
                 @foreach($detail_penjualan as $v)
-                    $('#produk_'+x).val('{{ $v->id_produk }}');
+                    $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
                     $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
                     $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
                     change_harga(x, {{ $v->harga_satuan }});

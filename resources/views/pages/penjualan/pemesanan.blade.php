@@ -127,11 +127,19 @@
                                         <input type="text" class="form-control" id="no_pelacakan" name="no_pelacakan">
                                     </div>
                                 </div>
-                                <div class="form-group col-md-3 pr-4">
-                                    @if(isset($penawaran))
-                                    <label for="nomor_penawaran_penjualan">No Penawaran Penjualan</label> <br>
-                                    <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
-                                    @endif
+                                <div class="col-md-3 pr-4">
+                                    <div class="form-group">
+                                        @if(isset($penawaran))
+                                            <label for="nomor_penawaran_penjualan">No Penawaran Penjualan</label> <br>
+                                            <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
+                                        @endif
+                                    </div>
+                                    <div class="form-group mt-5">
+                                        @if(isset($penawaran))
+                                            <label for="no_rfq">No RFQ</label> <br>
+                                            <span class="text-primary">{{ $penjualan->no_rfq }}</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 

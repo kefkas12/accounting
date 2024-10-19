@@ -10,6 +10,7 @@ use App\Models\Stok_gudang;
 use App\Models\Transaksi_produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class ProdukController extends Controller
@@ -74,9 +75,11 @@ class ProdukController extends Controller
                                     ->where('id_company',Auth::user()->id_company)
                                     ->first();
             $data['gudang'] = Gudang::leftJoin('stok_gudang','gudang.id','=','stok_gudang.id_gudang')
-                                    ->where('id_company',Auth::user()->id_company)
+                                    ->where('gudang.id_company',Auth::user()->id_company)
                                     ->get();
-            $data['stok_gudang'] = Stok_gudang::where('id_produk',$id)
+            $data['stok_gudang'] = Stok_gudang::select(DB::raw('sum(stok) as stok'))
+                                                ->where('id_produk',$id)
+                                                ->where('id_company', Auth::user()->id_company)
                                                 ->whereNull('id_gudang')
                                                 ->first();
             if($status == 'edit'){

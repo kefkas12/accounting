@@ -75,6 +75,7 @@ class Penjualan extends Model
             $this->no_str = 'Sales Order #' . $this->no;
             $tipe = 'Pemesanan Penjualan #' . $this->no;
         }
+        
         $this->id_pelanggan = $request->input('pelanggan');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
         if($is_requester){
@@ -95,10 +96,15 @@ class Penjualan extends Model
             $this->kirim_melalui = $request->input('kirim_melalui');
         if($request->input('no_pelacakan'))
             $this->no_pelacakan = $request->input('no_pelacakan');
-        if($jenis == 'pemesanan'){
+
+        if($jenis == 'penawaran'){
+            $this->no_rfq = $request->input('no_rfq');
+        }elseif($jenis == 'pemesanan'){
             if($id_jenis != null){
                 $this->id_penawaran = $id_jenis;
             }
+
+            $this->no_rfq = Penjualan::find($id_jenis)->no_rfq ? Penjualan::find($id_jenis)->no_rfq : null;
 
             $this->info_pengiriman = $request->input('info_pengiriman') ? $request->input('info_pengiriman') : null;
             $this->sama_dengan_penagihan = $request->input('info_pengiriman') == 'on' ? $request->input('sama_dengan_penagihan') : null;
@@ -110,9 +116,13 @@ class Penjualan extends Model
                 $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
             }
         }elseif(($jenis == 'penagihan' || $jenis == 'pengiriman') && $id_jenis != null){
+            $this->no_rfq = Penjualan::find($id_jenis)->no_rfq ? Penjualan::find($id_jenis)->no_rfq : null;
             if(Penjualan::find($id_jenis)->jenis == 'pengiriman'){
                 $this->id_pemesanan = Penjualan::find($id_jenis)->id_pemesanan;
+                $this->id_pengiriman = $id_jenis;
+                $this->id_penawaran = Penjualan::find($this->id_pemesanan)->id_penawaran;
             }else{
+                $this->id_penawaran = Penjualan::find($id_jenis)->id_penawaran;
                 $this->id_pemesanan = $id_jenis;
             }
         }
@@ -195,6 +205,7 @@ class Penjualan extends Model
     public function updateStokGudang($id_transaksi, $produk, $gudang, $kuantitas, $tanggal, $tipe, $jenis)
     {
         $stok_gudang = new Stok_gudang;
+        $stok_gudang->id_company = Auth::user()->id_company;
         $stok_gudang->id_transaksi = $id_transaksi;
         $stok_gudang->id_produk = $produk;
         $stok_gudang->id_gudang = $gudang;
@@ -217,7 +228,10 @@ class Penjualan extends Model
         $this->total = $request->input('input_total');
         $this->alamat = $request->input('alamat');
         $this->email = $request->input('email');
-        if($this->sisa_tagihan > 0){
+        $this->no_rfq = $request->input('no_rfq');
+        if($this->sisa_tagihan == $this->total){
+            $this->status = 'open';
+        }elseif($this->sisa_tagihan < $this->total && $this->sisa_tagihan > 0){
             $this->status = 'partial';
         }else{
             $this->status = 'paid';

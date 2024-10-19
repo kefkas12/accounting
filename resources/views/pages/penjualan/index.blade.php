@@ -16,9 +16,9 @@
                             <div class="col d-flex justify-content-end ">
                                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Buat penjualan baru</button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="{{ url('penjualan/penagihan') }}">Penagihan Penjualan</a>
-                                    <a class="dropdown-item" href="{{ url('penjualan/pemesanan') }}">Pemesanan Penjualan</a>
-                                    <a class="dropdown-item" href="{{ url('penjualan/penawaran') }}">Penawaran Penjualan</a>
+                                    <a class="dropdown-item text-capitalize" href="{{ url('penjualan/penagihan') }}">@if($pengaturan_nama->count()> 0) {{ $pengaturan_nama[0]->nama_diubah }} @else Penagihan Penjualan @endif</a>
+                                    <a class="dropdown-item text-capitalize" href="{{ url('penjualan/pemesanan') }}">@if($pengaturan_nama->count()> 0) {{ $pengaturan_nama[1]->nama_diubah }} @else Pemesanan Penjualan @endif</a>
+                                    <a class="dropdown-item text-capitalize" href="{{ url('penjualan/penawaran') }}">@if($pengaturan_nama->count()> 0) {{ $pengaturan_nama[2]->nama_diubah }} @else Penawaran Penjualan @endif</a>
                                 </div>
                             </div>
                         </div>
@@ -62,6 +62,9 @@
                     <div class='container-fluid' style="padding-left: 1.45rem !important;">
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                <button class="nav-link" id="nav-selesai-tab" data-toggle="tab" data-target="#nav-selesai"
+                                    type="button" role="tab" aria-controls="nav-selesai"
+                                    aria-selected="true">Selesai</button>
                                 <button class="nav-link active" id="nav-penagihan-tab" data-toggle="tab" data-target="#nav-penagihan"
                                     type="button" role="tab" aria-controls="nav-penagihan"
                                     aria-selected="true">Penagihan</button>
@@ -80,13 +83,32 @@
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade" id="nav-selesai" role="tabpanel"
+                                aria-labelledby="nav-selesai-tab">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center table-flush">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Tanggal</th>
+                                                <th scope="col">No Penawaran</th>
+                                                <th scope="col">No PO</th>
+                                                <th scope="col">Tanggal Pembayaran</th>
+                                                <th scope="col"></th>
+                                                <th scope="col">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                             <div class="tab-pane fade show active" id="nav-penagihan" role="tabpanel"
                                 aria-labelledby="nav-penagihan-tab">
                                 <div class="table-responsive">
                                     <table class="table align-items-center table-flush">
                                         <thead>
                                             <tr>
-                                                <th scope="col">Tanggal</th>
+                                                <th scope="col">Tanggal Penagihan</th>
                                                 <th scope="col">No</th>
                                                 <th scope="col">Pelanggan </th>
                                                 <th scope="col">Tgl. Jatuh Tempo</th>
@@ -118,9 +140,10 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">Tanggal</th>
-                                                <th scope="col">No</th>
+                                                <th scope="col">No Penawaran</th>
+                                                <th scope="col">No PO</th>
+                                                <th scope="col">No Surat Jalan</th>
                                                 <th scope="col">Pelanggan </th>
-                                                <th scope="col">Tgl. Jatuh Tempo</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Sisa Tagihan</th>
                                                 <th scope="col">Total</th>
@@ -130,9 +153,10 @@
                                             @foreach($pengiriman as $v)
                                             <tr>
                                                 <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id_pemesanan }}">{{ $v->no_str_pemesanan }}</a></td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->nama_pelanggan }}</td>
-                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d/m/Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
                                                 <td>{{ $v->status }}</td>
                                                 <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
@@ -149,9 +173,9 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">Tanggal</th>
-                                                <th scope="col">No</th>
+                                                <th scope="col">No Penawaran</th>
+                                                <th scope="col">No PO</th>
                                                 <th scope="col">Pelanggan </th>
-                                                <th scope="col">Tgl. Jatuh Tempo</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Sisa Tagihan</th>
                                                 <th scope="col">Total</th>
@@ -161,9 +185,9 @@
                                             @foreach($pemesanan as $v)
                                             <tr>
                                                 <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->nama_pelanggan }}</td>
-                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d/m/Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
                                                 <td>{{ $v->status }}</td>
                                                 <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
@@ -180,7 +204,8 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">Tanggal</th>
-                                                <th scope="col">No</th>
+                                                <th scope="col">No Penawaran</th>
+                                                <th scope="col">No RFQ</th>
                                                 <th scope="col">Pelanggan </th>
                                                 <th scope="col">Berlaku Hingga</th>
                                                 <th scope="col">Status</th>
@@ -193,6 +218,7 @@
                                             <tr>
                                                 <td>{{ $v->tanggal_transaksi }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td>{{ $v->no_rfq }}</td>
                                                 <td>{{ $v->nama_pelanggan }}</td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
                                                 <td>{{ $v->status }}</td>

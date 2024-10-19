@@ -65,6 +65,12 @@
                                 
                             </div>
                         </div>
+                        @if($penjualan->no_rfq)
+                        <div class="row">
+                            <div class="col-sm-2">No RFQ</div>
+                            <div class="col-sm-2"><strong>{{ $penjualan->no_rfq }}</strong></div>
+                        </div>
+                        @endif
                         <hr>
                         <div class="row">
                             <div class="col-sm-2">Alamat penagihan</div>
@@ -158,21 +164,15 @@
                                 @endif
                                 @endif
                             </div>
-                            <!-- @if($penjualan->penawaran)
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                No. Penawaran
-                            </div>
-                            <div class="col-sm-2">
-                                <a href="{{ url('penjualan/detail').'/'.$penjualan->penawaran->id }}">{{ $penjualan->penawaran->no_str }}</a>
-                            </div>
-                            @endif -->
                             @if($penjualan->jenis == 'pemesanan')
+                            @if($penjualan->id_gudang)
                             <div class="col-sm-2" style="margin-right: -25px !important;">
                                 Gudang
                             </div>
                             <div class="col-sm-2">
                                 <a href="{{ url('gudang/detail').'/'.$penjualan->id_gudang }}">{{ $penjualan->nama_gudang }}</a>
                             </div>
+                            @endif
                             @endif
                             @if($penjualan->jenis == 'pengiriman')
                             @if($penjualan->pemesanan)
