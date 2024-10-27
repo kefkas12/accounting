@@ -30,11 +30,11 @@
                     </div>
                     <form method="POST" id="insertForm"
                         @if(isset($penawaran))
-                            action="{{ url('penjualan/penawaran').'/pemesanan/'.$penjualan->id }}" 
+                            action="{{ url('penjualan/penawaran').'/pemesanan/'.$penjualan->id }}"
                         @elseif(isset($penjualan))
-                            action="{{ url('penjualan/pemesanan').'/'.$penjualan->id }}" 
+                            action="{{ url('penjualan/pemesanan').'/'.$penjualan->id }}"
                         @else
-                            action="{{ url('penjualan/pemesanan') }}" 
+                            action="{{ url('penjualan/pemesanan') }}"
                         @endif
                     >
                         @csrf
@@ -55,7 +55,7 @@
                                     <input type="email" class="form-control" id="email" name="email">
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label for="email">Pengiriman</label>
+                                    <label>Pengiriman</label>
                                     <div class="form-check mb-4" >
                                         <input class="form-check-input" type="checkbox" id="info_pengiriman" name="info_pengiriman">
                                         <label class="form-check-label" for="info_pengiriman">
@@ -64,14 +64,14 @@
                                     </div>
                                 </div>
                                 <div class="form-group col-md-3 d-flex justify-content-end">
-                                    Total Rp <span id="total_faktur">0</span>
+                                    Total &nbsp; <span id="total_faktur"> Rp 0</span>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="col-md-3 pr-4">
                                     <div class="form-group">
                                         <label for="alamat">Alamat Penagihan</label><br>
-                                        <textarea class="form-control" name="alamat" id="alamat" rows="1"></textarea>
+                                        <textarea class="form-control" name="alamat" id="alamat"></textarea>
                                     </div>
                                     <div class="form-group info_pengiriman" style="display:none">
                                         <label for="alamat_pengiriman">Alamat Pengiriman</label><br>
@@ -130,13 +130,13 @@
                                 <div class="col-md-3 pr-4">
                                     <div class="form-group">
                                         @if(isset($penawaran))
-                                            <label for="nomor_penawaran_penjualan">No Penawaran Penjualan</label> <br>
+                                            <label>No Penawaran Penjualan</label> <br>
                                             <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
                                         @endif
                                     </div>
                                     <div class="form-group mt-5">
-                                        @if(isset($penawaran))
-                                            <label for="no_rfq">No RFQ</label> <br>
+                                        @if(isset($penawaran) && $penjualan->no_rfq)
+                                            <label>No RFQ</label> <br>
                                             <span class="text-primary">{{ $penjualan->no_rfq }}</span>
                                         @endif
                                     </div>
@@ -152,7 +152,8 @@
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Deskripsi</th>
                                             <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas</th>
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Harga Satuan</th>
-                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Diskon</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">% Diskon</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Nilai Diskon</th>
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Pajak</th>
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Jumlah</th>
                                             <th scope="col" style="min-width: 50px !important; padding: 10px !important;"></th>
@@ -191,6 +192,16 @@
                                                     </div>
                                             </td>
                                             <td style="padding: 10px !important;">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">Rp</span>
+                                                    </div>
+                                                    <input type="number" class="form-control" id="nilai_diskon_per_baris_1"
+                                                        name="nilai_diskon_per_baris[]" value="0"
+                                                        onkeyup="change_nilai_diskon_per_baris(1)" onblur="check_null(this)" step="any">
+                                                </div>
+                                        </td>
+                                            <td style="padding: 10px !important;">
                                                 <select class="form-control" id="pajak_1" name="pajak[]"
                                                     onchange="get_pajak(this, 1)" required>
                                                     <option value="0" data-persen="0">Pilih pajak</option>
@@ -207,7 +218,16 @@
                             </div>
                             <hr>
                             <div class="row">
-                                <div class="col"></div>
+                                <div class="col">
+                                    <div class="form-group col-md-6">
+                                        <label for="pesan">Pesan</label><br>
+                                        <textarea class="form-control" name="pesan" id="pesan"></textarea>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="memo">Memo</label><br>
+                                        <textarea class="form-control" name="memo" id="memo"></textarea>
+                                    </div>
+                                </div>
                                 <div class="col ">
                                     <div class="row mb-3">
                                         <div class="col">
@@ -313,11 +333,16 @@
 
         function get_data(thisElement, no) {
             var selected = $(thisElement).find('option:selected').data('harga_jual');
+
             $('#harga_satuan_' + no).val(selected);
             $('#jumlah_' + no).val(selected);
+
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0 ;
             subtotal[no] = kuantitas * parseFloat(selected);
-            diskon_per_baris[no] = subtotal[no] * parseFloat($('#diskon_per_baris_' + no).val()) / 100;
+
+            float_diskon_per_baris = parseFloat($('#diskon_per_baris_' + no).val()) || 0;
+
+            diskon_per_baris[no] = subtotal[no] * float_diskon_per_baris / 100;
             load();
         }
 
@@ -352,6 +377,23 @@
             var subtotal = kuantitas * harga_satuan;
             diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
             diskon_per_baris[no] = subtotal * diskon / 100;
+
+            $('#nilai_diskon_per_baris_'+no).val(diskon_per_baris[no] == 0 ? "" : diskon_per_baris[no] );
+            $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
+
+            get_pajak($('#pajak_'+no), no);
+            
+            load();
+        }
+
+        function change_nilai_diskon_per_baris(no) {
+            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
+            var subtotal = kuantitas * harga_satuan;
+            nilai_diskon = $('#nilai_diskon_per_baris_' + no).val() ? parseFloat($('#nilai_diskon_per_baris_' + no).val()) : 0;
+            diskon_per_baris[no] = nilai_diskon;
+            $('#diskon_per_baris_'+no).val("");
+
             $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
 
             get_pajak($('#pajak_'+no), no);
@@ -361,7 +403,7 @@
 
         function check_null(element) {
             if (element.value.trim() === "") {
-                element.value = 0;
+                element.value = "";
                 load();
             }
 
@@ -401,6 +443,14 @@
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Rp</span>
+                            </div>
+                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" value="0" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                        </div>
+                    </td>
+                    <td style="padding: 10px !important;">
                         <select class="form-control" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required>
                             <option value="0" data-persen="0" >Pilih pajak</option>
                             <option value="11" data-persen="11">PPN</option>
@@ -427,6 +477,10 @@
                 $('#alamat_pengiriman').show();
             }
         })
+
+        $( document ).ready(function() {
+            $('#info_pengiriman').prop('checked', true).trigger("change");
+        });
 
         @if(isset($penjualan))
         $( document ).ready(function() {

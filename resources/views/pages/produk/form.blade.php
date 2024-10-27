@@ -26,8 +26,11 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="nomor_telepon">Unit</label>
-                                        <select class="form-control" name="unit" id="unit" value="{{ isset($produk) ? $produk->unit : '' }}">
+                                        <select class="form-control" name="satuan" id="satuan" value="{{ isset($produk) ? $produk->unit : '' }}">
                                             <option value="buah" selected>Buah</option>
+                                            @foreach($satuan as $v)
+                                            <option>{{ $v->nama }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -66,7 +69,7 @@
                                                 <tr>
                                                     <th>
                                                         <div class="input-group">
-                                                            <input type="number" class="form-control" value="0" name="batas_stok_minimum" id="batas_stok_minimum">
+                                                            <input type="number" class="form-control" placeholder="0" name="batas_stok_minimum" id="batas_stok_minimum">
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">Buah</span>
                                                             </div>
@@ -101,6 +104,12 @@
         @endif
         @endif
 
+        $( document ).ready(function() {
+            $('#batas_minimum').prop('checked', true).on("change", function() {
+                $('#monitor_persediaan_barang').show();
+                $('#batas_stok_minimum').prop('required', true);
+            }).trigger("change");
+        });
         
         function monitor_persediaan_barang(){
             if($('#batas_minimum').is(":checked")){

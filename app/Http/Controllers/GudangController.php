@@ -34,7 +34,7 @@ class GudangController extends Controller
     }
     public function detail($status=null,$id=null)
     {
-        $data['sidebar'] = 'produk';
+        $data['sidebar'] = 'gudang';
         if($id){
             $data['gudang'] = Gudang::where('id', $id)
                                     ->where('id_company',Auth::user()->id_company)

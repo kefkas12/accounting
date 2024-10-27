@@ -20,7 +20,7 @@
                             </div>
                         </div>
                     </div>
-                    <form method="POST" id="form"
+                    <form method="POST" id="insertForm"
                         @if(isset($pemesanan))
                             action="{{ url('pembelian/pemesanan').'/pengiriman/'.$pembelian->id }}" 
                         @elseif(isset($pembelian))
@@ -140,12 +140,15 @@
                                             <td style="padding: 10px !important;">
                                                 <textarea class="form-control" name="deskripsi[]" id="deskripsi_1" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                                             </td>
-                                            <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_1"
+                                            <td style="padding: 10px !important;">
+                                                <input type="number" class="form-control" id="kuantitas_1"
                                                     name="kuantitas[]" value="1" onkeyup="change_jumlah(1)"
                                                     onblur="check_null(this)" step="any"></td>
-                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="unit_1"
+                                            <td style="padding: 10px !important;">
+                                                <input type="text" class="form-control" id="unit_1"
                                                     name="unit[]" readonly></td>
-                                            <td style="padding: 10px !important;" hidden><input type="number" class="form-control" id="harga_satuan_1"
+                                            <td style="padding: 10px !important;" hidden>
+                                                <input type="number" class="form-control" id="harga_satuan_1"
                                                     name="harga_satuan[]" value="0" onkeyup="change_jumlah(1)"
                                                     onblur="check_null(this)" step="any"></td>
                                             <td style="padding: 10px !important;" hidden>
@@ -325,8 +328,8 @@
                     </td>
                     <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
                     <td style="padding: 10px !important;"><input type="text" class="form-control" id="unit_${i}" name="unit[]" readonly></td>
-                    <td style="padding: 10px !important;" hidden><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
-                    <td style="padding: 10px !important;" hidden>
+                    <td style="padding: 10px !important;" id="harga_satuan_td_${i}"><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                    <td style="padding: 10px !important;" id="diskon_per_baris_td_${i}">
                         <select class="form-control" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required>
                             <option value="0" data-persen="0" >Pilih pajak</option>
                             <option value="11" data-persen="11">PPN</option>
@@ -369,6 +372,8 @@
                 @else
                     $('#pajak_'+x).val('0').trigger('change');
                 @endif
+                $('#harga_satuan_td_'+x).hide();
+                $('#diskon_per_baris_td_'+x).hide();
                 create_row();
                 x++;
             @endforeach
@@ -378,17 +383,10 @@
         });
         @endif
 
-        @if(isset($penawaran))
-        document.getElementById('form').addEventListener('submit', function() {
-            document.getElementById('supplier').removeAttribute('disabled');
-        });
-        @endif
-        @if(isset($pemesanan))
-        $('#form').submit(function() {
+        @if(isset($penawaran) || isset($pemesanan))
+        $('#insertForm').submit(function() {
             $('.form-control').removeAttr('disabled');
         });
         @endif
-
-
     </script>
 @endsection

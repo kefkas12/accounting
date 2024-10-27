@@ -11,7 +11,7 @@
                     <div class="card-header border-0">
                         <div class="row">
                             <div class="col">
-                                <b>Produk</b>
+                                <b>Persediaan</b>
                             </div>
                             <div class="col d-flex justify-content-end">
                                 <div class="input-group-prepend">
@@ -19,6 +19,7 @@
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="{{ url('produk/insert') }}">Tambah produk baru</a>
                                         <a class="dropdown-item" href="{{ url('gudang/insert') }}">Tambah gudang baru</a>
+                                        <a class="dropdown-item" href="{{ url('satuan/insert') }}">Tambah satuan baru</a>
                                     </div>
                                   </div>
                             </div>
@@ -27,17 +28,20 @@
                     <div class="card-body">
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                <button class="nav-link @if(isset($menu) && $menu == 'barang') active @elseif (isset($menu) && $menu == 'gudang') @else active @endif" id="nav-barang-dan-jasa-tab" data-toggle="tab" data-target="#nav-barang-dan-jasa"
-                                    type="button" role="tab" aria-controls="nav-barang-dan-jasa"
-                                    @if(isset($menu) && $menu == 'barang') aria-selected="true" @elseif(isset($menu) && $menu == 'gudang') aria-selected="false" @else aria-selected="true" @endif>Barang & jasa</button>
+                                <button class="nav-link @if(isset($menu) && $menu == 'produk') active @endif" id="nav-produk-tab" data-toggle="tab" data-target="#nav-produk"
+                                    type="button" role="tab" aria-controls="nav-produk"
+                                    @if(isset($menu) && $menu == 'produk') aria-selected="true" @endif>Produk</button>
                                 <button class="nav-link @if(isset($menu) && $menu == 'gudang') active @endif" id="nav-gudang-tab" data-toggle="tab" data-target="#nav-gudang"
                                     type="button" role="tab" aria-controls="nav-gudang"
-                                    @if(isset($menu) && $menu == 'gudang') aria-selected="true" @elseif(isset($menu) && $menu == 'barang') aria-selected="false" @else aria-selected="false" @endif>Gudang</button>
+                                    @if(isset($menu) && $menu == 'gudang') aria-selected="true" @endif>Gudang</button>
+                                <button class="nav-link @if(isset($menu) && $menu == 'satuan') active @endif" id="nav-satuan-tab" data-toggle="tab" data-target="#nav-satuan"
+                                    type="button" role="tab" aria-controls="nav-satuan"
+                                    @if(isset($menu) && $menu == 'satuan') aria-selected="true" @endif>Satuan</button>
                             </div>
                         </nav>
                         <div class="tab-content mt-3" id="nav-tabContent">
-                            <div class="tab-pane fade @if(isset($menu) && $menu == 'barang') show active @elseif(isset($menu) && $menu == 'gudang') @else show active @endif" id="nav-barang-dan-jasa" role="tabpanel"
-                                aria-labelledby="nav-barang-dan-jasa-tab">
+                            <div class="tab-pane fade @if(isset($menu) && $menu == 'produk') show active @endif" id="nav-produk" role="tabpanel"
+                                aria-labelledby="nav-produk-tab">
                                 <div class="row mb-3" >
                                     <div class="col-sm-3" style="padding-right: 0px !important;">
                                         <div class="card border-success">
@@ -121,7 +125,7 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="tab-pane fade @if(isset($menu) && $menu == 'gudang') show active @elseif(isset($menu) && $menu == 'barang') @else @endif" id="nav-gudang" role="tabpanel"
+                            <div class="tab-pane fade @if(isset($menu) && $menu == 'gudang') show active @endif" id="nav-gudang" role="tabpanel"
                                 aria-labelledby="nav-gudang-tab">
                                 <div class="row mb-3" >
                                     <div class="col-sm-3" style="padding-right: 0px !important;">
@@ -183,6 +187,28 @@
                                                     </td>
                                                     <td>{{ $v->alamat }}</td>
                                                     <td>{{ $v->keterangan }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade @if(isset($menu) && $menu == 'satuan') show active @endif" id="nav-satuan" role="tabpanel"
+                                aria-labelledby="nav-satuan-tab">
+                                <div style="overflow: auto">
+                                    <table id="table_satuan" class="table table-striped table-bordered" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama Satuan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($satuan as $v)
+                                                <tr>
+                                                    <td>{{ $loop->index+1 }}</td>
+                                                    <td><a href="{{ url('satuan/detail') . '/' . $v->id }}">{{ $v->nama }}</a>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>

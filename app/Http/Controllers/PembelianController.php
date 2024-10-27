@@ -246,8 +246,11 @@ class PembelianController extends Controller
                                     ->get();
         if($id != null){
             $data['pemesanan'] = true;
-            $data['pembelian'] = Pembelian::join('kontak','id_supplier','=','kontak.id')->select('pembelian.*','kontak.nama')->where('pembelian.id',$id)->first();
-            $data['detail_pembelian'] = Detail_pembelian::join('produk','detail_pembelian.id_produk','=','produk.id')->select('detail_pembelian.*','produk.unit')->where('detail_pembelian.id_pembelian',$id)->get();
+            $data['pembelian'] = Pembelian::join('kontak','id_supplier','=','kontak.id')
+                                            ->select('pembelian.*','kontak.nama')->where('pembelian.id',$id)->first();
+            $data['detail_pembelian'] = Detail_pembelian::join('produk','detail_pembelian.id_produk','=','produk.id')
+                                                        ->select('detail_pembelian.*','produk.unit')
+                                                        ->where('detail_pembelian.id_pembelian',$id)->get();
         }
         return view('pages.pembelian.pengiriman', $data);
     }

@@ -67,12 +67,12 @@
             <!-- Navigation -->
             @if(Auth::user()->email == 'superadmin@gmail.com')
             <ul class="navbar-nav">
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link" href="{{ url('/') }}">
                         <i class="ni ni-tv-2 text-primary"></i> {{ __('Dashboard') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link" href="{{ url('/company') }}">
                         <i class="ni ni-tv-2 text-primary"></i> {{ __('Company') }}
                     </a>
@@ -80,37 +80,37 @@
             </ul>
             @elseif(Auth::user()->id_company == '9')
             <ul class="navbar-nav">
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link" href="{{ url('/') }}">
                         <i class="ni ni-tv-2 text-primary"></i> {{ __('Dashboard') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'penawaran' ? 'active' : '' }}" href="{{ url('penawaran') }}">
-                        <i class="fa fa-store text-primary"></i> {{ __('Penawaran') }}
+                        <i class="fa fa-store text-primary" ></i> {{ __('Penawaran') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'penjualan' ? 'active' : '' }}" href="{{ url('penjualan') }}">
                         <i class="fa fa-store text-primary"></i> {{ __('Penjualan') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'pembelian' ? 'active' : '' }}" href="{{ url('pembelian') }}">
                         <i class="fa fa-store text-primary"></i> {{ __('Pembelian') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'gudang' ? 'active' : '' }}" href="{{ url('gudang') }}">
                         <i class="fa fa-store text-primary"></i> {{ __('Gudang') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'laporan' ? 'active' : '' }}" href="{{ url('laporan') }}">
                         <i class="fa fa-store text-primary"></i> {{ __('Laporan') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'produk' ? 'active' : '' }}" href="{{ url('produk') }}">
                         <i class="fa fa-address-book text-primary"></i> {{ __('Produk') }}
                     </a>
@@ -149,27 +149,27 @@
             </ul>
             @else
             <ul class="navbar-nav">
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link" href="{{ url('/') }}">
                         <i class="ni ni-tv-2 text-primary"></i> {{ __('Dashboard') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'laporan' ? 'active' : '' }}" href="{{ url('laporan') }}">
                         <i class="fa fa-store text-primary"></i> {{ __('Laporan') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'penjualan' ? 'active' : '' }}" href="{{ url('penjualan') }}">
                         <i class="fa fa-store text-primary"></i> {{ __('Penjualan') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'pembelian' ? 'active' : '' }}" href="{{ url('pembelian') }}">
                         <i class="fa fa-store text-primary"></i> {{ __('Pembelian') }}
                     </a>
                 </li>
-                <li class="nav-item {{ $sidebar == 'supplier' || $sidebar == 'pelanggan' ? 'active' : '' }}">
+                <li class="nav-item {{ $sidebar == 'supplier' || $sidebar == 'pelanggan' ? 'active' : '' }}" style="margin-left: -10px">
                     <a class="nav-link" href="#navbar_kontak" data-toggle="collapse" role="button" aria-expanded="{{ $sidebar == 'supplier' || $sidebar == 'pelanggan' ? 'true' : 'false' }}" aria-controls="navbar_kontak">
                         <i class="fa fa-address-book text-primary"></i>
                         <span class="nav-link-text">{{ __('Kontak') }}</span>
@@ -190,22 +190,42 @@
                         </ul>
                     </div>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ $sidebar == 'produk' ? 'active' : '' }}" href="{{ url('produk') }}">
-                        <i class="fa fa-address-book text-primary"></i> {{ __('Produk') }}
+                <li class="nav-item {{ $sidebar == 'produk' || $sidebar == 'gudang' || $sidebar == 'satuan' ? 'active' : '' }}"  style="margin-left: -10px">
+                    <a class="nav-link" href="#navbar_persediaan" data-toggle="collapse" role="button" aria-expanded="{{ $sidebar == 'produk' || $sidebar == 'gudang' || $sidebar == 'satuan' ? 'true' : 'false' }}" aria-controls="navbar_persediaan">
+                        <i class="fa fa-address-book text-primary"></i>
+                        <span class="nav-link-text">{{ __('Persediaan') }}</span>
                     </a>
+                    <div class="collapse {{ $sidebar == 'produk' || $sidebar == 'gudang' || $sidebar == 'satuan' ? 'show' : '' }}" id="navbar_persediaan">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'produk' ? 'active' : '' }}" href="{{ url('produk/produk') }}">
+                                    {{ __('Produk') }}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'gudang' ? 'active' : '' }}" href="{{ url('produk/gudang') }}">
+                                    {{ __('Gudang') }}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'satuan' ? 'active' : '' }}" href="{{ url('produk/satuan') }}">
+                                    {{ __('Satuan') }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'akun' ? 'active' : '' }}" href="{{ url('akun') }}">
                         <i class="fa fa-address-book text-primary"></i> {{ __('Daftar Akun') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'pengaturan' ? 'active' : '' }}" href="{{ url('pengaturan') }}">
                         <i class="fa fa-address-book text-primary"></i> {{ __('Pengaturan') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'laporan' ? 'active' : '' }}" href="{{ url('laporan/jurnal') }}">
                         <i class="fa fa-address-book text-primary"></i> {{ __('Approval Jurnal') }}
                     </a>

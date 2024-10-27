@@ -28,7 +28,13 @@
                             </div>
                         </div>
                     </div>
-                    <form method="POST" @if(isset($penjualan)) action="{{ url('penjualan/penawaran').'/'.$penjualan->id }}" @else action="{{ url('penjualan/penawaran') }}" @endif id="insertForm">
+                    <form method="POST" id="insertForm"
+                        @if(isset($penjualan)) 
+                            action="{{ url('penjualan/penawaran').'/'.$penjualan->id }}" 
+                        @else
+                            action="{{ url('penjualan/penawaran') }}"
+                        @endif
+                    >
                         @csrf
                         <div class="card-body">
                             <div class="form-row">
@@ -42,11 +48,11 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-3 pr-4">
+                                <div class="form-group col-md-4 pr-4">
                                     <label for="email">Email</label>
                                     <input type="email" class="form-control" id="email" name="email">
                                 </div>
-                                <div class="form-group col-md-3 pr-4">
+                                <div class="form-group col-md-2 pr-4">
                                     <label for="no_rfq">No RFQ</label>
                                     <input type="text" class="form-control" id="no_rfq" name="no_rfq">
                                 </div>
@@ -59,15 +65,15 @@
                                     <label for="alamat">Alamat</label><br>
                                     <textarea class="form-control" name="alamat" id="alamat"></textarea>
                                 </div>
-                                <div class="form-group col-md-3 pr-4">
+                                <div class="form-group col-md-2 pr-4">
                                     <label for="tanggal_transaksi">Tgl. transaksi</label>
                                     <input type="date" class="form-control" id="tanggal_transaksi"
                                         name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
                                 </div>
-                                <div class="form-group col-md-3 pr-4">
-                                    <label for="tanggal_jatuh_tempo">Tgl. kedaluarsa</label>
+                                <div class="form-group col-md-3 pr-4" style="display: none">
+                                    <label for="tanggal_jatuh_tempo" style="display: none">Tgl. kedaluarsa</label>
                                     <input type="date" class="form-control" id="tanggal_jatuh_tempo"
-                                        name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
+                                        name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}" style="display: none">
                                 </div>
                             </div>
 
@@ -80,7 +86,8 @@
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Deskripsi</th>
                                             <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas</th>
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Harga Satuan</th>
-                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Diskon</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">% Diskon</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Nilai Diskon</th>
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Pajak</th>
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Jumlah</th>
                                             <th scope="col" style="min-width: 50px !important; padding: 10px !important;"></th>
@@ -112,8 +119,19 @@
                                                         <span class="input-group-text">%</span>
                                                     </div>
                                                     <input type="number" class="form-control" id="diskon_per_baris_1"
-                                                        name="diskon_per_baris[]" value="0"
+                                                        name="diskon_per_baris[]"
                                                         onkeyup="change_diskon_per_baris(1)" onblur="check_null(this)"
+                                                        step="any">
+                                                </div>
+                                            </td>
+                                            <td style="padding: 10px !important;">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">Rp</span>
+                                                    </div>
+                                                    <input type="number" class="form-control" id="nilai_diskon_per_baris_1"
+                                                        name="nilai_diskon_per_baris[]"
+                                                        onkeyup="change_nilai_diskon_per_baris(1)" onblur="check_null(this)"
                                                         step="any">
                                                 </div>
                                             </td>
@@ -135,7 +153,16 @@
                             </div>
                             <hr>
                             <div class="row">
-                                <div class="col"></div>
+                                <div class="col">
+                                    <div class="form-group col-md-6">
+                                        <label for="pesan">Pesan</label><br>
+                                        <textarea class="form-control" name="pesan" id="pesan"></textarea>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="memo">Memo</label><br>
+                                        <textarea class="form-control" name="memo" id="memo"></textarea>
+                                    </div>
+                                </div>
                                 <div class="col ">
                                     <div class="row mb-3">
                                         <div class="col">
@@ -208,13 +235,6 @@
         var result_subtotal = 0;
         var result_ppn = 0;
         var result_diskon_per_baris = 0;
-        
-        function buat() {
-            success = $('#pelanggan').val() != null ? true : false;
-            if(success == true){
-                $('#insertForm').submit();
-            }
-        }
 
         function load() {
 
@@ -281,7 +301,10 @@
 
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
             subtotal[no] = kuantitas * parseFloat(selected);
-            diskon_per_baris[no] = subtotal[no] * parseFloat($('#diskon_per_baris_' + no).val()) / 100;
+
+            float_diskon_per_baris = parseFloat($('#diskon_per_baris_' + no).val()) || 0;
+
+            diskon_per_baris[no] = subtotal[no] * float_diskon_per_baris / 100;
             load();
         }
 
@@ -332,6 +355,22 @@
             var subtotal = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
             diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
             diskon_per_baris[no] = subtotal * diskon / 100;
+            $('#nilai_diskon_per_baris_'+no).val(diskon_per_baris[no] == 0 ? "" : diskon_per_baris[no] );
+            
+            // $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
+            AutoNumeric.set('#jumlah_' + no,subtotal - diskon_per_baris[no]);
+
+            get_pajak($('#pajak_' + no), no);
+
+            load();
+        }
+
+        function change_nilai_diskon_per_baris(no) {
+            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            var subtotal = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
+            nilai_diskon = $('#nilai_diskon_per_baris_' + no).val() ? parseFloat($('#nilai_diskon_per_baris_' + no).val()) : 0;
+            diskon_per_baris[no] = nilai_diskon;
+            $('#diskon_per_baris_'+no).val("");
             
             // $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
             AutoNumeric.set('#jumlah_' + no,subtotal - diskon_per_baris[no]);
@@ -343,7 +382,7 @@
 
         function check_null(element) {
             if (element.value.trim() === "") {
-                element.value = 0;
+                element.value = "";
                 load();
             }
 
@@ -362,7 +401,8 @@
             $('#deskripsi_'+no).val('');
             $('#kuantitas_'+no).val('');
             AutoNumeric.set('#harga_satuan_' + no,0);
-            $('#diskon_per_baris_'+no).val(0);
+            $('#diskon_per_baris_'+no).val("");
+            $('#nilai_diskon_per_baris_'+no).val("");
             $('#pajak_'+no).val(0).trigger('change');
             AutoNumeric.set('#jumlah_' + no,0);
             subtotal[no] = 0;
@@ -393,7 +433,15 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">%</span>
                             </div>
-                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" value="0" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                        </div>
+                    </td>
+                    <td style="padding: 10px !important;">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Rp</span>
+                            </div>
+                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
@@ -410,6 +458,7 @@
         };
 
         $( document ).ready(function() {
+
             // $("#pelanggan").select2({
             //     allowClear: true,
             //     placeholder: 'Pilih kontak'
@@ -443,9 +492,5 @@
                 load_select_2(1);
             @endif
         });
-
-        // document.getElementById('myForm').addEventListener('submit', function() {
-        //     document.getElementById('mySelect').removeAttribute('disabled');
-        // });
     </script>
 @endsection

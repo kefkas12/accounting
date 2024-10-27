@@ -98,7 +98,7 @@
                                             name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
                                     </div>
                                 </div>
-                                <div class="col-md-2 pr-2">
+                                <div class="col-md-2 pr-4">
                                     <div class="form-group info_pengiriman" style="display:none">
                                         <label for="tanggal_pengiriman">Tgl. pengiriman</label>
                                         <input type="date" class="form-control" id="tanggal_pengiriman"
@@ -149,7 +149,8 @@
                                             <th scope="col" style="min-width: 200px !important;padding: 10px !important;">Deskripsi</th>
                                             <th scope="col" style="min-width: 100px !important;padding: 10px !important;">Kuantitas</th>
                                             <th scope="col" style="min-width: 200px !important;padding: 10px !important;">Harga Satuan</th>
-                                            <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Diskon</th>
+                                            <th scope="col" style="min-width: 150px !important;padding: 10px !important;">% Diskon</th>
+                                            <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Nilai Diskon</th>
                                             <th scope="col" style="min-width: 200px !important;padding: 10px !important;">Pajak</th>
                                             <th scope="col" style="min-width: 200px !important;padding: 10px !important;">Jumlah</th>
                                             @if(!isset($pemesanan))<th scope="col" style="min-width: 50px !important;padding: 10px !important;"></th>@endif
@@ -185,6 +186,16 @@
                                                             name="diskon_per_baris[]" value="0"
                                                             onkeyup="change_diskon_per_baris(1)" onblur="check_null(this)" step="any" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
                                                     </div>
+                                            </td>
+                                            <td style="padding: 10px !important;">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" @if(isset($pemesanan) || isset($pengiriman)) style="background-color: #e9ecefc4;" @endif>Rp</span>
+                                                    </div>
+                                                    <input type="number" class="form-control" id="nilai_diskon_per_baris_1"
+                                                        name="nilai_diskon_per_baris[]" value="0"
+                                                        onkeyup="change_diskon_per_baris(1)" onblur="check_null(this)" step="any" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
+                                                </div>
                                             </td>
                                             <td style="padding: 10px !important;">
                                                 <select class="form-control" id="pajak_1" name="pajak[]"
@@ -328,11 +339,16 @@
 
         function get_data(thisElement, no) {
             var selected = $(thisElement).find('option:selected').data('harga_jual');
+
             $('#harga_satuan_' + no).val(selected);
             $('#jumlah_' + no).val(selected);
+
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0 ;
             subtotal[no] = kuantitas * parseFloat(selected);
-            diskon_per_baris[no] = subtotal[no] * parseFloat($('#diskon_per_baris_' + no).val()) / 100;
+
+            float_diskon_per_baris = parseFloat($('#diskon_per_baris_' + no).val()) || 0;
+
+            diskon_per_baris[no] = subtotal[no] * float_diskon_per_baris / 100;
             load();
         }
 
@@ -367,6 +383,23 @@
             var subtotal = kuantitas * harga_satuan;
             diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
             diskon_per_baris[no] = subtotal * diskon / 100;
+            $('#nilai_diskon_per_baris_'+no).val(diskon_per_baris[no] == 0 ? "" : diskon_per_baris[no] );
+
+            $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
+
+            get_pajak($('#pajak_'+no), no);
+            
+            load();
+        }
+
+        function change_nilai_diskon_per_baris(no) {
+            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
+            var subtotal = kuantitas * harga_satuan;
+            nilai_diskon = $('#nilai_diskon_per_baris_' + no).val() ? parseFloat($('#nilai_diskon_per_baris_' + no).val()) : 0;
+            diskon_per_baris[no] = nilai_diskon;
+            $('#diskon_per_baris_'+no).val("");
+
             $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
 
             get_pajak($('#pajak_'+no), no);
@@ -376,7 +409,7 @@
 
         function check_null(element) {
             if (element.value.trim() === "") {
-                element.value = 0;
+                element.value = "";
                 load();
             }
 
@@ -413,6 +446,14 @@
                                 <span class="input-group-text" @if(isset($pemesanan) || isset($pengiriman)) style="background-color: #e9ecefc4;" @endif>%</span>
                             </div>
                             <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" value="0" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
+                        </div>
+                    </td>
+                    <td style="padding: 10px !important;">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" @if(isset($pemesanan) || isset($pengiriman)) style="background-color: #e9ecefc4;" @endif>Rp</span>
+                            </div>
+                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" value="0" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
                         </div>
                     </td>
                     <td style="padding: 10px !important;">

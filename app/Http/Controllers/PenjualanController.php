@@ -13,12 +13,14 @@ use App\Models\Detail_penjualan;
 use App\Models\Gudang;
 use App\Models\Jurnal;
 use App\Models\Kontak;
+use App\Models\Log;
 use App\Models\Pembayaran_penjualan;
 use App\Models\Pengaturan_nama;
 use App\Models\Penjualan;
 use App\Models\Produk;
 use App\Models\Stok_gudang;
 use App\Models\Transaksi_produk;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -36,18 +38,23 @@ class PenjualanController extends Controller
     {
         $data['sidebar'] = 'penjualan';
         $data['penagihan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
-                                        ->select('penjualan.*','kontak.nama as nama_pelanggan')
+                                        ->leftJoin('penjualan as pemesanan','penjualan.id_pemesanan','=','pemesanan.id')
+                                        ->leftJoin('penjualan as pengiriman','penjualan.id_pengiriman','=','pengiriman.id')
+                                        ->leftJoin('penjualan as penawaran','penjualan.id_penawaran','=','penawaran.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan','penawaran.no_str as no_str_penawaran','pemesanan.no_str as no_str_pemesanan','pengiriman.tanggal_transaksi as tanggal_transaksi_pengiriman')
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->where('penjualan.jenis','penagihan')
                                         ->whereNot('penjualan.status','draf')
                                         ->orderBy('id','DESC')
                                         ->get();
+
         $data['penawaran'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
                                         ->select('penjualan.*','kontak.nama as nama_pelanggan')
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->where('penjualan.jenis','penawaran')
                                         ->orderBy('id','DESC')
                                         ->get();
+
         $data['pemesanan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
                                         ->leftJoin('penjualan as penawaran','penjualan.id_penawaran','=','penawaran.id')
                                         ->select('penjualan.*','kontak.nama as nama_pelanggan', 'penawaran.no_str as no_str_penawaran')
@@ -55,6 +62,7 @@ class PenjualanController extends Controller
                                         ->where('penjualan.jenis','pemesanan')
                                         ->orderBy('id','DESC')
                                         ->get();
+
         $data['pengiriman'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
                                         ->leftJoin('penjualan as pemesanan','penjualan.id_pemesanan','=','pemesanan.id')
                                         ->leftJoin('penjualan as penawaran','pemesanan.id_penawaran','=','penawaran.id')
@@ -63,12 +71,14 @@ class PenjualanController extends Controller
                                         ->where('penjualan.jenis','pengiriman')
                                         ->orderBy('id','DESC')
                                         ->get();
+
         $data['membutuhkan_persetujuan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
                                         ->select('penjualan.*','kontak.nama as nama_pelanggan')
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->where('penjualan.status','draf')
                                         ->orderBy('id','DESC')
                                         ->get();
+
         $data['belum_dibayar'] = number_format(Penjualan::where('tanggal_jatuh_tempo','>',date('Y-m-d'))
                                         ->where('penjualan.jenis','penagihan')
                                         ->where('penjualan.id_company',Auth::user()->id_company)
@@ -121,6 +131,10 @@ class PenjualanController extends Controller
                                 ->select('jurnal.*')
                                 ->where('penjualan.id',$id)
                                 ->first();
+        $data['log'] = Log::leftJoin('users','id_user','=','users.id')
+                            ->where('log.id_transaksi',$id)
+                            ->orderBy('log.id','DESC')
+                            ->first();
         return view('pages.penjualan.detail', $data);
     }
 
@@ -263,8 +277,14 @@ class PenjualanController extends Controller
                                     ->get();
         if($id != null){
             $data['pemesanan'] = true;
-            $data['penjualan'] = Penjualan::where('id',$id)->first();
-            $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
+            $data['penjualan'] = Penjualan::join('kontak','id_pelanggan','=','kontak.id')
+                                            ->leftJoin('penjualan as penawaran', 'penawaran.id','=','penjualan.id_penawaran')
+                                            ->select('penjualan.*','penawaran.no_str as no_str_penawaran')
+                                            ->where('penjualan.id',$id)->first();
+            $data['detail_penjualan'] = Detail_penjualan::join('produk','detail_penjualan.id_produk','=','produk.id')
+                                                        ->select('detail_penjualan.*','produk.unit')
+                                                        ->where('detail_penjualan.id_penjualan',$id)
+                                                        ->get();
         }
         return view('pages.penjualan.pengiriman', $data);
     }
@@ -513,10 +533,10 @@ class PenjualanController extends Controller
 
             Detail_penjualan::where('id_penjualan',$penjualan->id)->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
-
+            //
             if($penjualan->id_pemesanan){
                 $pemesanan = Penjualan::find($penjualan->id_pemesanan);
-                $pemesanan->id_pemesanan = null;
+                $pemesanan->id_pengiriman = null;
                 $pemesanan->status = 'open';
                 $pemesanan->save();
                 $penjualan->delete();
@@ -553,21 +573,21 @@ class PenjualanController extends Controller
             Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->delete();
             Jurnal::find($penjualan->id_jurnal)->delete();
 
-            //consider karena update stock saat pengiriman
-            $detail_penjualan = Detail_penjualan::where('id_penjualan',$penjualan->id)->get();
-            foreach($detail_penjualan as $v){
-                $produk = Produk::find($v->id_produk);
-                $produk->stok = $produk->stok + $v->kuantitas;
-                $produk->save();
+            if(!$penjualan->id_pengiriman){
+                $detail_penjualan = Detail_penjualan::where('id_penjualan',$penjualan->id)->get();
+                foreach($detail_penjualan as $v){
+                    $produk = Produk::find($v->id_produk);
+                    $produk->stok = $produk->stok + $v->kuantitas;
+                    $produk->save();
+                }
             }
 
             Detail_penjualan::where('id_penjualan',$penjualan->id)->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
 
-            $pengiriman = Penjualan::find($penjualan->id_pemesanan);
             Stok_gudang::where('id_transaksi',$id)->delete();
-            if(isset($pengiriman->id_pemesanan) && $penjualan->jenis == 'penagihan'){
-                $pengiriman = Penjualan::find($pengiriman->id_pemesanan);
+            if(isset($penjualan->id_pengiriman)){
+                $pengiriman = Penjualan::find($penjualan->id_pengiriman);
                 $pengiriman->status = 'open';
                 $pengiriman->save();
                 $penjualan->delete();

@@ -229,7 +229,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="row mb-3">
+                        <div class="row my-3">
                             <div class="col-sm-7">
                                 <div class="row my-3">
                                     <div class="col-sm-3">Pesan</div>

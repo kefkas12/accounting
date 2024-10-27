@@ -62,9 +62,9 @@ class AkunController extends Controller
         if($id){
             $data['akun'] = Akun::where('id', $id)->first();
             if($status == 'edit'){
-                
                 return view('pages.akun.form', $data);
             }else if($status == 'detail'){
+                $data['id'] = $id;
                 $id_company = Auth::user()->id_company;
                 $select = [
                     'detail_jurnal.*',
@@ -72,7 +72,6 @@ class AkunController extends Controller
                     'pembelian.id as id_pembelian',
                     'pembayaran_pembelian.id as id_pembayaran_pembelian',
                     'pembayaran_penjualan.id as id_pembayaran_penjualan'];
-
                 $data['transaksi_akun'] = Detail_jurnal::with('jurnal','akun')
                                                         ->join('jurnal','detail_jurnal.id_jurnal','jurnal.id')
                                                         ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')
@@ -86,9 +85,27 @@ class AkunController extends Controller
                                                         ->where('id_akun',$id)
                                                         ->orderBy('jurnal.tanggal_transaksi','ASC')
                                                         ->get();
+                if(isset($_GET['dari'])){
+                    $data['transaksi_akun'] = Detail_jurnal::with('jurnal','akun')
+                                                            ->join('jurnal','detail_jurnal.id_jurnal','jurnal.id')
+                                                            ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')
+                                                            ->leftJoin('pembelian', 'jurnal.id', 'pembelian.id_jurnal')
+                                                            ->leftJoin('pembayaran_pembelian', 'jurnal.id', 'pembayaran_pembelian.id_jurnal')
+                                                            ->leftJoin('pembayaran_penjualan', 'jurnal.id', 'pembayaran_penjualan.id_jurnal')
+                                                            ->select($select)
+                                                            ->whereHas('jurnal', function($query) use ($id_company) {
+                                                                $query->where('id_company', $id_company);
+                                                            })
+                                                            ->where('id_akun',$id)
+                                                            ->whereBetween('jurnal.tanggal_transaksi',[$_GET['dari'], $_GET['sampai']])
+                                                            ->orderBy('jurnal.tanggal_transaksi','ASC')
+                                                            ->get();
+                    $data['dari'] = $_GET['dari'];
+                    $data['sampai'] = $_GET['sampai'];
+                }
                 return view('pages.akun.detail', $data);
             }
-        }else{
+        } else {
             $data['kategori'] = Kategori::leftJoin('akun', 'kategori.id','=','akun.id_kategori')
                                         ->select('kategori.*',DB::raw('max(akun.nomor) AS next_nomor'))
                                         ->groupBy('kategori.id')

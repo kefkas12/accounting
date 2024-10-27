@@ -21,9 +21,9 @@
                             @csrf
                             <div class="form-row">
                                 <div class="form-group col-md-3 pr-4">
-                                    <label for="tanggal_transaksi">Tgl. transaksi</label>
+                                    <label for="tanggal_transaksi">Tgl. transaksi <span class="text-danger">*</span></label>
                                     <input type="date" class="form-control" id="tanggal_transaksi"
-                                        name="tanggal_transaksi">
+                                        name="tanggal_transaksi" required>
                                 </div>
                             </div>
 
@@ -115,11 +115,11 @@
                                 <div class="col d-flex justify-content-end">
                                     @if (isset($jurnal))
                                     <a href="{{ url('jurnal') }}" class="btn btn-danger">Batal</a>
-                                    <button type="button" class="btn btn-success" onclick="check_balance();">Ubah
+                                    <button type="submit" class="btn btn-success" onclick="check_balance();">Ubah
                                         Jurnal Umum</button>
                                     @else
                                     <a href="{{ url('akun') }}" class="btn btn-light">Batalkan</a>
-                                    <button type="button" class="btn btn-primary" onclick="check_balance();">Buat
+                                    <button type="submit" class="btn btn-primary" onclick="check_balance();">Buat
                                         Jurnal Umum</button>
                                     @endif
                                 </div>
@@ -172,7 +172,7 @@
             } else {
                 $('#insertForm').submit();
             }
-            // 
+            //
         }
         function load_select_2(id) {
             $("#akun_" + id).select2({
@@ -189,16 +189,39 @@
             }
             
             new AutoNumeric("#debit_" + id, {
-                commaDecimalCharDotSeparator: true,
+                commaDecimalCharDotSeparator: false,
                 watchExternalChanges: true,
-                modifyValueOnWheel : false
+                modifyValueOnWheel : false,
+                showOnlyNumbersOnFocus : true,
+                unformatOnSubmit: true,
+                noSeparatorOnFocus: true,
+                allowDecimalPadding: false,
+                unformatOnSubmit: true
             });
             new AutoNumeric("#kredit_" + id, {
-                commaDecimalCharDotSeparator: true,
+                commaDecimalCharDotSeparator: false,
                 watchExternalChanges: true,
-                modifyValueOnWheel : false
+                modifyValueOnWheel : false,
+                showOnlyNumbersOnFocus : true,
+                unformatOnSubmit: true,
+                noSeparatorOnFocus: true,
+                allowDecimalPadding: false,
+                unformatOnSubmit: true
+            });
+
+            document.getElementById("debit_" + id).addEventListener("paste", function (e) {
+                e.preventDefault();
+                let pastedData = e.clipboardData.getData('Text');
+                AutoNumeric.set(this, pastedData);
+            });
+
+            document.getElementById("kredit_" + id).addEventListener("paste", function (e) {
+                e.preventDefault();
+                let pastedData = e.clipboardData.getData('Text');
+                AutoNumeric.set(this, pastedData);
             });
         }
+
 
         
         var debit = {};
@@ -283,5 +306,7 @@
             `);
             load_select_2(i);
         };
+
+        
     </script>
 @endsection

@@ -45,6 +45,7 @@ use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\SatuanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -204,19 +205,25 @@ Route::controller(SupplierController::class)->prefix('supplier')->group(function
 
 Route::controller(ProdukController::class)->prefix('produk')->group(function () {
 	Route::get('/', 'index');
-	Route::get('/barang', 'index');
-	Route::get('/gudang', 'index');
 	Route::get('/insert', 'detail');
 	Route::post('/insert', 'insert');
+	Route::get('/{menu}', 'index');
 	Route::post('/edit/{id}', 'edit');
-	Route::get('/{status}/{id}', 'detail');	
+	Route::get('/{status}/{id}', 'detail');
 });
 
 Route::controller(GudangController::class)->prefix('gudang')->group(function () {
 	Route::get('/insert', 'detail');
 	Route::post('/insert', 'insert');
 	Route::post('/edit/{id}', 'edit');
-	Route::get('/{status}/{id}', 'detail');	
+	Route::get('/{status}/{id}', 'detail');
+});
+
+Route::controller(SatuanController::class)->prefix('satuan')->group(function () {
+	Route::get('/insert', 'detail');
+	Route::post('/insert', 'insert');
+	Route::post('/edit/{id}', 'edit');
+	Route::get('/{status}/{id}', 'detail');
 });
 
 Route::controller(AkunController::class)->prefix('akun')->group(function () {
@@ -224,7 +231,7 @@ Route::controller(AkunController::class)->prefix('akun')->group(function () {
 	Route::get('/insert', 'detail');
 	Route::post('/insert', 'insert');
 	Route::post('/edit/{id}', 'edit');
-	Route::get('/{status}/{id}', 'detail');	
+	Route::get('/{status}/{id}', 'detail');
 });
 
 Route::controller(JurnalController::class)->prefix('jurnal')->group(function () {

@@ -22,14 +22,36 @@
                     </div>
                     <div class="card-body">
                         Transaksi Akun
-                        <div class="card-body mt-4" style="padding: 0px !important;">    
+                        <div class="card-body mt-4" style="padding: 0px !important;">
+                            <form>
+                                @csrf
+                                <div class="form-row">
+                                    <div class="col-sm-2">
+                                        <input type="date" class="form-control" name="dari" @if(isset($_GET['dari'])) value="{{ $_GET['dari'] }}" @endif>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <input type="date" class="form-control" name="sampai" @if(isset($_GET['sampai'])) value="{{ $_GET['sampai'] }}" @endif>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <button type="submit" class="btn btn-primary">Filter</button>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <a href="{{ url('akun/detail').'/'.$id }}" class="btn btn-primary">Clear</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                    </div>
+                                </div>
+                            </form>
                             <div class="table-responsive">
                                 <table class="table my-4">
                                     <thead style="background-color: #E0F7FF">
                                         <tr>
                                             <th>Tanggal</th>
                                             <th>Nomor</th>
-                                            <th>Kontak</th>
                                             <th class="text-right">Debit (dalam IDR)</th>
                                             <th class="text-right">Kredit (dalam IDR)</th>
                                             <th class="text-right">Saldo (dalam IDR)</th>
@@ -45,24 +67,23 @@
                                             <td>
                                                 <div class="d-flex">
                                                     <div class="d-flex flex-column justify-content-center">
-                                                    <h6 class="mb-0 text-xs">
-                                                        @if($v->jurnal->kategori == 'sales_invoice')
-                                                        <a href="{{ url('penjualan/detail').'/'.$v->id_penjualan }}">{{ $v->jurnal->no_str }}</a>
-                                                        @elseif($v->jurnal->kategori == 'purchase_invoice')
-                                                        <a href="{{ url('pembelian/detail').'/'.$v->id_pembelian }}">{{ $v->jurnal->no_str }}</a>
-                                                        @elseif($v->jurnal->kategori == 'receive_payment')
-                                                        <a href="{{ url('penjualan/receive_payment').'/'.$v->id_pembayaran_penjualan }}">{{ $v->jurnal->no_str }}</a>
-                                                        @elseif($v->jurnal->kategori == 'purchase_payment')
-                                                        <a href="{{ url('pembelian/receive_payment').'/'.$v->id_pembayaran_pembelian }}">{{ $v->jurnal->no_str }}</a>
-                                                        @else
-                                                        <a href="{{ url('jurnal/detail').'/'.$v->jurnal->id }}">{{ $v->jurnal->no_str }}</a>
-                                                        @endif
-                                                    </h6>
-                                                    <p class="text-xs mb-0 email">{{ $v->deskripsi }}</p>
+                                                        <h6 class="mb-0 text-xs">
+                                                            @if($v->jurnal->kategori == 'sales_invoice')
+                                                            <a href="{{ url('penjualan/detail').'/'.$v->id_penjualan }}">{{ $v->jurnal->no_str }}</a>
+                                                            @elseif($v->jurnal->kategori == 'purchase_invoice')
+                                                            <a href="{{ url('pembelian/detail').'/'.$v->id_pembelian }}">{{ $v->jurnal->no_str }}</a>
+                                                            @elseif($v->jurnal->kategori == 'receive_payment')
+                                                            <a href="{{ url('penjualan/receive_payment').'/'.$v->id_pembayaran_penjualan }}">{{ $v->jurnal->no_str }}</a>
+                                                            @elseif($v->jurnal->kategori == 'purchase_payment')
+                                                            <a href="{{ url('pembelian/receive_payment').'/'.$v->id_pembayaran_pembelian }}">{{ $v->jurnal->no_str }}</a>
+                                                            @else
+                                                            <a href="{{ url('jurnal/detail').'/'.$v->jurnal->id }}">{{ $v->jurnal->no_str }}</a>
+                                                            @endif
+                                                        </h6>
+                                                        <p class="text-xs mb-0 email">{{ $v->deskripsi }}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
                                             </td>
-                                            <td></td>
                                             <td class="text-right">{{ number_format($v->debit,2,',','.') }}</td>
                                             <td class="text-right">{{ number_format($v->kredit,2,',','.') }}</td>
                                             @php

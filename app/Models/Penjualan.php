@@ -60,7 +60,7 @@ class Penjualan extends Model
     public function insert($request, $idJurnal, $jenis, $id_jenis=null, $is_requester=null)
     {
         $this->id_company = Auth::user()->id_company;
-        $this->tanggal_transaksi = $request->input('tanggal_transaksi');
+        $this->tanggal_transaksi = date('Y-m-d',strtotime($request->input('tanggal_transaksi')));
         $this->no = $this->no($jenis);
         if($jenis == 'penagihan'){
             $this->no_str = 'Sales Invoice #' . $this->no;
@@ -92,10 +92,17 @@ class Penjualan extends Model
         $this->email = $request->input('email');
         $this->jenis = $jenis;
         $this->id_jurnal = $idJurnal;
-        if($request->input('kirim_melalui'))
-            $this->kirim_melalui = $request->input('kirim_melalui');
-        if($request->input('no_pelacakan'))
-            $this->no_pelacakan = $request->input('no_pelacakan');
+        $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
+        $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
+        $this->info_pengiriman = $request->input('info_pengiriman') ? $request->input('info_pengiriman') : null;
+
+        if($request->input('info_pengiriman') && $request->input('info_pengiriman') == 'on'){
+            $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : null;
+            $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
+            $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
+            $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
+            $this->sama_dengan_penagihan = $request->input('sama_dengan_penagihan') ? $request->input('sama_dengan_penagihan') : null;
+        }
 
         if($jenis == 'penawaran'){
             $this->no_rfq = $request->input('no_rfq');
@@ -103,24 +110,14 @@ class Penjualan extends Model
             if($id_jenis != null){
                 $this->id_penawaran = $id_jenis;
             }
-
             $this->no_rfq = Penjualan::find($id_jenis)->no_rfq ? Penjualan::find($id_jenis)->no_rfq : null;
-
-            $this->info_pengiriman = $request->input('info_pengiriman') ? $request->input('info_pengiriman') : null;
-            $this->sama_dengan_penagihan = $request->input('info_pengiriman') == 'on' ? $request->input('sama_dengan_penagihan') : null;
-
-            if($request->input('info_pengiriman') == 'on'){
-                $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : null;
-                $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
-                $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
-                $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
-            }
+            
         }elseif(($jenis == 'penagihan' || $jenis == 'pengiriman') && $id_jenis != null){
             $this->no_rfq = Penjualan::find($id_jenis)->no_rfq ? Penjualan::find($id_jenis)->no_rfq : null;
             if(Penjualan::find($id_jenis)->jenis == 'pengiriman'){
                 $this->id_pemesanan = Penjualan::find($id_jenis)->id_pemesanan;
                 $this->id_pengiriman = $id_jenis;
-                $this->id_penawaran = Penjualan::find($this->id_pemesanan)->id_penawaran;
+                $this->id_penawaran = Penjualan::find($this->id_pengiriman)->id_penawaran;
             }else{
                 $this->id_penawaran = Penjualan::find($id_jenis)->id_penawaran;
                 $this->id_pemesanan = $id_jenis;
@@ -132,11 +129,19 @@ class Penjualan extends Model
             $this->id_gudang = $gudang->id;
             $this->nama_gudang = $gudang->nama;
         }
+        $this->ongkos_kirim = $request->input('input_ongkos_kirim') ? $request->input('input_ongkos_kirim') : null;
+        $this->pesan = $request->input('pesan') ? $request->input('pesan') : null;
+        $this->memo = $request->input('memo') ? $request->input('memo') : null;
         $this->save();
 
-        if(($jenis == 'pemesanan' || $jenis == 'pengiriman') && $id_jenis != null){
+        if(($jenis == 'pemesanan') && $id_jenis != null){
             $penjualan = Penjualan::find($id_jenis);
             $penjualan->id_pemesanan = $this->id;
+            $penjualan->status = 'closed';
+            $penjualan->save();
+        }elseif($jenis == 'pengiriman' && $id_jenis != null){
+            $penjualan = Penjualan::find($id_jenis);
+            $penjualan->id_pengiriman = $this->id;
             $penjualan->status = 'closed';
             $penjualan->save();
         }elseif($jenis == 'penagihan' && $id_jenis != null){
@@ -145,6 +150,12 @@ class Penjualan extends Model
             $penjualan->save();
         }
         $this->insertDetailPenjualan($request, $tipe, $jenis,$this->id_gudang);
+
+        $log = new Log;
+        $log->id_user = Auth::user()->id;
+        $log->id_transaksi = $this->id;
+        $log->transaksi = 'penjualan';
+        $log->save();
     }
 
     protected function insertDetailPenjualan(Request $request, $tipe, $jenis, $id_gudang)
@@ -161,7 +172,8 @@ class Penjualan extends Model
             $detail_penjualan->deskripsi = $request->input('deskripsi')[$i];
             $detail_penjualan->kuantitas = $request->input('kuantitas')[$i];
             $detail_penjualan->harga_satuan = $harga_satuan;
-            $detail_penjualan->diskon_per_baris = $request->input('diskon_per_baris')[$i];
+            $detail_penjualan->diskon_per_baris = $request->input('diskon_per_baris')[$i] ? $request->input('diskon_per_baris')[$i] : 0;
+            $detail_penjualan->nilai_diskon_per_baris = $request->input('nilai_diskon_per_baris')[$i] ? $request->input('nilai_diskon_per_baris')[$i] : 0;
             $detail_penjualan->jumlah = $jumlah;
             $detail_penjualan->pajak = $jumlah * $pajak / 100;
             $detail_penjualan->save();
@@ -218,7 +230,7 @@ class Penjualan extends Model
 
     public function edit($request)
     {
-        $this->tanggal_transaksi = $request->input('tanggal_transaksi');
+        $this->tanggal_transaksi = date('Y-m-d',strtotime($request->tanggal_transaksi));
         $this->id_pelanggan = $request->input('pelanggan');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
         $this->subtotal = $request->input('input_subtotal');
@@ -229,6 +241,8 @@ class Penjualan extends Model
         $this->alamat = $request->input('alamat');
         $this->email = $request->input('email');
         $this->no_rfq = $request->input('no_rfq');
+        $this->pesan = $request->input('pesan');
+        $this->memo = $request->input('memo');
         if($this->sisa_tagihan == $this->total){
             $this->status = 'open';
         }elseif($this->sisa_tagihan < $this->total && $this->sisa_tagihan > 0){
@@ -239,6 +253,12 @@ class Penjualan extends Model
         $this->save();
 
         $this->editDetailPenjualan($request);
+
+        $log = new Log;
+        $log->id_user = Auth::user()->id;
+        $log->id_transaksi = $this->id;
+        $log->transaksi = 'penjualan';
+        $log->save();
     }
 
     protected function editDetailPenjualan(Request $request)

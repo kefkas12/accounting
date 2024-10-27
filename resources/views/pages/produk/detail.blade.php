@@ -173,20 +173,17 @@
                                         <thead>
                                             <tr>
                                                 <th>Nama gudang</th>
-                                                <th>Stok di gudang</th>
                                                 <th>Qty tersedia</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
                                                 <td>Unassigned</td>
-                                                <td>@if(isset($stok_gudang)){{ $stok_gudang->stok }} @else 0 @endif</td>
-                                                <td>@if(isset($stok_gudang)){{ $stok_gudang->stok }} @else 0 @endif</td>
+                                                <td>@if(isset($stok_gudang->stok)){{ $stok_gudang->stok }} @else 0 @endif</td>
                                             </tr>
                                             @foreach($gudang as $v)
                                             <tr>
                                                 <td>{{ $v->nama }}</td>
-                                                <td>{{ $v->stok ? $v->stok : 0 }}</td>
                                                 <td>{{ $v->stok ? $v->stok : 0 }}</td>
                                             </tr>
                                             @endforeach
