@@ -156,6 +156,8 @@ class Jurnal extends Model
 
     public function pengiriman_penagihan($request, $id = null)
     {
+        $ongkos_kirim = $request->input('input_ongkos_kirim') ? $request->input('input_ongkos_kirim') : 0;
+        
         $this->id_company = Auth::user()->id_company;
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');
         $this->kategori = 'sales_invoice';

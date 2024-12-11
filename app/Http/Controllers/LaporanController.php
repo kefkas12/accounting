@@ -7,6 +7,7 @@ use App\Models\Akun;
 use App\Models\Akun_company;
 use App\Models\Approval;
 use App\Models\Detail_jurnal;
+use App\Models\Gudang;
 use App\Models\Jurnal;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
@@ -31,43 +32,85 @@ class LaporanController extends Controller
 
     public function jurnal()
     {
-        
         $data['sidebar'] = 'laporan';
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
+                                    ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
         $select = [
                     'jurnal.*',
                     'penjualan.id as id_penjualan',
                     'pembelian.id as id_pembelian',
                     'pembayaran_pembelian.id as id_pembayaran_pembelian',
                     'pembayaran_penjualan.id as id_pembayaran_penjualan'];
-        if(isset($_GET['tanggal_mulai'])){
-            $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
-            ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')
-            ->leftJoin('pembelian', 'jurnal.id', 'pembelian.id_jurnal')
-            ->leftJoin('pembayaran_pembelian', 'jurnal.id', 'pembayaran_pembelian.id_jurnal')
-            ->leftJoin('pembayaran_penjualan', 'jurnal.id', 'pembayaran_penjualan.id_jurnal')
-            ->select($select)
-            ->where('jurnal.id_company', Auth::user()->id_company)
-            ->where(function($query) {
-                $query->whereNot('jurnal.status','draf')
-                      ->orWhere('jurnal.status',null);
-            })
-            ->whereBetween('jurnal.tanggal_transaksi',[$_GET['tanggal_mulai'],$_GET['tanggal_selesai']])
-            ->orderBy('jurnal.id', 'DESC')
-            ->get();
+        if(!empty($_GET['tanggal_mulai'])){
+            if(!empty($_GET['gudang'])){
+                $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')
+                ->leftJoin('pembelian', 'jurnal.id', 'pembelian.id_jurnal')
+                ->leftJoin('pembayaran_pembelian', 'jurnal.id', 'pembayaran_pembelian.id_jurnal')
+                ->leftJoin('pembayaran_penjualan', 'jurnal.id', 'pembayaran_penjualan.id_jurnal')
+                ->select($select)
+                ->where('jurnal.id_company', Auth::user()->id_company)
+                ->where('jurnal.id_gudang', $_GET['gudang'])
+                ->where(function($query) {
+                    $query->whereNot('jurnal.status','draf')
+                            ->orWhere('jurnal.status',null);
+                })
+                ->whereBetween('jurnal.tanggal_transaksi',[$_GET['tanggal_mulai'],$_GET['tanggal_selesai']])
+                ->orderBy('jurnal.id', 'DESC')
+                ->get();
+            }else{
+                $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')
+                ->leftJoin('pembelian', 'jurnal.id', 'pembelian.id_jurnal')
+                ->leftJoin('pembayaran_pembelian', 'jurnal.id', 'pembayaran_pembelian.id_jurnal')
+                ->leftJoin('pembayaran_penjualan', 'jurnal.id', 'pembayaran_penjualan.id_jurnal')
+                ->select($select)
+                ->where('jurnal.id_company', Auth::user()->id_company)
+                ->where(function($query) {
+                    $query->whereNot('jurnal.status','draf')
+                            ->orWhere('jurnal.status',null);
+                })
+                ->whereBetween('jurnal.tanggal_transaksi',[$_GET['tanggal_mulai'],$_GET['tanggal_selesai']])
+                ->orderBy('jurnal.id', 'DESC')
+                ->get();
+            }
+            
         }else{
-            $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
-            ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')
-            ->leftJoin('pembelian', 'jurnal.id', 'pembelian.id_jurnal')
-            ->leftJoin('pembayaran_pembelian', 'jurnal.id', 'pembayaran_pembelian.id_jurnal')
-            ->leftJoin('pembayaran_penjualan', 'jurnal.id', 'pembayaran_penjualan.id_jurnal')
-            ->select($select)
-            ->where('jurnal.id_company', Auth::user()->id_company)
-            ->where(function($query) {
-                $query->whereNot('jurnal.status','draf')
-                      ->orWhere('jurnal.status',null);
-            })
-            ->orderBy('jurnal.id', 'DESC')
-            ->get();
+            if(!empty($_GET['gudang'])){
+                $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')
+                ->leftJoin('pembelian', 'jurnal.id', 'pembelian.id_jurnal')
+                ->leftJoin('pembayaran_pembelian', 'jurnal.id', 'pembayaran_pembelian.id_jurnal')
+                ->leftJoin('pembayaran_penjualan', 'jurnal.id', 'pembayaran_penjualan.id_jurnal')
+                ->select($select)
+                ->where('jurnal.id_company', Auth::user()->id_company)
+                ->where('jurnal.id_gudang', $_GET['gudang'])
+                ->where(function($query) {
+                    $query->whereNot('jurnal.status','draf')
+                        ->orWhere('jurnal.status',null);
+                })
+                ->orderBy('jurnal.id', 'DESC')
+                ->get();
+            }else{
+                $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')
+                ->leftJoin('pembelian', 'jurnal.id', 'pembelian.id_jurnal')
+                ->leftJoin('pembayaran_pembelian', 'jurnal.id', 'pembayaran_pembelian.id_jurnal')
+                ->leftJoin('pembayaran_penjualan', 'jurnal.id', 'pembayaran_penjualan.id_jurnal')
+                ->select($select)
+                ->where('jurnal.id_company', Auth::user()->id_company)
+                ->where(function($query) {
+                    $query->whereNot('jurnal.status','draf')
+                        ->orWhere('jurnal.status',null);
+                })
+                ->orderBy('jurnal.id', 'DESC')
+                ->get();
+            }
         }
         $data['membutuhkan_persetujuan'] = Jurnal::with('detail_jurnal.akun')
             ->leftJoin('penjualan', 'jurnal.id', 'penjualan.id_jurnal')

@@ -22,6 +22,7 @@ class ProdukController extends Controller
     }
     public function index($menu = null)
     {
+
         $data['sidebar'] = $menu;
         $data['produk_tersedia'] = Produk::where('id_company',Auth::user()->id_company)
                                             ->count();

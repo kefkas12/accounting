@@ -62,21 +62,22 @@
                     <div class='container-fluid' style="padding-left: 1.45rem !important;">
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                <button class="nav-link" id="nav-selesai-tab" data-toggle="tab" data-target="#nav-selesai"
-                                    type="button" role="tab" aria-controls="nav-selesai"
-                                    aria-selected="true">Selesai</button>
-                                <button class="nav-link active" id="nav-penagihan-tab" data-toggle="tab" data-target="#nav-penagihan"
-                                    type="button" role="tab" aria-controls="nav-penagihan"
-                                    aria-selected="true">Penagihan</button>
-                                <button class="nav-link" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
-                                    type="button" role="tab" aria-controls="nav-pengiriman"
-                                    aria-selected="true">Pengiriman</button>
+                                
+                                <button class="nav-link active" id="nav-penawaran-tab" data-toggle="tab" data-target="#nav-penawaran"
+                                    type="button" role="tab" aria-controls="nav-penawaran"
+                                    aria-selected="false">Penawaran</button>
                                 <button class="nav-link" id="nav-pesanan-tab" data-toggle="tab" data-target="#nav-pesanan"
                                     type="button" role="tab" aria-controls="nav-pesanan"
                                     aria-selected="false">Pesanan</button>
-                                <button class="nav-link" id="nav-penawaran-tab" data-toggle="tab" data-target="#nav-penawaran"
-                                    type="button" role="tab" aria-controls="nav-penawaran"
-                                    aria-selected="false">Penawaran</button>
+                                <button class="nav-link" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
+                                    type="button" role="tab" aria-controls="nav-pengiriman"
+                                    aria-selected="true">Pengiriman</button>
+                                <button class="nav-link" id="nav-penagihan-tab" data-toggle="tab" data-target="#nav-penagihan"
+                                    type="button" role="tab" aria-controls="nav-penagihan"
+                                    aria-selected="true">Penagihan</button>
+                                <button class="nav-link" id="nav-selesai-tab" data-toggle="tab" data-target="#nav-selesai"
+                                    type="button" role="tab" aria-controls="nav-selesai"
+                                    aria-selected="true">Selesai</button>
                                 <button class="nav-link" id="nav-membutuhkan-persetujuan-tab" data-toggle="tab" data-target="#nav-membutuhkan-persetujuan"
                                     type="button" role="tab" aria-controls="nav-membutuhkan-persetujuan"
                                     aria-selected="false">Membutuhkan persetujuan @php $count_membutuhkan_persetujuan = 0; if(count($membutuhkan_persetujuan) > 0) $count_membutuhkan_persetujuan = count($membutuhkan_persetujuan); @endphp @if($count_membutuhkan_persetujuan > 0) <span class="badge badge-primary">{{ $count_membutuhkan_persetujuan }} </span> @else <span class="badge badge-secondary">{{ $count_membutuhkan_persetujuan }} </span> @endif</button>
@@ -102,7 +103,7 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="tab-pane fade show active" id="nav-penagihan" role="tabpanel"
+                            <div class="tab-pane fade" id="nav-penagihan" role="tabpanel"
                                 aria-labelledby="nav-penagihan-tab">
                                 <div class="table-responsive">
                                     <table class="table align-items-center table-flush">
@@ -211,14 +212,14 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="nav-penawaran" role="tabpanel"
+                            <div class="tab-pane fade show active" id="nav-penawaran" role="tabpanel"
                                 aria-labelledby="nav-penawaran-tab">
                                 <div class="table-responsive">
                                     <table class="table align-items-center table-flush">
                                         <thead>
                                             <tr>
-                                                <th scope="col">No Penawaran</th>
                                                 <th scope="col">Tanggal</th>
+                                                <th scope="col">No Penawaran</th>
                                                 <th scope="col">No RFQ</th>
                                                 <th scope="col">Pelanggan </th>
                                                 <th scope="col">Berlaku Hingga</th>
@@ -229,8 +230,8 @@
                                         <tbody class="list">
                                             @foreach($penawaran as $v)
                                             <tr>
-                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->tanggal_transaksi }}</td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->no_rfq }}</td>
                                                 <td>{{ $v->nama_pelanggan }}</td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>

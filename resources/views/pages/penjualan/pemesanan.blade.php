@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </div>
-                    <form method="POST" id="insertForm"
+                    <form method="POST"
                         @if(isset($penawaran))
                             action="{{ url('penjualan/penawaran').'/pemesanan/'.$penjualan->id }}"
                         @elseif(isset($penjualan))
@@ -36,6 +36,7 @@
                         @else
                             action="{{ url('penjualan/pemesanan') }}"
                         @endif
+                        id="insertForm"
                     >
                         @csrf
                         <div class="card-body">
@@ -43,7 +44,7 @@
                                 <div class="form-group col-md-3 pr-4">
                                     <label for="pelanggan">Pelanggan <span class="text-danger">*</span></label>
                                     <select class="form-control" id="pelanggan" name="pelanggan" required @if(isset($penawaran)) disabled @endif>
-                                        <option selected disabled @if(!isset($penawaran)) value="" @endif>Pilih kontak</option>
+                                        <option selected disabled value="">Pilih kontak</option>
                                         @foreach ($pelanggan as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
@@ -64,13 +65,13 @@
                                     </div>
                                 </div>
                                 <div class="form-group col-md-3 d-flex justify-content-end">
-                                    Total &nbsp; <span id="total_faktur"> Rp 0</span>
+                                    Total &nbsp; <span id="total_faktur"> Rp 0,00</span>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="col-md-3 pr-4">
                                     <div class="form-group">
-                                        <label for="alamat">Alamat Penagihan</label><br>
+                                        <label for="alamat">Alamat</label><br>
                                         <textarea class="form-control" name="alamat" id="alamat"></textarea>
                                     </div>
                                     <div class="form-group info_pengiriman" style="display:none">
@@ -90,7 +91,7 @@
                                         <input type="date" class="form-control" id="tanggal_transaksi"
                                             name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group" hidden>
                                         <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
                                         <input type="date" class="form-control" id="tanggal_jatuh_tempo"
                                             name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">

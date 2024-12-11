@@ -153,6 +153,8 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 
 	Route::post('/pemesanan', 'insert_pemesanan');
 
+	Route::post('/status_pengiriman', 'update_status_pengiriman');
+
 	Route::get('/cetak/surat_jalan/{id}','cetak_surat_jalan');
 	Route::get('/cetak/penagihan/{id}','cetak_penagihan');
 	Route::post('hapus/{id}','hapus');
@@ -268,11 +270,16 @@ Route::controller(PengaturanController::class)->prefix('pengaturan')->group(func
 	Route::get('/pengguna', 'pengguna');
 	Route::get('/pengguna/insert', 'form_pengguna');
 	Route::post('/pengguna/insert', 'insert_form_pengguna');
-
 	Route::get('/pengguna/edit/{id}', 'form_pengguna');
 	Route::post('/pengguna/edit/{id}', 'edit_form_pengguna');
-
 	Route::get('/pengguna/hapus/{id}', 'hapus_form_pengguna');
+
+	Route::get('/status_pengiriman', 'status_pengiriman');
+	Route::get('/status_pengiriman/insert', 'form_status_pengiriman');
+	Route::post('/status_pengiriman/insert', 'insert_form_status_pengiriman');
+	Route::get('/status_pengiriman/edit/{id}', 'form_status_pengiriman');
+	Route::post('/status_pengiriman/edit/{id}', 'edit_form_status_pengiriman');
+	Route::get('/status_pengiriman/hapus/{id}', 'hapus_form_status_pengiriman');
 
 	Route::get('/perusahaan', 'perusahaan');
 	Route::get('/perusahaan/insert', 'form_perusahaan');

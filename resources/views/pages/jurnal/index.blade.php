@@ -39,6 +39,24 @@
                                             <div class="col-2">Tanggal Selesai
                                                 <input type="date" name="tanggal_selesai" class="form-control" @if(isset($_GET['tanggal_selesai'])) value="{{ $_GET['tanggal_selesai'] }}" @endif>
                                             </div>
+                                            <div class="col-2">Gudang
+                                                <select class="form-control" name="gudang" id="gudang">
+                                                    @if(Auth::user()->id_gudang)
+                                                        @foreach($gudang as $v)
+                                                        <option value="{{ $v->id }}" selected>{{ $v->nama }}</option>
+                                                        @endforeach
+                                                    @else
+                                                        <option selected disabled hidden>Pilih Gudang</option>
+                                                        @if(isset($gudang))
+                                                        @foreach($gudang as $v)
+                                                        <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                                        @endforeach
+                                                        @else
+                                                        <option disabled>No result found</option>
+                                                        @endif
+                                                    @endif
+                                                </select>
+                                            </div>
                                             <div class="col-2">
                                                 <button type="submit" class="btn btn-primary">Filter</button>
                                             </div>

@@ -6,6 +6,7 @@ use App\Models\Akun;
 use App\Models\Akun_company;
 use App\Models\Approval;
 use App\Models\Detail_jurnal;
+use App\Models\Gudang;
 use App\Models\Jurnal;
 use App\Models\User;
 use Exception;
@@ -23,12 +24,16 @@ class JurnalController extends Controller
     public function insert(Request $request)
     {
         DB::beginTransaction();
-
+        
         $approval = new Approval;
         $is_requester = $approval->check_requester('Tambah Jurnal');
 
         $jurnal = new Jurnal;
         $jurnal->id_company = Auth::user()->id_company;
+        if(isset($_POST['gudang'])){
+            $jurnal->id_gudang = $_POST['gudang'];
+            $jurnal->nama_gudang = Gudang::where('id',$jurnal->id_gudang)->first()->nama;
+        }
         $jurnal->tanggal_transaksi = $_POST['tanggal_transaksi'];
         $jurnal->kategori = 'journal_entry';
         $jurnal->no = $jurnal->no('journal_entry');
@@ -46,6 +51,10 @@ class JurnalController extends Controller
                 $detail_jurnal->id_company = Auth::user()->id_company;
                 $detail_jurnal->id_jurnal = $jurnal->id;
                 $detail_jurnal->id_akun = $_POST['akun'][$i];
+                if(isset($_POST['gudang'])){
+                    $detail_jurnal->id_gudang = $_POST['gudang'];
+                    $detail_jurnal->nama_gudang = Gudang::where('id',$detail_jurnal->id_gudang)->first()->nama;
+                }
                 $detail_jurnal->deskripsi = $_POST['deskripsi'][$i];
                 $detail_jurnal->debit = $_POST['debit'][$i] != '' || $_POST['debit'][$i] != null ? number_format((float)str_replace(",", "", $_POST['debit'][$i]), 2, '.', '') : 0;
                 $detail_jurnal->kredit = $_POST['kredit'][$i] != '' || $_POST['kredit'][$i] != null ? number_format((float)str_replace(",", "", $_POST['kredit'][$i]), 2, '.', '') : 0;
@@ -76,6 +85,10 @@ class JurnalController extends Controller
             return redirect()->back();
         }else{
             $jurnal = Jurnal::find($id);
+            if(isset($_POST['gudang'])){
+                $jurnal->id_gudang = $_POST['gudang'];
+                $jurnal->nama_gudang = Gudang::where('id',$jurnal->id_gudang)->nama;
+            }
             $jurnal->tanggal_transaksi = $_POST['tanggal_transaksi'];
             $jurnal->debit = $_POST['total_debit'];
             $jurnal->kredit = $_POST['total_kredit'];
@@ -102,6 +115,10 @@ class JurnalController extends Controller
             for($i=0; $i<count($_POST['akun']) ; $i++){
                 if($_POST['akun'][$i] != ''){
                     $detail_jurnal = new Detail_jurnal;
+                    if(isset($_POST['gudang'])){
+                        $detail_jurnal->id_gudang = $_POST['gudang'];
+                        $detail_jurnal->nama_gudang = Gudang::where('id',$detail_jurnal->id_gudang)->nama;
+                    }
                     $detail_jurnal->id_company = Auth::user()->id_company;
                     $detail_jurnal->id_jurnal = $jurnal->id;
                     $detail_jurnal->id_akun = $_POST['akun'][$i];
@@ -132,6 +149,13 @@ class JurnalController extends Controller
     {
         $data['sidebar'] = 'akun';
         $data['akun'] = Akun::get();
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
+                                    ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
         if($id){
             $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
                                         ->where('id',$id)

@@ -23,7 +23,7 @@
                                     <option selected disabled hidden>Pemesanan Pembelian</option>
                                     <option value="{{ url('pembelian/faktur') }}">Faktur Pembelian</option>
                                     <option value="{{ url('pembelian/pemesanan') }}">Pemesanan Pembelian</option>
-                                    <option value="{{ url('pembelian/penawaran') }}">Penawaran Pembelian</option>
+                                    <option hidden value="{{ url('pembelian/penawaran') }}">Penawaran Pembelian</option>
                                 </select>
                             </div>
                         </div>
@@ -37,7 +37,7 @@
                             action="{{ url('pembelian/pemesanan') }}" 
                         @endif
                         id="insertForm"
-                        >
+                    >
                         @csrf
                         <div class="card-body">
                             <div class="form-row">
@@ -57,7 +57,7 @@
                                     
                                 </div>
                                 <div class="form-group col-md-2">
-                                    <label for="email">Pengiriman</label>
+                                    <label>Pengiriman</label>
                                     <div class="form-check mb-4" >
                                         <input class="form-check-input" type="checkbox" id="info_pengiriman" name="info_pengiriman">
                                         <label class="form-check-label" for="info_pengiriman">
@@ -67,15 +67,16 @@
                                 </div>
                                 
                                 <div class="form-group col-md-3 d-flex justify-content-end">
-                                    Total Rp <span id="total_faktur">0,00</span>
+                                    Total &nbsp; <span id="total_faktur"> Rp 0,00</span>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="col-md-3 pr-4">
                                     <div class="form-group">
-                                        <label for="alamat_penagihan">Alamat Kirim</label><br>
-                                        <textarea class="form-control" name="alamat_penagihan" id="alamat_penagihan" rows="1"></textarea>
+                                        <label for="alamat">Alamat</label><br>
+                                        <textarea class="form-control" name="alamat" id="alamat"></textarea>
                                     </div>
+
                                     <div class="form-group info_pengiriman" style="display:none">
                                         <label for="alamat_pengiriman">Alamat Pengiriman</label><br>
                                         <textarea class="form-control" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
@@ -94,7 +95,7 @@
                                         <input type="date" class="form-control" id="tanggal_transaksi"
                                             name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group" hidden>
                                         <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
                                         <input type="date" class="form-control" id="tanggal_jatuh_tempo"
                                             name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
@@ -109,13 +110,19 @@
                                     <div class="form-group">
                                         <label for="gudang">Gudang</label>
                                         <select class="form-control" id="gudang" name="gudang">
-                                            <option selected disabled hidden>Pilih Gudang</option>
-                                            @if(isset($gudang))
-                                            @foreach($gudang as $v)
-                                            <option value="{{ $v->id }}">{{ $v->nama }}</option>
-                                            @endforeach
+                                            @if(Auth::user()->id_gudang)
+                                                @foreach($gudang as $v)
+                                                <option value="{{ $v->id }}" selected>{{ $v->nama }}</option>
+                                                @endforeach
                                             @else
-                                            <option disabled>No result found</option>
+                                                <option selected disabled hidden>Pilih Gudang</option>
+                                                @if(isset($gudang))
+                                                @foreach($gudang as $v)
+                                                <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                                @endforeach
+                                                @else
+                                                <option disabled>No result found</option>
+                                                @endif
                                             @endif
                                         </select>
                                     </div>
@@ -192,7 +199,16 @@
                             </div>
                             <hr>
                             <div class="row">
-                                <div class="col"></div>
+                                <div class="col">
+                                    <div class="form-group col-md-6">
+                                        <label for="pesan">Pesan</label><br>
+                                        <textarea class="form-control" name="pesan" id="pesan"></textarea>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="memo">Memo</label><br>
+                                        <textarea class="form-control" name="memo" id="memo"></textarea>
+                                    </div>
+                                </div>
                                 <div class="col ">
                                     <div class="row mb-3">
                                         <div class="col">
@@ -234,7 +250,7 @@
                                     <div class="row my-5">
                                         <div class="col d-flex justify-content-end">
                                             <a href="{{ url('pembelian') }}" class="btn btn-light">Batalkan</a>
-                                            <button type="submit" class="btn btn-primary" onclick="buat();">Buat</button>
+                                            <button type="submit" class="btn btn-primary">Buat</button>
                                         </div>
                                     </div>
                                 </div>
@@ -276,17 +292,12 @@
             $('#input_sisa_tagihan').val(result_subtotal + result_ppn);
         }
 
-        function buat() {
-            success = $('#supplier').val() != null ? true : false;
-            if(success == true){
-                $('#insertForm').submit();
-            }
-        }
-
         function get_data(thisElement, no) {
             var selected = $(thisElement).find('option:selected').data('harga_beli');
+            
             $('#harga_satuan_' + no).val(selected);
             $('#jumlah_' + no).val(selected);
+
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0 ;
             subtotal[no] = kuantitas * parseFloat(selected);
             load();
@@ -308,6 +319,7 @@
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
             harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
             subtotal[no] = kuantitas * harga_satuan;
+
             $('#jumlah_' + no).val(subtotal[no]);
 
             get_pajak($('#pajak_'+no), no);
@@ -317,7 +329,7 @@
 
         function check_null(element) {
             if (element.value.trim() === "") {
-                element.value = 0;
+                element.value = "";
                 load();
             }
 
@@ -375,6 +387,10 @@
             }
         })
 
+        $( document ).ready(function() {
+            $('#info_pengiriman').prop('checked', true).trigger("change");
+        });
+
         @if(isset($pembelian))
         $( document ).ready(function() {
             $('#supplier').val('{{ $pembelian->id_supplier }}')
@@ -382,6 +398,7 @@
             $('#alamat').val('{{ $pembelian->alamat }}')
             $('#tanggal_transaksi').val('{{ $pembelian->tanggal_transaksi }}')
             $('#tanggal_jatuh_tempo').val('{{ $pembelian->tanggal_jatuh_tempo }}')
+            $('#gudang').val('{{ $pembelian->id_gudang }}')
 
             var x = 1;
             @foreach($detail_pembelian as $v)

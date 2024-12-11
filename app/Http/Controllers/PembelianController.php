@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Akun;
 use App\Models\Akun_company;
+use App\Models\Approval;
 use App\Models\Company;
 use App\Models\Detail_jurnal;
 use App\Models\Detail_pembayaran_pembelian;
@@ -144,8 +145,15 @@ class PembelianController extends Controller
         $data['supplier'] = Kontak::where('tipe','supplier')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
-        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
                                     ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
+        
+        
         if($id != null){
             $data['pembelian'] = Pembelian::where('id',$id)->first();
             $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
@@ -279,8 +287,13 @@ class PembelianController extends Controller
         $data['supplier'] = Kontak::where('tipe','supplier')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
-        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
                                     ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
         if($id != null){
             $data['pengiriman'] = true;
             $data['pembelian'] = Pembelian::where('id',$id)->first();
@@ -356,7 +369,7 @@ class PembelianController extends Controller
         $pembelian = Pembelian::find($id);
         $jurnal = Jurnal::find($pembelian->id_jurnal);
         $jurnal->pembelian($request, $id);
-        $pembelian->edit($request);
+        $pembelian->ubah($request, 'faktur');
         DB::commit();
 
         return redirect('pembelian/detail/'.$pembelian->id);
@@ -376,7 +389,7 @@ class PembelianController extends Controller
     {
         DB::beginTransaction();
         $pembelian = Pembelian::find($id);
-        $pembelian->edit($request);
+        $pembelian->edit($request, 'penawaran');
         DB::commit();
 
         return redirect('pembelian/detail/'.$pembelian->id);
@@ -427,12 +440,15 @@ class PembelianController extends Controller
 
     public function insert_pemesanan_faktur(Request $request, $id)
     {
+        $approval = new Approval;
+        $is_requester = $approval->check_requester('Faktur Pembelian');
+
         DB::beginTransaction();
         $jurnal = new Jurnal;
-        $jurnal->pembelian($request);
+        $jurnal->pembelian($request, null, $is_requester);
         
         $pembelian = new Pembelian;
-        $pembelian->insert($request, $jurnal->id, 'faktur', $id);
+        $pembelian->insert($request, $jurnal->id, 'faktur', $id, $is_requester);
         DB::commit();
 
         return redirect('pembelian/detail/'.$pembelian->id);

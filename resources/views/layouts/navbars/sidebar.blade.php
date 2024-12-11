@@ -154,10 +154,37 @@
                         <i class="ni ni-tv-2 text-primary"></i> {{ __('Dashboard') }}
                     </a>
                 </li>
+                @hasanyrole('pemilik|Admin Gudang')
                 <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'laporan' ? 'active' : '' }}" href="{{ url('laporan') }}">
                         <i class="fa fa-store text-primary"></i> {{ __('Laporan') }}
                     </a>
+                </li>
+                <li hidden class="nav-item {{ $sidebar == 'pembayaran' || $sidebar == 'penerimaan' ? 'active' : '' }}" style="margin-left: -10px">
+                    <a class="nav-link" href="#navbar_kas_dan_bank" data-toggle="collapse" role="button" aria-expanded="{{ $sidebar == 'pembayaran' || $sidebar == 'penerimaan' ? 'true' : 'false' }}" aria-controls="navbar_kas_dan_bank">
+                        <i class="fa fa-address-book text-primary"></i>
+                        <span class="nav-link-text">{{ __('Kas & Bank') }}</span>
+                    </a>
+
+                    <div class="collapse {{ $sidebar == 'kirim_uang' || $sidebar == 'terima_uang' || $sidebar == 'transfer_uang' ? 'show' : '' }}" id="navbar_kas_dan_bank">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'kirim_uang' ? 'active' : '' }}" href="{{ url('kirim_uang') }}">
+                                    {{ __('Kirim Uang') }}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'terima_uang' ? 'active' : '' }}" href="{{ url('terima_uang') }}">
+                                    {{ __('Terima Uang') }}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'transfer_uang' ? 'active' : '' }}" href="{{ url('transfer_uang') }}">
+                                    {{ __('Transfer Uang') }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
                 <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'penjualan' ? 'active' : '' }}" href="{{ url('penjualan') }}">
@@ -230,6 +257,34 @@
                         <i class="fa fa-address-book text-primary"></i> {{ __('Approval Jurnal') }}
                     </a>
                 </li>
+                @endhasallroles
+                @hasanyrole('Admin Marketing/sales')
+                <li class="nav-item {{ $sidebar == 'produk' || $sidebar == 'gudang' || $sidebar == 'satuan' ? 'active' : '' }}"  style="margin-left: -10px">
+                    <a class="nav-link" href="#navbar_persediaan" data-toggle="collapse" role="button" aria-expanded="{{ $sidebar == 'produk' || $sidebar == 'gudang' || $sidebar == 'satuan' ? 'true' : 'false' }}" aria-controls="navbar_persediaan">
+                        <i class="fa fa-address-book text-primary"></i>
+                        <span class="nav-link-text">{{ __('Persediaan') }}</span>
+                    </a>
+                    <div class="collapse {{ $sidebar == 'produk' || $sidebar == 'gudang' || $sidebar == 'satuan' ? 'show' : '' }}" id="navbar_persediaan">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'produk' ? 'active' : '' }}" href="{{ url('produk/produk') }}">
+                                    {{ __('Produk') }}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'gudang' ? 'active' : '' }}" href="{{ url('produk/gudang') }}">
+                                    {{ __('Gudang') }}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'satuan' ? 'active' : '' }}" href="{{ url('produk/satuan') }}">
+                                    {{ __('Satuan') }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                @endhasallroles
             </ul>
             @endif
         </div>

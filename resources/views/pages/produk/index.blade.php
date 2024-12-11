@@ -14,6 +14,8 @@
                                 <b>Persediaan</b>
                             </div>
                             <div class="col d-flex justify-content-end">
+                                @hasanyrole('Admin Marketing/sales')
+                                @else
                                 <div class="input-group-prepend">
                                     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Tindakan</button>
                                     <div class="dropdown-menu">
@@ -21,7 +23,8 @@
                                         <a class="dropdown-item" href="{{ url('gudang/insert') }}">Tambah gudang baru</a>
                                         <a class="dropdown-item" href="{{ url('satuan/insert') }}">Tambah satuan baru</a>
                                     </div>
-                                  </div>
+                                </div>
+                                @endhasallroles
                             </div>
                         </div>
                     </div>

@@ -16,8 +16,10 @@ use App\Models\Kontak;
 use App\Models\Log;
 use App\Models\Pembayaran_penjualan;
 use App\Models\Pengaturan_nama;
+use App\Models\Pengaturan_status_pengiriman;
 use App\Models\Penjualan;
 use App\Models\Produk;
+use App\Models\Status_pengiriman;
 use App\Models\Stok_gudang;
 use App\Models\Transaksi_produk;
 use Carbon\Carbon;
@@ -118,6 +120,18 @@ class PenjualanController extends Controller
                                             ->where('jenis','penagihan')
                                             ->get();
         }
+
+        if($data['penjualan']->jenis == 'pengiriman'){
+            $data['pengaturan_status_pengiriman'] = Pengaturan_status_pengiriman::where('id_company',Auth::user()->id_company)
+                                            ->get();
+
+            $data['status_pengiriman'] = Status_pengiriman::where('id_pengiriman_penjualan',$id)
+                                            ->get();
+
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                            ->get();
+        }
+
         $count_pengiriman = Penjualan::where('id_pemesanan',$data['penjualan']->id_pemesanan)
                                             ->where('jenis','pengiriman')
                                             ->count();
@@ -161,8 +175,13 @@ class PenjualanController extends Controller
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
-        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
                                     ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
         if($id != null){
             $data['penjualan'] = Penjualan::where('id',$id)->first();
             $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
@@ -177,8 +196,13 @@ class PenjualanController extends Controller
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
-        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
                                     ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
         if($id != null){
             $data['penjualan'] = Penjualan::where('id',$id)->first();
             $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
@@ -383,7 +407,7 @@ class PenjualanController extends Controller
         $penjualan = Penjualan::find($id);
         $jurnal = Jurnal::find($penjualan->id_jurnal);
         $jurnal->penjualan($request, $id);
-        $penjualan->edit($request);
+        $penjualan->ubah($request, 'penagihan');
         DB::commit();
 
         return redirect('penjualan/detail/'.$penjualan->id);
@@ -409,7 +433,7 @@ class PenjualanController extends Controller
         
         DB::beginTransaction();
         $penjualan = Penjualan::find($id);
-        $penjualan->edit($request);
+        $penjualan->ubah($request, 'penawaran');
         DB::commit();
 
         return redirect('penjualan/detail/'.$penjualan->id);
@@ -442,7 +466,7 @@ class PenjualanController extends Controller
     {
         DB::beginTransaction();
         $penjualan = Penjualan::find($id);
-        $penjualan->edit($request);
+        $penjualan->ubah($request, 'pemesanan');
         DB::commit();
 
         return redirect('penjualan/detail/'.$penjualan->id);
@@ -487,6 +511,21 @@ class PenjualanController extends Controller
 
         return redirect('penjualan/detail/'.$penjualan->id);
     }
+
+    public function update_status_pengiriman(){
+
+        $status_pengiriman = new Status_pengiriman();
+        $status_pengiriman->id_company = Auth::user()->id_company;
+        $status_pengiriman->id_pengiriman_penjualan = $_POST['id_pengiriman_penjualan'];
+        $status_pengiriman->id_status_pengiriman = $_POST['status_pengiriman'];
+        $status_pengiriman->nama_status_pengiriman = Pengaturan_status_pengiriman::find($_POST['status_pengiriman'])->nama;
+        $status_pengiriman->id_gudang = $_POST['gudang'];
+        $status_pengiriman->nama_gudang = Gudang::find($_POST['gudang'])->nama;
+        $status_pengiriman->save();
+
+        return redirect('penjualan/detail/'.$_POST['id_pengiriman_penjualan']);
+    }
+
     public function hapus($id){
         DB::beginTransaction();
         $penjualan = Penjualan::find($id);

@@ -117,13 +117,19 @@
                                     <div class="form-group">
                                         <label for="gudang">Gudang</label>
                                         <select class="form-control" id="gudang" name="gudang" @if(isset($pengiriman)) disabled @endif>
-                                            <option selected disabled hidden>Pilih Gudang</option>
-                                            @if(isset($gudang))
-                                            @foreach($gudang as $v)
-                                            <option value="{{ $v->id }}">{{ $v->nama }}</option>
-                                            @endforeach
+                                            @if(Auth::user()->id_gudang)
+                                                @foreach($gudang as $v)
+                                                <option value="{{ $v->id }}" selected>{{ $v->nama }}</option>
+                                                @endforeach
                                             @else
-                                            <option disabled>No result found</option>
+                                                <option selected disabled hidden>Pilih Gudang</option>
+                                                @if(isset($gudang))
+                                                @foreach($gudang as $v)
+                                                <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                                @endforeach
+                                                @else
+                                                <option disabled>No result found</option>
+                                                @endif
                                             @endif
                                         </select>
                                     </div>

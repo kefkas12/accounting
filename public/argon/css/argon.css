@@ -19507,7 +19507,7 @@ textarea[resize='horizontal']
         display: block;
         overflow-y: auto; 
 
-        /* width: 100%; */
+        width: 100%;
         max-width: 170px;
         padding-right: 1.5rem;
         padding-left: 1.5rem;

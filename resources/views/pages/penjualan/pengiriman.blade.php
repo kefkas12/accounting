@@ -72,7 +72,7 @@
                                         <label for="alamat">Alamat Pengiriman</label><br>
                                         <textarea class="form-control" name="alamat" id="alamat"></textarea>
                                     </div>
-                                    <div class="form-group info_pengiriman" style="display:none">
+                                    <div class="form-group" style="display:none">
                                         <label for="alamat_pengiriman">Alamat Pengiriman</label><br>
                                         <textarea class="form-control" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
                                         <div class="form-check mb-4" >
@@ -86,13 +86,12 @@
                                 <div class="col-md-2 pr-2">
                                     <div class="form-group">
                                         <label for="tanggal_transaksi">Tgl. transaksi</label>
-                                        <input type="date" class="form-control" id="tanggal_transaksi"
-                                            name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
+                                        <input type="date" class="form-control" id="tanggal_transaksi" name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group" hidden>
                                         <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
                                         <input type="date" class="form-control" id="tanggal_jatuh_tempo"
-                                            name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
+                                            name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                     </div>
                                 </div>
                                 <div class="col-md-2 pr-2">

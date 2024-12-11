@@ -10,10 +10,13 @@
                     <div class="card-header bg-transparent border-0">
                         <div class="row">
                             <div class="col-sm-6">Detail Produk</div>
+                            @hasanyrole('Admin Marketing/sales')
+                            @else
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <a href="{{ url('produk/edit').'/'.$produk->id }}" class="btn btn-outline-primary">Ubah</a>
                                 <a href="{{ url('produk/hapus').'/'.$produk->id }}" class="btn btn-outline-danger">Hapus</a>
                             </div>
+                            @endhasanyrole
                         </div>
                     </div>
                     <div class="card-body" style="font-size: 12px;">

@@ -69,18 +69,19 @@
                                 @if($penjualan->jenis != 'pengiriman')<strong> Rp. {{ number_format($penjualan->sisa_tagihan, 2, ',', '.') }}</strong> @else <strong> Rp. {{ number_format($penjualan->ongkos_kirim, 2, ',', '.') }}</strong> @endif
                             </div>
                         </div>
+                        @if($penjualan->no_rfq || $jurnal)
                         <div class="row mb-2">
-                            <div class="col-sm-2">No RFQ</div>
+                            <div class="col-sm-2">@if($penjualan->no_rfq)No RFQ @endif</div>
                             <div class="col-sm-2">@if($penjualan->no_rfq)<strong>{{ $penjualan->no_rfq }}</strong>@endif</div>
                             <div class="col-sm-6" style="margin-right: -25px !important;"></div>
                             <div class="col-sm-2 d-flex justify-content-end">
                                 @if ($jurnal)
-                                <a href="#" data-toggle="modal" data-target="#exampleModal">Lihat Jurnal
+                                <a href="#" data-toggle="modal" data-target="#jurnalEntryModal">Lihat Jurnal
                                         Entry</a>
                                 @endif
                             </div>
                         </div>
-                        
+                        @endif
                         <hr>
                         <div class="row">
                             <div class="col-sm-2">Alamat penagihan</div>
@@ -140,7 +141,7 @@
                             @endif
                             @endif
                         </div>
-                        @if($penjualan->kirim_melalui || ($penjualan->jenis == 'pemesanan' && $penjualan->id_gudang) || ($penjualan->jenis == 'pengiriman' && $penjualan->pemesanan))
+                        @if($penjualan->jenis == 'pemesanan' || $penjualan->jenis == 'pengiriman')
                         <div class="row my-3">
                             <div class="col-sm-2">
                                 @if($penjualan->kirim_melalui)
@@ -154,38 +155,21 @@
                                 -
                                 @endif
                             </div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            @if($penjualan->jenis == 'pemesanan' && $penjualan->id_gudang)
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                Gudang
-                            </div>
-                            <div class="col-sm-2 d-flex justify-content-end">
+                            @if($penjualan->id_gudang)
+                            <div class="col-sm-2">Gudang</div>
+                            <div class="col-sm-2">
                                 <a href="{{ url('gudang/detail').'/'.$penjualan->id_gudang }}">{{ $penjualan->nama_gudang }}</a>
                             </div>
                             @endif
-                            @if($penjualan->jenis == 'pengiriman' && $penjualan->pemesanan)
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
+                            @if($penjualan->pemesanan)
+                            <div class="col-sm-2" >
                                 No. Pemesanan
                             </div>
-                            <div class="col-sm-2 d-flex justify-content-end">
+                            <div class="col-sm-2 @if($penjualan->jenis != 'pengiriman') d-flex justify-content-end @endif">
                                 <a href="{{ url('penjualan/detail').'/'.$penjualan->pemesanan->id }}">{{ $penjualan->pemesanan->no_str }}</a>
                             </div>
                             @endif
                         </div>
-                        @else
-                        @if(isset($penjualan->nama_gudang))
-                        <div class="row my-3">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">Gudang</div>
-                            <div class="col-sm-2 d-flex justify-content-end">
-                                <a href="{{ url('gudang/detail').'/'.$penjualan->id_gudang }}">{{ $penjualan->nama_gudang }}</a>
-                            </div>
-                        </div>
-                        @endif
                         @endif
                         @if($penjualan->no_pelacakan || ($penjualan->jenis == 'pengiriman' && isset($penjualan->nama_gudang)))
                         <div class="row my-3">
@@ -203,12 +187,8 @@
                             </div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2"></div>
-                            @if($penjualan->jenis == 'pengiriman' && isset($penjualan->nama_gudang))
-                            <div class="col-sm-2" style="margin-right: -25px !important;">Gudang</div>
-                            <div class="col-sm-2 d-flex justify-content-end">
-                                <a href="{{ url('gudang/detail').'/'.$penjualan->id_gudang }}">{{ $penjualan->nama_gudang }}</a>
-                            </div>
-                            @endif
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
                         </div>
                         @endif
                         <div class="table-responsive">
@@ -258,6 +238,18 @@
                         <hr>
                         @if($penjualan->jenis == 'pengiriman')
                         <div class="row my-3">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2" style="margin-right: -25px !important;">
+                                Log Pengiriman
+                            </div>
+                            <div class="col-sm-2 d-flex justify-content-end">
+                                <a href="#" data-toggle="modal" data-target="#logPengirimanModal">Lihat Log Pengiriman</a>
+                            </div>
+                        </div>
+                        <div class="row my-3">
                             <div class="col-sm-2">Pesan</div>
                             <div class="col-sm-2">@if($penjualan->pesan){{ $penjualan->pesan }} @else - @endif</div>
                             <div class="col-sm-2"></div>
@@ -271,8 +263,24 @@
                             <div class="col-sm-2">@if($penjualan->pesan){{ $penjualan->memo }} @else - @endif</div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2" style="margin-right: -25px !important;">Update Status Pengiriman</div>
+                            <div class="col-sm-2">
+                                <form method="POST" action="{{ url('penjualan/status_pengiriman') }}">
+                                    @csrf
+                                    <select class="form-control" name="status_pengiriman" id="status_pengiriman">
+                                        @foreach($pengaturan_status_pengiriman as $v)
+                                        <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                    <select class="form-control" name="gudang" id="gudang">
+                                        @foreach($gudang as $v)
+                                        <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                        @endforeach
+                                    </select><br>
+                                    <input type="hidden" name="id_pengiriman_penjualan" value="{{ $penjualan->id }}">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </form>
+                            </div>
                         </div>
                         @else
                         <div class="row my-3">
@@ -609,11 +617,11 @@
     </div>
     <!-- Modal -->
     @if ($jurnal)
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade" id="jurnalEntryModal" tabindex="-1" aria-labelledby="jurnalEntryModalLabel" aria-hidden="true">
             <div class="modal-dialog @if($penjualan->status != 'draf') modal-lg @else modal-sm text-center @endif">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">@if($penjualan->status == 'draf')Journal entry belum tersedia @else {{ $jurnal->no_str }} @endif</h5>
+                        <h5 class="modal-title" id="jurnalEntryModalLabel">@if($penjualan->status == 'draf')Journal entry belum tersedia @else {{ $jurnal->no_str }} @endif</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -659,6 +667,39 @@
             </div>
         </div>
     @endif
+    <div class="modal fade" id="logPengirimanModal" tabindex="-1" aria-labelledby="logPengirimanModalLabel" aria-hidden="true">
+        <div class="modal-dialog @if($penjualan->status != 'draf') modal-lg @else modal-sm text-center @endif">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logPengirimanModalLabel">Log Pengiriman</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Status</th>
+                                <th scope="col">Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($status_pengiriman as $v)
+                                <tr>
+                                    <td>
+                                        <h6 class="mb-0 text-xs username"><a href="#">{{ $v->nama_status_pengiriman }}</a></h6>
+                                        <p class="text-xs mb-0 email">{{ $v->nama_gudang }}</p>
+                                    </td>
+                                    <td>{{ $v->created_at }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         function confirmDelete(event) {
             event.preventDefault();

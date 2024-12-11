@@ -35,6 +35,15 @@
                         </div>
                         @endforeach
                     </div>
+                    <div class="form-group col-md-5">
+                        <label for="gudang">Gudang</label>
+                        <select class="form-control" id="gudang" name="gudang">
+                            <option value="" selected disabled hidden>Choose here</option>
+                            @foreach($gudang as $v)
+                            <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="form-group col-md-10 d-flex justify-content-end">
                         <a href="{{ url('pengaturan/pengguna') }}" class="btn btn-light">Batalkan</a>
                         @if(isset($is_edit))

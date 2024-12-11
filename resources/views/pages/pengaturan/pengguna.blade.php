@@ -17,6 +17,7 @@
                     <tr>
                         <th>Nama pengguna</th>
                         <th>Peran</th>
+                        <th>Gudang</th>
                         <th>Status</th>
                         <th></th>
                     </tr>
@@ -33,6 +34,7 @@
                             </div>
                         </td>
                         <td>{{ $v->getRoleNames()->implode(', ') }}</td>
+                        <td>{{ $v->nama_gudang }}</td>
                         <td>Aktif</td>
                         <td>
                             @if(Auth::user()->id != $v->id)

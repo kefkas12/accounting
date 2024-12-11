@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Approval;
 use App\Models\Approver;
 use App\Models\Company;
+use App\Models\Gudang;
 use App\Models\Kontak;
+use App\Models\Pengaturan_status_pengiriman;
 use App\Models\Requester;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -53,6 +55,7 @@ class PengaturanController extends Controller
     {
         $data['sidebar'] = 'pengaturan';
         $data['role'] = Role::get();
+        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)->get();
         if($id){
             $data['is_edit'] = true;
             $data['user'] = User::where('id',$id)->first();
@@ -71,6 +74,11 @@ class PengaturanController extends Controller
         $user->email = $_POST['email'];
         $user->password = Hash::make($_POST['password']);
         $user->role = 0;
+        if(isset($_POST['gudang'])){
+            $user->id_gudang = $_POST['gudang'];
+            $user->nama_gudang = Gudang::find($_POST['gudang'])->nama;
+        }
+        $user->email = $_POST['email'];
         $user->save();
 
         for($i= 0;$i<count($_POST['role']); $i++){
@@ -98,6 +106,54 @@ class PengaturanController extends Controller
 
         return redirect('pengaturan/pengguna');
     }
+
+    public function status_pengiriman()
+    {
+        $data['sidebar'] = 'pengaturan';
+        $data['status_pengiriman'] = Pengaturan_status_pengiriman::where('id_company',Auth::user()->id_company)
+                                                                ->get();
+
+        return view('pages.pengaturan.status_pengiriman', $data);
+    }
+    public function form_status_pengiriman($id = null)
+    {
+        $data['sidebar'] = 'pengaturan';
+        if($id){
+            $data['is_edit'] = true;
+            $data['status_pengiriman'] = Pengaturan_status_pengiriman::where('id_company',Auth::user()->id_company)
+                                                                    ->first();
+        }
+        
+        return view('pages.pengaturan.form_status_pengiriman', $data);
+    }
+
+    public function insert_form_status_pengiriman()
+    {
+        $status_pengiriman = new Pengaturan_status_pengiriman();
+        $status_pengiriman->id_company = Auth::user()->id_company;
+        $status_pengiriman->nama_perusahaan = Company::find($status_pengiriman->id_company)->nama_perusahaan;
+        $status_pengiriman->nama = $_POST['nama'];
+        $status_pengiriman->save();
+
+        return redirect('pengaturan/status_pengiriman');
+    }
+
+    public function edit_form_status_pengiriman($id){
+        $status_pengiriman = Pengaturan_status_pengiriman::find($id);
+        $status_pengiriman->nama = $_POST['nama'];
+        $status_pengiriman->save();
+
+        return redirect('pengaturan/status_pengiriman');
+    }
+
+    public function hapus_form_status_pengiriman($id)
+    {
+        $status_pengiriman = Pengaturan_status_pengiriman::find($id);
+        $status_pengiriman->delete();
+
+        return redirect('pengaturan/status_pengiriman');
+    }
+    //
 
     public function perusahaan()
     {

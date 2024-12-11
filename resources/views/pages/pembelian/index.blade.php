@@ -19,7 +19,7 @@
                                     <div class="dropdown-menu">
                                       <a class="dropdown-item" href="{{ url('pembelian/faktur') }}">Faktur Pembelian</a>
                                       <a class="dropdown-item" href="{{ url('pembelian/pemesanan') }}">Pemesanan Pembelian</a>
-                                      <a class="dropdown-item" href="{{ url('pembelian/penawaran') }}">Penawaran Pembelian</a>
+                                      <a class="dropdown-item" href="{{ url('pembelian/penawaran') }}" hidden>Penawaran Pembelian</a>
                                     </div>
                                   </div>
                             </div>
@@ -67,16 +67,16 @@
                                     type="button" role="tab" aria-controls="nav-faktur-pembelian"
                                     aria-selected="true">Faktur Pembelian</button>
                                 @endhasallroles
-                                @hasanyrole('pemilik|pergudangan')
+                                @hasanyrole('pemilik|pergudangan|Admin Gudang')
                                 <button class="nav-link @if(auth()->user()->hasRole('pergudangan')) active @endif" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
                                     type="button" role="tab" aria-controls="nav-pengiriman"
                                     aria-selected="false">Pengiriman</button>
                                 <button class="nav-link" id="nav-pemesanan-pembelian-tab" data-toggle="tab" data-target="#nav-pemesanan-pembelian"
                                     type="button" role="tab" aria-controls="nav-pemesanan-pembelian"
-                                    aria-selected="false">Pemesanan Pembelian</button>
+                                    aria-selected="false">Pemesanan</button>
                                 @endhasallroles
-                                @hasanyrole('pemilik')
-                                <button class="nav-link" id="nav-penawaran-pembelian-tab" data-toggle="tab" data-target="#nav-penawaran-pembelian"
+                                @hasanyrole('pemilik|Admin Gudang')
+                                <button hidden class="nav-link" id="nav-penawaran-pembelian-tab" data-toggle="tab" data-target="#nav-penawaran-pembelian"
                                     type="button" role="tab" aria-controls="nav-penawaran-pembelian"
                                     aria-selected="false">Penawaran Pembelian</button>
                                 @endhasallroles
@@ -194,7 +194,7 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="nav-penawaran-pembelian" role="tabpanel"
+                            <div hidden class="tab-pane fade" id="nav-penawaran-pembelian" role="tabpanel"
                                 aria-labelledby="nav-penawaran-pembelian-tab">
                                 <div class="table-responsive">
                                     <table class="table align-items-center table-flush">

@@ -25,8 +25,26 @@
                                     <input type="date" class="form-control" id="tanggal_transaksi"
                                         name="tanggal_transaksi" required>
                                 </div>
+                                <div class="form-group col-md-3 pr-4">
+                                    <label for="gudang">Gudang</label>
+                                    <select class="form-control" name="gudang" id="gudang">
+                                        @if(Auth::user()->id_gudang)
+                                            @foreach($gudang as $v)
+                                            <option value="{{ $v->id }}" selected>{{ $v->nama }}</option>
+                                            @endforeach
+                                        @else
+                                            <option selected disabled hidden>Pilih Gudang</option>
+                                            @if(isset($gudang))
+                                            @foreach($gudang as $v)
+                                            <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                            @endforeach
+                                            @else
+                                            <option disabled>No result found</option>
+                                            @endif
+                                        @endif
+                                    </select>
+                                </div>
                             </div>
-
                             <div style="overflow-x: auto">
                                 <table class="table">
                                     <thead>
@@ -114,7 +132,7 @@
                             <div class="row my-5">
                                 <div class="col d-flex justify-content-end">
                                     @if (isset($jurnal))
-                                    <a href="{{ url('jurnal') }}" class="btn btn-danger">Batal</a>
+                                    <a href="{{ url('laporan/jurnal') }}" class="btn btn-danger">Batal</a>
                                     <button type="submit" class="btn btn-success" onclick="check_balance();">Ubah
                                         Jurnal Umum</button>
                                     @else
@@ -139,6 +157,7 @@
         $(document).ready(function() {
             @if (isset($jurnal))
                 $('#tanggal_transaksi').val('{{ $jurnal->tanggal_transaksi }}')
+                $('#gudang').val('{{ $jurnal->id_gudang }}')
                 x = 1;
                 @foreach ($jurnal->detail_jurnal as $v)
                     if(x < 3){

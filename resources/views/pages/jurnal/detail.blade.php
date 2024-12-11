@@ -31,7 +31,12 @@
                                 <div class="col-sm-12"><strong>No Transaksi:</strong></div>
                                 <div class="col-sm-12">{{ $jurnal->no }}</div>
                             </div>
-                            <div class="col"></div>
+                            <div class="col">
+                                @if($jurnal->nama_gudang)
+                                <div class="col-sm-12"><strong>Gudang:</strong></div>
+                                <div class="col-sm-12">{{ $jurnal->nama_gudang }}</div>
+                                @endif
+                            </div>
                             <div class="col"></div>
                         </div>
                         <div class="table-responsive">
@@ -86,7 +91,7 @@
                                 </form>
                             </div>
                             <div class="col-sm-6 d-flex justify-content-end">
-                                <a href="{{ url('jurnal') }}" class="btn btn-danger">Kembali</a>
+                                <a href="{{ url('laporan/jurnal') }}" class="btn btn-danger">Kembali</a>
                                 <a href="{{ url('jurnal').'/edit/'.$jurnal->id }}" class="btn btn-success">Ubah</a>
                             </div>
                         </div>

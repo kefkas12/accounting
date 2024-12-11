@@ -58,30 +58,36 @@
                             <div class="form-row text-sm">
                                 <div class="col-md-3 pr-4">
                                     <div class="form-group">
+                                        <label for="alamat">Alamat Pengiriman</label><br>
+                                        <textarea class="form-control" name="alamat" id="alamat"></textarea>
+                                    </div>
+                                    <div class="form-group" style="display:none">
                                         <label for="alamat_pengiriman">Alamat Pengiriman</label><br>
-                                        <textarea class="form-control" name="alamat_pengiriman" id="alamat_pengiriman" rows="2"></textarea>
+                                        <textarea class="form-control" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
+                                        <div class="form-check mb-4" >
+                                            <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
+                                            <label class="form-check-label" for="sama_dengan_penagihan">
+                                                Sama dengan penagihan
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3 pr-2">
+                                <div class="col-md-2 pr-2">
                                     <div class="form-group">
-                                        <label for="tanggal_transaksi">Tgl. pengiriman</label>
+                                        <label for="tanggal_transaksi">Tgl. transaksi</label>
                                         <input type="date" class="form-control" id="tanggal_transaksi" name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
                                     </div>
                                     <div class="form-group" hidden>
                                         <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
                                         <input type="date" class="form-control" id="tanggal_jatuh_tempo"
-                                            name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="kirim_melalui">Kirim melalui</label>
-                                        <input type="text" class="form-control" id="kirim_melalui"
-                                            name="kirim_melalui">
+                                            name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                     </div>
                                 </div>
-                                <div class="col-md-3 pr-2">
-                                    <div class="form-group">
-                                        <label for="no_pelacakan">No. pelacakan</label>
-                                        <input type="text" class="form-control" id="no_pelacakan" name="no_pelacakan">
+                                <div class="col-md-2 pr-2">
+                                    <div class="form-group info_pengiriman" style="display:none">
+                                        <label for="tanggal_pengiriman">Tgl. pengiriman</label>
+                                        <input type="date" class="form-control" id="tanggal_pengiriman"
+                                            name="tanggal_pengiriman" value="{{ date('Y-m-d') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="gudang">Gudang</label>
@@ -96,17 +102,31 @@
                                             @endif
                                         </select>
                                     </div>
-                                    
                                 </div>
-                                <div class="form-group col-md-3 pr-4">
-                                    @if(isset($penawaran))
-                                    <label for="nomor_penawaran_pembelian">No Penawaran Pembelian</label> <br>
-                                    <a href="{{ url('pembelian/detail').'/'.$pembelian->id }}">{{ $pembelian->no_str }}</a>
-                                    @endif
-                                    @if(isset($pemesanan))
-                                    <label for="nomor_pemesanan_pembelian">No Pemesanan Pembelian</label> <br>
-                                    <a href="{{ url('pembelian/detail').'/'.$pembelian->id }}">{{ $pembelian->no_str }}</a>
-                                    @endif
+                                <div class="col-md-2 info_pengiriman" style="display:none">
+                                    <div class="form-group">
+                                        <label for="kirim_melalui">Kirim melalui</label>
+                                        <input type="text" class="form-control" id="kirim_melalui"
+                                            name="kirim_melalui">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="no_pelacakan">No. Pelacakan</label>
+                                        <input type="text" class="form-control" id="no_pelacakan" name="no_pelacakan">
+                                    </div>
+                                </div>
+                                <div class="col-md-2 pr-4">
+                                    <div class="form-group">
+                                        @if(isset($penawaran))
+                                        <label for="nomor_penawaran_pembelian">No Penawaran Pembelian</label> <br>
+                                        <a href="{{ url('pembelian/detail').'/'.$pembelian->id }}">{{ $pembelian->no_str }}</a>
+                                        @endif
+                                    </div>
+                                    <div class="form-group">
+                                        @if(isset($pemesanan))
+                                        <label for="nomor_pemesanan_pembelian">No Pemesanan Pembelian</label> <br>
+                                        <a href="{{ url('pembelian/detail').'/'.$pembelian->id }}">{{ $pembelian->no_str }}</a>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
