@@ -97,7 +97,7 @@ class Pembelian extends Model
         }
         
         if(($jenis == 'faktur' || $jenis == 'pengiriman') && $id_jenis != null){
-            $this->id_penawaran = Penjualan::find($id_jenis)->id_penawaran ? Penjualan::find($id_jenis)->id_penawaran : null;
+            $this->id_penawaran = isset(Penjualan::find($id_jenis)->id_penawaran) ? Penjualan::find($id_jenis)->id_penawaran : null;
             if(Pembelian::find($id_jenis)->jenis == 'pengiriman'){
                 $this->id_pemesanan = Pembelian::find($id_jenis)->id_pemesanan;
                 $this->id_pengiriman = $id_jenis;

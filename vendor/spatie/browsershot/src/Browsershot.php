@@ -70,17 +70,17 @@ class Browsershot
 
     public static function url(string $url): static
     {
-        return (new static())->setUrl($url);
+        return (new static)->setUrl($url);
     }
 
     public static function html(string $html): static
     {
-        return (new static())->setHtml($html);
+        return (new static)->setHtml($html);
     }
 
     public static function htmlFromFilePath(string $filePath): static
     {
-        return (new static())->setHtmlFromFilePath($filePath);
+        return (new static)->setHtmlFromFilePath($filePath);
     }
 
     public function __construct(string $url = '', bool $deviceEmulate = false)
@@ -91,7 +91,7 @@ class Browsershot
             $this->windowSize(800, 600);
         }
 
-        $this->imageManipulations = new ImageManipulations();
+        $this->imageManipulations = new ImageManipulations;
     }
 
     public function setNodeBinary(string $nodeBinary): static
@@ -257,7 +257,7 @@ class Browsershot
 
     public function setUrl(string $url): static
     {
-        if (str_starts_with(strtolower($url), 'file://')) {
+        if (str_starts_with(strtolower($url), 'file://') || str_starts_with(strtolower($url), 'file:/')) {
             throw FileUrlNotAllowed::make();
         }
 
@@ -289,7 +289,7 @@ class Browsershot
 
     public function setHtml(string $html): static
     {
-        if (str_contains(strtolower($html), 'file://')) {
+        if (str_contains(strtolower($html), 'file://') || str_contains(strtolower($html), 'file:/')) {
             throw HtmlIsNotAllowedToContainFile::make();
         }
 
@@ -407,7 +407,7 @@ class Browsershot
 
     public function ignoreHttpsErrors(): static
     {
-        return $this->setOption('ignoreHttpsErrors', true);
+        return $this->setOption('acceptInsecureCerts', true);
     }
 
     public function mobile(bool $mobile = true): static
@@ -472,6 +472,11 @@ class Browsershot
         return $this->setOption('blockDomains', $array);
     }
 
+    public function disableRedirects(): static
+    {
+        return $this->setOption('disableRedirects', true);
+    }
+
     public function pages(string $pages): static
     {
         return $this->setOption('pageRanges', $pages);
@@ -504,6 +509,11 @@ class Browsershot
         return $this->setOption('timeout', $timeout * 1000);
     }
 
+    public function protocolTimeout(int $protocolTimeout): static
+    {
+        return $this->setOption('protocolTimeout', $protocolTimeout * 1000);
+    }
+
     public function userAgent(string $userAgent): static
     {
         return $this->setOption('userAgent', $userAgent);
@@ -517,6 +527,11 @@ class Browsershot
     public function emulateMedia(?string $media): static
     {
         return $this->setOption('emulateMedia', $media);
+    }
+
+    public function emulateMediaFeatures(array $features): static
+    {
+        return $this->setOption('emulateMediaFeatures', json_encode($features));
     }
 
     public function newHeadless(): self

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\CompanyProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/iot/{alat}', [ApiController::class, 'iot_read']);
 Route::post('/iot/{alat}', [ApiController::class, 'iot_create']);
+
+Route::get('/data/{id}', [CompanyProfileController::class, 'company_profile']);
