@@ -78,6 +78,14 @@
                         </form>
                     </div>
                 </div>
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <a href="{{ url('password/reset') }}" class="text-light"><small>Forgot password?</small></a>
+                    </div>
+                    <div class="col-6 text-right">
+                        <a href="{{ url('login') }}" class="text-light"><small>Already have account?</small></a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

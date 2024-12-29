@@ -142,11 +142,12 @@
                                                     <option value="11" data-persen="11">PPN</option>
                                                 </select>
                                             </td>
-                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_1"
-                                                    name="jumlah[]" value="0" onblur="change_jumlah(1)"></td>
-                                            <td style="padding: 10px !important;">
+                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_1" name="jumlah[]" value="0" onblur="change_jumlah(1)"></td>
+                                            <td style="padding: 10px !important;"><a href="javascript:;" onclick="create_row()"><i
+                                                        class="fa fa-plus text-primary"></i></a></td>
+                                            <!-- <td style="padding: 10px !important;">
                                                 <a href="javascript:;" onclick="clear_row(1)"><i class="fa fa-trash text-primary"></i></a>
-                                            </td>
+                                            </td> -->
                                         </tr>
                                     </tbody>
                                 </table>
@@ -273,12 +274,12 @@
                 allowClear: true,
                 placeholder: 'Pilih produk'
             });
-            $('#produk_'+id).on('select2:select', function (e) {
-                if(id >= x){
-                    x += 1;
-                    create_row();
-                }
-            });
+            // $('#produk_'+id).on('select2:select', function (e) {
+            //     if(id >= x){
+            //         x += 1;
+            //         create_row();
+            //     }
+            // });
             
             new AutoNumeric("#harga_satuan_" + id, {
                 commaDecimalCharDotSeparator: true,
@@ -325,7 +326,6 @@
             if(val_harga_satuan){
                 AutoNumeric.set('#harga_satuan_' + no,val_harga_satuan);
             }else{
-                console.log(no);
                 AutoNumeric.set('#harga_satuan_' + no,AutoNumeric.getNumber('#harga_satuan_' + no));
             }
             subtotal[no] = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
@@ -341,7 +341,7 @@
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
             diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
 
-            AutoNumeric.set('#harga_satuan_' + no, (100/(100-diskon)) * AutoNumeric.getNumber('#jumlah_' + no));
+            AutoNumeric.set('#harga_satuan_' + no, (100/(100-diskon)) * AutoNumeric.getNumber('#jumlah_' + no) / kuantitas);
 
             subtotal[no] = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
             diskon_per_baris[no] = subtotal[no] * diskon / 100;
@@ -451,7 +451,10 @@
                         </select>
                     </td>
                     <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})"></td>
-                    <td style="padding: 10px !important;"><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>
+                    <td style="padding: 10px !important;">
+                        <a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>
+                        <a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a>
+                    </td>
                 </tr>
             `);
             load_select_2(i);

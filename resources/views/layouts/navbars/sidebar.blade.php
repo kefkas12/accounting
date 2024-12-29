@@ -125,7 +125,7 @@
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a class="nav-link {{ $sidebar == 'supplier' ? 'active' : '' }}" href="{{ url('supplier') }}">
-                                    {{ __('Supplier') }}
+                                    {{ __('Supplier / Pemasok') }}
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -206,7 +206,7 @@
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
                                 <a class="nav-link {{ $sidebar == 'supplier' ? 'active' : '' }}" href="{{ url('supplier') }}">
-                                    {{ __('Supplier') }}
+                                    {{ __('Supplier / Pemasok') }}
                                 </a>
                             </li>
                             <li class="nav-item">

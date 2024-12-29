@@ -12,7 +12,7 @@
                         <div class="row mb-3">
                             <div class="col">
                                 <a href="{{ url('supplier/insert') }}"class="btn btn-primary" >
-                                    Tambah Supplier
+                                    Tambah Supplier / Pemasok
                                 </a>
                             </div>
                         </div>

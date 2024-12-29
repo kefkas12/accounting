@@ -67,7 +67,7 @@ Auth::routes();
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
+// Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
 
 Route::get('/cloud/jarak', 'App\Http\Controllers\ApiController@jarak');
 Route::get('/cloud/suhu', 'App\Http\Controllers\ApiController@suhu');
@@ -456,3 +456,5 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 */
+
+// require __DIR__.'/auth.php';
