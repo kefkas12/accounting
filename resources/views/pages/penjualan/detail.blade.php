@@ -258,30 +258,36 @@
                                 Ongkos Kirim</div>
                             <div class="col-sm-2 d-flex justify-content-end"><strong>Rp. {{ number_format($penjualan->ongkos_kirim, 2, ',', '.') }}</strong></div>
                         </div>
-                        <div class="row my-3">
-                            <div class="col-sm-2">Memo</div>
-                            <div class="col-sm-2">@if($penjualan->pesan){{ $penjualan->memo }} @else - @endif</div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">Update Status Pengiriman</div>
-                            <div class="col-sm-2">
-                                <form method="POST" action="{{ url('penjualan/status_pengiriman') }}">
-                                    @csrf
+                        <form method="POST" action="{{ url('penjualan/status_pengiriman') }}">
+                            @csrf
+                            <div class="row my-3">
+                                <div class="col-sm-2">Memo</div>
+                                <div class="col-sm-2">@if($penjualan->pesan){{ $penjualan->memo }} @else - @endif</div>
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-2" style="margin-right: -25px !important;">Update Status Pengiriman</div>
+                                <div class="col-sm-2">
                                     <select class="form-control" name="status_pengiriman" id="status_pengiriman">
                                         @foreach($pengaturan_status_pengiriman as $v)
                                         <option value="{{ $v->id }}">{{ $v->nama }}</option>
                                         @endforeach
                                     </select>
+                                </div>
+                            </div>
+                            <div class="row my-3">
+                                <div class="col-sm-8"></div>
+                                <div class="col-sm-2" style="margin-right: -25px !important;">Gudang</div>
+                                <div class="col-sm-2">
                                     <select class="form-control" name="gudang" id="gudang">
                                         @foreach($gudang as $v)
                                         <option value="{{ $v->id }}">{{ $v->nama }}</option>
                                         @endforeach
-                                    </select><br>
+                                    </select>
                                     <input type="hidden" name="id_pengiriman_penjualan" value="{{ $penjualan->id }}">
-                                    <button type="submit" class="btn btn-primary">Update</button>
-                                </form>
+                                    <button type="submit" class="btn btn-primary mt-3">Update</button>
+                                </div>
                             </div>
-                        </div>
+                        </form>
                         @else
                         <div class="row my-3">
                             <div class="col-sm-2">Pesan</div>
@@ -667,6 +673,7 @@
             </div>
         </div>
     @endif
+    @if(isset($status_pengiriman))
     <div class="modal fade" id="logPengirimanModal" tabindex="-1" aria-labelledby="logPengirimanModalLabel" aria-hidden="true">
         <div class="modal-dialog @if($penjualan->status != 'draf') modal-lg @else modal-sm text-center @endif">
             <div class="modal-content">
@@ -700,6 +707,7 @@
             </div>
         </div>
     </div>
+    @endif
     <script>
         function confirmDelete(event) {
             event.preventDefault();

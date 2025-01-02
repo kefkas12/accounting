@@ -67,7 +67,7 @@
                                         <button type="submit" class="btn btn-success btn-lg px-5">
                                                 <i class="fa fa-save" style="font-size: 1.5em;"></i>
                                             </button>
-                                        <a href="{{ url('supplier') }}" class="btn btn-light btn-lg px-5""><i class="fa fa-trash" style="font-size: 1.5em;"></i></a>
+                                        <a href="{{ url('supplier') }}" class="btn btn-light btn-lg px-5"><i class="fa fa-trash" style="font-size: 1.5em;"></i></a>
                                     </div>
                                 </div>
                             </div>

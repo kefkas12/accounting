@@ -360,4 +360,29 @@ class Jurnal extends Model
                                     ->where('id_company', Auth::user()->id_company)
                                     ->update(['saldo' => $saldo + $debit - $kredit]);
     }
+
+    public function penerimaan(Request $request)
+    {
+        $this->id_company = Auth::user()->id_company;
+        $this->tanggal_transaksi = $request->input('tanggal');
+        $this->kategori = 'penerimaan';
+        $this->no = $this->no('penerimaan');
+        $this->no_str = 'Penerimaan #' . $this->no('penerimaan');
+        $this->debit = $request->input('total_nilai');
+        $this->kredit = $request->input('total_nilai');
+        $this->save();
+
+        for ($i = 0; $i < count($request->input('akun')); $i++) {
+            if($request->input('total')[$i] != '' && $request->input('total')[$i] != null ){
+
+                $this->createDetailJurnal($this->id, 33, $request->input('total')[$i], 0);
+                $this->updateAkunBalance(33, $request->input('total')[$i], 0);
+            }
+        }
+
+        $this->createDetailJurnal($this->id, $request->input('setor_ke'), 0, $request->input('subtotal'));
+        $this->updateAkunBalance($request->input('setor_ke'), 0, $request->input('subtotal'));
+
+        
+    }
 }

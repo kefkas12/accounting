@@ -7,23 +7,27 @@
         <!-- Dark table -->
         <div class="row">
             <div class="col">
-                <form action="{{ url('pelanggan/insert') }}" method ="POST" id="form">
+                <form action="{{ url('/kas_bank/pembayaran/insert') }}" method ="POST" id="form">
                     @csrf
                         <div class="card">
                             <div class="card-body ">
-                                <h2 class="text-primary mb-3 pb-3" style="border-bottom: 1px solid rgb(199, 206, 215);">Buat Kontak Pelanggan</h2>
+                                <h2 class="text-primary mb-3 pb-3" style="border-bottom: 1px solid rgb(199, 206, 215);">Buat Pembayaran</h2>
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="form-group row mb-2">
-                                            <label for="nama" class="col-sm-3 col-form-label">Nama Pelanggan <span class="text-danger">*</span></label>
+                                            <label for="nama" class="col-sm-3 col-form-label">Kas/Bank <span class="text-danger">*</span></label>
                                             <div class="col-sm-9">
-                                                <input type="text" class="form-control" id="nama" name="nama" value="{{ isset($pelanggan) ? $pelanggan->nama : '' }}" required>
+                                                <select class="form-control" name="kas_bank" id="kas_bank" required>
+                                                    @foreach($kas_bank as $v)
+                                                    <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="form-group row mb-2">
-                                            <label for="email" class="col-sm-3 col-form-label">Email</label>
+                                            <label for="tanggal" class="col-sm-3 col-form-label">Tanggal <span class="text-danger">*</span></label>
                                             <div class="col-sm-9">
-                                                <input type="email" class="form-control" id="email" name="email" value="{{ isset($pelanggan) ? $pelanggan->email : '' }}">
+                                                <input type="date" class="form-control" id="tanggal" name="tanggal" value="{{ isset($pembayaran) ? $pembayaran->tanggal : '' }}" required>
                                             </div>
                                         </div>
                                         <div class="form-group row mb-2">
@@ -69,7 +73,7 @@
                                             <button type="submit" class="btn btn-success btn-lg px-5">
                                                 <i class="fa fa-save" style="font-size: 1.5em;"></i>
                                             </button>
-                                            <a href="{{ url('pelanggan') }}" class="btn btn-light btn-lg px-5"><i class="fa fa-trash" style="font-size: 1.5em;"></i></a>
+                                            <a href="{{ url('kas_bank/pembayaran') }}" class="btn btn-light btn-lg px-5"><i class="fa fa-trash" style="font-size: 1.5em;"></i></a>
                                         </div>
                                     </div>
                                 </div>

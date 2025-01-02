@@ -23,7 +23,6 @@
                                     <option selected disabled hidden>Pemesanan Pembelian</option>
                                     <option value="{{ url('pembelian/faktur') }}">Faktur Pembelian</option>
                                     <option value="{{ url('pembelian/pemesanan') }}">Pemesanan Pembelian</option>
-                                    <option hidden value="{{ url('pembelian/penawaran') }}">Penawaran Pembelian</option>
                                 </select>
                             </div>
                         </div>
@@ -176,14 +175,12 @@
                                             <td style="padding: 10px !important;">
                                                 <textarea class="form-control" name="deskripsi[]" id="deskripsi_1" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                                             </td>
-                                            <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_1"
-                                                    name="kuantitas[]" value="1" onkeyup="change_harga(1)"
-                                                    onblur="check_null(this)" step="any"></td>
-                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_1"
-                                                    name="harga_satuan[]" value="0" onblur="change_harga(1)" ></td>
                                             <td style="padding: 10px !important;">
-                                                <select class="form-control" id="pajak_1" name="pajak[]"
-                                                    onchange="get_pajak(this, 1)" required>
+                                                <input type="number" class="form-control" id="kuantitas_1" name="kuantitas[]" value="1" onkeyup="change_harga(1)" onblur="check_null(this)" step="any"></td>
+                                            <td style="padding: 10px !important;">
+                                                <input type="text" class="form-control" id="harga_satuan_1" name="harga_satuan[]" value="0" onblur="change_harga(1)" ></td>
+                                            <td style="padding: 10px !important;">
+                                                <select class="form-control" id="pajak_1" name="pajak[]" onchange="get_pajak(this, 1)" required>
                                                     <option value="0" data-persen="0">Pilih pajak</option>
                                                     <option value="11" data-persen="11">PPN</option>
                                                 </select>
@@ -267,7 +264,6 @@
         var result_ppn = 0;
 
         function load() {
-
             result_subtotal = 0;
             for (var key in subtotal) {
                 result_subtotal += subtotal[key];
@@ -277,7 +273,6 @@
             for (var key in ppn) {
                 result_ppn += ppn[key];
             }
-
             $('#subtotal').text(rupiah(result_subtotal));
             $('#ppn').text(rupiah(result_ppn));
             $('#total').text(rupiah(result_subtotal + result_ppn));

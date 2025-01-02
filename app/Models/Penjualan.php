@@ -74,6 +74,9 @@ class Penjualan extends Model
         }else if($jenis == 'pemesanan'){
             $this->no_str = 'Sales Order #' . $this->no;
             $tipe = 'Pemesanan Penjualan #' . $this->no;
+        }else if($jenis == 'selesai'){
+            $this->no_str = 'Sales Finish #' . $this->no;
+            $tipe = 'Penjualan Selesai #' . $this->no;
         }
         
         $this->id_pelanggan = $request->input('pelanggan');
@@ -141,14 +144,21 @@ class Penjualan extends Model
             $penjualan = Penjualan::find($id_jenis);
             $penjualan->status = 'closed';
             $penjualan->save();
+        }elseif($jenis == 'selesai' && $id_jenis != null){
+            $penjualan = Penjualan::find($id_jenis);
+            $penjualan->status = 'closed';
+            $penjualan->save();
         }
+
         $this->insertDetailPenjualan($request, $tipe, $jenis,$this->id_gudang);
+
 
         $log = new Log;
         $log->id_user = Auth::user()->id;
         $log->id_transaksi = $this->id;
         $log->transaksi = 'penjualan';
         $log->save();
+
     }
 
     protected function insertDetailPenjualan(Request $request, $tipe, $jenis, $id_gudang)

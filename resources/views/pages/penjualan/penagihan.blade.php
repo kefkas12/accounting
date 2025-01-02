@@ -214,7 +214,16 @@
                             </div>
                             <hr>
                             <div class="row">
-                                <div class="col"></div>
+                                <div class="col">
+                                    <div class="form-group col-md-6">
+                                        <label for="pesan">Pesan</label><br>
+                                        <textarea class="form-control" name="pesan" id="pesan"></textarea>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="memo">Memo</label><br>
+                                        <textarea class="form-control" name="memo" id="memo"></textarea>
+                                    </div>
+                                </div>
                                 <div class="col ">
                                     <div class="row mb-3">
                                         <div class="col">

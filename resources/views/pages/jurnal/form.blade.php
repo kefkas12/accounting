@@ -2,23 +2,16 @@
 
 @section('content')
     @include('layouts.headers.cards')
-    <style>
-        .chosen-container.chosen-with-drop .chosen-drop {
-            position: relative;
-        }
-    </style>
     <!-- Page content -->
     <div class="mt--6">
         <!-- Dark table -->
         <div class="row">
             <div class="col">
-                <div class="card mb-5">
-                    <div class="card-header bg-transparent border-0">
-                        Jurnal Umum
-                    </div>
-                    <div class="card-body ">
-                        <form method="POST" @if (isset($jurnal)) action="{{ url('jurnal/edit').'/'.$jurnal->id }}" @else action="{{ url('jurnal/insert') }}" @endif id="insertForm">
-                            @csrf
+                <form method="POST" @if (isset($jurnal)) action="{{ url('jurnal/edit').'/'.$jurnal->id }}" @else action="{{ url('jurnal/insert') }}" @endif id="insertForm">
+                    @csrf
+                    <div class="card mb-5">
+                        <div class="card-body ">
+                            <h2 class="text-primary mb-3 pb-3" style="border-bottom: 1px solid rgb(199, 206, 215);">Jurnal Umum</h2>
                             <div class="form-row">
                                 <div class="form-group col-md-3 pr-4">
                                     <label for="tanggal_transaksi">Tgl. transaksi <span class="text-danger">*</span></label>
@@ -142,9 +135,9 @@
                                     @endif
                                 </div>
                             </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>

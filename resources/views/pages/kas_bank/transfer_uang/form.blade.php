@@ -7,11 +7,11 @@
         <!-- Dark table -->
         <div class="row">
             <div class="col">
-                <form action="{{ url('pelanggan/insert') }}" method ="POST" id="form">
+                <form action="{{ url('/kas_bank/transfer_uang/insert') }}" method ="POST" id="form">
                     @csrf
                         <div class="card">
                             <div class="card-body ">
-                                <h2 class="text-primary mb-3 pb-3" style="border-bottom: 1px solid rgb(199, 206, 215);">Buat Kontak Pelanggan</h2>
+                                <h2 class="text-primary mb-3 pb-3" style="border-bottom: 1px solid rgb(199, 206, 215);">Buat Transfer Uang</h2>
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="form-group row mb-2">

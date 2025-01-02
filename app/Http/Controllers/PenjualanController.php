@@ -676,4 +676,14 @@ class PenjualanController extends Controller
         
         return redirect('penjualan');
     }
+
+    public function insert_selesai(Request $request, $id)
+    {
+        DB::beginTransaction();
+        $penjualan = new Penjualan;
+        $penjualan->insert($request, null, 'selesai', $id);
+        DB::commit();
+
+        return redirect('penjualan/detail/'.$penjualan->id);
+    }
 }

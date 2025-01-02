@@ -12,6 +12,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\JobRequestController;
 use App\Http\Controllers\JurnalController;
 use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\KasBankController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\PartnerController;
@@ -80,6 +81,26 @@ Route::controller(ProfilController::class)->prefix('profil')->group(function () 
 	Route::post('/', 'create');
 	Route::post('/password', 'create_password');
 	Route::post('/company', 'create_company');
+});
+
+Route::controller(KasBankController::class)->prefix('kas_bank')->group(function () {
+	Route::get('/pembayaran', 'pembayaran');
+	Route::get('/pembayaran/insert', 'detail_pembayaran');
+	Route::post('/pembayaran/insert', 'insert_pembayaran');
+	Route::post('/pembayaran/edit/{id}', 'edit_pembayaran');
+	Route::get('/pembayaran/{status}/{id}', 'detail_pembayaran');	
+
+	Route::get('/penerimaan', 'penerimaan');
+	Route::get('/penerimaan/insert', 'detail_penerimaan');
+	Route::post('/penerimaan/insert', 'insert_penerimaan');
+	Route::post('/penerimaan/edit/{id}', 'edit_penerimaan');
+	Route::get('/penerimaan/{status}/{id}', 'detail_penerimaan');	
+
+	Route::get('/transfer_uang', 'transfer_uang');
+	Route::get('/transfer_uang/insert', 'detail_transfer_uang');
+	Route::post('/transfer_uang/insert', 'insert_transfer_uang');
+	Route::post('/transfer_uang/edit/{id}', 'edit_transfer_uang');
+	Route::get('/transfer_uang/{status}/{id}', 'detail_transfer_uang');	
 });
 
 Route::controller(PembelianController::class)->prefix('pembelian')->group(function () {
@@ -160,6 +181,9 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 
 	Route::get('/approve/{id}','approve');
 	// Route::post('/{id}', 'edit');
+
+	Route::post('/selesai/{id}', 'insert_selesai');
+
 });
 
 Route::controller(PenawaranController::class)->prefix('penawaran')->group(function () {
