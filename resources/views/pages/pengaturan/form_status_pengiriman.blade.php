@@ -10,7 +10,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-5">
                         <label for="nama">Nama Status Pengiriman</label>
-                        <input type="text" class="form-control" name="nama" id="nama" @if(isset($is_edit)) value="{{ $status_pengiriman->nama }}" readonly @endif required>
+                        <input type="text" class="form-control" name="nama" id="nama" @if(isset($is_edit)) value="{{ $status_pengiriman->nama }}" @endif required>
                     </div>
                     <div class="form-group col-md-8 d-flex justify-content-end">
                         <a href="{{ url('pengaturan/status_pengiriman') }}" class="btn btn-light">Batalkan</a>

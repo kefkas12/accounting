@@ -99,6 +99,20 @@
                                             </tr>
                                         </thead>
                                         <tbody class="list">
+                                            @foreach($selesai as $v)
+                                                <tr>
+                                                    <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
+                                                    <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
+                                                    <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_pemesanan }}">{{ $v->no_str_pemesanan }}</a></td>
+                                                    <td>{{ date('d/m/Y', strtotime($v->tanggal_pembayaran)) }}</td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" >
+                                                            Upload
+                                                        </button>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -132,12 +146,13 @@
                                                 <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_pemesanan }}">{{ $v->no_str_pemesanan }}</a></td>
                                                 <td>{{ $v->nama_pelanggan }}</td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d/m/Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
-                                                <td>@if($v->status =='open') <span class="badge badge-warning">Menunggu pembayaran</span> @else {{ $v->status }} @endif</td>
+                                                <td>@if($v->selesai == 'selesai') closed @else @if($v->status =='open') <span class="badge badge-warning">Menunggu pembayaran</span> @else {{ $v->status }} @endif @endif</td>
                                                 <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
                                                 <td>
-                                                @if($v->status == 'paid')
-                                                <form action="{{ url('penjualan/selesai').'/'.$v->id }}">
+                                                @if($v->status == 'paid' && $v->selesai != 'selesai')
+                                                <form action="{{ url('penjualan/selesai').'/'.$v->id }}" method="POST">
+                                                    @csrf
                                                     <button type="submit" class="btn btn-sm btn-primary">Selesai</button>
                                                 </form>
                                                 @endif
@@ -283,7 +298,33 @@
         </div>
     </div>
 
-
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Upload Dokumen</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ url('penjualan/upload/dokumen') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        @foreach($pengaturan_dokumen as $v)
+                        <div class="form-group">
+                            <label for="{{ $v->nama }}">{{ $v->nama }}</label>
+                            <input type="file" class="form-control" name="{{ str_replace(' ', '_', strtolower($v->nama)) }}" id="{{ $v->nama }}" required>
+                        </div>
+                        @endforeach
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script>
     </script>

@@ -69,6 +69,7 @@ class Pembayaran_penjualan extends Model
                 }else{
                     $penjualan->status = 'partial';
                 }
+                $penjualan->tanggal_pembayaran = date('Y-m-d');
                 $penjualan->save();
 
             }

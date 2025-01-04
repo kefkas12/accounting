@@ -11,6 +11,7 @@
                         <li class="list-group-item" style="background: #F1F5F9; font-size:13px;"><a href="{{ url('pengaturan/perusahaan') }}" style="color:#000000 !important;">Perusahaan</a></li>
                         <li class="list-group-item" style="background: #F1F5F9; font-size:13px;"><a href="{{ url('pengaturan/pengguna') }}" style="color:#000000 !important;">Pengguna</a></li>
                         <li class="list-group-item" style="background: #F1F5F9; font-size:13px;"><a href="{{ url('pengaturan/status_pengiriman') }}" style="color:#000000 !important;">Status Pengiriman</a></li>
+                        <li class="list-group-item" style="background: #F1F5F9; font-size:13px;"><a href="{{ url('pengaturan/dokumen') }}" style="color:#000000 !important;">Dokumen</a></li>
                         <li class="list-group-item" style="background: #F1F5F9; font-size:13px;"><a href="{{ url('pengaturan/approval') }}" style="color:#000000 !important;">Aturan Approval</a></li>
                     </ul>
                 </div>

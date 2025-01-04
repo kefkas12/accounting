@@ -16,6 +16,17 @@ class Penjualan extends Model
     use HasFactory;
     protected $table = 'penjualan';
 
+    protected $fillable = [
+        'id_penagihan', 
+        'id_jurnal',
+        'tanggal_transaksi',
+        'no',
+        'no_str',
+        'tanggal_jatuh_tempo',
+        'status',
+        'jenis'
+    ];
+
     function no($jenis)
     {
         $no = Penjualan::select('no')
@@ -74,9 +85,6 @@ class Penjualan extends Model
         }else if($jenis == 'pemesanan'){
             $this->no_str = 'Sales Order #' . $this->no;
             $tipe = 'Pemesanan Penjualan #' . $this->no;
-        }else if($jenis == 'selesai'){
-            $this->no_str = 'Sales Finish #' . $this->no;
-            $tipe = 'Penjualan Selesai #' . $this->no;
         }
         
         $this->id_pelanggan = $request->input('pelanggan');
@@ -141,10 +149,6 @@ class Penjualan extends Model
             $penjualan->status = 'closed';
             $penjualan->save();
         }elseif($jenis == 'penagihan' && $id_jenis != null){
-            $penjualan = Penjualan::find($id_jenis);
-            $penjualan->status = 'closed';
-            $penjualan->save();
-        }elseif($jenis == 'selesai' && $id_jenis != null){
             $penjualan = Penjualan::find($id_jenis);
             $penjualan->status = 'closed';
             $penjualan->save();
@@ -302,5 +306,27 @@ class Penjualan extends Model
 
             $detail_penjualan->save();
         }
+    }
+
+    public function selesai($id)
+    {
+        $penjualan = Penjualan::find($id);
+        
+        $no = $this->no('selesai');
+        $selesai = $penjualan->replicate()->fill([
+            'id_penagihan' => $id, 
+            'id_jurnal' => null,
+            'tanggal_transaksi' => date('Y-m-d'),
+            'no' => $no,
+            'no_str' => 'Sales Finish #' .$no,
+            'tanggal_jatuh_tempo' => null,
+            'status' => 'open',
+            'jenis' => 'selesai',
+        ]);
+        $selesai->save();
+
+        $penjualan->selesai = 'selesai';
+        $penjualan->save();
+
     }
 }

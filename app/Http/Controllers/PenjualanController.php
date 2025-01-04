@@ -15,6 +15,7 @@ use App\Models\Jurnal;
 use App\Models\Kontak;
 use App\Models\Log;
 use App\Models\Pembayaran_penjualan;
+use App\Models\Pengaturan_dokumen;
 use App\Models\Pengaturan_nama;
 use App\Models\Pengaturan_status_pengiriman;
 use App\Models\Penjualan;
@@ -39,6 +40,18 @@ class PenjualanController extends Controller
     public function index()
     {
         $data['sidebar'] = 'penjualan';
+        $data['selesai'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                        ->leftJoin('penjualan as pemesanan','penjualan.id_pemesanan','=','pemesanan.id')
+                                        ->leftJoin('penjualan as pengiriman','penjualan.id_pengiriman','=','pengiriman.id')
+                                        ->leftJoin('penjualan as penagihan','penjualan.id_penagihan','=','penagihan.id')
+                                        ->leftJoin('penjualan as penawaran','penjualan.id_penawaran','=','penawaran.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan','penawaran.no_str as no_str_penawaran','pemesanan.no_str as no_str_pemesanan','pengiriman.tanggal_transaksi as tanggal_transaksi_pengiriman')
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->where('penjualan.jenis','selesai')
+                                        ->whereNot('penjualan.status','draf')
+                                        ->orderBy('id','DESC')
+                                        ->get();
+
         $data['penagihan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
                                         ->leftJoin('penjualan as pemesanan','penjualan.id_pemesanan','=','pemesanan.id')
                                         ->leftJoin('penjualan as pengiriman','penjualan.id_pengiriman','=','pengiriman.id')
@@ -90,6 +103,7 @@ class PenjualanController extends Controller
         $data['is_approver'] = $approval->check_approver('penjualan');
 
         $data['pengaturan_nama'] = Pengaturan_nama::where('id_company',Auth::user()->id_company)->get();
+        $data['pengaturan_dokumen'] = Pengaturan_dokumen::where('id_company',Auth::user()->id_company)->get();
 
         return view('pages.penjualan.index', $data);
     }
@@ -681,7 +695,7 @@ class PenjualanController extends Controller
     {
         DB::beginTransaction();
         $penjualan = new Penjualan;
-        $penjualan->insert($request, null, 'selesai', $id);
+        $penjualan->selesai($id);
         DB::commit();
 
         return redirect('penjualan/detail/'.$penjualan->id);

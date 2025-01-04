@@ -8,6 +8,7 @@ use App\Models\Approver;
 use App\Models\Company;
 use App\Models\Gudang;
 use App\Models\Kontak;
+use App\Models\Pengaturan_dokumen;
 use App\Models\Pengaturan_status_pengiriman;
 use App\Models\Requester;
 use App\Models\User;
@@ -115,6 +116,7 @@ class PengaturanController extends Controller
 
         return view('pages.pengaturan.status_pengiriman', $data);
     }
+
     public function form_status_pengiriman($id = null)
     {
         $data['sidebar'] = 'pengaturan';
@@ -152,6 +154,55 @@ class PengaturanController extends Controller
         $status_pengiriman->delete();
 
         return redirect('pengaturan/status_pengiriman');
+    }
+
+    public function dokumen()
+    {
+        $data['sidebar'] = 'pengaturan';
+        $data['dokumen'] = Pengaturan_dokumen::where('id_company',Auth::user()->id_company)
+                                                                ->get();
+
+        return view('pages.pengaturan.dokumen', $data);
+    }
+    
+    public function form_dokumen($id = null)
+    {
+        $data['sidebar'] = 'pengaturan';
+        if($id){
+            $data['is_edit'] = true;
+            $data['dokumen'] = Pengaturan_dokumen::where('id',$id)
+                                                    ->where('id_company',Auth::user()->id_company)
+                                                    ->first();
+        }
+        
+        return view('pages.pengaturan.form_dokumen', $data);
+    }
+
+    public function insert_form_dokumen()
+    {
+        $dokumen = new Pengaturan_dokumen();
+        $dokumen->id_company = Auth::user()->id_company;
+        $dokumen->nama_perusahaan = Company::find($dokumen->id_company)->nama_perusahaan;
+        $dokumen->nama = $_POST['nama'];
+        $dokumen->save();
+
+        return redirect('pengaturan/dokumen');
+    }
+
+    public function edit_form_dokumen($id){
+        $dokumen = Pengaturan_dokumen::find($id);
+        $dokumen->nama = $_POST['nama'];
+        $dokumen->save();
+
+        return redirect('pengaturan/dokumen');
+    }
+
+    public function hapus_form_dokumen($id)
+    {
+        $dokumen = Pengaturan_dokumen::find($id);
+        $dokumen->delete();
+
+        return redirect('pengaturan/dokumen');
     }
     //
 

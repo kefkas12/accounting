@@ -19,6 +19,9 @@
                 <div class='transaction-customer-info clear'>
                     <div class='transaction-info'>
                         <div class='row' style='margin-bottom: 5px; width: 95%;'>
+                        <div class="col-sm-12">
+                            
+                        </div>
                             <div class='invoice-name'>
                                 SURAT JALAN
                             </div>
@@ -137,7 +140,7 @@
         </div>
     </div>
     <script>
-        window.print()
+        // window.print()
     </script>
 </body>
 

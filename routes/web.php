@@ -184,6 +184,7 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 
 	Route::post('/selesai/{id}', 'insert_selesai');
 
+	Route::post('/upload/dokumen/{id}', 'upload_dokumen');
 });
 
 Route::controller(PenawaranController::class)->prefix('penawaran')->group(function () {
@@ -303,6 +304,13 @@ Route::controller(PengaturanController::class)->prefix('pengaturan')->group(func
 	Route::get('/status_pengiriman/edit/{id}', 'form_status_pengiriman');
 	Route::post('/status_pengiriman/edit/{id}', 'edit_form_status_pengiriman');
 	Route::get('/status_pengiriman/hapus/{id}', 'hapus_form_status_pengiriman');
+
+	Route::get('/dokumen', 'dokumen');
+	Route::get('/dokumen/insert', 'form_dokumen');
+	Route::post('/dokumen/insert', 'insert_form_dokumen');
+	Route::get('/dokumen/edit/{id}', 'form_dokumen');
+	Route::post('/dokumen/edit/{id}', 'edit_form_dokumen');
+	Route::get('/dokumen/hapus/{id}', 'hapus_form_dokumen');
 
 	Route::get('/perusahaan', 'perusahaan');
 	Route::get('/perusahaan/insert', 'form_perusahaan');
