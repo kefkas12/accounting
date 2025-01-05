@@ -10,6 +10,7 @@ use App\Models\Company;
 use App\Models\Detail_jurnal;
 use App\Models\Detail_pembayaran_penjualan;
 use App\Models\Detail_penjualan;
+use App\Models\Dokumen_penjualan;
 use App\Models\Gudang;
 use App\Models\Jurnal;
 use App\Models\Kontak;
@@ -31,6 +32,8 @@ use Illuminate\Support\Facades\Hash;
 use PDO;
 use Spatie\LaravelPdf\Facades\Pdf;
 
+use Illuminate\Support\Str;
+
 class PenjualanController extends Controller
 {
     public function __construct()
@@ -40,11 +43,24 @@ class PenjualanController extends Controller
     public function index()
     {
         $data['sidebar'] = 'penjualan';
-        $data['selesai'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+        $data['selesai'] = Penjualan::with([
+                                            'dokumen_penjualan.dokumen',
+                                            'detail_pembayaran_penjualan' => function ($query){
+                                                $query->orderBy('detail_pembayaran_penjualan.id_pembayaran_penjualan','desc');
+                                            },
+                                            'penawaran' => function ($query){
+                                                $query->select('id', 'no_str');
+                                            },
+                                            'pemesanan' => function ($query){
+                                                $query->select('id', 'no_str');
+                                            }
+                                        ])
+                                        ->leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
                                         ->leftJoin('penjualan as pemesanan','penjualan.id_pemesanan','=','pemesanan.id')
                                         ->leftJoin('penjualan as pengiriman','penjualan.id_pengiriman','=','pengiriman.id')
                                         ->leftJoin('penjualan as penagihan','penjualan.id_penagihan','=','penagihan.id')
                                         ->leftJoin('penjualan as penawaran','penjualan.id_penawaran','=','penawaran.id')
+
                                         ->select('penjualan.*','kontak.nama as nama_pelanggan','penawaran.no_str as no_str_penawaran','pemesanan.no_str as no_str_pemesanan','pengiriman.tanggal_transaksi as tanggal_transaksi_pengiriman')
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->where('penjualan.jenis','selesai')
@@ -663,7 +679,16 @@ class PenjualanController extends Controller
 
     public function cetak_surat_jalan($id){
         $data['company'] = Company::where('id',Auth::user()->id_company)->first();
-        $data['penjualan'] = Penjualan::where('id',$id)->first();
+        $data['penjualan'] = Penjualan::with([
+                                                'detail_penjualan.produk'
+                                            ])
+                                        ->leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                        ->leftJoin('penjualan as penawaran', 'penjualan.id_penawaran', '=', 'penawaran.id')
+                                        ->leftJoin('penjualan as pemesanan', 'penjualan.id_pemesanan', '=', 'pemesanan.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan','kontak.alamat','pemesanan.no_str as no_str_pemesanan')
+                                        ->where('penjualan.id',$id)
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->first();
         $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
 
         return view('pages.penjualan.cetak.surat_jalan',$data);
@@ -699,5 +724,26 @@ class PenjualanController extends Controller
         DB::commit();
 
         return redirect('penjualan/detail/'.$penjualan->id);
+    }
+    public function upload_dokumen(Request $request, $id)
+    {
+        for($i = 0; $i < count($_POST['id_dokumen']) ; $i++ ){
+            if($request->file($_POST['id_dokumen'][$i])){
+                $fileName = $request->file($_POST['id_dokumen'][$i])->getClientOriginalName();
+                $uniqueFileName = time() . '.' . $fileName;
+
+                $filePath = $request->file($_POST['id_dokumen'][$i])->storeAs('uploads', $uniqueFileName, 'public');
+                $dokumen_penjualan = new Dokumen_penjualan();
+                $dokumen_penjualan->id_company = Auth::user()->id_company;
+                $dokumen_penjualan->id_penjualan = $id;
+                $dokumen_penjualan->id_dokumen =$_POST['id_dokumen'][$i];
+                $dokumen_penjualan->tanggal_upload = date('Y-m-d');
+                $dokumen_penjualan->nama = $uniqueFileName;
+                $dokumen_penjualan->save();
+            }
+        }
+        
+
+        return back()->with('success', 'File uploaded successfully!');
     }
 }

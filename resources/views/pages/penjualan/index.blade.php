@@ -95,22 +95,36 @@
                                                 <th scope="col">No PO</th>
                                                 <th scope="col">Tanggal Pembayaran</th>
                                                 <th scope="col">Dokumen</th>
-                                                <th scope="col">Status</th>
+                                                <th scope="col">Status Selesai</th>
                                             </tr>
                                         </thead>
                                         <tbody class="list">
+                                            @php $id_dokumen = array(); @endphp
+                                            @php $nama_dokumen = array(); @endphp
                                             @foreach($selesai as $v)
+                                                @php $id_dokumen[$v->id] = array(); @endphp
+                                                @php $nama_dokumen[$v->id] = array(); @endphp
                                                 <tr>
                                                     <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
                                                     <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
                                                     <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_pemesanan }}">{{ $v->no_str_pemesanan }}</a></td>
                                                     <td>{{ date('d/m/Y', strtotime($v->tanggal_pembayaran)) }}</td>
                                                     <td>
-                                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" >
+                                                        @foreach($v->dokumen_penjualan as $w)
+                                                            @php array_push($id_dokumen[$v->id], $w->id_dokumen) @endphp
+                                                            @php array_push($nama_dokumen[$v->id], $w->nama) @endphp
+                                                        @endforeach
+                                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" onclick="upload_dokumen({{ $v->id }}, '{{ implode(';',$id_dokumen[$v->id]) }}', '{{ implode(';',$nama_dokumen[$v->id]) }}')">
                                                             Upload
                                                         </button>
                                                     </td>
-                                                    <td></td>
+                                                    <td>
+                                                        <ul>
+                                                        @foreach($v->dokumen_penjualan as $w)
+                                                            <li>{{ $w->dokumen->nama }}</li>
+                                                        @endforeach
+                                                        </ul>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -307,13 +321,16 @@
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form action="{{ url('penjualan/upload/dokumen') }}" method="POST" enctype="multipart/form-data">
+                <form action="#" method="POST" enctype="multipart/form-data" id="upload_dokumen">
                     @csrf
-                    <div class="modal-body">
+                    <div class="modal-body" >
                         @foreach($pengaturan_dokumen as $v)
                         <div class="form-group">
-                            <label for="{{ $v->nama }}">{{ $v->nama }}</label>
-                            <input type="file" class="form-control" name="{{ str_replace(' ', '_', strtolower($v->nama)) }}" id="{{ $v->nama }}" required>
+                            <label for="{{ $v->nama }}" id="label_{{ $v->id }}">{{ $v->nama }}</label>
+                            <input type="file" class="form-control" name="{{ $v->id }}" id="file_{{ $v->id }}">
+                            <br>
+                            <a href="#" id="link_{{ $v->id }}" style="display:none;" target="_blank"></a>
+                            <input type="number" name="id_dokumen[]" value="{{ $v->id }}" hidden id="id_{{ $v->id }}">
                         </div>
                         @endforeach
                     </div>
@@ -327,5 +344,19 @@
     </div>
 
     <script>
+        function upload_dokumen(id, id_dokumen, nama_dokumen){
+            $('.form-control').show();
+            id_dokumen = id_dokumen.split(";");
+            nama_dokumen = nama_dokumen.split(";");
+            
+            for (let i = 0; i < id_dokumen.length; i++) {
+                $('#file_'+id_dokumen[i]).hide();
+                $('#link_'+id_dokumen[i]).show();
+                $('#link_'+id_dokumen[i]).text(nama_dokumen[i]);
+                $('#link_'+id_dokumen[i]).attr('href','{{ asset("storage/uploads") }}/'+nama_dokumen[i]);
+            }
+
+            $('#upload_dokumen').attr('action','{{ url("penjualan/upload/dokumen") }}/'+id);
+        }
     </script>
 @endsection

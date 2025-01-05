@@ -110,7 +110,7 @@
                         <i class="fa fa-store text-primary"></i> {{ __('Laporan') }}
                     </a>
                 </li>
-                <li class="nav-item {{ $sidebar == 'pembayaran' || $sidebar == 'penerimaan' || $sidebar == 'transfer_uang' ? 'active' : '' }}" style="margin-left: -10px">
+                <li hidden class="nav-item {{ $sidebar == 'pembayaran' || $sidebar == 'penerimaan' || $sidebar == 'transfer_uang' ? 'active' : '' }}" style="margin-left: -10px">
                     <a class="nav-link" href="#navbar_kas_dan_bank" data-toggle="collapse" role="button" aria-expanded="{{ $sidebar == 'pembayaran' || $sidebar == 'penerimaan' || $sidebar == 'transfer_uang' ? 'true' : 'false' }}" aria-controls="navbar_kas_dan_bank">
                         <i class="fa fa-address-book text-primary"></i>
                         <span class="nav-link-text">{{ __('Kas & Bank') }}</span>
@@ -186,7 +186,7 @@
                         <i class="fa fa-store text-primary"></i> {{ __('Laporan') }}
                     </a>
                 </li>
-                <li class="nav-item {{ $sidebar == 'pembayaran' || $sidebar == 'penerimaan' || $sidebar == 'transfer_uang' ? 'active' : '' }}" style="margin-left: -10px">
+                <li hidden class="nav-item {{ $sidebar == 'pembayaran' || $sidebar == 'penerimaan' || $sidebar == 'transfer_uang' ? 'active' : '' }}" style="margin-left: -10px">
                     <a class="nav-link" href="#navbar_kas_dan_bank" data-toggle="collapse" role="button" aria-expanded="{{ $sidebar == 'pembayaran' || $sidebar == 'penerimaan' || $sidebar == 'transfer_uang' ? 'true' : 'false' }}" aria-controls="navbar_kas_dan_bank">
                         <i class="fa fa-address-book text-primary"></i>
                         <span class="nav-link-text">{{ __('Kas & Bank') }}</span>

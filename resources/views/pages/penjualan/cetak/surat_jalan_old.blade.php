@@ -8,131 +8,12 @@
         Surat Jalan
     </title>
     <link href="{{ asset('argon') }}/img/brand/favicon.png" rel="icon" type="image/png">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    <link rel="stylesheet" media="all" href="https://d2lud967a5orp2.cloudfront.net/assets/prints-20337af3b4793164edb266685154eb22.css" data-turbolinks-track="true" />
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-5">
-                <img src="{{ asset('assets/img/brand/metalco.jpg') }}" alt="" style="width: 300px;">
-            </div>
-            <div class="col-sm-3">
-                <b style="font-size: 30px;">
-                    Surat Jalan
-                </b>
-            </div>
-            <div class="col-sm-4">
-                <div class="d-flex flex-row-reverse">
-                    <b>{{ date('d-M-y') }}</b>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4">
-                Grand Sungkono Lagoon Tower Caspian 3515
-            </div>
-            <div class="col-sm-4">
-            </div>
-            <div class="col-sm-4">
-                <div class="d-flex flex-row-reverse">
-                    Kepada Yth :
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4">
-                Jl. KH Abdul Wahab Siamin Kav 9-10, Surabaya
-            </div>
-            <div class="col-sm-5">
-            </div>
-            <div class="col-sm-3">
-                <div class="d-flex flex-row-reverse">
-                    <b>{{ $penjualan->nama_pelanggan }}</b>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4">
-                031-33300038 / 0821 1791 2229
-            </div>
-            <div class="col-sm-4">
-            </div>
-            <div class="col-sm-4">
-                <div class="d-flex flex-row-reverse text-right">
-                    {{ $penjualan->alamat }}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4">
-                
-            </div>
-            <div class="col-sm-5">
-            </div>
-            <div class="col-sm-3">
-                <div class="d-flex flex-row-reverse text-right">
-                    No SJ : {{ $penjualan->no_str }}
-                </div>
-            </div>
-        </div>
-        <div class="row">
-        <div class="col-sm-12">
-            <table class="table  table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">No</th>
-                        <th scope="col">Material Name</th>
-                        <th scope="col">Qty</th>
-                        <th scope="col">Keterangan</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($penjualan->detail_penjualan as $v)
-                    <tr>
-                        <td>
-                            {{ $loop->index+1 }}
-                        </td>
-                        <td>
-                            {{ $v->produk->nama }}
-                        </td>
-                        <td>
-                            {{ $v->kuantitas }} Buah
-                        </td>
-                        <td>
-                            {{ $v->deskripsi }}
-                        </td>
-                    </tr>
-                    @endforeach
-                    <tr>
-                        <td></td>
-                        <td>PO No. : {{ $penjualan->no_str_pemesanan }}</td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-4">
-            PENERIMA :
-        </div>
-        <div class="col-sm-4">
-        </div>
-        <div class="col-sm-4">
-            PENGIRIM :
-        </div>
-    </div>
-    </div>
-    
-
-
-
     <!-- A4 Paper size: 210mm x 297mm = 793.7px x 1122.5px -->
-    <!-- <div class='print-template'>
+    <div class='print-template'>
         <div class='delivery-slip'>
             <div class='a4'>
                 <div class='transaction-customer-info clear'>
@@ -254,9 +135,9 @@
                 </div>
             </div>
         </div>
-    </div> -->
+    </div>
     <script>
-        // window.print()
+        window.print()
     </script>
 </body>
 
