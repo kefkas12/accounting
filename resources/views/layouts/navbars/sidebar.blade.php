@@ -141,7 +141,7 @@
                         <i class="fa fa-address-book text-primary"></i> {{ __('Produk') }}
                     </a>
                 </li>
-                <li class="nav-item {{ $sidebar == 'supplier' || $sidebar == 'pelanggan' ? 'active' : '' }}">
+                <li class="nav-item {{ $sidebar == 'supplier' || $sidebar == 'pelanggan' ? 'active' : '' }}" style="margin-left: -10px">
                     <a class="nav-link" href="#navbar_kontak" data-toggle="collapse" role="button" aria-expanded="{{ $sidebar == 'supplier' || $sidebar == 'pelanggan' ? 'true' : 'false' }}" aria-controls="navbar_kontak">
                         <i class="fa fa-address-book text-primary"></i>
                         <span class="nav-link-text">{{ __('Kontak') }}</span>
@@ -162,12 +162,12 @@
                         </ul>
                     </div>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'akun' ? 'active' : '' }}" href="{{ url('akun') }}">
                         <i class="fa fa-address-book text-primary"></i> {{ __('Daftar Akun') }}
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link {{ $sidebar == 'pengaturan' ? 'active' : '' }}" href="{{ url('pengaturan') }}">
                         <i class="fa fa-address-book text-primary"></i> {{ __('Pengaturan') }}
                     </a>
