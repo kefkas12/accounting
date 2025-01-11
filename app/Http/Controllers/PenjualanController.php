@@ -254,6 +254,20 @@ class PenjualanController extends Controller
         return view('pages.penjualan.penawaran', $data);
     }
 
+    public function v2_penawaran($id=null)
+    {
+        $data['sidebar'] = 'penjualan';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['pelanggan'] = Kontak::where('tipe','pelanggan')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        if($id != null){
+            $data['penjualan'] = Penjualan::where('id',$id)->first();
+            $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
+        }
+        return view('v2.penjualan.penawaran', $data);
+    }
+
     public function cetak_penawaran($id){
         $data['penjualan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','kontak.id')
                                         ->where('penjualan.id',$id)

@@ -140,6 +140,8 @@ Route::controller(PembelianController::class)->prefix('pembelian')->group(functi
 });
 
 Route::controller(PenjualanController::class)->prefix('penjualan')->group(function () {
+	Route::get('/v2/penawaran', 'v2_penawaran');
+
 	Route::get('/', 'index');
 	Route::get('/penawaran', 'penawaran');
 	Route::get('/pemesanan', 'pemesanan');
