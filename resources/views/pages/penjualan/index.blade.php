@@ -2,6 +2,7 @@
 
 @section('content')
     @include('layouts.headers.cards')
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css" />
     <!-- Page content -->
     <div class="mt--6">
         <!-- Dark table -->
@@ -75,6 +76,9 @@
                                 <button class="nav-link" id="nav-penagihan-tab" data-toggle="tab" data-target="#nav-penagihan"
                                     type="button" role="tab" aria-controls="nav-penagihan"
                                     aria-selected="true">Penagihan</button>
+                                <button class="nav-link" id="nav-jatuh-tempo-tab" data-toggle="tab" data-target="#nav-jatuh-tempo"
+                                    type="button" role="tab" aria-controls="nav-jatuh-tempo"
+                                    aria-selected="true">Jatuh Tempo</button>
                                 <button class="nav-link" id="nav-selesai-tab" data-toggle="tab" data-target="#nav-selesai"
                                     type="button" role="tab" aria-controls="nav-selesai"
                                     aria-selected="true">Selesai</button>
@@ -84,10 +88,235 @@
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="nav-penawaran" role="tabpanel"
+                                aria-labelledby="nav-penawaran-tab">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center table-flush" id="penawaranTable">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Tanggal</th>
+                                                <th scope="col">No Penawaran</th>
+                                                <th scope="col">No RFQ</th>
+                                                <th scope="col">Pelanggan </th>
+                                                <th scope="col">Berlaku Hingga</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Total</th>
+                                                <th scope="col">Produk</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                            @foreach($penawaran as $v)
+                                            <tr>
+                                                <td>{{ $v->tanggal_transaksi }}</td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td>{{ $v->no_rfq }}</td>
+                                                <td>{{ $v->nama_pelanggan }}</td>
+                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
+                                                <td>
+                                                    @if($v->status == 'closed')
+                                                    <span class="badge badge-dark text-white">
+                                                    @else
+                                                    <span class="badge badge-success">
+                                                    @endif
+                                                    {{ $v->status }}
+                                                    </span>
+                                                </td>
+                                                <td>Rp {{ number_format($v->total,2,',','.') }}</td>
+                                                <td>@foreach($v->detail_penjualan as $w) {{ $w->produk->nama }} @endforeach</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="nav-pesanan" role="tabpanel"
+                                aria-labelledby="nav-pesanan-tab">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center table-flush" id="pesananTable">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Tanggal</th>
+                                                <th scope="col">No PO</th>
+                                                <th scope="col">No Penawaran</th>
+                                                <th scope="col">Pelanggan </th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Sisa Tagihan</th>
+                                                <th scope="col">Total</th>
+                                                <th scope="col">Produk</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                            @foreach($pemesanan as $v)
+                                            <tr>
+                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
+                                                <td>{{ $v->nama_pelanggan }}</td>
+                                                <td>
+                                                    @if($v->status == 'closed')
+                                                    <span class="badge badge-dark text-white">
+                                                    @else
+                                                    <span class="badge badge-success">
+                                                    @endif
+                                                    {{ $v->status }}
+                                                    </span>
+                                                </td>
+                                                <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
+                                                <td>Rp {{ number_format($v->total,2,',','.') }}</td>
+                                                <td>@foreach($v->detail_penjualan as $w) {{ $w->produk->nama }} @endforeach</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="nav-pengiriman" role="tabpanel"
+                                aria-labelledby="nav-pengiriman-tab">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center table-flush" id="pengirimanTable">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Tanggal</th>
+                                                <th scope="col">No Surat Jalan</th>
+                                                <th scope="col">No PO</th>
+                                                <th scope="col">No Penawaran</th>
+                                                <th scope="col">Pelanggan </th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Sisa Tagihan</th>
+                                                <th scope="col">Total</th>
+                                                <th scope="col">Produk</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                            @foreach($pengiriman as $v)
+                                            <tr>
+                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_pemesanan }}">{{ $v->no_str_pemesanan }}</a></td>
+                                                <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
+                                                <td>{{ $v->nama_pelanggan }}</td>
+                                                <td>
+                                                    @if($v->status == 'closed')
+                                                    <span class="badge badge-dark text-white">
+                                                    @else
+                                                    <span class="badge badge-success">
+                                                    @endif
+                                                    {{ $v->status }}
+                                                    </span>
+                                                </td>
+                                                <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
+                                                <td>Rp {{ number_format($v->total,2,',','.') }}</td>
+                                                <td>@foreach($v->detail_penjualan as $w) {{ $w->produk->nama }} @endforeach</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="nav-penagihan" role="tabpanel"
+                                aria-labelledby="nav-penagihan-tab">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center table-flush" id="penagihanTable">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Tgl. Penagihan / Tgl. Kirim</th>
+                                                <th scope="col">No</th>
+                                                <th scope="col">No PO</th>
+                                                <th scope="col">No Penawaran</th>
+                                                <th scope="col">Pelanggan </th>
+                                                <th scope="col">Tgl. Jatuh Tempo</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Sisa Tagihan</th>
+                                                <th scope="col">Total</th>
+                                                <th scope="col">Checklist</th>
+                                                <th scope="col">Produk</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                            @foreach($penagihan as $v)
+                                            <tr>
+                                                <td>{{ date('d-m-Y', strtotime($v->tanggal_transaksi)) }} / @if($v->tanggal_transaksi_pengiriman) {{ date('d-m-Y', strtotime($v->tanggal_transaksi_pengiriman)) }} @else - @endif</td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_pemesanan }}">{{ $v->no_str_pemesanan }}</a></td>
+                                                <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
+                                                <td>{{ $v->nama_pelanggan }}</td>
+                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d/m/Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
+                                                <td>
+                                                    @if($v->selesai == 'selesai') <span class="badge badge-dark text-white">closed</span>
+                                                    @else @if($v->status =='open') <span class="badge badge-warning">Menunggu pembayaran</span> 
+                                                    @else <span class="badge badge-success"> {{ $v->status }} </span> @endif 
+                                                    @endif</td>
+                                                <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
+                                                <td>Rp {{ number_format($v->total,2,',','.') }}</td>
+                                                <td>
+                                                @if($v->status == 'paid' && $v->selesai != 'selesai')
+                                                <form action="{{ url('penjualan/selesai').'/'.$v->id }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-primary">Selesai</button>
+                                                </form>
+                                                @endif
+                                                </td>
+                                                <td>@foreach($v->detail_penjualan as $w) {{ $w->produk->nama }} @endforeach</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="nav-jatuh-tempo" role="tabpanel"
+                                aria-labelledby="nav-jatuh-tempo-tab">
+                                <div class="table-responsive">
+                                    <table class="table align-items-center table-flush" id="jatuhTempoTable">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Tgl. Penagihan / Tgl. Kirim</th>
+                                                <th scope="col">No</th>
+                                                <th scope="col">No PO</th>
+                                                <th scope="col">No Penawaran</th>
+                                                <th scope="col">Pelanggan </th>
+                                                <th scope="col">Tgl. Jatuh Tempo</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Sisa Tagihan</th>
+                                                <th scope="col">Total</th>
+                                                <th scope="col">Checklist</th>
+                                                <th scope="col">Produk</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="list">
+                                            @foreach($jatuh_tempo as $v)
+                                            <tr>
+                                                <td>{{ date('d-m-Y', strtotime($v->tanggal_transaksi)) }} / @if($v->tanggal_transaksi_pengiriman) {{ date('d-m-Y', strtotime($v->tanggal_transaksi_pengiriman)) }} @else - @endif</td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_pemesanan }}">{{ $v->no_str_pemesanan }}</a></td>
+                                                <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
+                                                <td>{{ $v->nama_pelanggan }}</td>
+                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d/m/Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
+                                                <td>
+                                                    @if($v->selesai == 'selesai') <span class="badge badge-dark text-white">closed</span>
+                                                    @else @if($v->status =='open') <span class="badge badge-warning">Menunggu pembayaran</span> 
+                                                    @else <span class="badge badge-success"> {{ $v->status }} </span> @endif 
+                                                    @endif</td>
+                                                <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
+                                                <td>Rp {{ number_format($v->total,2,',','.') }}</td>
+                                                <td>
+                                                @if($v->status == 'paid' && $v->selesai != 'selesai')
+                                                <form action="{{ url('penjualan/selesai').'/'.$v->id }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-primary">Selesai</button>
+                                                </form>
+                                                @endif
+                                                </td>
+                                                <td>@foreach($v->detail_penjualan as $w) {{ $w->produk->nama }} @endforeach</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                             <div class="tab-pane fade" id="nav-selesai" role="tabpanel"
                                 aria-labelledby="nav-selesai-tab">
                                 <div class="table-responsive">
-                                    <table class="table align-items-center table-flush">
+                                    <table class="table align-items-center table-flush" id="selesaiTable">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Tanggal</th>
@@ -114,7 +343,7 @@
                                                             @php array_push($id_dokumen[$v->id], $w->id_dokumen) @endphp
                                                             @php array_push($nama_dokumen[$v->id], $w->nama) @endphp
                                                         @endforeach
-                                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" onclick="upload_dokumen({{ $v->id }}, '{{ implode(';',$id_dokumen[$v->id]) }}', '{{ implode(';',$nama_dokumen[$v->id]) }}')">
+                                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal" onclick="upload_dokumen({{ $v->id }}, '{{ implode(';',$id_dokumen[$v->id]) }}', '{{ implode(';',$nama_dokumen[$v->id]) }}')">
                                                             Upload
                                                         </button>
                                                     </td>
@@ -131,151 +360,10 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="nav-penagihan" role="tabpanel"
-                                aria-labelledby="nav-penagihan-tab">
-                                <div class="table-responsive">
-                                    <table class="table align-items-center table-flush">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Tgl. Penagihan</th>
-                                                <th scope="col">Tgl. Kirim</th>
-                                                <th scope="col">No Penawaran</th>
-                                                <th scope="col">No </th>
-                                                <th scope="col">No PO</th>
-                                                <th scope="col">Pelanggan </th>
-                                                <th scope="col">Tgl. Jatuh Tempo</th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Sisa Tagihan</th>
-                                                <th scope="col">Total</th>
-                                                <th scope="col">Checklist</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list">
-                                            @foreach($penagihan as $v)
-                                            <tr>
-                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
-                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi_pengiriman)) }}</td>
-                                                <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
-                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
-                                                <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_pemesanan }}">{{ $v->no_str_pemesanan }}</a></td>
-                                                <td>{{ $v->nama_pelanggan }}</td>
-                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d/m/Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
-                                                <td>@if($v->selesai == 'selesai') closed @else @if($v->status =='open') <span class="badge badge-warning">Menunggu pembayaran</span> @else {{ $v->status }} @endif @endif</td>
-                                                <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
-                                                <td>Rp {{ number_format($v->total,2,',','.') }}</td>
-                                                <td>
-                                                @if($v->status == 'paid' && $v->selesai != 'selesai')
-                                                <form action="{{ url('penjualan/selesai').'/'.$v->id }}" method="POST">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-sm btn-primary">Selesai</button>
-                                                </form>
-                                                @endif
-                                                </td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="nav-pengiriman" role="tabpanel"
-                                aria-labelledby="nav-pengiriman-tab">
-                                <div class="table-responsive">
-                                    <table class="table align-items-center table-flush">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Tanggal</th>
-                                                <th scope="col">No Penawaran</th>
-                                                <th scope="col">No PO</th>
-                                                <th scope="col">No Surat Jalan</th>
-                                                <th scope="col">Pelanggan </th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Sisa Tagihan</th>
-                                                <th scope="col">Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list">
-                                            @foreach($pengiriman as $v)
-                                            <tr>
-                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
-                                                <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
-                                                <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_pemesanan }}">{{ $v->no_str_pemesanan }}</a></td>
-                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
-                                                <td>{{ $v->nama_pelanggan }}</td>
-                                                <td>{{ $v->status }}</td>
-                                                <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
-                                                <td>Rp {{ number_format($v->total,2,',','.') }}</td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="nav-pesanan" role="tabpanel"
-                                aria-labelledby="nav-pesanan-tab">
-                                <div class="table-responsive">
-                                    <table class="table align-items-center table-flush">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Tanggal</th>
-                                                <th scope="col">No Penawaran</th>
-                                                <th scope="col">No PO</th>
-                                                <th scope="col">Pelanggan </th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Sisa Tagihan</th>
-                                                <th scope="col">Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list">
-                                            @foreach($pemesanan as $v)
-                                            <tr>
-                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
-                                                <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
-                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
-                                                <td>{{ $v->nama_pelanggan }}</td>
-                                                <td>{{ $v->status }}</td>
-                                                <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
-                                                <td>Rp {{ number_format($v->total,2,',','.') }}</td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade show active" id="nav-penawaran" role="tabpanel"
-                                aria-labelledby="nav-penawaran-tab">
-                                <div class="table-responsive">
-                                    <table class="table align-items-center table-flush">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Tanggal</th>
-                                                <th scope="col">No Penawaran</th>
-                                                <th scope="col">No RFQ</th>
-                                                <th scope="col">Pelanggan </th>
-                                                <th scope="col">Berlaku Hingga</th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="list">
-                                            @foreach($penawaran as $v)
-                                            <tr>
-                                                <td>{{ $v->tanggal_transaksi }}</td>
-                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
-                                                <td>{{ $v->no_rfq }}</td>
-                                                <td>{{ $v->nama_pelanggan }}</td>
-                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
-                                                <td>{{ $v->status }}</td>
-                                                <td>Rp {{ number_format($v->total,2,',','.') }}</td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
                             <div class="tab-pane fade" id="nav-membutuhkan-persetujuan" role="tabpanel"
                                 aria-labelledby="nav-membutuhkan-persetujuan-tab">
                                 <div class="table-responsive">
-                                    <table class="table align-items-center table-flush">
+                                    <table class="table align-items-center table-flush" id="membutuhkanPersetujuanTable">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Tanggal</th>
@@ -342,8 +430,51 @@
             </div>
         </div>
     </div>
-
+    <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
     <script>
+        let penawaranTable = new DataTable('#penawaranTable', {
+                                columnDefs: [
+                                    {
+                                        target: 7,
+                                        visible: false
+                                    }
+                                ]
+                            });
+        let pesananTable = new DataTable('#pesananTable', {
+                                columnDefs: [
+                                    {
+                                        target: 7,
+                                        visible: false
+                                    }
+                                ]
+                            });
+        let pengirimanTable = new DataTable('#pengirimanTable', {
+                                columnDefs: [
+                                    {
+                                        target: 8,
+                                        visible: false
+                                    }
+                                ]
+                            });
+        let penagihanTable = new DataTable('#penagihanTable', {
+                                columnDefs: [
+                                    {
+                                        target: 10,
+                                        visible: false
+                                    }
+                                ]
+                            });
+        let jatuhTempoTable = new DataTable('#jatuhTempoTable', {
+                                columnDefs: [
+                                    {
+                                        target: 10,
+                                        visible: false
+                                    }
+                                ]
+                            });
+        let selesaiTable = new DataTable('#selesaiTable');
+        let membutuhkanPersetujuanTable = new DataTable('#membutuhkanPersetujuanTable');
+
         function upload_dokumen(id, id_dokumen, nama_dokumen){
             $('.form-control').show();
             id_dokumen = id_dokumen.split(";");

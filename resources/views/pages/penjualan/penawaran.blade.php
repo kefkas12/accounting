@@ -48,13 +48,14 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-4 pr-4">
-                                    <label for="email">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email">
-                                </div>
+                                
                                 <div class="form-group col-md-2 pr-4">
                                     <label for="no_rfq">No RFQ</label>
                                     <input type="text" class="form-control" id="no_rfq" name="no_rfq">
+                                </div>
+                                <div class="form-group col-md-4 pr-4">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email">
                                 </div>
                                 <div class="form-group col-md-3 d-flex justify-content-end">
                                     Total &nbsp; <span id="total_faktur"> Rp 0</span>
@@ -62,13 +63,19 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-group col-md-3 pr-4">
-                                    <label for="alamat">Alamat</label><br>
-                                    <textarea class="form-control" name="alamat" id="alamat"></textarea>
+                                    <label for="pic">PIC</label>
+                                    <input type="text" class="form-control" id="pic"
+                                        name="pic">
                                 </div>
+                                
                                 <div class="form-group col-md-2 pr-4">
                                     <label for="tanggal_transaksi">Tgl. transaksi</label>
                                     <input type="date" class="form-control" id="tanggal_transaksi"
                                         name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
+                                </div>
+                                <div class="form-group col-md-4 pr-4">
+                                    <label for="alamat">Alamat</label><br>
+                                    <textarea class="form-control" name="alamat" id="alamat"></textarea>
                                 </div>
                                 <div class="form-group col-md-3 pr-4" style="display: none">
                                     <label for="tanggal_jatuh_tempo" style="display: none">Tgl. kedaluarsa</label>
@@ -470,6 +477,7 @@
                 $('#pelanggan').val('{{ $penjualan->id_pelanggan }}')
                 $('#email').val('{{ $penjualan->email }}')
                 $('#no_rfq').val('{{ $penjualan->no_rfq }}')
+                $('#pic').val('{{ $penjualan->pic }}')
                 $('#alamat').val('{{ $penjualan->alamat }}')
                 $('#tanggal_transaksi').val('{{ $penjualan->tanggal_transaksi }}')
                 $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')

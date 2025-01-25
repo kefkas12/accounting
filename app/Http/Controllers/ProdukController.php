@@ -22,8 +22,11 @@ class ProdukController extends Controller
     }
     public function index($menu = null)
     {
-
-        $data['sidebar'] = $menu;
+        if($menu){
+            $data['sidebar'] = $menu;
+        }else{
+            $data['sidebar'] = 'produk';
+        }
         $data['produk_tersedia'] = Produk::where('id_company',Auth::user()->id_company)
                                             ->count();
         $data['produk_segera_habis'] = Produk::whereColumn('stok','<','batas_stok_minimum')
@@ -44,6 +47,8 @@ class ProdukController extends Controller
                                 ->get();
         if(isset($menu)){
             $data['menu'] = $menu;
+        }else{
+            $data['menu'] = 'produk';
         }
         return view('pages.produk.index', $data);
     }

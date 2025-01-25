@@ -45,6 +45,7 @@ use App\Http\Controllers\PenawaranController;
 use App\Http\Controllers\PengaturanController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\ProdukPenawaranController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\SatuanController;
 
@@ -232,6 +233,15 @@ Route::controller(SupplierController::class)->prefix('supplier')->group(function
 });
 
 Route::controller(ProdukController::class)->prefix('produk')->group(function () {
+	Route::get('/', 'index');
+	Route::get('/insert', 'detail');
+	Route::post('/insert', 'insert');
+	Route::get('/{menu}', 'index');
+	Route::post('/edit/{id}', 'edit');
+	Route::get('/{status}/{id}', 'detail');
+});
+
+Route::controller(ProdukPenawaranController::class)->prefix('produk_penawaran')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/insert', 'detail');
 	Route::post('/insert', 'insert');

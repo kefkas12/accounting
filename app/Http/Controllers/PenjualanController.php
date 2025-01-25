@@ -43,6 +43,67 @@ class PenjualanController extends Controller
     public function index()
     {
         $data['sidebar'] = 'penjualan';
+        $data['penawaran'] = Penjualan::with('detail_penjualan.produk')
+                                        ->leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan')
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->where('penjualan.jenis','penawaran')
+                                        ->orderBy('id','DESC')
+                                        ->get();
+
+        $data['pemesanan'] = Penjualan::with('detail_penjualan.produk')
+                                        ->leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                        ->leftJoin('penjualan as penawaran','penjualan.id_penawaran','=','penawaran.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan', 'penawaran.no_str as no_str_penawaran')
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->where('penjualan.jenis','pemesanan')
+                                        ->orderBy('id','DESC')
+                                        ->get();
+
+        $data['pengiriman'] = Penjualan::with('detail_penjualan.produk')
+                                        ->leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                        ->leftJoin('penjualan as pemesanan','penjualan.id_pemesanan','=','pemesanan.id')
+                                        ->leftJoin('penjualan as penawaran','pemesanan.id_penawaran','=','penawaran.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan', 'penawaran.no_str as no_str_penawaran', 'pemesanan.no_str as no_str_pemesanan', 'pemesanan.id_penawaran')
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->where('penjualan.jenis','pengiriman')
+                                        ->orderBy('id','DESC')
+                                        ->get();
+
+        $data['penagihan'] = Penjualan::with('detail_penjualan.produk')
+                                        ->leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                        ->leftJoin('penjualan as pemesanan','penjualan.id_pemesanan','=','pemesanan.id')
+                                        ->leftJoin('penjualan as pengiriman','penjualan.id_pengiriman','=','pengiriman.id')
+                                        ->leftJoin('penjualan as penawaran','penjualan.id_penawaran','=','penawaran.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan','penawaran.no_str as no_str_penawaran','pemesanan.no_str as no_str_pemesanan','pengiriman.tanggal_transaksi as tanggal_transaksi_pengiriman')
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->where('penjualan.jenis','penagihan')
+                                        ->where('penjualan.tanggal_jatuh_tempo','>',date('Y-m-d'))
+                                        ->whereNot('penjualan.status','draf')
+                                        ->orderBy('id','DESC')
+                                        ->get();
+
+        $data['jatuh_tempo'] = Penjualan::with('detail_penjualan.produk')
+                                        ->leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                        ->leftJoin('penjualan as pemesanan','penjualan.id_pemesanan','=','pemesanan.id')
+                                        ->leftJoin('penjualan as pengiriman','penjualan.id_pengiriman','=','pengiriman.id')
+                                        ->leftJoin('penjualan as penawaran','penjualan.id_penawaran','=','penawaran.id')
+                                        ->select('penjualan.*','kontak.nama as nama_pelanggan','penawaran.no_str as no_str_penawaran','pemesanan.no_str as no_str_pemesanan','pengiriman.tanggal_transaksi as tanggal_transaksi_pengiriman')
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->where('penjualan.jenis','penagihan')
+                                        ->where('penjualan.tanggal_jatuh_tempo','<',date('Y-m-d'))
+                                        ->whereNot('penjualan.status','draf')
+                                        ->orderBy('id','DESC')
+                                        ->get();
+
+        $data['membutuhkan_persetujuan'] = Penjualan::with('detail_penjualan.produk')
+                                                    ->leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                                    ->select('penjualan.*','kontak.nama as nama_pelanggan')
+                                                    ->where('penjualan.id_company',Auth::user()->id_company)
+                                                    ->where('penjualan.status','draf')
+                                                    ->orderBy('id','DESC')
+                                                    ->get();
+
         $data['selesai'] = Penjualan::with([
                                             'dokumen_penjualan.dokumen',
                                             'detail_pembayaran_penjualan' => function ($query){
@@ -65,48 +126,6 @@ class PenjualanController extends Controller
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->where('penjualan.jenis','selesai')
                                         ->whereNot('penjualan.status','draf')
-                                        ->orderBy('id','DESC')
-                                        ->get();
-
-        $data['penagihan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
-                                        ->leftJoin('penjualan as pemesanan','penjualan.id_pemesanan','=','pemesanan.id')
-                                        ->leftJoin('penjualan as pengiriman','penjualan.id_pengiriman','=','pengiriman.id')
-                                        ->leftJoin('penjualan as penawaran','penjualan.id_penawaran','=','penawaran.id')
-                                        ->select('penjualan.*','kontak.nama as nama_pelanggan','penawaran.no_str as no_str_penawaran','pemesanan.no_str as no_str_pemesanan','pengiriman.tanggal_transaksi as tanggal_transaksi_pengiriman')
-                                        ->where('penjualan.id_company',Auth::user()->id_company)
-                                        ->where('penjualan.jenis','penagihan')
-                                        ->whereNot('penjualan.status','draf')
-                                        ->orderBy('id','DESC')
-                                        ->get();
-
-        $data['penawaran'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
-                                        ->select('penjualan.*','kontak.nama as nama_pelanggan')
-                                        ->where('penjualan.id_company',Auth::user()->id_company)
-                                        ->where('penjualan.jenis','penawaran')
-                                        ->orderBy('id','DESC')
-                                        ->get();
-
-        $data['pemesanan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
-                                        ->leftJoin('penjualan as penawaran','penjualan.id_penawaran','=','penawaran.id')
-                                        ->select('penjualan.*','kontak.nama as nama_pelanggan', 'penawaran.no_str as no_str_penawaran')
-                                        ->where('penjualan.id_company',Auth::user()->id_company)
-                                        ->where('penjualan.jenis','pemesanan')
-                                        ->orderBy('id','DESC')
-                                        ->get();
-
-        $data['pengiriman'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
-                                        ->leftJoin('penjualan as pemesanan','penjualan.id_pemesanan','=','pemesanan.id')
-                                        ->leftJoin('penjualan as penawaran','pemesanan.id_penawaran','=','penawaran.id')
-                                        ->select('penjualan.*','kontak.nama as nama_pelanggan', 'penawaran.no_str as no_str_penawaran', 'pemesanan.no_str as no_str_pemesanan', 'pemesanan.id_penawaran')
-                                        ->where('penjualan.id_company',Auth::user()->id_company)
-                                        ->where('penjualan.jenis','pengiriman')
-                                        ->orderBy('id','DESC')
-                                        ->get();
-
-        $data['membutuhkan_persetujuan'] = Penjualan::leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
-                                        ->select('penjualan.*','kontak.nama as nama_pelanggan')
-                                        ->where('penjualan.id_company',Auth::user()->id_company)
-                                        ->where('penjualan.status','draf')
                                         ->orderBy('id','DESC')
                                         ->get();
 

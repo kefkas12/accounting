@@ -60,8 +60,8 @@
                     </div>
                     <div class="card-body " style="font-size: 14px;">
                         <div class="row">
-                            <div class="col-sm-2">Pelanggan</div>
-                            <div class="col-sm-2"><strong>{{ $penjualan->nama_pelanggan }}</strong></div>
+                            <div class="col-sm-2">Pelanggan <br> PIC</div>
+                            <div class="col-sm-2"><strong>{{ $penjualan->nama_pelanggan }}</strong> <br> <strong>{{ $penjualan->pic }}</strong></div>
                             <div class="col-sm-2">Email</div>
                             <div class="col-sm-2"><strong>{{ $penjualan->email }}</strong></div>
                             <div class="col-sm-2" style="margin-right: -25px !important;">@if($penjualan->jenis != 'pengiriman') @if($penjualan->jenis == 'penawaran') Total @else Sisa tagihan @endif @else Ongkos Kirim @endif</div>

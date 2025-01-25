@@ -118,6 +118,7 @@ class Penjualan extends Model
 
         if($jenis == 'penawaran'){
             $this->no_rfq = $request->input('no_rfq');
+            $this->pic = $request->input('pic');
         }elseif($jenis == 'pemesanan'){
             if($id_jenis != null){
                 $this->id_penawaran = $id_jenis;

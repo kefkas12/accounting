@@ -136,10 +136,26 @@
                         </ul>
                     </div>
                 </li>
-                <li class="nav-item" style="margin-left: -10px">
-                    <a class="nav-link {{ $sidebar == 'produk' ? 'active' : '' }}" href="{{ url('produk') }}">
-                        <i class="fa fa-address-book text-primary"></i> {{ __('Produk') }}
+                <li class="nav-item {{ $sidebar == 'produk' || $sidebar == 'produk_penawaran' ? 'active' : '' }}" style="margin-left: -10px">
+                    <a class="nav-link" href="#navbar_produk" data-toggle="collapse" role="button" aria-expanded="{{ $sidebar == 'produk' || $sidebar == 'produk_penawaran' ? 'true' : 'false' }}" aria-controls="navbar_produk">
+                        <i class="fa fa-address-book text-primary"></i>
+                        <span class="nav-link-text">{{ __('Produk') }}</span>
                     </a>
+
+                    <div class="collapse {{ $sidebar == 'produk' || $sidebar == 'produk_penawaran' ? 'show' : '' }}" id="navbar_produk">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'produk' ? 'active' : '' }}" href="{{ url('produk') }}">
+                                    {{ __('Produk') }}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ $sidebar == 'produk_penawaran' ? 'active' : '' }}" href="{{ url('produk_penawaran') }}">
+                                    {{ __('Produk Penawaran') }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
                 <li class="nav-item {{ $sidebar == 'supplier' || $sidebar == 'pelanggan' ? 'active' : '' }}" style="margin-left: -10px">
                     <a class="nav-link" href="#navbar_kontak" data-toggle="collapse" role="button" aria-expanded="{{ $sidebar == 'supplier' || $sidebar == 'pelanggan' ? 'true' : 'false' }}" aria-controls="navbar_kontak">
