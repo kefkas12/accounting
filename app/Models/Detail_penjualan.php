@@ -22,4 +22,9 @@ class Detail_penjualan extends Model
     {
         return $this->belongsTo(Produk::class, 'id_produk');
     }
+
+    public function produk_penawaran(): BelongsTo
+    {
+        return $this->belongsTo(Produk_penawaran::class, 'id_produk_penawaran');
+    }
 }

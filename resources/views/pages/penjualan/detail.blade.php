@@ -195,6 +195,9 @@
                             <table class="table my-4">
                                 <thead class="thead-light">
                                     <tr>
+                                        @if(isset($produk_penawaran))
+                                        <th>Produk Penawaran</th>
+                                        @endif
                                         <th>Produk</th>
                                         <th>Deskripsi</th>
                                         <th>Kuantitas</th>
@@ -203,14 +206,17 @@
                                         <th>Harga Satuan</th>
                                         <th>Diskon</th>
                                         <th style="margin-right: -25px !important;">Pajak</th>
-                                        <th class="d-flex justify-content-end" style="margin-right: 25px !important;">Jumlah</th>
+                                        <th style="margin-right: 25px !important;">Jumlah</th>
                                         @endif
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($penjualan->detail_penjualan as $v)
+                                    @foreach($penjualan->detail_penjualan as $v)
                                         <tr>
-                                            <th><a href="{{ url('produk').'/detail/'.$v->produk->id }}">{{ $v->produk->nama }}</a></th>
+                                            @if(isset($produk_penawaran))
+                                            <th>@if(isset($v->produk_penawaran))<a href="{{ url('produk_penawaran').'/detail/'.$v->produk_penawaran->id }}">{{ $v->produk_penawaran->nama }}</a>@else - @endif</th>
+                                            @endif
+                                            <th>@if(isset($v->produk))<a href="{{ url('produk').'/detail/'.$v->produk->id }}">{{ $v->produk->nama }}</a>@else - @endif</th>
                                             <td>{{ $v->deskripsi }}</td>
                                             <td>{{ $v->kuantitas }}</td>
                                             <td>Buah</td>
@@ -228,7 +234,7 @@
                                                     PPN
                                                 @endif
                                             </td>
-                                            <td class="d-flex justify-content-end" style="margin-right: 25px !important;">Rp. {{ number_format($v->jumlah, 2, ',', '.') }}</td>
+                                            <td style="margin-right: 25px !important;">Rp. {{ number_format($v->jumlah, 2, ',', '.') }}</td>
                                             @endif
                                         </tr>
                                     @endforeach

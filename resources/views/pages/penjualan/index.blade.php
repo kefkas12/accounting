@@ -101,6 +101,9 @@
                                                 <th scope="col">Berlaku Hingga</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Total</th>
+                                                @if(isset($produk_penawaran))
+                                                <th scope="col">Produk Penawaran</th>
+                                                @endif
                                                 <th scope="col">Produk</th>
                                             </tr>
                                         </thead>
@@ -116,13 +119,16 @@
                                                     @if($v->status == 'closed')
                                                     <span class="badge badge-dark text-white">
                                                     @else
-                                                    <span class="badge badge-success">
+                                                    <span class="badge text-white" style="background-color: #F59E0B">
                                                     @endif
                                                     {{ $v->status }}
                                                     </span>
                                                 </td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
-                                                <td>@foreach($v->detail_penjualan as $w) {{ $w->produk->nama }} @endforeach</td>
+                                                @if(isset($produk_penawaran))
+                                                <td>@foreach($v->detail_penjualan as $w) @if(isset($w->produk_penawaran)) {{ $w->produk_penawaran->nama }} @else - @endif @endforeach</td>
+                                                @endif
+                                                <td>@foreach($v->detail_penjualan as $w) @if(isset($w->produk)) {{ $w->produk->nama }} @else - @endif @endforeach</td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -432,6 +438,16 @@
     </div>
     <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
     <script>
+        @if(isset($produk_penawaran))
+        let penawaranTable = new DataTable('#penawaranTable', {
+                                columnDefs: [
+                                    {
+                                        target: [7,8],
+                                        visible: false
+                                    }
+                                ]
+                            });
+        @else
         let penawaranTable = new DataTable('#penawaranTable', {
                                 columnDefs: [
                                     {
@@ -440,6 +456,7 @@
                                     }
                                 ]
                             });
+        @endif
         let pesananTable = new DataTable('#pesananTable', {
                                 columnDefs: [
                                     {

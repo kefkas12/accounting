@@ -9,7 +9,7 @@
             <div class="card mb-5">
                 <div class="card-body">
                     <div class="d-flex bd-highlight">
-                        <div class="mr-auto p-2 bd-highlight">
+                        <div class="mr-auto p-2 bd-highlight border-bottom border-primary">
                             <h2>Detail Produk</h2>
                         </div>
                         <div class="p-2 bd-highlight">
@@ -17,27 +17,28 @@
                             @else
                             <a href="{{ url('produk/edit').'/'.$produk->id }}" class="btn btn-outline-primary">Ubah</a>
                             <a href="{{ url('produk/hapus').'/'.$produk->id }}" class="btn btn-outline-danger">Hapus</a>
-                            @endif
+                            @endhasanyrole
                         </div>
                     </div>
                     <div class="row">
-                    <div class="col-sm-12">
-                            <h3>Info Produk</h3>
+                        <div class="col-sm-12 mt-3">
+                            <h4>Info Produk</h4>
                         </div>
                     </div>
-                    <div class="row">
-                        
+                    <div class="row" style="font-size: 12px;">
                         <div class="col-sm-6">
                             <div class="d-flex">
                                 <div class="mr-auto p-2 bd-highlight">
                                     Nama produk
                                 </div>
                                 <div class="p-2 bd-highlight">
+                                    <b>
                                     @if (isset($produk) && $produk->nama != null)
                                     {{ $produk->nama }}
                                     @else
                                     -
                                     @endif
+                                    </b>
                                 </div>
                             </div>
                         </div>
@@ -47,11 +48,13 @@
                                     Kode produk
                                 </div>
                                 <div class="p-2 bd-highlight">
+                                    <b>
                                     @if (isset($produk) && $produk->kode != null)
                                     {{ $produk->kode }}
                                     @else
                                     -
                                     @endif
+                                    </b>
                                 </div>
                             </div>
                         </div>
@@ -61,11 +64,13 @@
                                     Kategori produk
                                 </div>
                                 <div class="p-2 bd-highlight">
+                                    <b>
                                     @if (isset($produk) && $produk->kategori != null)
                                     {{ $produk->kategori }}
                                     @else
                                     -
                                     @endif
+                                    </b>
                                 </div>
                             </div>
                         </div>
@@ -75,11 +80,13 @@
                                     Deskripsi produk
                                 </div>
                                 <div class="p-2 bd-highlight">
+                                    <b>
                                     @if (isset($produk) && $produk->deskripsi != null)
                                     {{ $produk->deskripsi }}
                                     @else
                                     -
                                     @endif
+                                    </b>
                                 </div>
                             </div>
                         </div>
@@ -90,11 +97,13 @@
                                     Stok
                                 </div>
                                 <div class="p-2 bd-highlight">
+                                    <b>
                                     @if (isset($produk) && $produk->stok != null)
                                     {{ $produk->stok }}
                                     @else
                                     -
                                     @endif
+                                    </b>
                                 </div>
                             </div>
                         </div>
@@ -104,11 +113,13 @@
                                     Unit
                                 </div>
                                 <div class="p-2 bd-highlight">
+                                    <b>
                                     @if (isset($produk))
                                     {{ $produk->unit }}
                                     @else
                                     -
                                     @endif
+                                    </b>
                                 </div>
                             </div>
                         </div>
@@ -119,7 +130,9 @@
                                     Harga rata-rata
                                 </div>
                                 <div class="p-2 bd-highlight">
+                                    <b>
                                     Rp {{ $produk->harga_beli }}
+                                    </b>
                                 </div>
                             </div>
                         </div>
@@ -129,7 +142,9 @@
                                     Stok di gudang
                                 </div>
                                 <div class="p-2 bd-highlight">
+                                    <b>
                                     {{ $produk->stok }} {{ $produk->unit }}
+                                    </b>
                                 </div>
                             </div>
                         </div>
@@ -139,46 +154,52 @@
                                     Batas stok minimum
                                 </div>
                                 <div class="p-2 bd-highlight">
-                                    {{ $produk->batas_stok_minimum }} {{ $produk->unit }}
+                                    <b>
+                                        {{ $produk->batas_stok_minimum }} {{ $produk->unit }}
+                                    </b>
                                 </div>
                             </div>
                         </div>
                         @endif
                     </div>
-                    <div class="row mt-3">
+                    <div class="row mt-3" style="font-size: 12px;">
                         <div class="col-sm-12">
-                            <h3>Info Pembelian</h3>
+                            <h4>Info Pembelian</h4>
                         </div>
                         <div class="col-sm-6">
                             <div class="d-flex" >
                                 <div class="mr-auto p-2 bd-highlight">
-                                Harga Beli
+                                    Harga Beli
                                 </div>
                                 <div class="p-2 bd-highlight">
-                                @if (isset($produk) && $produk->harga_beli != '')
-                                Rp {{ number_format($produk->harga_beli,2,',','.') }}
-                                @else
-                                -
-                                @endif
+                                    <b>
+                                        @if (isset($produk) && $produk->harga_beli != '')
+                                        Rp {{ number_format($produk->harga_beli,2,',','.') }}
+                                        @else
+                                        -
+                                        @endif
+                                    </b>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row mt-3">
+                    <div class="row mt-3" style="font-size: 12px;">
                         <div class="col-sm-12">
-                            <h3>Info Penjualan</h3>
+                            <h4>Info Penjualan</h4>
                         </div>
                         <div class="col-sm-6">
                             <div class="d-flex" >
                                 <div class="mr-auto p-2 bd-highlight">
-                                Harga Jual
+                                    Harga Jual
                                 </div>
                                 <div class="p-2 bd-highlight">
-                                @if (isset($produk) && $produk->harga_jual != '')
-                                Rp {{ number_format($produk->harga_jual,2,',','.') }}
-                                @else
-                                -
-                                @endif
+                                    <b>
+                                    @if (isset($produk) && $produk->harga_jual != '')
+                                    Rp {{ number_format($produk->harga_jual,2,',','.') }}
+                                    @else
+                                    -
+                                    @endif
+                                    </b>
                                 </div>
                             </div>
                         </div>
@@ -199,7 +220,7 @@
                             <div style="overflow: auto">
                                 <table id="example" class="table table-striped table-bordered" style="width:100%">
                                     <thead>
-                                        <tr>
+                                        <tr class="table-primary">
                                             <th>Tanggal</th>
                                             <th>Tipe</th>
                                             <th>Qty</th>
@@ -236,7 +257,7 @@
                             <div style="overflow: auto">
                                 <table id="table_gudang" class="table table-striped table-bordered" style="width:100%">
                                     <thead>
-                                        <tr>
+                                        <tr class="table-primary">
                                             <th>Nama gudang</th>
                                             <th>Qty tersedia</th>
                                         </tr>

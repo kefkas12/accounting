@@ -2,6 +2,29 @@
 
 @section('content')
     @include('layouts.headers.cards')
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+
+        .select2-container .select2-selection--single {
+            height: calc(2.25rem + 2px) !important; /* Sesuaikan dengan tinggi input Bootstrap */
+            display: flex; /* Gunakan flexbox untuk menata konten */
+            align-items: center; /* Pusatkan konten secara vertikal */
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            padding-left: 10px; /* Memberikan jarak teks dari tepi kiri */
+            line-height: normal !important; /* Hilangkan line-height default */
+            color: #6c757d; /* Placeholder warna abu-abu */
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            margin: 0; /* Hilangkan margin bawaan */
+            line-height: normal; /* Pastikan line-height tidak memengaruhi posisi */
+            color: #6c757d; /* Warna abu-abu */
+        }
+    </style>
     <!-- Page content -->
     <div class="mt--6">
         <!-- Dark table -->
@@ -150,6 +173,9 @@
                                     <thead>
                                         <tr>
                                             <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk</th>
+                                            @if(isset($penawaran) && isset($produk_penawaran))
+                                            <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk penawaran</th>
+                                            @endif
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Deskripsi</th>
                                             <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas</th>
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Harga Satuan</th>
@@ -163,8 +189,7 @@
                                     <tbody id="list">
                                         <tr>
                                             <td style="padding: 10px !important;">
-                                                <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)"
-                                                    required>
+                                                <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)" @if(!isset($produk_penawaran)) required @endif>
                                                     <option selected disabled hidden>Pilih produk</option>
                                                     @foreach ($produk as $v)
                                                         <option value="{{ $v->id }}"
@@ -173,15 +198,24 @@
                                                     @endforeach
                                                 </select>
                                             </td>
+                                            @if(isset($penawaran) && isset($produk_penawaran))
+                                            <td style="padding: 10px !important;">
+                                                <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_1" onchange="get_data(this, 1)"
+                                                    required>
+                                                    <option selected disabled hidden>Pilih produk penawaran</option>
+                                                    @foreach ($produk_penawaran as $v)
+                                                        <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                            @endif
                                             <td style="padding: 10px !important;">
                                                 <textarea class="form-control" name="deskripsi[]" id="deskripsi_1" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                                             </td>
                                             <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_1"
-                                                    name="kuantitas[]" value="1" onkeyup="change_jumlah(1)"
-                                                    onblur="check_null(this)" step="any"></td>
-                                            <td style="padding: 10px !important;"><input type="number" class="form-control" id="harga_satuan_1"
-                                                    name="harga_satuan[]" value="0" onkeyup="change_jumlah(1)"
-                                                    onblur="check_null(this)" step="any"></td>
+                                                    name="kuantitas[]" value="1" onkeyup="change_harga(1)" onblur="check_null(this)" step="any"></td>
+                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_1"
+                                                    name="harga_satuan[]" value="0" onblur="change_harga(1)"></td>
                                             <td style="padding: 10px !important;">
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
@@ -198,8 +232,9 @@
                                                         <span class="input-group-text">Rp</span>
                                                     </div>
                                                     <input type="number" class="form-control" id="nilai_diskon_per_baris_1"
-                                                        name="nilai_diskon_per_baris[]" value="0"
-                                                        onkeyup="change_nilai_diskon_per_baris(1)" onblur="check_null(this)" step="any">
+                                                        name="nilai_diskon_per_baris[]" 
+                                                        onkeyup="change_nilai_diskon_per_baris(1)" onblur="check_null(this)" 
+                                                        step="any">
                                                 </div>
                                         </td>
                                             <td style="padding: 10px !important;">
@@ -209,8 +244,7 @@
                                                     <option value="11" data-persen="11">PPN</option>
                                                 </select>
                                             </td>
-                                            <td style="padding: 10px !important;"><input type="number" class="form-control" id="jumlah_1" name="jumlah[]"
-                                                    value="0" step="any"></td>
+                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_1" name="jumlah[]" value="0" onblur="change_jumlah(1)"></td>
                                             <td style="padding: 10px !important;"><a href="javascript:;" onclick="create_row()"><i
                                                         class="fa fa-plus text-primary"></i></a></td>
                                         </tr>
@@ -332,11 +366,48 @@
             $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris);
         }
 
+        function load_select_2(id) {
+            @if(isset($penjualan))
+            $("#produk_penawaran_" + id).select2({
+                allowClear: true,
+                placeholder: 'Pilih produk penawaran'
+            });
+            $("#produk_" + id).select2({
+                allowClear: true,
+                placeholder: 'Pilih produk'
+            });
+            @else
+            @if(isset($produk_penawaran))
+            $("#produk_penawaran_" + id).select2({
+                allowClear: true,
+                placeholder: 'Pilih produk penawaran'
+            });
+            @else
+            $("#produk_" + id).select2({
+                allowClear: true,
+                placeholder: 'Pilih produk'
+            });
+            @endif
+            @endif
+            
+            new AutoNumeric("#harga_satuan_" + id, {
+                commaDecimalCharDotSeparator: true,
+                watchExternalChanges: true,
+                modifyValueOnWheel : false
+            });
+            new AutoNumeric("#jumlah_" + id, {
+                commaDecimalCharDotSeparator: true,
+                watchExternalChanges: true,
+                modifyValueOnWheel : false
+            });
+        }
+
         function get_data(thisElement, no) {
             var selected = $(thisElement).find('option:selected').data('harga_jual');
-
-            $('#harga_satuan_' + no).val(selected);
-            $('#jumlah_' + no).val(selected);
+            // $('#harga_satuan_' + no).val(selected);
+            // $('#jumlah_' + no).val(selected);
+            AutoNumeric.set('#harga_satuan_' + no,selected);
+            AutoNumeric.set('#jumlah_' + no,selected);
 
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0 ;
             subtotal[no] = kuantitas * parseFloat(selected);
@@ -344,6 +415,7 @@
             float_diskon_per_baris = parseFloat($('#diskon_per_baris_' + no).val()) || 0;
 
             diskon_per_baris[no] = subtotal[no] * float_diskon_per_baris / 100;
+            $('#nilai_diskon_per_baris_'+no).val(diskon_per_baris[no] == 0 ? "" : diskon_per_baris[no] );
             load();
         }
 
@@ -351,7 +423,7 @@
             var selected = parseFloat($(thisElement).find('option:selected').data('persen'));
 
             if (selected != 0) {
-                ppn[no] = selected * $('#jumlah_' + no).val() / 100;
+                ppn[no] = selected * parseFloat(AutoNumeric.getNumber('#jumlah_' + no)) / 100;
             } else {
                 ppn[no] = 0;
             }
@@ -359,28 +431,45 @@
             load();
         }
 
-        function change_jumlah(no) {
+        function change_harga(no, val_harga_satuan = null) {
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
-            harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
-            subtotal[no] = kuantitas * harga_satuan;
+            if(val_harga_satuan){
+                AutoNumeric.set('#harga_satuan_' + no,val_harga_satuan);
+            }else{
+                AutoNumeric.set('#harga_satuan_' + no,AutoNumeric.getNumber('#harga_satuan_' + no));
+            }
+            subtotal[no] = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
             diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
             diskon_per_baris[no] = subtotal[no] * diskon / 100;
-            $('#jumlah_' + no).val(subtotal[no] - diskon_per_baris[no]);
+            AutoNumeric.set('#jumlah_' + no,subtotal[no] - diskon_per_baris[no]);
+            get_pajak($('#pajak_' + no), no);
+            load();
+        }
 
+        function change_jumlah(no) {
+            AutoNumeric.set('#jumlah_' + no,AutoNumeric.getNumber('#jumlah_' + no));
+            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
+            
+            AutoNumeric.set('#harga_satuan_' + no, (100/(100-diskon)) * AutoNumeric.getNumber('#jumlah_' + no) / kuantitas);
+
+            subtotal[no] = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
+            diskon_per_baris[no] = subtotal[no] * diskon / 100;
             get_pajak($('#pajak_'+no), no);
-
             load();
         }
 
         function change_diskon_per_baris(no) {
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
-            harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
-            var subtotal = kuantitas * harga_satuan;
+            // harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
+            var subtotal = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
             diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
             diskon_per_baris[no] = subtotal * diskon / 100;
 
             $('#nilai_diskon_per_baris_'+no).val(diskon_per_baris[no] == 0 ? "" : diskon_per_baris[no] );
-            $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
+            
+            // $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
+            AutoNumeric.set('#jumlah_' + no,subtotal - diskon_per_baris[no]);
 
             get_pajak($('#pajak_'+no), no);
             
@@ -389,13 +478,13 @@
 
         function change_nilai_diskon_per_baris(no) {
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
-            harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
-            var subtotal = kuantitas * harga_satuan;
+            var subtotal = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
             nilai_diskon = $('#nilai_diskon_per_baris_' + no).val() ? parseFloat($('#nilai_diskon_per_baris_' + no).val()) : 0;
             diskon_per_baris[no] = nilai_diskon;
             $('#diskon_per_baris_'+no).val("");
 
-            $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
+            // $('#jumlah_' + no).val(subtotal - diskon_per_baris[no]);
+            AutoNumeric.set('#jumlah_' + no,subtotal - diskon_per_baris[no]);
 
             get_pajak($('#pajak_'+no), no);
             
@@ -418,10 +507,42 @@
             load();
         }
 
+        function clear_row(no) {
+            @if(isset($penjualan))
+            $('#produk_penawaran_'+no).val('').trigger('change');
+            $('#produk_'+no).val('').trigger('change');
+            @else
+            @if(isset($produk_penawaran))
+            $('#produk_penawaran_'+no).val('').trigger('change');
+            @else
+            $('#produk_'+no).val('').trigger('change');
+            @endif
+            @endif
+            $('#deskripsi_'+no).val('');
+            $('#kuantitas_'+no).val('');
+            AutoNumeric.set('#harga_satuan_' + no,0);
+            $('#diskon_per_baris_'+no).val("");
+            $('#nilai_diskon_per_baris_'+no).val("");
+            $('#pajak_'+no).val(0).trigger('change');
+            AutoNumeric.set('#jumlah_' + no,0);
+            subtotal[no] = 0;
+            ppn[no] = 0;
+            diskon_per_baris[no] = 0;
+            load();
+        }
+
         function create_row() {
             i++;
             $('#list').append(`
                 <tr id="list_${i}">
+                    <th style="padding: 10px !important;">
+                        <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_${i}" onchange="get_data(this, ${i})" required>
+                            <option selected disabled hidden>Pilih produk penawaran</option>
+                            @foreach ($produk_penawaran as $v)
+                                <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                            @endforeach
+                        </select>
+                    </th>
                     <th style="padding: 10px !important;">
                         <select class="form-control" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
                             <option selected disabled hidden>Pilih produk</option>
@@ -433,14 +554,14 @@
                     <td style="padding: 10px !important;">
                         <textarea class="form-control" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                     </td>
-                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
-                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_harga(${i})"></td>
                     <td style="padding: 10px !important;">
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">%</span>
                             </div>
-                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" value="0" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
@@ -448,7 +569,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Rp</span>
                             </div>
-                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" value="0" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
@@ -457,10 +578,15 @@
                             <option value="11" data-persen="11">PPN</option>
                         </select>
                     </td>
-                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" step="any"></td>
-                    <td style="padding: 10px !important;"><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})"></td>
+                    <td style="padding: 10px !important;">
+                        <a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>
+                        <a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a>
+                    </td>
                 </tr>
             `);
+
+            load_select_2(i);
         };
 
         $("#info_pengiriman").change(function() {
@@ -483,8 +609,9 @@
             $('#info_pengiriman').prop('checked', true).trigger("change");
         });
 
-        @if(isset($penjualan))
+        
         $( document ).ready(function() {
+            @if(isset($penjualan))
             $('#pelanggan').val('{{ $penjualan->id_pelanggan }}')
             $('#email').val('{{ $penjualan->email }}')
             $('#alamat').val('{{ $penjualan->alamat }}')
@@ -493,8 +620,12 @@
             $('#gudang').val('{{ $penjualan->id_gudang }}')
 
             var x = 1;
+            load_select_2(x);
             @foreach($detail_penjualan as $v)
-                $('#produk_'+x).val('{{ $v->id_produk }}');
+                $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
+                @if(isset($penawaran) && isset($produk_penawaran))
+                $('#produk_penawaran_'+x).val('{{ $v->id_produk_penawaran }}').trigger('change');
+                @endif
                 $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
                 $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
                 $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').trigger('keyup');
@@ -508,10 +639,10 @@
                 x++;
             @endforeach
             hapus(x);
-
-            
+            @else
+                load_select_2(1);
+            @endif
         });
-        @endif
 
         @if(isset($penawaran))
         $('#insertForm').submit(function() {

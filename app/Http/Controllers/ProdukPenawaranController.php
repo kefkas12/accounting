@@ -46,8 +46,6 @@ class ProdukPenawaranController extends Controller
         $produk_penawaran->kode = $_POST['kode'];
         $produk_penawaran->unit = $_POST['satuan'];
         $produk_penawaran->kategori = $_POST['kategori'];
-        $produk_penawaran->harga_beli = $_POST['harga_beli'] ? $_POST['harga_beli'] : 0;
-        $produk_penawaran->harga_jual = $_POST['harga_jual'] ? $_POST['harga_jual'] : 0;
         $produk_penawaran->save();
 
         return redirect('produk_penawaran/detail/'.$produk_penawaran->id);
@@ -64,7 +62,7 @@ class ProdukPenawaranController extends Controller
             if($status == 'edit'){
                 return view('pages.produk_penawaran.form', $data);
             }else if($status == 'detail'){
-                $data['transaksi_produk'] = Transaksi_produk_penawaran::where('id_produk',$id)
+                $data['transaksi_produk_penawaran'] = Transaksi_produk_penawaran::where('id_produk',$id)
                                                 ->where('id_company',Auth::user()->id_company)
                                                 ->get();
 
@@ -82,8 +80,6 @@ class ProdukPenawaranController extends Controller
         $produk_penawaran->kode = $_POST['kode'];
         $produk_penawaran->unit = $_POST['satuan'];
         $produk_penawaran->kategori = $_POST['kategori'];
-        $produk_penawaran->harga_beli = $_POST['harga_beli'] ? $_POST['harga_beli'] : 0;
-        $produk_penawaran->harga_jual = $_POST['harga_jual'] ? $_POST['harga_jual'] : 0;
         $produk_penawaran->save();
 
         return redirect('produk_penawaran');

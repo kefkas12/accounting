@@ -31,8 +31,6 @@
                                         <th>Kode produk</th>
                                         <th>Kategori produk</th>
                                         <th>Unit</th>
-                                        <th>Harga beli</th>
-                                        <th>Harga jual</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -46,8 +44,6 @@
                                             <td>{{ $v->kode }}</td>
                                             <td>{{ $v->kategori }}</td>
                                             <td>{{ $v->unit }}</td>
-                                            <td>@if($v->harga_beli) {{ number_format($v->harga_beli, 2, ',', '.') }} @else 0,00 @endif</td>
-                                            <td>@if($v->harga_jual) {{ number_format($v->harga_jual, 2, ',', '.') }} @else 0,00 @endif</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -61,16 +57,7 @@
     </div>
     <script>
         $(document).ready(function() {
-            $('#example').DataTable({
-                columnDefs: [{
-                    type: 'formatted-num',
-                    targets: [5, 6]
-                }],
-                language: {
-                    thousands: ".",
-                    decimal: ","
-                }
-            })
+            $('#example').DataTable()
         });
 
         $.fn.dataTable.ext.type.order['formatted-num-pre'] = function(data) {

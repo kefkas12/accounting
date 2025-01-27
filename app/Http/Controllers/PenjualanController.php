@@ -18,9 +18,11 @@ use App\Models\Log;
 use App\Models\Pembayaran_penjualan;
 use App\Models\Pengaturan_dokumen;
 use App\Models\Pengaturan_nama;
+use App\Models\Pengaturan_produk;
 use App\Models\Pengaturan_status_pengiriman;
 use App\Models\Penjualan;
 use App\Models\Produk;
+use App\Models\Produk_penawaran;
 use App\Models\Status_pengiriman;
 use App\Models\Stok_gudang;
 use App\Models\Transaksi_produk;
@@ -43,13 +45,29 @@ class PenjualanController extends Controller
     public function index()
     {
         $data['sidebar'] = 'penjualan';
-        $data['penawaran'] = Penjualan::with('detail_penjualan.produk')
-                                        ->leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
-                                        ->select('penjualan.*','kontak.nama as nama_pelanggan')
-                                        ->where('penjualan.id_company',Auth::user()->id_company)
-                                        ->where('penjualan.jenis','penawaran')
-                                        ->orderBy('id','DESC')
-                                        ->get();
+
+        $data['produk_penawaran'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                        ->where('fitur','Produk penawaran')
+                                        ->where('status','active')
+                                        ->first();
+        if(isset($data['produk_penawaran'])){
+            $data['penawaran'] = Penjualan::with('detail_penjualan.produk_penawaran')
+                                            ->leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                            ->select('penjualan.*','kontak.nama as nama_pelanggan')
+                                            ->where('penjualan.id_company',Auth::user()->id_company)
+                                            ->where('penjualan.jenis','penawaran')
+                                            ->orderBy('id','DESC')
+                                            ->get();
+        }else{
+            $data['penawaran'] = Penjualan::with('detail_penjualan.produk')
+                                            ->leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
+                                            ->select('penjualan.*','kontak.nama as nama_pelanggan')
+                                            ->where('penjualan.id_company',Auth::user()->id_company)
+                                            ->where('penjualan.jenis','penawaran')
+                                            ->orderBy('id','DESC')
+                                            ->get();
+        }
+        
 
         $data['pemesanan'] = Penjualan::with('detail_penjualan.produk')
                                         ->leftJoin('kontak','penjualan.id_pelanggan','=','kontak.id')
@@ -147,6 +165,7 @@ class PenjualanController extends Controller
         $data['sidebar'] = 'penjualan';
         $data['penjualan'] = Penjualan::with([
                                                 'detail_penjualan.produk',
+                                                'detail_penjualan.produk_penawaran',
                                                 'detail_pembayaran_penjualan' => function ($query){
                                                     $query->orderBy('detail_pembayaran_penjualan.id_pembayaran_penjualan','desc');
                                                 },
@@ -164,6 +183,13 @@ class PenjualanController extends Controller
                                         ->where('penjualan.id',$id)
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->first();
+                                        
+        if($data['penjualan']->jenis == 'penawaran'){
+            $data['produk_penawaran'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                        ->where('fitur','Produk penawaran')
+                                        ->where('status','active')
+                                        ->first();
+        }
         if($data['penjualan']->jenis == 'pemesanan'){
             $data['penagihan'] = Penjualan::where('id_pemesanan',$id)
                                             ->where('jenis','penagihan')
@@ -262,7 +288,15 @@ class PenjualanController extends Controller
     public function penawaran($id=null)
     {
         $data['sidebar'] = 'penjualan';
+        $data['produk_penawaran'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Produk penawaran')
+                                                ->where('status','active')
+                                                ->first();
+        if(isset($data['produk_penawaran'])){
+            $data['produk_penawaran'] = Produk_penawaran::where('id_company',Auth::user()->id_company)->get();
+        }
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
@@ -322,6 +356,13 @@ class PenjualanController extends Controller
     public function penawaran_pemesanan($id)
     {
         $data['sidebar'] = 'penjualan';
+        $data['produk_penawaran'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Produk penawaran')
+                                                ->where('status','active')
+                                                ->first();
+        if(isset($data['produk_penawaran'])){
+            $data['produk_penawaran'] = Produk_penawaran::where('id_company',Auth::user()->id_company)->get();
+        }
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)

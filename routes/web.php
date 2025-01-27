@@ -183,7 +183,6 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::post('hapus/{id}','hapus');
 
 	Route::get('/approve/{id}','approve');
-	// Route::post('/{id}', 'edit');
 
 	Route::post('/selesai/{id}', 'insert_selesai');
 
@@ -202,19 +201,6 @@ Route::controller(PenawaranController::class)->prefix('penawaran')->group(functi
 
 	Route::get('/detail/{id}', 'detail');
 });
-
-// Route::controller(PenawaranController::class)->prefix('penawaran')->group(function () {
-// 	Route::get('/', 'index');
-// 	Route::get('/insert', 'penawaran');
-// 	Route::get('/{id}', 'penawaran');
-// 	Route::get('/pemesanan/{id}', 'penawaran_pemesanan');
-// 	Route::post('/', 'insert_penawaran');
-// 	Route::post('/{id}', 'update_penawaran');
-// 	Route::post('/pemesanan/{id}', 'insert_penawaran_pemesanan');
-// 	Route::post('/pengiriman/{id}', 'insert_penawaran_pengiriman');
-	
-// 	Route::get('/detail/{id}', 'detail');
-// });
 
 Route::controller(PelangganController::class)->prefix('pelanggan')->group(function () {
 	Route::get('/', 'index');

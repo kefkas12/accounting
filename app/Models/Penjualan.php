@@ -181,7 +181,12 @@ class Penjualan extends Model
             $detail_penjualan = new Detail_penjualan;
             $detail_penjualan->id_company = Auth::user()->id_company;
             $detail_penjualan->id_penjualan = $this->id;
-            $detail_penjualan->id_produk = $request->input('produk')[$i];
+            if($request->input('produk')){
+                $detail_penjualan->id_produk = $request->input('produk')[$i];
+            }
+            if($request->input('produk_penawaran')){
+                $detail_penjualan->id_produk_penawaran = $request->input('produk_penawaran')[$i];
+            }
             $detail_penjualan->deskripsi = $request->input('deskripsi')[$i];
             $detail_penjualan->kuantitas = $request->input('kuantitas')[$i];
             $detail_penjualan->harga_satuan = $harga_satuan;
@@ -191,18 +196,63 @@ class Penjualan extends Model
             $detail_penjualan->pajak = $jumlah * $pajak / 100;
             $detail_penjualan->save();
 
-            $transaksi_produk = new Transaksi_produk;
-            $transaksi_produk->id_company = Auth::user()->id_company;
-            $transaksi_produk->id_transaksi = $this->id;
-            $transaksi_produk->id_produk = $request->input('produk')[$i];
-            $transaksi_produk->tanggal = $request->input('tanggal_transaksi');
-            $transaksi_produk->tipe = $tipe;
-            $transaksi_produk->jenis = 'penjualan';
-            $transaksi_produk->qty = -$request->input('kuantitas')[$i];
+            $jenis_transaksi = "";
 
-            $produk = Produk::where('id',$request->input('produk')[$i])->first();
-            $transaksi_produk->unit = $produk->unit;
-            $transaksi_produk->save();
+            if($jenis == 'penawaran'){
+                $produk_penawaran = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                        ->where('fitur','Produk penawaran')
+                                                        ->where('status','active')
+                                                        ->first();
+                if(isset($produk_penawaran)){
+                    $transaksi_produk_penawaran = new Transaksi_produk_penawaran;
+                    $transaksi_produk_penawaran->id_company = Auth::user()->id_company;
+                    $transaksi_produk_penawaran->id_transaksi = $this->id;
+                    $transaksi_produk_penawaran->id_produk = $request->input('produk')[$i];
+                    $transaksi_produk_penawaran->tanggal = $request->input('tanggal_transaksi');
+                    $transaksi_produk_penawaran->tipe = $tipe;
+                    $transaksi_produk_penawaran->jenis = 'penjualan';
+                    $transaksi_produk_penawaran->qty = -$request->input('kuantitas')[$i];
+        
+                    $produk_penawaran = Produk_penawaran::where('id',$request->input('produk')[$i])->first();
+                    $transaksi_produk_penawaran->unit = $produk_penawaran->unit;
+                    $transaksi_produk_penawaran->save();
+    
+                    $jenis_transaksi = $transaksi_produk_penawaran->jenis;
+                }else{
+                    $transaksi_produk = new Transaksi_produk;
+                    $transaksi_produk->id_company = Auth::user()->id_company;
+                    $transaksi_produk->id_transaksi = $this->id;
+                    $transaksi_produk->id_produk = $request->input('produk')[$i];
+                    $transaksi_produk->tanggal = $request->input('tanggal_transaksi');
+                    $transaksi_produk->tipe = $tipe;
+                    $transaksi_produk->jenis = 'penjualan';
+                    $transaksi_produk->qty = -$request->input('kuantitas')[$i];
+
+                    $produk = Produk::where('id',$request->input('produk')[$i])->first();
+                    $transaksi_produk->unit = $produk->unit;
+                    $transaksi_produk->save();
+
+                    $jenis_transaksi = $transaksi_produk->jenis;
+                }
+            }else{
+                $transaksi_produk = new Transaksi_produk;
+                $transaksi_produk->id_company = Auth::user()->id_company;
+                $transaksi_produk->id_transaksi = $this->id;
+                $transaksi_produk->id_produk = $request->input('produk')[$i];
+                $transaksi_produk->tanggal = $request->input('tanggal_transaksi');
+                $transaksi_produk->tipe = $tipe;
+                $transaksi_produk->jenis = 'penjualan';
+                $transaksi_produk->qty = -$request->input('kuantitas')[$i];
+
+                $produk = Produk::where('id',$request->input('produk')[$i])->first();
+                $transaksi_produk->unit = $produk->unit;
+                $transaksi_produk->save();
+
+                $jenis_transaksi = $transaksi_produk->jenis;
+            }
+            
+            
+            
 
             if($jenis == 'pengiriman'){
                 $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i]);
@@ -214,7 +264,7 @@ class Penjualan extends Model
                     $request->input('kuantitas')[$i],
                     $request->input('tanggal_transaksi'),
                     $tipe,
-                    $transaksi_produk->jenis
+                    $jenis_transaksi
                 );
             }
         }
@@ -296,16 +346,21 @@ class Penjualan extends Model
     protected function editDetailPenjualan(Request $request)
     {
         $detail_penjualan = Detail_penjualan::where('id_penjualan',$this->id)->delete();
-        for ($i = 0; $i < count($request->input('produk')); $i++) {
+        $produk = $request->input('produk') ? $request->input('produk') : $request->input('produk_penawaran');
+        for ($i = 0; $i < count($produk); $i++) {
             $harga_satuan = $request->input('harga_satuan')[$i] != '' || $request->input('harga_satuan')[$i] != null ? number_format((float)str_replace(",", "", $_POST['harga_satuan'][$i]), 2, '.', '') : 0;
             $jumlah = $request->input('jumlah')[$i] != '' || $request->input('jumlah')[$i] != null ? number_format((float)str_replace(",", "", $_POST['jumlah'][$i]), 2, '.', '') : 0;
             $pajak = $request->input('pajak')[$i] != '' || $request->input('pajak')[$i] != null ? number_format((float)str_replace(",", "", $_POST['pajak'][$i]), 2, '.', '') : 0;
 
-
             $detail_penjualan = new Detail_penjualan;
             $detail_penjualan->id_company = Auth::user()->id_company;
             $detail_penjualan->id_penjualan = $this->id;
-            $detail_penjualan->id_produk = $request->input('produk')[$i];
+            if($request->input('produk')){
+                $detail_penjualan->id_produk = $request->input('produk')[$i];
+            }
+            if($request->input('produk_penawaran')){
+                $detail_penjualan->id_produk_penawaran = $request->input('produk_penawaran')[$i];
+            }
             $detail_penjualan->deskripsi = $request->input('deskripsi')[$i];
             $detail_penjualan->kuantitas = $request->input('kuantitas')[$i];
             $detail_penjualan->harga_satuan = $harga_satuan;

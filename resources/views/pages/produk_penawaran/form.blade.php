@@ -49,18 +49,6 @@
                                             <textarea class="form-control" name="deskripsi" id="deskripsi">{{ isset($produk_penawaran) ? $produk_penawaran->deskripsi : '' }}</textarea>
                                         </div>
                                     </div>
-                                    <div class="form-group row mb-2">
-                                        <label for="harga_beli" class="col-sm-3 col-form-label">Harga Beli Satuan</label>
-                                        <div class="col-sm-9">
-                                            <input type="number" class="form-control" id="harga_beli" name="harga_beli" value="{{ isset($produk_penawaran) ? $produk_penawaran->harga_beli : '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row mb-2">
-                                        <label for="harga_jual" class="col-sm-3 col-form-label">Harga Jual Satuan</label>
-                                        <div class="col-sm-9">
-                                            <input type="number" class="form-control" id="harga_jual" name="harga_jual" value="{{ isset($produk_penawaran) ? $produk_penawaran->harga_jual : '' }}">
-                                        </div>
-                                    </div>
                                     <div class="d-flex justify-content-end">
                                         <a href="{{ url('produk_penawaran') }}" class="btn btn-light">Batalkan</a>
                                         <button type="submit" class="btn btn-primary">Simpan</button>
