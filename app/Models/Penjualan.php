@@ -256,6 +256,9 @@ class Penjualan extends Model
         $this->no_rfq = $request->input('no_rfq');
         $this->pesan = $request->input('pesan');
         $this->memo = $request->input('memo');
+        if($request->input('pic')){
+            $this->pic = $request->input('pic');
+        }
         if($this->sisa_tagihan == $this->total){
             $this->status = 'open';
         }elseif($this->sisa_tagihan < $this->total && $this->sisa_tagihan > 0){

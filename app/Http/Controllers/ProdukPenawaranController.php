@@ -10,6 +10,7 @@ use App\Models\Produk_penawaran;
 use App\Models\Satuan;
 use App\Models\Stok_gudang;
 use App\Models\Transaksi_produk;
+use App\Models\Transaksi_produk_penawaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -63,9 +64,9 @@ class ProdukPenawaranController extends Controller
             if($status == 'edit'){
                 return view('pages.produk_penawaran.form', $data);
             }else if($status == 'detail'){
-                // $data['transaksi_produk'] = Transaksi_produk::where('id_produk',$id)
-                //                                 ->where('id_company',Auth::user()->id_company)
-                //                                 ->get();
+                $data['transaksi_produk'] = Transaksi_produk_penawaran::where('id_produk',$id)
+                                                ->where('id_company',Auth::user()->id_company)
+                                                ->get();
 
                 return view('pages.produk_penawaran.detail', $data);
             }

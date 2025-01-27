@@ -124,9 +124,9 @@
             margin-bottom: 30px;
         }
 
-        .bg-primary {
+        /* .bg-primary {
             background-color: #00ad99 !important;
-        }
+        } */
 
         a {
             cursor: pointer !important;
