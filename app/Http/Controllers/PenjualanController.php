@@ -221,9 +221,16 @@ class PenjualanController extends Controller
                                 ->where('penjualan.id',$id)
                                 ->first();
         $data['log'] = Log::leftJoin('users','id_user','=','users.id')
+                            ->select('log.*','users.name')
                             ->where('log.id_transaksi',$id)
                             ->orderBy('log.id','DESC')
                             ->first();
+
+        $data['status_update'] = Log::leftJoin('users','id_user','=','users.id')
+                            ->select('log.*','users.name','users.email')
+                            ->where('log.id_transaksi',$id)
+                            ->orderBy('log.id','DESC')
+                            ->get();
         return view('pages.penjualan.detail', $data);
     }
 

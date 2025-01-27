@@ -380,7 +380,9 @@
                         <hr>
                         @if(isset($log))
                         <div class="row my-3">
-                            <div class="col-sm-7">Terakhir diubah oleh {{ $log->name }} pada {{ date('d F Y h:i:s', strtotime($log->created_at)) }}</div>
+                            <div class="col-sm-7">
+                                <a href="#" data-toggle="modal" data-target="#logUpdateModal">Terakhir diubah oleh {{ $log->name }} pada {{ date('d F Y h:i:s', strtotime($log->created_at)) }}</a>
+                            </div>
                         </div>
                         @endif
                         @if(isset($pengiriman))
@@ -714,6 +716,39 @@
         </div>
     </div>
     @endif
+    <div class="modal fade" id="logUpdateModal" tabindex="-1" aria-labelledby="logUpdateModalLabel" aria-hidden="true">
+        <div class="modal-dialog @if($penjualan->status != 'draf') modal-lg @else modal-sm text-center @endif">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logUpdateModalLabel">Log Update</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">User</th>
+                                <th scope="col">Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($status_update as $v)
+                                <tr>
+                                    <td>
+                                        <h6 class="mb-0 text-xs username"><a href="#">{{ $v->name }}</a></h6>
+                                        <p class="text-xs mb-0 email">{{ $v->email }}</p>
+                                    </td>
+                                    <td>{{ $v->created_at }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         function confirmDelete(event) {
             event.preventDefault();
