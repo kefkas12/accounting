@@ -399,6 +399,7 @@
 
             diskon_per_baris[no] = subtotal[no] * float_diskon_per_baris / 100;
             $('#nilai_diskon_per_baris_'+no).val(diskon_per_baris[no] == 0 ? "" : diskon_per_baris[no] );
+            get_pajak($('#pajak_' + no), no);
             load();
         }
 
