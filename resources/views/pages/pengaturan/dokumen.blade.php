@@ -17,6 +17,7 @@
                     <tr>
                         <th>Nama Dokumen</th>
                         <th>Status</th>
+                        <th>Status penjualan</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,6 +33,7 @@
                             </div>
                             @endif
                         </td>
+                        <td>{{ $v->status_penjualan }}</td>
                     </tr>
                     @endforeach
                 </tbody>

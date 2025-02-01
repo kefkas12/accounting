@@ -104,8 +104,9 @@
                                         <input type="date" class="form-control" id="tanggal_pengiriman"
                                             name="tanggal_pengiriman" value="{{ date('Y-m-d') }}">
                                     </div>
+                                    @if(Auth::user()->id_company != '9')
                                     <div class="form-group">
-                                        <label for="gudang" >Gudang</label>
+                                        <label for="gudang">Gudang</label>
                                         <select class="form-control" id="gudang" name="gudang" @if(isset($pengiriman)) disabled @endif>
                                             <option selected disabled hidden>Pilih Gudang</option>
                                             @if(isset($gudang))
@@ -117,6 +118,7 @@
                                             @endif
                                         </select>
                                     </div>
+                                    @endif
                                 </div>
                                 <div class="col-md-2 info_pengiriman" style="display:none">
                                     <div class="form-group">

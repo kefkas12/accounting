@@ -149,6 +149,24 @@ class Penjualan extends Model
         $this->memo = $request->input('memo') ? $request->input('memo') : null;
         $this->save();
 
+        if($jenis == 'pemesanan'){
+            for($i = 0; $i < count($_POST['id_dokumen']) ; $i++ ){
+                if($request->file($_POST['id_dokumen'][$i])){
+                    $fileName = $request->file($_POST['id_dokumen'][$i])->getClientOriginalName();
+                    $uniqueFileName = time() . '.' . $fileName;
+    
+                    $filePath = $request->file($_POST['id_dokumen'][$i])->storeAs('uploads', $uniqueFileName, 'public');
+                    $dokumen_penjualan = new Dokumen_penjualan();
+                    $dokumen_penjualan->id_company = Auth::user()->id_company;
+                    $dokumen_penjualan->id_penjualan = $this->id;
+                    $dokumen_penjualan->id_dokumen =$_POST['id_dokumen'][$i];
+                    $dokumen_penjualan->tanggal_upload = date('Y-m-d');
+                    $dokumen_penjualan->nama = $uniqueFileName;
+                    $dokumen_penjualan->save();
+                }
+            }
+        }
+
         if(($jenis == 'pemesanan') && $id_jenis != null){
             $penjualan = Penjualan::find($id_jenis);
             $penjualan->id_pemesanan = $this->id;

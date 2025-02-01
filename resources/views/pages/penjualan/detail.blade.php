@@ -439,6 +439,7 @@
                             @if($penjualan->jenis == 'penagihan' && $penjualan->status != 'paid')
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
+                                <a href="#" class="btn btn-outline-primary">Upload</a>
                                 <div class="btn-group dropup mr-2">
                                     <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
                                         aria-expanded="false">
@@ -483,6 +484,7 @@
                             <div class="col-sm-6 d-flex justify-content-end">
                                 <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
                                 @if($penjualan->jenis == 'penawaran' || $penjualan->jenis == 'pemesanan')
+                                <a href="#" class="btn btn-outline-primary">Upload</a>
                                 <div class="btn-group dropup mr-2">
                                     <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
                                         aria-expanded="false">

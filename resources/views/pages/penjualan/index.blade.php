@@ -232,7 +232,6 @@
                                                 <th scope="col">Pelanggan </th>
                                                 <th scope="col">Tgl. Jatuh Tempo</th>
                                                 <th scope="col">Status</th>
-                                                <th scope="col">Sisa Tagihan</th>
                                                 <th scope="col">Total</th>
                                                 <th scope="col">Checklist</th>
                                                 <th scope="col">Produk</th>
@@ -240,6 +239,7 @@
                                         </thead>
                                         <tbody class="list">
                                             @foreach($penagihan as $v)
+                                            @if(date('Y-m-d',strtotime($v->tanggal_jatuh_tempo)) >= date('Y-m-d') || $v->status == 'paid')
                                             <tr>
                                                 <td>{{ date('d-m-Y', strtotime($v->tanggal_transaksi)) }} / @if($v->tanggal_transaksi_pengiriman) {{ date('d-m-Y', strtotime($v->tanggal_transaksi_pengiriman)) }} @else - @endif</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
@@ -252,7 +252,6 @@
                                                     @else @if($v->status =='open') <span class="badge badge-warning">Menunggu pembayaran</span> 
                                                     @else <span class="badge badge-success"> {{ $v->status }} </span> @endif 
                                                     @endif</td>
-                                                <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
                                                 <td>
                                                 @if($v->status == 'paid' && $v->selesai != 'selesai')
@@ -264,6 +263,7 @@
                                                 </td>
                                                 <td>@foreach($v->detail_penjualan as $w) {{ $w->produk->nama }} @endforeach</td>
                                             </tr>
+                                            @endif
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -284,12 +284,12 @@
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Sisa Tagihan</th>
                                                 <th scope="col">Total</th>
-                                                <th scope="col">Checklist</th>
                                                 <th scope="col">Produk</th>
                                             </tr>
                                         </thead>
                                         <tbody class="list">
-                                            @foreach($jatuh_tempo as $v)
+                                            @foreach($penagihan as $v)
+                                            @if(date('Y-m-d',strtotime($v->tanggal_jatuh_tempo)) < date('Y-m-d') && $v->status != 'paid')
                                             <tr>
                                                 <td>{{ date('d-m-Y', strtotime($v->tanggal_transaksi)) }} / @if($v->tanggal_transaksi_pengiriman) {{ date('d-m-Y', strtotime($v->tanggal_transaksi_pengiriman)) }} @else - @endif</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
@@ -304,16 +304,9 @@
                                                     @endif</td>
                                                 <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
-                                                <td>
-                                                @if($v->status == 'paid' && $v->selesai != 'selesai')
-                                                <form action="{{ url('penjualan/selesai').'/'.$v->id }}" method="POST">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-sm btn-primary">Selesai</button>
-                                                </form>
-                                                @endif
-                                                </td>
                                                 <td>@foreach($v->detail_penjualan as $w) {{ $w->produk->nama }} @endforeach</td>
                                             </tr>
+                                            @endif
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -476,7 +469,7 @@
         let penagihanTable = new DataTable('#penagihanTable', {
                                 columnDefs: [
                                     {
-                                        target: 10,
+                                        target: 9,
                                         visible: false
                                     }
                                 ]
@@ -484,7 +477,7 @@
         let jatuhTempoTable = new DataTable('#jatuhTempoTable', {
                                 columnDefs: [
                                     {
-                                        target: 10,
+                                        target: 9,
                                         visible: false
                                     }
                                 ]

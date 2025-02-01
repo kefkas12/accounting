@@ -40,7 +40,7 @@
                     >
                         @csrf
                         <div class="card-body">
-                        <div class="form-row border-bottom border-top border-left text-center pt-3 mb-3">
+                        <div class="form-row border-bottom border-top border-left border-right text-center pt-3 mb-3">
                                 <div class="col-md-3 border-right">
                                     <div class="form-group">
                                         @if(isset($penawaran))
@@ -48,6 +48,14 @@
                                             <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
                                         @endif
                                     </div>
+                                </div>
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        @if(isset($penawaran) && $penjualan->alamat)
+                                            <label>Alamat Penawaran</label> <br>
+                                            <span class="text-primary">{{ $penjualan->alamat }}</span>
+                                        @endif
+                                    </div>  
                                 </div>
                                 <div class="col-md-2 border-right">
                                     <div class="form-group">
@@ -57,6 +65,7 @@
                                         @endif
                                     </div>
                                 </div>
+                                
                                 <div class="col-md-2 border-right">
                                     <div class="form-group">
                                         @if(isset($penawaran) && $penjualan->pesan)
@@ -73,19 +82,9 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-3 border-right">
-                                    <div class="form-group">
-                                        <div class="form-check" >
-                                            <input class="form-check-input" type="checkbox" id="info_pengiriman" name="info_pengiriman">
-                                            <label class="form-check-label" for="info_pengiriman">
-                                                Info Pengiriman
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                             <div class="form-row border-bottom mb-3">
-                                <div class="form-group has-float-label col-md-3 pr-4">
+                                <div class="form-group has-float-label col-md-3 pr-2">
                                     <span>Pelanggan <span class="text-danger">*</span></span>
                                     <select class="selectpicker form-control" data-style="btn-white" data-live-search="true" id="pelanggan" name="pelanggan" required @if(isset($penawaran)) disabled @endif>
                                         <option selected disabled value="">Pilih pelanggan</option>
@@ -95,31 +94,40 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group has-float-label col-md-3 pr-4">
+                                <div class="form-group has-float-label col-md-3 pr-2">
                                     <span>Email</span>
                                     <input type="email" class="form-control" id="email" name="email">
                                 </div>
-                                <div class="col-md-3"></div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="form-check" >
+                                            <input class="form-check-input" type="checkbox" id="info_pengiriman" name="info_pengiriman">
+                                            <label class="form-check-label" for="info_pengiriman">
+                                                Info Pengiriman
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="form-group col-md-3 d-flex justify-content-end">
-                                    Total &nbsp; <span id="total_faktur"> Rp 0,00</span>
+                                    <h1><strong>Total &nbsp; <span id="total_faktur"> Rp 0,00</span></strong></h1>
                                 </div>
                             </div>
                             
                             <div class="form-row">
                                 <div class="col-md-3 pr-4">
                                     <div class="form-group has-float-label">
-                                        <span>Alamat</span>
+                                        <span>Alamat Pemesanan</span>
                                         <textarea class="form-control" name="alamat" id="alamat"></textarea>
                                     </div>
-                                    <div class="form-group info_pengiriman" style="display:none">
-                                        <label for="alamat_pengiriman">Alamat Pengiriman</label><br>
-                                        <textarea class="form-control" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
-                                        <div class="form-check mb-4" >
-                                            <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
-                                            <label class="form-check-label" for="sama_dengan_penagihan">
-                                                Sama dengan penagihan
-                                            </label>
-                                        </div>
+                                    <div class="form-group has-float-label info_pengiriman" style="display:none">
+                                        <span class="alamat_pengiriman" style="display:none">Alamat Pengiriman</span>
+                                        <textarea class="form-control" name="alamat_pengiriman" id="alamat_pengiriman" style="display:none"></textarea>
+                                    </div>
+                                    <div class="form-check mb-4" >
+                                        <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
+                                        <label class="form-check-label" for="sama_dengan_penagihan">
+                                        Alamat Pengiriman sama dengan pemesanan
+                                        </label>
                                     </div>
                                 </div>
                                 <div class="form-group has-float-label col-md-3 pr-2">
@@ -133,11 +141,6 @@
                                         name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                 </div>
                                 <div class="col-md-3 pr-2">
-                                    <div class="form-group has-float-label info_pengiriman" style="display:none">
-                                        <span>Tgl. pengiriman</span>
-                                        <input type="date" class="form-control" id="tanggal_pengiriman"
-                                            name="tanggal_pengiriman" value="{{ date('Y-m-d') }}">
-                                    </div>
                                     <div class="form-group has-float-label">
                                         <span>Gudang</span>
                                         <select class="form-control" id="gudang" name="gudang">
@@ -151,6 +154,12 @@
                                             @endif
                                         </select>
                                     </div>
+                                    <div class="form-group has-float-label info_pengiriman" style="display:none">
+                                        <span>Tgl. pengiriman</span>
+                                        <input type="date" class="form-control" id="tanggal_pengiriman"
+                                            name="tanggal_pengiriman" value="{{ date('Y-m-d') }}">
+                                    </div>
+                                    
                                 </div>
                                 <div class="col-md-3 info_pengiriman" style="display:none">
                                     <div class="form-group has-float-label">
@@ -187,7 +196,7 @@
                                     <tbody id="list">
                                         <tr>
                                             <td style="padding: 10px !important;">
-                                                <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)" @if(!isset($produk_penawaran)) required @endif>
+                                                <select class="form-control" name="produk[]" id="produk_1" @if(!isset($produk_penawaran)) required @endif>
                                                     <option selected disabled hidden>Pilih produk</option>
                                                     @foreach ($produk as $v)
                                                         <option value="{{ $v->id }}"
@@ -198,7 +207,7 @@
                                             </td>
                                             @if(isset($penawaran) && isset($produk_penawaran))
                                             <td style="padding: 10px !important;">
-                                                <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_1" onchange="get_data(this, 1)"
+                                                <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_1" disabled
                                                     required>
                                                     <option selected disabled hidden>Pilih produk penawaran</option>
                                                     @foreach ($produk_penawaran as $v)
@@ -252,6 +261,13 @@
                             <hr>
                             <div class="row">
                                 <div class="col">
+                                    @foreach($pengaturan_dokumen as $v)
+                                    <div class="form-group has-float-label">
+                                        <span>Upload {{ $v->nama }}</span>
+                                        <input type="file" class="form-control" name="{{ $v->id }}" id="file_{{ $v->id }}">
+                                        <input type="number" name="id_dokumen[]" value="{{ $v->id }}" hidden id="id_{{ $v->id }}">
+                                    </div>
+                                    @endforeach
                                     <div class="form-group has-float-label">
                                         <span>Pesan</span>
                                         <textarea class="form-control" name="pesan" id="pesan"></textarea>
@@ -260,6 +276,7 @@
                                         <span>Memo</span>
                                         <textarea class="form-control" name="memo" id="memo"></textarea>
                                     </div>
+                                    
                                 </div>
                                 <div class="col ">
                                     <div class="row mb-3">
@@ -536,7 +553,7 @@
             $('#list').append(`
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
-                        <select class="form-control" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
+                        <select class="form-control" name="produk[]" id="produk_${i}" required>
                             <option selected disabled hidden>Pilih produk</option>
                             @foreach ($produk as $v)
                                 <option value="{{ $v->id }}" data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}</option>
@@ -544,7 +561,7 @@
                         </select>
                     </th>
                     <th style="padding: 10px !important;">
-                        <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_${i}" onchange="get_data(this, ${i})" required>
+                        <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_${i}" disabled>
                             <option selected disabled hidden>Pilih produk penawaran</option>
                             @foreach ($produk_penawaran as $v)
                                 <option value="{{ $v->id }}">{{ $v->nama }}</option>
@@ -645,8 +662,10 @@
         $('#sama_dengan_penagihan').change(function() {
             if(this.checked) {
                 $('#alamat_pengiriman').hide();
+                $('.alamat_pengiriman').hide();
             }else{
                 $('#alamat_pengiriman').show();
+                $('.alamat_pengiriman').show();
             }
         })
 
