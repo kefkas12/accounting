@@ -2,29 +2,6 @@
 
 @section('content')
     @include('layouts.headers.cards')
-    <style>
-        .select2-container {
-            width: 100% !important;
-        }
-
-        .select2-container .select2-selection--single {
-            height: calc(2.25rem + 2px) !important; /* Sesuaikan dengan tinggi input Bootstrap */
-            display: flex; /* Gunakan flexbox untuk menata konten */
-            align-items: center; /* Pusatkan konten secara vertikal */
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            padding-left: 10px; /* Memberikan jarak teks dari tepi kiri */
-            line-height: normal !important; /* Hilangkan line-height default */
-            color: #6c757d; /* Placeholder warna abu-abu */
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__placeholder {
-            margin: 0; /* Hilangkan margin bawaan */
-            line-height: normal; /* Pastikan line-height tidak memengaruhi posisi */
-            color: #6c757d; /* Warna abu-abu */
-        }
-    </style>
     <!-- Page content -->
     <div class="mt--6">
         <!-- Dark table -->
@@ -74,7 +51,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-4 pr-4">
+                                <div class="form-group col-md-3 pr-4">
                                     <label for="email">Email</label>
                                     <input type="email" class="form-control" id="email" name="email">
                                 </div>
@@ -534,6 +511,7 @@
 
         function create_row() {
             i++;
+            @if(isset($penawaran) && isset($produk_penawaran))
             $('#list').append(`
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
@@ -586,7 +564,52 @@
                     </td>
                 </tr>
             `);
-
+            @else
+            $('#list').append(`
+                <tr id="list_${i}">
+                    <th style="padding: 10px !important;">
+                        <select class="form-control" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
+                            <option selected disabled hidden>Pilih produk</option>
+                            @foreach ($produk as $v)
+                                <option value="{{ $v->id }}" data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}</option>
+                            @endforeach
+                        </select>
+                    </th>
+                    <td style="padding: 10px !important;">
+                        <textarea class="form-control" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
+                    </td>
+                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_harga(${i})"></td>
+                    <td style="padding: 10px !important;">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                        </div>
+                    </td>
+                    <td style="padding: 10px !important;">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Rp</span>
+                            </div>
+                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                        </div>
+                    </td>
+                    <td style="padding: 10px !important;">
+                        <select class="form-control" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required>
+                            <option value="0" data-persen="0" >Pilih pajak</option>
+                            <option value="11" data-persen="11">PPN</option>
+                        </select>
+                    </td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})"></td>
+                    <td style="padding: 10px !important;">
+                        <a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>
+                        <a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a>
+                    </td>
+                </tr>
+            `);
+            @endif
             load_select_2(i);
         };
 

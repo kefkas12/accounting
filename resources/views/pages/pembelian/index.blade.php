@@ -62,23 +62,18 @@
                     <div class='container-fluid' style="padding-left: 1.45rem !important;">
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                @hasanyrole('pemilik|pergudangan|Admin Gudang')
+                                <button class="nav-link" id="nav-pemesanan-pembelian-tab" data-toggle="tab" data-target="#nav-pemesanan-pembelian"
+                                    type="button" role="tab" aria-controls="nav-pemesanan-pembelian"
+                                    aria-selected="false">Pemesanan</button>
+                                <button class="nav-link @if(auth()->user()->hasRole('pergudangan')) active @endif" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
+                                    type="button" role="tab" aria-controls="nav-pengiriman"
+                                    aria-selected="false">Pengiriman</button>
+                                @endhasallroles
                                 @hasanyrole('pemilik')
                                 <button class="nav-link active" id="nav-faktur-pembelian-tab" data-toggle="tab" data-target="#nav-faktur-pembelian"
                                     type="button" role="tab" aria-controls="nav-faktur-pembelian"
                                     aria-selected="true">Faktur Pembelian</button>
-                                @endhasallroles
-                                @hasanyrole('pemilik|pergudangan|Admin Gudang')
-                                <button class="nav-link @if(auth()->user()->hasRole('pergudangan')) active @endif" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
-                                    type="button" role="tab" aria-controls="nav-pengiriman"
-                                    aria-selected="false">Pengiriman</button>
-                                <button class="nav-link" id="nav-pemesanan-pembelian-tab" data-toggle="tab" data-target="#nav-pemesanan-pembelian"
-                                    type="button" role="tab" aria-controls="nav-pemesanan-pembelian"
-                                    aria-selected="false">Pemesanan</button>
-                                @endhasallroles
-                                @hasanyrole('pemilik|Admin Gudang')
-                                <button hidden class="nav-link" id="nav-penawaran-pembelian-tab" data-toggle="tab" data-target="#nav-penawaran-pembelian"
-                                    type="button" role="tab" aria-controls="nav-penawaran-pembelian"
-                                    aria-selected="false">Penawaran Pembelian</button>
                                 @endhasallroles
                             </div>
                         </nav>

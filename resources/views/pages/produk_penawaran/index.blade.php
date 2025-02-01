@@ -16,7 +16,7 @@
                             <div class="col d-flex justify-content-end">
                                 @hasanyrole('Admin Marketing/sales')
                                 @else
-                                <a class="btn btn-primary" href="{{ url('produk_penawaran/insert') }}">Tambah produk penawaranx baru</a>
+                                <a class="btn btn-primary" href="{{ url('produk_penawaran/insert') }}">Tambah produk penawaran baru</a>
                                 @endhasallroles
                             </div>
                         </div>

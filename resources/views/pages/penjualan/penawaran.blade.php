@@ -2,29 +2,6 @@
 
 @section('content')
     @include('layouts.headers.cards')
-    <style>
-        .select2-container {
-            width: 100% !important;
-        }
-
-        .select2-container .select2-selection--single {
-            height: calc(2.25rem + 2px) !important; /* Sesuaikan dengan tinggi input Bootstrap */
-            display: flex; /* Gunakan flexbox untuk menata konten */
-            align-items: center; /* Pusatkan konten secara vertikal */
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            padding-left: 10px; /* Memberikan jarak teks dari tepi kiri */
-            line-height: normal !important; /* Hilangkan line-height default */
-            color: #6c757d; /* Placeholder warna abu-abu */
-        }
-
-        .select2-container--default .select2-selection--single .select2-selection__placeholder {
-            margin: 0; /* Hilangkan margin bawaan */
-            line-height: normal; /* Pastikan line-height tidak memengaruhi posisi */
-            color: #6c757d; /* Warna abu-abu */
-        }
-    </style>
     <!-- Page content -->
     <div class="mt--6">
         <!-- Dark table -->
@@ -61,50 +38,50 @@
                         @csrf
                         <div class="card-body">
                             <div class="form-row">
-                                <div class="form-group col-md-3 pr-4">
-                                    <label for="pelanggan">Pelanggan <span class="text-danger">*</span></label>
-                                    <select class="form-control col-md-3" id="pelanggan" name="pelanggan" required>
-                                        <option selected disabled value="">Pilih kontak</option>
+                                <label class="form-group has-float-label col-md-3 pr-4">
+                                    <span>Pelanggan <span class="text-danger">*</span></span>
+                                    <select class="selectpicker form-control" data-style="btn-white" data-live-search="true" id="pelanggan" name="pelanggan" required>
+                                        <option selected disabled value="">Pilih Pelanggan</option>
                                         @foreach ($pelanggan as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
                                         @endforeach
                                     </select>
-                                </div>
+                                </label>
                                 
-                                <div class="form-group col-md-3 pr-4">
-                                    <label for="no_rfq">No RFQ</label>
+                                <label class="form-group has-float-label col-md-3 pr-4">
+                                    <span>No RFQ</span>
                                     <input type="text" class="form-control" id="no_rfq" name="no_rfq">
-                                </div>
-                                <div class="form-group col-md-3 pr-4">
-                                    <label for="email">Email</label>
+                                </label>
+                                <label class="form-group has-float-label col-md-3 pr-4">
+                                    <span>Email</span>
                                     <input type="email" class="form-control" id="email" name="email">
-                                </div>
+                                </label>
                                 <div class="form-group col-md-3 d-flex justify-content-end">
                                     Total &nbsp; <span id="total_faktur"> Rp 0</span>
                                 </div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group col-md-3 pr-4">
-                                    <label for="pic">PIC</label>
+                                <label class="form-group has-float-label col-md-3 pr-4">
+                                    <span>PIC</span>
                                     <input type="text" class="form-control" id="pic"
                                         name="pic">
-                                </div>
+                                </label>
                                 
-                                <div class="form-group col-md-3 pr-4">
-                                    <label for="tanggal_transaksi">Tgl. transaksi</label>
+                                <label class="form-group has-float-label col-md-3 pr-4">
+                                    <span>Tgl. transaksi</span>
                                     <input type="date" class="form-control" id="tanggal_transaksi"
                                         name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
-                                </div>
-                                <div class="form-group col-md-3 pr-4">
-                                    <label for="alamat">Alamat</label><br>
+                                </label>
+                                <label class="form-group has-float-label col-md-3 pr-4">
+                                    <span>Alamat</span>
                                     <textarea class="form-control" name="alamat" id="alamat"></textarea>
-                                </div>
-                                <div class="form-group col-md-3 pr-4" style="display: none">
-                                    <label for="tanggal_jatuh_tempo" style="display: none">Tgl. kedaluarsa</label>
+                                </label>
+                                <label class="form-group has-float-label col-md-3 pr-4" style="display: none">
+                                    <span style="display: none">Tgl. kedaluarsa</span>
                                     <input type="date" class="form-control" id="tanggal_jatuh_tempo"
-                                        name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}" style="display: none">
-                                </div>
+                                        name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
+                                </label>
                             </div>
 
                             <div style="overflow: auto">
@@ -140,7 +117,7 @@
                                             @if(isset($produk_penawaran))
                                             <td style="padding: 10px !important;">
                                                 <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_1" onchange="get_data(this, 1)" required>
-                                                    <option selected disabled hidden>Pilih produk penawaran</option>
+                                                    <option selected disabled hidden value="">Pilih produk penawaran</option>
                                                     @foreach ($produk_penawaran as $v)
                                                         <option value="{{ $v->id }}">{{ $v->nama }}</option>
                                                     @endforeach
@@ -149,7 +126,7 @@
                                             @endif
                                             <td style="padding: 10px !important;">
                                                 <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)" @if(!isset($produk_penawaran)) required @endif>
-                                                    <option selected disabled hidden>Pilih produk</option>
+                                                    <option selected disabled hidden value="">Pilih produk</option>
                                                     @foreach ($produk as $v)
                                                         <option value="{{ $v->id }}"
                                                             data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}
@@ -161,7 +138,7 @@
                                             @if(isset($produk_penawaran))
                                             <td style="padding: 10px !important;">
                                                 <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_1" onchange="get_data(this, 1)" required>
-                                                    <option selected disabled hidden>Pilih produk penawaran</option>
+                                                    <option selected disabled hidden value="">Pilih produk penawaran</option>
                                                     @foreach ($produk_penawaran as $v)
                                                         <option value="{{ $v->id }}">{{ $v->nama }}</option>
                                                     @endforeach
@@ -170,7 +147,7 @@
                                             @else
                                             <td style="padding: 10px !important;">
                                                 <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)" @if(!isset($produk_penawaran)) required @endif>
-                                                    <option selected disabled hidden>Pilih produk</option>
+                                                    <option selected disabled hidden value="">Pilih produk</option>
                                                     @foreach ($produk as $v)
                                                         <option value="{{ $v->id }}"
                                                             data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}
@@ -228,15 +205,15 @@
                             </div>
                             <hr>
                             <div class="row">
-                                <div class="col">
-                                    <div class="form-group col-md-6">
-                                        <label for="pesan">Pesan</label><br>
+                                <div class="col-md-6">
+                                    <label class="form-group has-float-label pr-4">
+                                        <span>Pesan</span>
                                         <textarea class="form-control" name="pesan" id="pesan"></textarea>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label for="memo">Memo</label><br>
+                                    </label>
+                                    <label class="form-group has-float-label pr-4">
+                                        <span>Memo</span>
                                         <textarea class="form-control" name="memo" id="memo"></textarea>
-                                    </div>
+                                    </label>
                                 </div>
                                 <div class="col ">
                                     <div class="row mb-3">
@@ -523,7 +500,7 @@
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
                         <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_${i}" onchange="get_data(this, ${i})" required>
-                            <option selected disabled hidden>Pilih produk penawaran</option>
+                            <option selected disabled hidden value="">Pilih produk penawaran</option>
                             @foreach ($produk_penawaran as $v)
                                 <option value="{{ $v->id }}">{{ $v->nama }}</option>
                             @endforeach
@@ -531,7 +508,7 @@
                     </th>
                     <th style="padding: 10px !important;">
                         <select class="form-control" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})">
-                            <option selected disabled hidden>Pilih produk</option>
+                            <option selected disabled hidden value="">Pilih produk</option>
                             @foreach ($produk as $v)
                                 <option value="{{ $v->id }}" data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}</option>
                             @endforeach
@@ -576,7 +553,7 @@
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
                         <select class="form-control" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
-                            <option selected disabled hidden>Pilih produk</option>
+                            <option selected disabled hidden value="">Pilih produk</option>
                             @foreach ($produk as $v)
                                 <option value="{{ $v->id }}" data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}</option>
                             @endforeach
@@ -623,7 +600,7 @@
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
                         <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_${i}" onchange="get_data(this, ${i})" required>
-                            <option selected disabled hidden>Pilih produk penawaran</option>
+                            <option selected disabled hidden value="">Pilih produk penawaran</option>
                             @foreach ($produk_penawaran as $v)
                                 <option value="{{ $v->id }}">{{ $v->nama }}</option>
                             @endforeach
@@ -668,7 +645,7 @@
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
                         <select class="form-control" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
-                            <option selected disabled hidden>Pilih produk</option>
+                            <option selected disabled hidden value="">Pilih produk</option>
                             @foreach ($produk as $v)
                                 <option value="{{ $v->id }}" data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}</option>
                             @endforeach
@@ -714,11 +691,12 @@
         };
 
         $( document ).ready(function() {
-            $("#pelanggan").select2({
-                allowClear: true,
-                placeholder: 'Pilih pelanggan',
-                width: 'resolve'
-            });
+            // $("#pelanggan").select2({
+            //     allowClear: true,
+            //     placeholder: 'Pilih pelanggan',
+            //     width: 'resolve'
+            // });
+            $('#pelanggan').selectpicker();
             @if(isset($penjualan))
                 $('#pelanggan').val('{{ $penjualan->id_pelanggan }}').trigger('change')
                 $('#email').val('{{ $penjualan->email }}')

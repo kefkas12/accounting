@@ -274,6 +274,13 @@ class PenjualanController extends Controller
     public function pemesanan($id=null)
     {
         $data['sidebar'] = 'penjualan';
+        $data['produk_penawaran'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Produk penawaran')
+                                                ->where('status','active')
+                                                ->first();
+        if(isset($data['produk_penawaran'])){
+            $data['produk_penawaran'] = Produk_penawaran::where('id_company',Auth::user()->id_company)->get();
+        }
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)

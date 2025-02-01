@@ -14,59 +14,49 @@
                             <h2 class="text-primary mb-3 pb-3" style="border-bottom: 1px solid rgb(199, 206, 215);">Buat Produk Baru</h2>
                             <div class="row">
                                 <div class="col-sm-6">
+                                    <label class="form-group has-float-label mb-2">
+                                        <span>Nama Produk <span class="text-red">*</span></span>
+                                        <input type="text" class="form-control" id="nama" name="nama" value="{{ isset($produk) ? $produk->nama : '' }}" required>
+                                    </label>
+                                    <label class="form-group has-float-label mb-2">
+                                        <span>Deskripsi</span>
+                                        <textarea class="form-control" name="deskripsi" id="deskripsi" rows="4">{{ isset($produk) ? $produk->deskripsi : '' }}</textarea>
+                                    </label>
+                                    <label class="form-group has-float-label mb-2">
+                                        <span>Harga Beli Satuan</span>
+                                        <input type="number" class="form-control" id="harga_beli" name="harga_beli" value="{{ isset($produk) ? $produk->harga_beli : '' }}">
+                                    </label>
                                     <div class="form-group row mb-2">
-                                        <label for="nama" class="col-sm-3 col-form-label">Nama Produk <span class="text-red">*</span></label>
-                                        <div class="col-sm-9">
-                                            <input type="text" class="form-control" id="nama" name="nama" value="{{ isset($produk) ? $produk->nama : '' }}" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row mb-2">
-                                        <label for="kode" class="col-sm-3 col-form-label">Kode produk / SKU</label>
-                                        <div class="col-sm-9">
-                                            <input type="number" class="form-control" id="kode" name="kode"  value="{{ isset($produk) ? $produk->kode : '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row mb-2">
-                                        <label for="nomor_telepon" class="col-sm-3 col-form-label">Unit</label>
-                                        <div class="col-sm-9">
-                                            <select class="form-control" name="satuan" id="satuan" value="{{ isset($produk) ? $produk->unit : '' }}">
-                                                <option value="buah" selected>Buah</option>
-                                                @foreach($satuan as $v)
-                                                <option>{{ $v->nama }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row mb-2">
-                                        <label for="kategori" class="col-sm-3 col-form-label">Kategori</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" class="form-control" id="kategori" name="kategori" value="{{ isset($produk) ? $produk->kategori : '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row mb-2">
-                                        <label for="deskripsi" class="col-sm-3 col-form-label">Deskripsi</label>
-                                        <div class="col-sm-9">
-                                            <textarea class="form-control" name="deskripsi" id="deskripsi">{{ isset($produk) ? $produk->deskripsi : '' }}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row mb-2">
-                                        <label for="harga_beli" class="col-sm-3 col-form-label">Harga Beli Satuan</label>
-                                        <div class="col-sm-9">
-                                            <input type="number" class="form-control" id="harga_beli" name="harga_beli" value="{{ isset($produk) ? $produk->harga_beli : '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row mb-2">
-                                        <label for="harga_jual" class="col-sm-3 col-form-label">Harga Jual Satuan</label>
-                                        <div class="col-sm-9">
-                                            <input type="number" class="form-control" id="harga_jual" name="harga_jual" value="{{ isset($produk) ? $produk->harga_jual : '' }}">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row mb-2">
-                                        <label for="batas_minimum" class="col-sm-3 col-form-label">Monitor persediaan barang</label>
-                                        <div class="col-sm-9">
+                                        <label for="batas_minimum" class="col-sm-5 col-form-label">Monitor persediaan barang</label>
+                                        <div class="col-sm-7">
                                             <input type="checkbox" class="mt-4" style="position: absolute;margin-top: .3rem;" name="batas_minimum" id="batas_minimum">
                                         </div>
-                                      </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-group has-float-label mb-2">
+                                        <span>Kode produk / SKU</span>
+                                        <input type="number" class="form-control" id="kode" name="kode"  value="{{ isset($produk) ? $produk->kode : '' }}">
+                                    </label>
+                                    <label class="form-group has-float-label mb-2">
+                                        <span>Kategori</span>
+                                        <input type="text" class="form-control" id="kategori" name="kategori" value="{{ isset($produk) ? $produk->kategori : '' }}">
+                                    </label>
+                                    <label class="form-group has-float-label mb-2">
+                                        <span>Unit</span>
+                                        <select class="form-control" name="satuan" id="satuan" value="{{ isset($produk) ? $produk->unit : '' }}">
+                                            <option value="buah" selected>Buah</option>
+                                            @foreach($satuan as $v)
+                                            <option>{{ $v->nama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </label>
+                                    <label class="form-group has-float-label mb-2">
+                                        <span>Harga Jual Satuan</span>
+                                        <input type="number" class="form-control" id="harga_jual" name="harga_jual" value="{{ isset($produk) ? $produk->harga_jual : '' }}">
+                                    </label>
+                                </div>
+                                <div class="col-sm-12">
                                     <div class="form-group" id="monitor_persediaan_barang" style="display:none;">
                                         <table class="table">
                                             <thead class="thead-light">

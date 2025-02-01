@@ -1,3 +1,11 @@
+<style>
+    .minimize{
+        width: 10px !important;
+    }
+    .minimize-main-content{
+        margin-left: 50px !important;
+    }
+</style>
 <nav class="navbar navbar-vertical fixed-left navbar-expand-md navbar-light bg-white" id="sidenav-main">
     <div class="container-fluid">
         <!-- Toggler -->
@@ -5,8 +13,8 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <!-- Brand -->
-        <div class="d-flex justify-content-center">
-            <img width="75px" src="@if(Auth::user()->logo_perusahaan) {{ asset('argon/img/brand').'/'.Auth::user()->logo_perusahaan }} @else {{ asset('argon') }}/img/theme/team-4-800x800.jpg @endif" alt="">
+        <div class="d-flex justify-content-center" >
+            <img hidden width="75px" src="@if(Auth::user()->logo_perusahaan) {{ asset('argon/img/brand').'/'.Auth::user()->logo_perusahaan }} @else {{ asset('argon') }}/img/theme/team-4-800x800.jpg @endif" alt="">
         </div>
         <!-- User -->
         <ul class="nav align-items-center d-md-none">
@@ -80,18 +88,18 @@
             </ul>
             @elseif(Auth::user()->id_company == '9')
             <ul class="navbar-nav">
+                <li class="nav-item" style="margin-left: -10px" hidden>
+                    <a class="nav-link" href="#" onclick="minimize_sidebar()">
+                        <i class="fa fa-bars text-primary"></i> {{ __('Minimize') }}
+                    </a>
+                </li>
                 <li class="nav-item" style="margin-left: -10px">
                     <a class="nav-link" href="{{ url('/') }}">
                         <i class="ni ni-tv-2 text-primary"></i> {{ __('Dashboard') }}
                     </a>
                 </li>
                 <li class="nav-item" style="margin-left: -10px">
-                    <a class="nav-link {{ $sidebar == 'penawaran' ? 'active' : '' }}" href="{{ url('penawaran') }}">
-                        <i class="fa fa-store text-primary" ></i> {{ __('Penawaran') }}
-                    </a>
-                </li>
-                <li class="nav-item" style="margin-left: -10px">
-                    <a class="nav-link {{ $sidebar == 'penjualan' ? 'active' : '' }}" href="{{ url('penjualan') }}">
+                    <a tabindex="0" class="nav-link {{ $sidebar == 'penjualan' ? 'active' : '' }}" href="{{ url('penjualan') }}" data-toggle="popover" data-trigger="hover" data-placement="right" data-content="Penjualan">
                         <i class="fa fa-store text-primary"></i> {{ __('Penjualan') }}
                     </a>
                 </li>
@@ -101,7 +109,7 @@
                     </a>
                 </li>
                 <li class="nav-item" style="margin-left: -10px">
-                    <a class="nav-link {{ $sidebar == 'gudang' ? 'active' : '' }}" href="{{ url('gudang') }}">
+                    <a class="nav-link {{ $sidebar == 'gudang' ? 'active' : '' }}" href="{{ url('produk/gudang') }}">
                         <i class="fa fa-store text-primary"></i> {{ __('Gudang') }}
                     </a>
                 </li>
