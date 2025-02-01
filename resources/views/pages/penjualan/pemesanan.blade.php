@@ -40,38 +40,75 @@
                     >
                         @csrf
                         <div class="card-body">
-                            <div class="form-row">
-                                <div class="form-group col-md-3 pr-4">
-                                    <label for="pelanggan">Pelanggan <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="pelanggan" name="pelanggan" required @if(isset($penawaran)) disabled @endif>
-                                        <option selected disabled value="">Pilih kontak</option>
+                        <div class="form-row border-bottom border-top border-left text-center pt-3 mb-3">
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        @if(isset($penawaran))
+                                            <label>No Penawaran Penjualan</label> <br>
+                                            <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-2 border-right">
+                                    <div class="form-group">
+                                        @if(isset($penawaran) && $penjualan->no_rfq)
+                                            <label>No RFQ</label> <br>
+                                            <span class="text-primary">{{ $penjualan->no_rfq }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-2 border-right">
+                                    <div class="form-group">
+                                        @if(isset($penawaran) && $penjualan->pesan)
+                                            <label>Pesan Penawaran</label> <br>
+                                            <span class="text-primary">{{ $penjualan->pesan }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-2 border-right">
+                                    <div class="form-group">
+                                        @if(isset($penawaran) && $penjualan->memo)
+                                            <label>Memo Penawaran</label> <br>
+                                            <span class="text-primary">{{ $penjualan->memo }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        <div class="form-check" >
+                                            <input class="form-check-input" type="checkbox" id="info_pengiriman" name="info_pengiriman">
+                                            <label class="form-check-label" for="info_pengiriman">
+                                                Info Pengiriman
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row border-bottom mb-3">
+                                <div class="form-group has-float-label col-md-3 pr-4">
+                                    <span>Pelanggan <span class="text-danger">*</span></span>
+                                    <select class="selectpicker form-control" data-style="btn-white" data-live-search="true" id="pelanggan" name="pelanggan" required @if(isset($penawaran)) disabled @endif>
+                                        <option selected disabled value="">Pilih pelanggan</option>
                                         @foreach ($pelanggan as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-3 pr-4">
-                                    <label for="email">Email</label>
+                                <div class="form-group has-float-label col-md-3 pr-4">
+                                    <span>Email</span>
                                     <input type="email" class="form-control" id="email" name="email">
                                 </div>
-                                <div class="form-group col-md-2">
-                                    <label>Pengiriman</label>
-                                    <div class="form-check mb-4" >
-                                        <input class="form-check-input" type="checkbox" id="info_pengiriman" name="info_pengiriman">
-                                        <label class="form-check-label" for="info_pengiriman">
-                                            Info Pengiriman
-                                        </label>
-                                    </div>
-                                </div>
+                                <div class="col-md-3"></div>
                                 <div class="form-group col-md-3 d-flex justify-content-end">
                                     Total &nbsp; <span id="total_faktur"> Rp 0,00</span>
                                 </div>
                             </div>
+                            
                             <div class="form-row">
                                 <div class="col-md-3 pr-4">
-                                    <div class="form-group">
-                                        <label for="alamat">Alamat</label><br>
+                                    <div class="form-group has-float-label">
+                                        <span>Alamat</span>
                                         <textarea class="form-control" name="alamat" id="alamat"></textarea>
                                     </div>
                                     <div class="form-group info_pengiriman" style="display:none">
@@ -85,26 +122,24 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-2 pr-2">
-                                    <div class="form-group">
-                                        <label for="tanggal_transaksi">Tgl. transaksi</label>
-                                        <input type="date" class="form-control" id="tanggal_transaksi"
-                                            name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
-                                    </div>
-                                    <div class="form-group" hidden>
-                                        <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
-                                        <input type="date" class="form-control" id="tanggal_jatuh_tempo"
-                                            name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
-                                    </div>
+                                <div class="form-group has-float-label col-md-3 pr-2">
+                                    <span>Tgl. transaksi</span>
+                                    <input type="date" class="form-control" id="tanggal_transaksi"
+                                        name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
                                 </div>
-                                <div class="col-md-2 pr-2">
-                                    <div class="form-group info_pengiriman" style="display:none">
-                                        <label for="tanggal_pengiriman">Tgl. pengiriman</label>
+                                <div class="form-group has-float-label col-md-2 pr-2" hidden>
+                                    <span>Tgl. jatuh tempo</span>
+                                    <input type="date" class="form-control" id="tanggal_jatuh_tempo"
+                                        name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
+                                </div>
+                                <div class="col-md-3 pr-2">
+                                    <div class="form-group has-float-label info_pengiriman" style="display:none">
+                                        <span>Tgl. pengiriman</span>
                                         <input type="date" class="form-control" id="tanggal_pengiriman"
                                             name="tanggal_pengiriman" value="{{ date('Y-m-d') }}">
                                     </div>
-                                    <div class="form-group">
-                                        <label for="gudang">Gudang</label>
+                                    <div class="form-group has-float-label">
+                                        <span>Gudang</span>
                                         <select class="form-control" id="gudang" name="gudang">
                                             <option selected disabled hidden>Pilih Gudang</option>
                                             @if(isset($gudang))
@@ -117,29 +152,15 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-2 info_pengiriman" style="display:none">
-                                    <div class="form-group">
-                                        <label for="kirim_melalui">Kirim melalui</label>
+                                <div class="col-md-3 info_pengiriman" style="display:none">
+                                    <div class="form-group has-float-label">
+                                        <span>Kirim melalui</span>
                                         <input type="text" class="form-control" id="kirim_melalui"
                                             name="kirim_melalui">
                                     </div>
-                                    <div class="form-group">
-                                        <label for="no_pelacakan">No. pelacakan</label>
+                                    <div class="form-group has-float-label">
+                                        <span>No. pelacakan</span>
                                         <input type="text" class="form-control" id="no_pelacakan" name="no_pelacakan">
-                                    </div>
-                                </div>
-                                <div class="col-md-3 pr-4">
-                                    <div class="form-group">
-                                        @if(isset($penawaran))
-                                            <label>No Penawaran Penjualan</label> <br>
-                                            <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
-                                        @endif
-                                    </div>
-                                    <div class="form-group mt-5">
-                                        @if(isset($penawaran) && $penjualan->no_rfq)
-                                            <label>No RFQ</label> <br>
-                                            <span class="text-primary">{{ $penjualan->no_rfq }}</span>
-                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -231,12 +252,12 @@
                             <hr>
                             <div class="row">
                                 <div class="col">
-                                    <div class="form-group col-md-6">
-                                        <label for="pesan">Pesan</label><br>
+                                    <div class="form-group has-float-label">
+                                        <span>Pesan</span>
                                         <textarea class="form-control" name="pesan" id="pesan"></textarea>
                                     </div>
-                                    <div class="form-group col-md-6">
-                                        <label for="memo">Memo</label><br>
+                                    <div class="form-group has-float-label">
+                                        <span>Memo</span>
                                         <textarea class="form-control" name="memo" id="memo"></textarea>
                                     </div>
                                 </div>
@@ -515,18 +536,18 @@
             $('#list').append(`
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
-                        <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_${i}" onchange="get_data(this, ${i})" required>
-                            <option selected disabled hidden>Pilih produk penawaran</option>
-                            @foreach ($produk_penawaran as $v)
-                                <option value="{{ $v->id }}">{{ $v->nama }}</option>
-                            @endforeach
-                        </select>
-                    </th>
-                    <th style="padding: 10px !important;">
                         <select class="form-control" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
                             <option selected disabled hidden>Pilih produk</option>
                             @foreach ($produk as $v)
                                 <option value="{{ $v->id }}" data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}</option>
+                            @endforeach
+                        </select>
+                    </th>
+                    <th style="padding: 10px !important;">
+                        <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_${i}" onchange="get_data(this, ${i})" required>
+                            <option selected disabled hidden>Pilih produk penawaran</option>
+                            @foreach ($produk_penawaran as $v)
+                                <option value="{{ $v->id }}">{{ $v->nama }}</option>
                             @endforeach
                         </select>
                     </th>
@@ -636,7 +657,7 @@
         
         $( document ).ready(function() {
             @if(isset($penjualan))
-            $('#pelanggan').val('{{ $penjualan->id_pelanggan }}')
+            $('#pelanggan').selectpicker('val','{{ $penjualan->id_pelanggan }}')
             $('#email').val('{{ $penjualan->email }}')
             $('#alamat').val('{{ $penjualan->alamat }}')
             $('#tanggal_transaksi').val('{{ $penjualan->tanggal_transaksi }}')

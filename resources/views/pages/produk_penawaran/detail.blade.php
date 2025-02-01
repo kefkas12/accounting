@@ -61,22 +61,6 @@
                             <div class="col-sm-6">
                                 <div class="d-flex">
                                     <div class="mr-auto p-2 bd-highlight">
-                                        Kategori produk penawaran
-                                    </div>
-                                    <div class="p-2 bd-highlight">
-                                        <b>
-                                        @if (isset($produk_penawaran) && $produk_penawaran->kategori != null)
-                                        {{ $produk_penawaran->kategori }}
-                                        @else
-                                        -
-                                        @endif
-                                        </b>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="d-flex">
-                                    <div class="mr-auto p-2 bd-highlight">
                                         Deskripsi produk penawaran
                                     </div>
                                     <div class="p-2 bd-highlight">
@@ -90,6 +74,23 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex">
+                                    <div class="mr-auto p-2 bd-highlight">
+                                        Kategori produk penawaran
+                                    </div>
+                                    <div class="p-2 bd-highlight">
+                                        <b>
+                                        @if (isset($produk_penawaran) && $produk_penawaran->kategori != null)
+                                        {{ $produk_penawaran->kategori }}
+                                        @else
+                                        -
+                                        @endif
+                                        </b>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             @if (isset($produk_penawaran) && $produk_penawaran->batas_stok_minimum == null)
                             <div class="col-sm-6">
                                 <div class="d-flex" >

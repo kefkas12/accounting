@@ -158,6 +158,7 @@ class PenjualanController extends Controller
         $data['pengaturan_nama'] = Pengaturan_nama::where('id_company',Auth::user()->id_company)->get();
         $data['pengaturan_dokumen'] = Pengaturan_dokumen::where('id_company',Auth::user()->id_company)->get();
 
+        // dd($data['produk_penawaran']);
         return view('pages.penjualan.index', $data);
     }
     public function detail($id)

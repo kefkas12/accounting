@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -76,7 +77,11 @@ class Penjualan extends Model
     public function insert($request, $idJurnal, $jenis, $id_jenis=null, $is_requester=null)
     {
         $this->id_company = Auth::user()->id_company;
-        $this->tanggal_transaksi = date('Y-m-d',strtotime($request->input('tanggal_transaksi')));
+        if($jenis == 'penawaran'){
+            $this->tanggal_transaksi = DateTime::createFromFormat('d/m/Y', $request->tanggal_transaksi)->format('Y-m-d');
+        }else{
+            $this->tanggal_transaksi = date('Y-m-d',strtotime($request->tanggal_transaksi));
+        }
         $this->no = $this->no($jenis);
         if($jenis == 'penagihan'){
             $this->no_str = 'Sales Invoice #' . $this->no;
@@ -173,7 +178,8 @@ class Penjualan extends Model
 
     protected function insertDetailPenjualan(Request $request, $tipe, $jenis, $id_gudang)
     {
-        for ($i = 0; $i < count($request->input('produk')); $i++) {
+        $index = $request->input('produk') ? $request->input('produk') : $request->input('produk_penawaran');
+        for ($i = 0; $i < count($index); $i++) {
             $harga_satuan = $request->input('harga_satuan')[$i] != '' || $request->input('harga_satuan')[$i] != null ? number_format((float)str_replace(",", "", $_POST['harga_satuan'][$i]), 2, '.', '') : 0;
             $jumlah = $request->input('jumlah')[$i] != '' || $request->input('jumlah')[$i] != null ? number_format((float)str_replace(",", "", $_POST['jumlah'][$i]), 2, '.', '') : 0;
             $pajak = $request->input('pajak')[$i] != '' || $request->input('pajak')[$i] != null ? number_format((float)str_replace(",", "", $_POST['pajak'][$i]), 2, '.', '') : 0;
@@ -207,13 +213,13 @@ class Penjualan extends Model
                     $transaksi_produk_penawaran = new Transaksi_produk_penawaran;
                     $transaksi_produk_penawaran->id_company = Auth::user()->id_company;
                     $transaksi_produk_penawaran->id_transaksi = $this->id;
-                    $transaksi_produk_penawaran->id_produk = $request->input('produk')[$i];
+                    $transaksi_produk_penawaran->id_produk = $request->input('produk_penawaran')[$i];
                     $transaksi_produk_penawaran->tanggal = $request->input('tanggal_transaksi');
                     $transaksi_produk_penawaran->tipe = $tipe;
                     $transaksi_produk_penawaran->jenis = 'penjualan';
                     $transaksi_produk_penawaran->qty = -$request->input('kuantitas')[$i];
         
-                    $produk_penawaran = Produk_penawaran::where('id',$request->input('produk')[$i])->first();
+                    $produk_penawaran = Produk_penawaran::where('id',$request->input('produk_penawaran')[$i])->first();
                     $transaksi_produk_penawaran->unit = $produk_penawaran->unit;
                     $transaksi_produk_penawaran->save();
     
@@ -293,7 +299,11 @@ class Penjualan extends Model
 
     public function ubah($request, $jenis = null)
     {
-        $this->tanggal_transaksi = date('Y-m-d',strtotime($request->tanggal_transaksi));
+        if($jenis == 'penawaran'){
+            $this->tanggal_transaksi = DateTime::createFromFormat('d/m/Y', $request->tanggal_transaksi)->format('Y-m-d');
+        }else{
+            $this->tanggal_transaksi = date('Y-m-d',strtotime($request->tanggal_transaksi));
+        }
         $this->id_pelanggan = $request->input('pelanggan');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
         $this->subtotal = $request->input('input_subtotal');

@@ -2,6 +2,8 @@
 
 @section('content')
     @include('layouts.headers.cards')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <!-- Page content -->
     <div class="mt--6">
         <!-- Dark table -->
@@ -41,7 +43,7 @@
                                 <label class="form-group has-float-label col-md-3 pr-4">
                                     <span>Pelanggan <span class="text-danger">*</span></span>
                                     <select class="selectpicker form-control" data-style="btn-white" data-live-search="true" id="pelanggan" name="pelanggan" required>
-                                        <option selected disabled value="">Pilih Pelanggan</option>
+                                        <option selected disabled value="">Pilih pelanggan</option>
                                         @foreach ($pelanggan as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
@@ -71,7 +73,7 @@
                                 <label class="form-group has-float-label col-md-3 pr-4">
                                     <span>Tgl. transaksi</span>
                                     <input type="date" class="form-control" id="tanggal_transaksi"
-                                        name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
+                                        name="tanggal_transaksi" style="background-color: #ffffff !important;">
                                 </label>
                                 <label class="form-group has-float-label col-md-3 pr-4">
                                     <span>Alamat</span>
@@ -205,7 +207,7 @@
                             </div>
                             <hr>
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col">
                                     <label class="form-group has-float-label pr-4">
                                         <span>Pesan</span>
                                         <textarea class="form-control" name="pesan" id="pesan"></textarea>
@@ -697,13 +699,19 @@
             //     width: 'resolve'
             // });
             $('#pelanggan').selectpicker();
+            const fp = flatpickr("#tanggal_transaksi", {
+                dateFormat: "d/m/Y" // Contoh format: DD/MM/YYYY
+            });
+            fp.setDate(new Date('{{ date("Y-m-d") }}'));
             @if(isset($penjualan))
-                $('#pelanggan').val('{{ $penjualan->id_pelanggan }}').trigger('change')
+                // $('#pelanggan').val('id_pelanggan').trigger('change')
+                $('#pelanggan').selectpicker('val','{{ $penjualan->id_pelanggan }}')
                 $('#email').val('{{ $penjualan->email }}')
                 $('#no_rfq').val('{{ $penjualan->no_rfq }}')
                 $('#pic').val('{{ $penjualan->pic }}')
                 $('#alamat').val('{{ $penjualan->alamat }}')
-                $('#tanggal_transaksi').val('{{ $penjualan->tanggal_transaksi }}')
+                // $('#tanggal_transaksi').val('tanggal_transaksi')
+                fp.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
                 $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
 
                 $('#pesan').val('{{ $penjualan->pesan }}')
@@ -713,7 +721,7 @@
                 load_select_2(x);
                 @foreach($detail_penjualan as $v)
                     @if(isset($produk_penawaran))
-                    $('#produk_penawaran_'+x).val('{{ $v->id_produk }}').trigger('change');
+                    $('#produk_penawaran_'+x).val('{{ $v->id_produk_penawaran }}').trigger('change');
                     @endif
                     $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
                     $('#deskripsi_'+x).val('{{ $v->deskripsi }}');

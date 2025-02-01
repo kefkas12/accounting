@@ -59,9 +59,9 @@
                         </div>
                     </div>
                     <div class="card-body " style="font-size: 14px;">
-                        <div class="row">
-                            <div class="col-sm-2">Pelanggan <br> PIC</div>
-                            <div class="col-sm-2"><strong>{{ $penjualan->nama_pelanggan }}</strong> <br> <strong>{{ $penjualan->pic }}</strong></div>
+                        <div class="row border-bottom mb-3 pb-3">
+                            <div class="col-sm-2">Pelanggan <br> PIC @if($penjualan->no_rfq) <br> No RFQ @endif</div>
+                            <div class="col-sm-2"><strong>{{ $penjualan->nama_pelanggan }}</strong> <br> <strong>{{ $penjualan->pic }}</strong> @if($penjualan->no_rfq) <br> <strong>{{ $penjualan->no_rfq }}</strong>@endif</div>
                             <div class="col-sm-2">Email</div>
                             <div class="col-sm-2"><strong>{{ $penjualan->email }}</strong></div>
                             <div class="col-sm-2" style="margin-right: -25px !important;">@if($penjualan->jenis != 'pengiriman') @if($penjualan->jenis == 'penawaran') Total @else Sisa tagihan @endif @else Ongkos Kirim @endif</div>
@@ -69,10 +69,10 @@
                                 @if($penjualan->jenis != 'pengiriman')<strong> Rp. {{ number_format($penjualan->sisa_tagihan, 2, ',', '.') }}</strong> @else <strong> Rp. {{ number_format($penjualan->ongkos_kirim, 2, ',', '.') }}</strong> @endif
                             </div>
                         </div>
-                        @if($penjualan->no_rfq || $jurnal)
+                        @if($jurnal)
                         <div class="row mb-2">
-                            <div class="col-sm-2">@if($penjualan->no_rfq)No RFQ @endif</div>
-                            <div class="col-sm-2">@if($penjualan->no_rfq)<strong>{{ $penjualan->no_rfq }}</strong>@endif</div>
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2"></div>
                             <div class="col-sm-6" style="margin-right: -25px !important;"></div>
                             <div class="col-sm-2 d-flex justify-content-end">
                                 @if ($jurnal)
@@ -82,7 +82,6 @@
                             </div>
                         </div>
                         @endif
-                        <hr>
                         <div class="row">
                             <div class="col-sm-2">Alamat penagihan</div>
                             <div class="col-sm-2">
@@ -192,7 +191,7 @@
                         </div>
                         @endif
                         <div class="table-responsive">
-                            <table class="table my-4">
+                            <table class="table">
                                 <thead class="thead-light">
                                     <tr>
                                         @if(isset($produk_penawaran))
@@ -381,7 +380,7 @@
                         @if(isset($log))
                         <div class="row my-3">
                             <div class="col-sm-7">
-                                <a href="#" data-toggle="modal" data-target="#logUpdateModal">Terakhir diubah oleh {{ $log->name }} pada {{ date('d F Y h:i:s', strtotime($log->created_at)) }}</a>
+                                <a href="#" data-toggle="modal" data-target="#logUpdateModal">Terakhir diproses oleh {{ $log->name }} pada {{ date('d F Y h:i:s', strtotime($log->created_at)) }}</a>
                             </div>
                         </div>
                         @endif

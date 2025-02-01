@@ -98,7 +98,7 @@
                                                 <th scope="col">No Penawaran</th>
                                                 <th scope="col">No RFQ</th>
                                                 <th scope="col">Pelanggan </th>
-                                                <th scope="col">Berlaku Hingga</th>
+                                                <th scope="col">PIC</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Total</th>
                                                 @if(isset($produk_penawaran))
@@ -114,7 +114,7 @@
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->no_rfq }}</td>
                                                 <td>{{ $v->nama_pelanggan }}</td>
-                                                <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
+                                                <td>{{ $v->pic }}</td>
                                                 <td>
                                                     @if($v->status == 'closed')
                                                     <span class="badge badge-dark text-white">
