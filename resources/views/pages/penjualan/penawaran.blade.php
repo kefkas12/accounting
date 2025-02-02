@@ -42,8 +42,8 @@
                             <div class="form-row">
                                 <label class="form-group has-float-label col-md-3 pr-4">
                                     <span>Pelanggan <span class="text-danger">*</span></span>
-                                    <select class="selectpicker form-control" data-style="btn-white" data-live-search="true" id="pelanggan" name="pelanggan" required>
-                                        <option selected disabled value="">Pilih pelanggan</option>
+                                    <select class="selectpicker form-control" data-style="btn-white" data-live-search="true" id="pelanggan" name="pelanggan" onchange="alamat_pelanggan(this)" required>
+                                        <option selected disabled hidden value="">Pilih pelanggan</option>
                                         @foreach ($pelanggan as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
@@ -77,6 +77,12 @@
                                 </label>
                                 <label class="form-group has-float-label col-md-3 pr-4">
                                     <span>Alamat</span>
+                                    <select class="form-control" id="alamat_penawaran" name="alamat_penawaran">
+                                        <option selected disabled value="">Pilih alamat</option>
+                                    </select>
+                                </label>
+                                <label class="form-group has-float-label col-md-3 pr-4">
+                                    <span>Alamat</span>
                                     <textarea class="form-control" name="alamat" id="alamat"></textarea>
                                 </label>
                                 <label class="form-group has-float-label col-md-3 pr-4" style="display: none">
@@ -92,16 +98,16 @@
                                     <thead>
                                         <tr>
                                             @if(isset($penjualan))
-                                            @if(isset($produk_penawaran))
-                                            <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk Penawaran</th>
-                                            @endif
-                                            <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk</th>
+                                                @if(isset($produk_penawaran))
+                                                <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk Penawaran</th>
+                                                @endif
+                                                <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk</th>
                                             @else
-                                            @if(isset($produk_penawaran))
-                                            <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk Penawaran</th>
-                                            @else
-                                            <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk</th>
-                                            @endif
+                                                @if(isset($produk_penawaran))
+                                                <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk Penawaran</th>
+                                                @else
+                                                <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk</th>
+                                                @endif
                                             @endif
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Deskripsi</th>
                                             <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas</th>
@@ -116,48 +122,48 @@
                                     <tbody id="list">
                                         <tr>
                                             @if(isset($penjualan))
-                                            @if(isset($produk_penawaran))
-                                            <td style="padding: 10px !important;">
-                                                <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_1" onchange="get_data(this, 1)" required>
-                                                    <option selected disabled hidden value="">Pilih produk penawaran</option>
-                                                    @foreach ($produk_penawaran as $v)
-                                                        <option value="{{ $v->id }}">{{ $v->nama }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
-                                            @endif
-                                            <td style="padding: 10px !important;">
-                                                <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)" @if(!isset($produk_penawaran)) required @endif>
-                                                    <option selected disabled hidden value="">Pilih produk</option>
-                                                    @foreach ($produk as $v)
-                                                        <option value="{{ $v->id }}"
-                                                            data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
+                                                @if(isset($produk_penawaran))
+                                                <td style="padding: 10px !important;">
+                                                    <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_1" onchange="get_data(this, 1)" required>
+                                                        <option selected disabled hidden value="">Pilih produk penawaran</option>
+                                                        @foreach ($produk_penawaran as $v)
+                                                            <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                                @endif
+                                                <td style="padding: 10px !important;">
+                                                    <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)" @if(!isset($produk_penawaran)) required @endif>
+                                                        <option selected disabled hidden value="">Pilih produk</option>
+                                                        @foreach ($produk as $v)
+                                                            <option value="{{ $v->id }}"
+                                                                data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
                                             @else
-                                            @if(isset($produk_penawaran))
-                                            <td style="padding: 10px !important;">
-                                                <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_1" onchange="get_data(this, 1)" required>
-                                                    <option selected disabled hidden value="">Pilih produk penawaran</option>
-                                                    @foreach ($produk_penawaran as $v)
-                                                        <option value="{{ $v->id }}">{{ $v->nama }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
-                                            @else
-                                            <td style="padding: 10px !important;">
-                                                <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)" @if(!isset($produk_penawaran)) required @endif>
-                                                    <option selected disabled hidden value="">Pilih produk</option>
-                                                    @foreach ($produk as $v)
-                                                        <option value="{{ $v->id }}"
-                                                            data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
-                                            @endif
+                                                @if(isset($produk_penawaran))
+                                                <td style="padding: 10px !important;">
+                                                    <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_1" onchange="get_data(this, 1)" required>
+                                                        <option selected disabled hidden value="">Pilih produk penawaran</option>
+                                                        @foreach ($produk_penawaran as $v)
+                                                            <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                                @else
+                                                <td style="padding: 10px !important;">
+                                                    <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)" @if(!isset($produk_penawaran)) required @endif>
+                                                        <option selected disabled hidden value="">Pilih produk</option>
+                                                        @foreach ($produk as $v)
+                                                            <option value="{{ $v->id }}"
+                                                                data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                                @endif
                                             @endif
                                             
                                             <td style="padding: 10px !important;">
@@ -724,6 +730,7 @@
                     $('#produk_penawaran_'+x).val('{{ $v->id_produk_penawaran }}').trigger('change');
                     @endif
                     $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
+                    
                     $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
                     $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
                     change_harga(x, {{ $v->harga_satuan }});
@@ -741,5 +748,24 @@
                 load_select_2(1);
             @endif
         });
+
+        function alamat_pelanggan(thisElement) {
+            var selected = $(thisElement).find('option:selected').val();
+            $('#alamat_penawaran').empty();
+            $.ajax({
+                url: '{{ url("pelanggan/alamat_penawaran") }}',
+                type: 'GET',
+                data: {
+                    id: selected
+                },
+                success: function (response) {
+                    $('#alamat_penawaran').append('<option selected disabled hidden value="">Pilih alamat penawaran</option>');
+                    for(var i = 0; i < response.length; i++){
+                        console.log(response[i]);
+                        $('#alamat_penawaran').append('<option value="'+response[i].id+'">'+response[i].alamat+'</option>');
+                    }
+                }
+            });
+        }
     </script>
 @endsection

@@ -103,4 +103,11 @@ class PelangganController extends Controller
 
         return redirect('pelanggan');
     }
+
+    public function alamat_penawaran()
+    {
+        $data['alamat_penawaran'] = Alamat::where('id_kontak', $_GET['id'])
+                                            ->get();
+        return $data['alamat_penawaran'];
+    }
 }

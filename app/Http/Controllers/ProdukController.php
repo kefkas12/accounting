@@ -88,7 +88,13 @@ class ProdukController extends Controller
             $data['produk'] = Produk::where('id', $id)
                                     ->where('id_company',Auth::user()->id_company)
                                     ->first();
-            $data['gudang'] = Gudang::leftJoin('stok_gudang', 'gudang.id', '=', 'stok_gudang.id_gudang')
+            $data['gudang'] = Gudang::leftJoin('stok_gudang', function($join){
+                                    $join->on( 'gudang.id', '=', 'stok_gudang.id_gudang')
+                                        ->where(function($query){
+                                                $query->where('stok_gudang.tipe','like','Faktur Pembelian%')
+                                                    ->orWhere('stok_gudang.tipe','like','Penagihan Pembelian%');
+                                        }); 
+                                    })
                                     ->select('gudang.nama', DB::raw('COALESCE(SUM(CASE WHEN stok_gudang.id_produk = ' . $id . ' THEN stok_gudang.stok ELSE 0 END), 0) as stok'))
                                     ->where('gudang.id_company', Auth::user()->id_company)
                                     ->groupBy('gudang.nama')

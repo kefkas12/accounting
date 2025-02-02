@@ -149,11 +149,12 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::get('/penagihan', 'penagihan');
 
 	Route::get('/penawaran/{id}', 'penawaran');
+	Route::get('/penawaran/pemesanan/{id}', 'penawaran_pemesanan');
 
 	Route::get('/penawaran/cetak/{id}', 'cetak_penawaran');
 	Route::get('/pemesanan/cetak/{id}', 'cetak_pemesanan');
 
-	Route::get('/penawaran/pemesanan/{id}', 'penawaran_pemesanan');
+	Route::get('/pemesanan/{id}', 'pemesanan');
 	Route::get('/pemesanan/pengiriman/{id}', 'pemesanan_pengiriman');
 	Route::get('/pemesanan/penagihan/{id}', 'pemesanan_penagihan');
 	Route::get('/pengiriman/penagihan/{id}', 'pengiriman_penagihan');
@@ -175,6 +176,7 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::post('/pengiriman/penagihan/{id}', 'insert_pengiriman_penagihan');
 
 	Route::post('/pemesanan', 'insert_pemesanan');
+	Route::post('/pemesanan/{id}', 'update_pemesanan');
 
 	Route::post('/status_pengiriman', 'update_status_pengiriman');
 
@@ -208,6 +210,8 @@ Route::controller(PelangganController::class)->prefix('pelanggan')->group(functi
 	Route::post('/insert', 'insert');
 	Route::post('/edit/{id}', 'edit');
 	Route::get('/{status}/{id}', 'detail');
+
+	Route::get('/alamat_penawaran', 'alamat_penawaran');
 });
 
 Route::controller(SupplierController::class)->prefix('supplier')->group(function () {
@@ -225,6 +229,8 @@ Route::controller(ProdukController::class)->prefix('produk')->group(function () 
 	Route::get('/{menu}', 'index');
 	Route::post('/edit/{id}', 'edit');
 	Route::get('/{status}/{id}', 'detail');
+
+
 });
 
 Route::controller(ProdukPenawaranController::class)->prefix('produk_penawaran')->group(function () {

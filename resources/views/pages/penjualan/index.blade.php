@@ -10,9 +10,9 @@
             <div class="col">
                 <div class="card mb-5">
                     <div class="card-header border-0" style="padding: 1rem 0.5rem">
-                        <div class="row mb-3">
+                        <div class="row mb-3 pb-3" style="border-bottom: 1px solid rgb(199, 206, 215);">
                             <div class="col">
-                                <b>Penjualan</b>
+                                <h2 class="text-primary"><strong>Penjualan</strong></h2>
                             </div>
                             <div class="col d-flex justify-content-end ">
                                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Buat penjualan baru</button>
@@ -162,7 +162,7 @@
                                                     @if($v->status == 'closed')
                                                     <span class="badge badge-dark text-white">
                                                     @else
-                                                    <span class="badge badge-success">
+                                                    <span class="badge text-white" style="background-color: #F59E0B">
                                                     @endif
                                                     {{ $v->status }}
                                                     </span>
@@ -205,7 +205,7 @@
                                                     @if($v->status == 'closed')
                                                     <span class="badge badge-dark text-white">
                                                     @else
-                                                    <span class="badge badge-success">
+                                                    <span class="badge text-white" style="background-color: #F59E0B">
                                                     @endif
                                                     {{ $v->status }}
                                                     </span>

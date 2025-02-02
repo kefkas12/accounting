@@ -60,10 +60,10 @@
                     </div>
                     <div class="card-body " style="font-size: 14px;">
                         <div class="row border-bottom mb-3 pb-3">
-                            <div class="col-sm-2">Pelanggan <br> PIC @if($penjualan->no_rfq) <br> No RFQ @endif</div>
-                            <div class="col-sm-2"><strong>{{ $penjualan->nama_pelanggan }}</strong> <br> <strong>{{ $penjualan->pic }}</strong> @if($penjualan->no_rfq) <br> <strong>{{ $penjualan->no_rfq }}</strong>@endif</div>
-                            <div class="col-sm-2">Email</div>
-                            <div class="col-sm-2"><strong>{{ $penjualan->email }}</strong></div>
+                            <div class="col-sm-2">Pelanggan <br> PIC</div>
+                            <div class="col-sm-2"><strong>{{ $penjualan->nama_pelanggan }}</strong> <br> <strong>{{ $penjualan->pic }}</strong></div>
+                            <div class="col-sm-2">Email @if($penjualan->no_rfq) <br> No RFQ @endif</div>
+                            <div class="col-sm-2"><strong>{{ $penjualan->email }}</strong> @if($penjualan->no_rfq) <br> <strong>{{ $penjualan->no_rfq }}</strong>@endif</div>
                             <div class="col-sm-2" style="margin-right: -25px !important;">@if($penjualan->jenis != 'pengiriman') @if($penjualan->jenis == 'penawaran') Total @else Sisa tagihan @endif @else Ongkos Kirim @endif</div>
                             <div class="col-sm-2 d-flex justify-content-end">
                                 @if($penjualan->jenis != 'pengiriman')<strong> Rp. {{ number_format($penjualan->sisa_tagihan, 2, ',', '.') }}</strong> @else <strong> Rp. {{ number_format($penjualan->ongkos_kirim, 2, ',', '.') }}</strong> @endif
@@ -142,18 +142,13 @@
                         </div>
                         @if($penjualan->jenis == 'pemesanan' || $penjualan->jenis == 'pengiriman')
                         <div class="row my-3">
-                            <div class="col-sm-2">
-                                @if($penjualan->kirim_melalui)
-                                Kirim melalui
-                                @endif
-                            </div>
-                            <div class="col-sm-2">
-                                @if($penjualan->kirim_melalui)
-                                <strong>{{ $penjualan->kirim_melalui }}</strong>
-                                @else
-                                -
-                                @endif
-                            </div>
+                            @if($penjualan->kirim_melalui)
+                            <div class="col-sm-2">Kirim melalui</div>
+                            <div class="col-sm-2"><strong>{{ $penjualan->kirim_melalui }}</strong></div>
+                            @else
+                            <div class="col-sm-4"></div>
+                            @endif
+                            
                             @if($penjualan->id_gudang)
                             <div class="col-sm-2">Gudang</div>
                             <div class="col-sm-2">
@@ -194,7 +189,7 @@
                             <table class="table">
                                 <thead class="thead-light">
                                     <tr>
-                                        @if(isset($produk_penawaran))
+                                        @if($penjualan->jenis == 'penawaran' && isset($produk_penawaran))
                                         <th>Produk Penawaran</th>
                                         @endif
                                         <th>Produk</th>
@@ -212,7 +207,7 @@
                                 <tbody>
                                     @foreach($penjualan->detail_penjualan as $v)
                                         <tr>
-                                            @if(isset($produk_penawaran))
+                                            @if($penjualan->jenis == 'penawaran' && isset($produk_penawaran))
                                             <th>@if(isset($v->produk_penawaran))<a href="{{ url('produk_penawaran').'/detail/'.$v->produk_penawaran->id }}">{{ $v->produk_penawaran->nama }}</a>@else - @endif</th>
                                             @endif
                                             <th>@if(isset($v->produk))<a href="{{ url('produk').'/detail/'.$v->produk->id }}">{{ $v->produk->nama }}</a>@else - @endif</th>
@@ -243,8 +238,8 @@
                         <hr>
                         @if($penjualan->jenis == 'pengiriman')
                         <div class="row my-3">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2">Pesan</div>
+                            <div class="col-sm-2">@if($penjualan->pesan){{ $penjualan->pesan }} @else - @endif</div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2" style="margin-right: -25px !important;">
@@ -255,8 +250,8 @@
                             </div>
                         </div>
                         <div class="row my-3">
-                            <div class="col-sm-2">Pesan</div>
-                            <div class="col-sm-2">@if($penjualan->pesan){{ $penjualan->pesan }} @else - @endif</div>
+                            <div class="col-sm-2">Memo</div>
+                            <div class="col-sm-2">@if($penjualan->pesan){{ $penjualan->memo }} @else - @endif</div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2" style="margin-right: -25px !important;">
@@ -266,12 +261,24 @@
                         <form method="POST" action="{{ url('penjualan/status_pengiriman') }}">
                             @csrf
                             <div class="row my-3">
-                                <div class="col-sm-2">Memo</div>
-                                <div class="col-sm-2">@if($penjualan->pesan){{ $penjualan->memo }} @else - @endif</div>
-                                <div class="col-sm-2"></div>
-                                <div class="col-sm-2"></div>
-                                <div class="col-sm-2" style="margin-right: -25px !important;">Update Status Pengiriman</div>
                                 <div class="col-sm-2">
+                                @if(isset($dokumen_penjualan))
+                                    @foreach($dokumen_penjualan as $v) 
+                                        Dokumen {{ $loop->index+1 }} <br>
+                                    @endforeach
+                                @endif
+                                </div>
+                                <div class="col-sm-2">
+                                @if(isset($dokumen_penjualan))
+                                    @foreach($dokumen_penjualan as $v) 
+                                    <a href="{{ asset('storage/uploads') }}/{{ $v->nama }}" target="_blank"> {{ $v->dokumen->nama }}</a> <br>
+                                    @endforeach
+                                @endif
+                                </div>
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-4 has-float-label">
+                                    <span>Update Status Pengiriman  </span>
                                     <select class="form-control" name="status_pengiriman" id="status_pengiriman">
                                         @foreach($pengaturan_status_pengiriman as $v)
                                         <option value="{{ $v->id }}">{{ $v->nama }}</option>
@@ -280,9 +287,11 @@
                                 </div>
                             </div>
                             <div class="row my-3">
-                                <div class="col-sm-8"></div>
-                                <div class="col-sm-2" style="margin-right: -25px !important;">Gudang</div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-4 has-float-label">
+                                    <span>Gudang </span>
                                     <select class="form-control" name="gudang" id="gudang">
                                         @foreach($gudang as $v)
                                         <option value="{{ $v->id }}">{{ $v->nama }}</option>
@@ -320,8 +329,20 @@
                         </div>
                         @if ($penjualan->diskon_per_baris)
                         <div class="row my-3">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
+                            <div class="col-sm-2">
+                                @if(isset($dokumen_penjualan))
+                                @foreach($dokumen_penjualan as $v) 
+                                    {{ $v->dokumen->nama }} 
+                                @endforeach
+                                @endif
+                            </div>
+                            <div class="col-sm-2">
+                                @if(isset($dokumen_penjualan))
+                                @foreach($dokumen_penjualan as $v) 
+                                <a href="{{ asset('storage/uploads') }}/{{ $v->nama }}" target="_blank">Dokumen {{ $loop->index+1 }}</a>
+                                @endforeach
+                                @endif
+                            </div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2" style="margin-right: -25px !important;">
@@ -333,8 +354,26 @@
                         </div>
                         @endif
                         <div class="row my-3">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
+                            @if (!$penjualan->diskon_per_baris)
+                            <div class="col-sm-2">
+                                @if(isset($dokumen_penjualan))
+                                @foreach($dokumen_penjualan as $v) 
+                                    {{ $v->dokumen->nama }} 
+                                @endforeach
+                                @endif
+                            </div>
+                            <div class="col-sm-2">
+                                @if(isset($dokumen_penjualan))
+                                @foreach($dokumen_penjualan as $v) 
+                                <a href="{{ asset('storage/uploads') }}/{{ $v->nama }}" target="_blank">Dokumen {{ $loop->index+1 }}</a>
+                                @endforeach
+                                @endif
+                            </div>
+                            @else
+                            <div class="col-sm-4">
+                                
+                            </div>
+                            @endif
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2" style="margin-right: -25px !important;">
@@ -482,9 +521,10 @@
                             </div>
                             @else
                             <div class="col-sm-6 d-flex justify-content-end">
+                                @if($penjualan->status == 'draf' || $penjualan->status == 'open')
                                 <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
+                                @endif
                                 @if($penjualan->jenis == 'penawaran' || $penjualan->jenis == 'pemesanan')
-                                <a href="#" class="btn btn-outline-primary">Upload</a>
                                 <div class="btn-group dropup mr-2">
                                     <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
                                         aria-expanded="false">

@@ -9,4 +9,9 @@ class Alamat extends Model
 {
     use HasFactory;
     protected $table = 'alamat';
+
+    protected $fillable = [
+        'id_kontak',
+        'alamat'
+    ];
 }

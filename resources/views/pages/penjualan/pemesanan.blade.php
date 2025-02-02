@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </div>
-                    <form method="POST"
+                    <form method="POST" 
                         @if(isset($penawaran))
                             action="{{ url('penjualan/penawaran').'/pemesanan/'.$penjualan->id }}"
                         @elseif(isset($penjualan))
@@ -37,13 +37,15 @@
                             action="{{ url('penjualan/pemesanan') }}"
                         @endif
                         id="insertForm"
+                        enctype="multipart/form-data"
                     >
                         @csrf
                         <div class="card-body">
-                        <div class="form-row border-bottom border-top border-left border-right text-center pt-3 mb-3">
+                            @if(isset($penawaran))
+                            <div class="form-row border-bottom border-top border-left border-right text-center pt-3 mb-3">
                                 <div class="col-md-3 border-right">
                                     <div class="form-group">
-                                        @if(isset($penawaran))
+                                        @if($penjualan->no_str)
                                             <label>No Penawaran Penjualan</label> <br>
                                             <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
                                         @endif
@@ -51,42 +53,59 @@
                                 </div>
                                 <div class="col-md-3 border-right">
                                     <div class="form-group">
-                                        @if(isset($penawaran) && $penjualan->alamat)
-                                            <label>Alamat Penawaran</label> <br>
-                                            <span class="text-primary">{{ $penjualan->alamat }}</span>
+                                        <label>Alamat Penawaran</label> <br>
+                                        <span class="text-primary">
+                                        @if($penjualan->alamat)
+                                            {{ $penjualan->alamat }}
+                                        @else
+                                            -
                                         @endif
+                                        </span>
                                     </div>  
                                 </div>
                                 <div class="col-md-2 border-right">
                                     <div class="form-group">
-                                        @if(isset($penawaran) && $penjualan->no_rfq)
-                                            <label>No RFQ</label> <br>
-                                            <span class="text-primary">{{ $penjualan->no_rfq }}</span>
+                                        <label>No RFQ</label> <br>
+                                        <span class="text-primary">
+                                        @if($penjualan->no_rfq)
+                                            {{ $penjualan->no_rfq }}
+                                        @else
+                                            -
                                         @endif
+                                        </span>
                                     </div>
                                 </div>
                                 
                                 <div class="col-md-2 border-right">
                                     <div class="form-group">
-                                        @if(isset($penawaran) && $penjualan->pesan)
-                                            <label>Pesan Penawaran</label> <br>
-                                            <span class="text-primary">{{ $penjualan->pesan }}</span>
+                                        <label>Pesan Penawaran</label> <br>
+                                        <span class="text-primary">
+                                        @if($penjualan->pesan)
+                                            {{ $penjualan->pesan }}
+                                        @else
+                                            -
                                         @endif
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="col-md-2 border-right">
                                     <div class="form-group">
-                                        @if(isset($penawaran) && $penjualan->memo)
-                                            <label>Memo Penawaran</label> <br>
-                                            <span class="text-primary">{{ $penjualan->memo }}</span>
+                                        <label>Memo Penawaran</label> <br>
+                                        <span class="text-primary">
+                                        @if($penjualan->memo)
+                                            {{ $penjualan->memo }}
+                                        @else
+                                            -
                                         @endif
+                                        </span>
                                     </div>
                                 </div>
                             </div>
+                            @endif
                             <div class="form-row border-bottom mb-3">
                                 <div class="form-group has-float-label col-md-3 pr-2">
                                     <span>Pelanggan <span class="text-danger">*</span></span>
-                                    <select class="selectpicker form-control" data-style="btn-white" data-live-search="true" id="pelanggan" name="pelanggan" required @if(isset($penawaran)) disabled @endif>
+                                    <select class="form-control" id="pelanggan" name="pelanggan" required @if(isset($penawaran)) disabled @endif>
                                         <option selected disabled value="">Pilih pelanggan</option>
                                         @foreach ($pelanggan as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
@@ -141,7 +160,7 @@
                                         name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                 </div>
                                 <div class="col-md-3 pr-2">
-                                    <div class="form-group has-float-label">
+                                    <div class="form-group has-float-label" style="display:none">
                                         <span>Gudang</span>
                                         <select class="form-control" id="gudang" name="gudang">
                                             <option selected disabled hidden>Pilih Gudang</option>
@@ -173,18 +192,75 @@
                                     </div>
                                 </div>
                             </div>
+                            @if(isset($produk_penawaran) && isset($detail_penjualan[0]->produk_penawaran))
+                                Referensi Produk Penawaran
+                                <table class="table table-striped table-dark">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Produk Penawaran</th>
+                                            <th>Deskripsi</th>
+                                            <th>Kuantitas</th>
+                                            <th>Harga Satuan</th>
+                                            <th>% Diskon</th>
+                                            <th>Nilai Diskon</th>
+                                            <th>Pajak</th>
+                                            <th>Jumlah</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    @if(isset($penawaran))
+                                        @foreach($detail_penjualan as $v)
+                                            <tr>
+                                                <td>{{ $loop->index+1 }}</td>
+                                                <td>{{ $v->produk_penawaran->nama }}</td>
+                                                <td>{{ $v->deskripsi }}</td>
+                                                <td>{{ $v->kuantitas }}</td>
+                                                <td>Rp {{ number_format($v->harga_satuan,0,',','.') }}</td>
+                                                <td>{{ $v->diskon_per_baris }}</td>
+                                                <td>Rp {{ number_format($v->nilai_diskon_per_baris,0,',','.') }}</td>
+                                                <td>@if($v->pajak != 0) 11 @else 0 @endif</td>
+                                                <td>Rp {{ number_format($v->jumlah,0,',','.') }}</td>
+                                            </tr>
+                                        @endforeach
+                                    @elseif(isset($detail_penawaran))
+                                        @foreach($detail_penawaran as $v)
+                                            <tr>
+                                                <td>{{ $loop->index+1 }}</td>
+                                                <td>{{ $v->produk_penawaran->nama }}</td>
+                                                <td>{{ $v->deskripsi }}</td>
+                                                <td>{{ $v->kuantitas }}</td>
+                                                <td>Rp {{ number_format($v->harga_satuan,0,',','.') }}</td>
+                                                <td>{{ $v->diskon_per_baris }}</td>
+                                                <td>Rp {{ number_format($v->nilai_diskon_per_baris,0,',','.') }}</td>
+                                                <td>@if($v->pajak != 0) 11 @else 0 @endif</td>
+                                                <td>Rp {{ number_format($v->jumlah,0,',','.') }}</td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
+                                    </tbody>
+                                    
+                                </table>
+                            @endif
 
-                            <div style="overflow: auto">
+                            <div class="mt-3" style="overflow: auto">
                                 <table class="table align-items-center table-flush">
                                     <!-- Your table headers -->
                                     <thead>
                                         <tr>
                                             <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk</th>
-                                            @if(isset($penawaran) && isset($produk_penawaran))
-                                            <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk penawaran</th>
-                                            @endif
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Deskripsi</th>
+                                            @if(isset($multiple_gudang))
+                                                @if(isset($gudang))
+                                                    @foreach($gudang as $v)
+                                                    <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas {{ $v->nama }}</th>
+                                                    @endforeach
+                                                @else
+                                                    <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas</th>
+                                                @endif
+                                            @else
                                             <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas</th>
+                                            @endif
                                             <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Harga Satuan</th>
                                             <th scope="col" style="min-width: 150px !important; padding: 10px !important;">% Diskon</th>
                                             <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Nilai Diskon</th>
@@ -196,7 +272,7 @@
                                     <tbody id="list">
                                         <tr>
                                             <td style="padding: 10px !important;">
-                                                <select class="form-control" name="produk[]" id="produk_1" @if(!isset($produk_penawaran)) required @endif>
+                                                <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)" required>
                                                     <option selected disabled hidden>Pilih produk</option>
                                                     @foreach ($produk as $v)
                                                         <option value="{{ $v->id }}"
@@ -205,22 +281,23 @@
                                                     @endforeach
                                                 </select>
                                             </td>
-                                            @if(isset($penawaran) && isset($produk_penawaran))
-                                            <td style="padding: 10px !important;">
-                                                <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_1" disabled
-                                                    required>
-                                                    <option selected disabled hidden>Pilih produk penawaran</option>
-                                                    @foreach ($produk_penawaran as $v)
-                                                        <option value="{{ $v->id }}">{{ $v->nama }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
-                                            @endif
                                             <td style="padding: 10px !important;">
                                                 <textarea class="form-control" name="deskripsi[]" id="deskripsi_1" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                                             </td>
+                                            @if(isset($multiple_gudang))
+                                                @if(isset($gudang))
+                                                    @foreach($gudang as $v)
+                                                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_{{ $v->id }}_1"
+                                                            name="kuantitas_{{ $v->id }}[]" @if($loop->index == 0) value="1" @endif onkeyup="change_harga(1)" onblur="check_null(this)" step="any"></td>
+                                                    @endforeach
+                                                @else
+                                                <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_1"
+                                                        name="kuantitas[]" value="1" onkeyup="change_harga(1)" onblur="check_null(this)" step="any"></td>
+                                                @endif
+                                            @else
                                             <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_1"
                                                     name="kuantitas[]" value="1" onkeyup="change_harga(1)" onblur="check_null(this)" step="any"></td>
+                                            @endif
                                             <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_1"
                                                     name="harga_satuan[]" value="0" onblur="change_harga(1)"></td>
                                             <td style="padding: 10px !important;">
@@ -243,7 +320,7 @@
                                                         onkeyup="change_nilai_diskon_per_baris(1)" onblur="check_null(this)" 
                                                         step="any">
                                                 </div>
-                                        </td>
+                                            </td>
                                             <td style="padding: 10px !important;">
                                                 <select class="form-control" id="pajak_1" name="pajak[]"
                                                     onchange="get_pajak(this, 1)" required>
@@ -261,6 +338,7 @@
                             <hr>
                             <div class="row">
                                 <div class="col">
+                                    @if(isset($pengaturan_dokumen))
                                     @foreach($pengaturan_dokumen as $v)
                                     <div class="form-group has-float-label">
                                         <span>Upload {{ $v->nama }}</span>
@@ -268,6 +346,7 @@
                                         <input type="number" name="id_dokumen[]" value="{{ $v->id }}" hidden id="id_{{ $v->id }}">
                                     </div>
                                     @endforeach
+                                    @endif
                                     <div class="form-group has-float-label">
                                         <span>Pesan</span>
                                         <textarea class="form-control" name="pesan" id="pesan"></textarea>
@@ -348,7 +427,7 @@
         var result_subtotal = 0;
         var result_ppn = 0;
         var result_diskon_per_baris = 0;
-
+        var kuantitas_array = [];
 
         function load() {
 
@@ -383,26 +462,21 @@
 
         function load_select_2(id) {
             @if(isset($penjualan))
-            $("#produk_penawaran_" + id).select2({
-                allowClear: true,
-                placeholder: 'Pilih produk penawaran'
-            });
-            $("#produk_" + id).select2({
-                allowClear: true,
-                placeholder: 'Pilih produk'
-            });
-            @else
-            @if(isset($produk_penawaran))
-            $("#produk_penawaran_" + id).select2({
-                allowClear: true,
-                placeholder: 'Pilih produk penawaran'
-            });
-            @else
-            $("#produk_" + id).select2({
-                allowClear: true,
-                placeholder: 'Pilih produk'
-            });
-            @endif
+                @if(isset($produk_penawaran))
+                    $("#produk_penawaran_" + id).select2({
+                        allowClear: true,
+                        placeholder: 'Pilih produk penawaran'
+                    });
+                @endif
+                $("#produk_" + id).select2({
+                    allowClear: true,
+                    placeholder: 'Pilih produk'
+                });
+            @else            
+                $("#produk_" + id).select2({
+                    allowClear: true,
+                    placeholder: 'Pilih produk'
+                });
             @endif
             
             new AutoNumeric("#harga_satuan_" + id, {
@@ -424,7 +498,21 @@
             AutoNumeric.set('#harga_satuan_' + no,selected);
             AutoNumeric.set('#jumlah_' + no,selected);
 
-            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0 ;
+            @if(isset($multiple_gudang))
+                @if(isset($gudang))
+                    @foreach($gudang as $v)
+                        kuantitas_array[{{ $loop->index }}] = $('#kuantitas_{{ $v->id }}_' + no).val() ? parseFloat($('#kuantitas_{{ $v->id }}_' + no).val()) : 0;
+                    @endforeach
+                    kuantitas = kuantitas_array.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue
+                    },0);
+                @else
+                    kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+                @endif
+            @else
+                kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            @endif
+
             subtotal[no] = kuantitas * parseFloat(selected);
 
             float_diskon_per_baris = parseFloat($('#diskon_per_baris_' + no).val()) || 0;
@@ -448,12 +536,27 @@
         }
 
         function change_harga(no, val_harga_satuan = null) {
-            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            @if(isset($multiple_gudang))
+                @if(isset($gudang))
+                    @foreach($gudang as $v)
+                        kuantitas_array[{{ $loop->index }}] = $('#kuantitas_{{ $v->id }}_' + no).val() ? parseFloat($('#kuantitas_{{ $v->id }}_' + no).val()) : 0;
+                    @endforeach
+                    kuantitas = kuantitas_array.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue
+                    },0);
+                @else
+                    kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+                @endif
+            @else
+                kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            @endif
+            
             if(val_harga_satuan){
                 AutoNumeric.set('#harga_satuan_' + no,val_harga_satuan);
             }else{
                 AutoNumeric.set('#harga_satuan_' + no,AutoNumeric.getNumber('#harga_satuan_' + no));
             }
+
             subtotal[no] = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
             diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
             diskon_per_baris[no] = subtotal[no] * diskon / 100;
@@ -464,7 +567,20 @@
 
         function change_jumlah(no) {
             AutoNumeric.set('#jumlah_' + no,AutoNumeric.getNumber('#jumlah_' + no));
-            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            @if(isset($multiple_gudang))
+                @if(isset($gudang))
+                    @foreach($gudang as $v)
+                        kuantitas_array[{{ $loop->index }}] = $('#kuantitas_{{ $v->id }}_' + no).val() ? parseFloat($('#kuantitas_{{ $v->id }}_' + no).val()) : 0;
+                    @endforeach
+                    kuantitas = kuantitas_array.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue
+                    },0);
+                @else
+                    kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+                @endif
+            @else
+                kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            @endif
             diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
             
             AutoNumeric.set('#harga_satuan_' + no, (100/(100-diskon)) * AutoNumeric.getNumber('#jumlah_' + no) / kuantitas);
@@ -476,7 +592,20 @@
         }
 
         function change_diskon_per_baris(no) {
-            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            @if(isset($multiple_gudang))
+                @if(isset($gudang))
+                    @foreach($gudang as $v)
+                        kuantitas_array[{{ $loop->index }}] = $('#kuantitas_{{ $v->id }}_' + no).val() ? parseFloat($('#kuantitas_{{ $v->id }}_' + no).val()) : 0;
+                    @endforeach
+                    kuantitas = kuantitas_array.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue
+                    },0);
+                @else
+                    kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+                @endif
+            @else
+                kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            @endif
             // harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
             var subtotal = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
             diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
@@ -493,7 +622,21 @@
         }
 
         function change_nilai_diskon_per_baris(no) {
-            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            @if(isset($multiple_gudang))
+                @if(isset($gudang))
+                    @foreach($gudang as $v)
+                        kuantitas_array[{{ $loop->index }}] = $('#kuantitas_{{ $v->id }}_' + no).val() ? parseFloat($('#kuantitas_{{ $v->id }}_' + no).val()) : 0;
+                    @endforeach
+                    kuantitas = kuantitas_array.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue
+                    },0);
+                @else
+                    kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+                @endif
+            @else
+                kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            @endif
+
             var subtotal = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
             nilai_diskon = $('#nilai_diskon_per_baris_' + no).val() ? parseFloat($('#nilai_diskon_per_baris_' + no).val()) : 0;
             diskon_per_baris[no] = nilai_diskon;
@@ -549,60 +692,6 @@
 
         function create_row() {
             i++;
-            @if(isset($penawaran) && isset($produk_penawaran))
-            $('#list').append(`
-                <tr id="list_${i}">
-                    <th style="padding: 10px !important;">
-                        <select class="form-control" name="produk[]" id="produk_${i}" required>
-                            <option selected disabled hidden>Pilih produk</option>
-                            @foreach ($produk as $v)
-                                <option value="{{ $v->id }}" data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}</option>
-                            @endforeach
-                        </select>
-                    </th>
-                    <th style="padding: 10px !important;">
-                        <select class="form-control" name="produk_penawaran[]" id="produk_penawaran_${i}" disabled>
-                            <option selected disabled hidden>Pilih produk penawaran</option>
-                            @foreach ($produk_penawaran as $v)
-                                <option value="{{ $v->id }}">{{ $v->nama }}</option>
-                            @endforeach
-                        </select>
-                    </th>
-                    <td style="padding: 10px !important;">
-                        <textarea class="form-control" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
-                    </td>
-                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
-                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_harga(${i})"></td>
-                    <td style="padding: 10px !important;">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">%</span>
-                            </div>
-                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
-                        </div>
-                    </td>
-                    <td style="padding: 10px !important;">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">Rp</span>
-                            </div>
-                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
-                        </div>
-                    </td>
-                    <td style="padding: 10px !important;">
-                        <select class="form-control" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required>
-                            <option value="0" data-persen="0" >Pilih pajak</option>
-                            <option value="11" data-persen="11">PPN</option>
-                        </select>
-                    </td>
-                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})"></td>
-                    <td style="padding: 10px !important;">
-                        <a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>
-                        <a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a>
-                    </td>
-                </tr>
-            `);
-            @else
             $('#list').append(`
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
@@ -616,7 +705,17 @@
                     <td style="padding: 10px !important;">
                         <textarea class="form-control" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                     </td>
-                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
+                    @if(isset($multiple_gudang))
+                        @if(isset($gudang))
+                            @foreach($gudang as $v)
+                                <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_{{ $v->id }}_${i}" name="kuantitas_{{ $v->id }}[]" @if($loop->index == 0) value="1" @endif onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
+                            @endforeach
+                        @else
+                            <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
+                        @endif
+                    @else
+                        <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
+                    @endif
                     <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_harga(${i})"></td>
                     <td style="padding: 10px !important;">
                         <div class="input-group">
@@ -647,7 +746,6 @@
                     </td>
                 </tr>
             `);
-            @endif
             load_select_2(i);
         };
 
@@ -667,42 +765,38 @@
                 $('#alamat_pengiriman').show();
                 $('.alamat_pengiriman').show();
             }
-        })
+        });
 
         $( document ).ready(function() {
             $('#info_pengiriman').prop('checked', true).trigger("change");
-        });
-
-        
-        $( document ).ready(function() {
             @if(isset($penjualan))
-            $('#pelanggan').selectpicker('val','{{ $penjualan->id_pelanggan }}')
-            $('#email').val('{{ $penjualan->email }}')
-            $('#alamat').val('{{ $penjualan->alamat }}')
-            $('#tanggal_transaksi').val('{{ $penjualan->tanggal_transaksi }}')
-            $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
-            $('#gudang').val('{{ $penjualan->id_gudang }}')
+                $('#pelanggan').val('{{ $penjualan->id_pelanggan }}')
+                $('#email').val('{{ $penjualan->email }}')
+                $('#alamat').val('{{ $penjualan->alamat }}')
+                $('#tanggal_transaksi').val('{{ $penjualan->tanggal_transaksi }}')
+                $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
+                $('#gudang').val('{{ $penjualan->id_gudang }}')
 
-            var x = 1;
-            load_select_2(x);
-            @foreach($detail_penjualan as $v)
-                $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
-                @if(isset($penawaran) && isset($produk_penawaran))
-                $('#produk_penawaran_'+x).val('{{ $v->id_produk_penawaran }}').trigger('change');
+                var x = 1;
+                load_select_2(x);
+                @if(!isset($produk_penawaran) || isset($detail_penawaran) || !isset($detail_penjualan->id_produk_penawaran))
+                    @foreach($detail_penjualan as $v)
+                        $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
+                        $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
+                        $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
+                        $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').blur();
+                        $('#diskon_per_baris_'+x).val('{{ $v->diskon_per_baris }}').trigger('keyup');
+                        @if($v->pajak != 0)
+                            $('#pajak_'+x).val('11').trigger('change');
+                        @else
+                            $('#pajak_'+x).val('0').trigger('change');
+                        @endif
+                        create_row();
+                        x++;
+                    @endforeach
+                    
                 @endif
-                $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
-                $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
-                $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').trigger('keyup');
-                $('#diskon_per_baris_'+x).val('{{ $v->diskon_per_baris }}').trigger('keyup');
-                @if($v->pajak != 0)
-                    $('#pajak_'+x).val('11').trigger('change');
-                @else
-                    $('#pajak_'+x).val('0').trigger('change');
-                @endif
-                create_row();
-                x++;
-            @endforeach
-            hapus(x);
+                hapus(x);
             @else
                 load_select_2(1);
             @endif
