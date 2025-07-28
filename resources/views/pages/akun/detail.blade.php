@@ -85,7 +85,7 @@
                                                 </div>
                                             </td>
                                             <td class="text-right">{{ number_format($v->debit,2,',','.') }}</td>
-                                            <td class="text-right">{{ number_format($v->kredit,2,',','.') }}</td>
+                                            <td class="text-right text-danger">{{ number_format($v->kredit,2,',','.') }}</td>
                                             @php
                                             $saldo = $saldo + $v->debit - $v->kredit;
                                             @endphp

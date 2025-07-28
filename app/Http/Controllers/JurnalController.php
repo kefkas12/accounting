@@ -73,6 +73,7 @@ class JurnalController extends Controller
         }
         DB::commit();
         return redirect('laporan/jurnal');
+        //return redirect('jurnal/insert');
     }
 
     public function edit($id){
