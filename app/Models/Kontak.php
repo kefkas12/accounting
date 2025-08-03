@@ -21,8 +21,8 @@ class Kontak extends Model
         return $this->hasMany(Pembelian::class, 'id_supplier');
     }
 
-    public function alamat(): HasMany
+    public function additional_alamat(): HasMany
     {
-        return $this->hasMany(Pembelian::class, 'id_supplier');
+        return $this->hasMany(Alamat::class, 'id_kontak');
     }
 }

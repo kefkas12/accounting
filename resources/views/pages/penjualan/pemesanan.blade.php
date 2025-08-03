@@ -2,6 +2,14 @@
 
 @section('content')
     @include('layouts.headers.cards')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <style>
+        .select2-container {
+            width: 200px !important;
+        }
+    </style>
     <!-- Page content -->
     <div class="mt--6">
         <!-- Dark table -->
@@ -105,8 +113,8 @@
                             <div class="form-row border-bottom mb-3">
                                 <div class="form-group has-float-label col-md-3 pr-2">
                                     <span>Pelanggan <span class="text-danger">*</span></span>
-                                    <select class="form-control" id="pelanggan" name="pelanggan" required @if(isset($penawaran)) disabled @endif>
-                                        <option selected disabled value="">Pilih pelanggan</option>
+                                    <select class="selectpicker form-control form-control-sm" data-style="btn-white" data-live-search="true" id="pelanggan" name="pelanggan" onchange="alamat_pelanggan(this)" required @if(isset($penawaran)) disabled @endif>
+                                        <option selected disabled hidden value="">Pilih pelanggan</option>
                                         @foreach ($pelanggan as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
@@ -115,7 +123,7 @@
                                 </div>
                                 <div class="form-group has-float-label col-md-3 pr-2">
                                     <span>Email</span>
-                                    <input type="email" class="form-control" id="email" name="email">
+                                    <input type="email" class="form-control form-control-sm" id="email" name="email">
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
@@ -133,36 +141,36 @@
                             </div>
                             
                             <div class="form-row">
-                                <div class="col-md-3 pr-4">
+                                <div class="col-md-3 pr-2">
                                     <div class="form-group has-float-label">
-                                        <span>Alamat Pemesanan</span>
-                                        <textarea class="form-control" name="alamat" id="alamat"></textarea>
+                                        <label for="alamat">Alamat Pemesanan</label>
+                                        <textarea class="form-control form-control-sm" name="alamat" id="alamat"></textarea>
                                     </div>
                                     <div class="form-group has-float-label info_pengiriman" style="display:none">
                                         <span class="alamat_pengiriman" style="display:none">Alamat Pengiriman</span>
-                                        <textarea class="form-control" name="alamat_pengiriman" id="alamat_pengiriman" style="display:none"></textarea>
+                                        <textarea class="form-control form-control-sm" name="alamat_pengiriman" id="alamat_pengiriman" style="display:none"></textarea>
                                     </div>
-                                    <div class="form-check mb-4" >
+                                    <div class="form-check mb-4 text-sm" >
                                         <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
                                         <label class="form-check-label" for="sama_dengan_penagihan">
-                                        Alamat Pengiriman sama dengan pemesanan
+                                            Alamat Pengiriman sama dengan pemesanan
                                         </label>
                                     </div>
                                 </div>
                                 <div class="form-group has-float-label col-md-3 pr-2">
                                     <span>Tgl. transaksi</span>
-                                    <input type="date" class="form-control" id="tanggal_transaksi"
-                                        name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
+                                    <input type="date" class="form-control form-control-sm" id="tanggal_transaksi"
+                                        name="tanggal_transaksi" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
                                 </div>
                                 <div class="form-group has-float-label col-md-2 pr-2" hidden>
                                     <span>Tgl. jatuh tempo</span>
-                                    <input type="date" class="form-control" id="tanggal_jatuh_tempo"
-                                        name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
+                                    <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
+                                        name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                 </div>
                                 <div class="col-md-3 pr-2">
-                                    <div class="form-group has-float-label" style="display:none">
+                                    <div class="form-group has-float-label">
                                         <span>Gudang</span>
-                                        <select class="form-control" id="gudang" name="gudang">
+                                        <select class="form-control form-control-sm" id="gudang" name="gudang">
                                             <option selected disabled hidden>Pilih Gudang</option>
                                             @if(isset($gudang))
                                             @foreach($gudang as $v)
@@ -175,20 +183,20 @@
                                     </div>
                                     <div class="form-group has-float-label info_pengiriman" style="display:none">
                                         <span>Tgl. pengiriman</span>
-                                        <input type="date" class="form-control" id="tanggal_pengiriman"
-                                            name="tanggal_pengiriman" value="{{ date('Y-m-d') }}">
+                                        <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
+                                            name="tanggal_pengiriman" style="background-color: #ffffff !important;">
                                     </div>
                                     
                                 </div>
                                 <div class="col-md-3 info_pengiriman" style="display:none">
                                     <div class="form-group has-float-label">
                                         <span>Kirim melalui</span>
-                                        <input type="text" class="form-control" id="kirim_melalui"
+                                        <input type="text" class="form-control form-control-sm" id="kirim_melalui"
                                             name="kirim_melalui">
                                     </div>
                                     <div class="form-group has-float-label">
                                         <span>No. pelacakan</span>
-                                        <input type="text" class="form-control" id="no_pelacakan" name="no_pelacakan">
+                                        <input type="text" class="form-control form-control-sm" id="no_pelacakan" name="no_pelacakan">
                                     </div>
                                 </div>
                             </div>
@@ -248,31 +256,31 @@
                                     <!-- Your table headers -->
                                     <thead>
                                         <tr>
-                                            <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk</th>
-                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Deskripsi</th>
+                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Produk</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Deskripsi</th>
                                             @if(isset($multiple_gudang))
                                                 @if(isset($gudang))
                                                     @foreach($gudang as $v)
-                                                    <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas {{ $v->nama }}</th>
+                                                    <th scope="col" style="min-width: 50px !important; padding: 10px !important;">Kuantitas {{ $v->nama }}</th>
                                                     @endforeach
                                                 @else
-                                                    <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas</th>
+                                                    <th scope="col" style="min-width: 50px !important; padding: 10px !important;">Kuantitas</th>
                                                 @endif
                                             @else
-                                            <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas</th>
+                                            <th scope="col" style="min-width: 50px !important; padding: 10px !important;">Kuantitas</th>
                                             @endif
-                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Harga Satuan</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Harga Satuan</th>
                                             <th scope="col" style="min-width: 150px !important; padding: 10px !important;">% Diskon</th>
-                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Nilai Diskon</th>
-                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Pajak</th>
-                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Jumlah</th>
+                                            <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Nilai Diskon</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Pajak</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Jumlah</th>
                                             <th scope="col" style="min-width: 50px !important; padding: 10px !important;"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="list">
                                         <tr>
                                             <td style="padding: 10px !important;">
-                                                <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)" required>
+                                                <select class="form-control form-control-sm" name="produk[]" id="produk_1" onchange="get_data(this, 1)" required>
                                                     <option selected disabled hidden>Pilih produk</option>
                                                     @foreach ($produk as $v)
                                                         <option value="{{ $v->id }}"
@@ -282,26 +290,26 @@
                                                 </select>
                                             </td>
                                             <td style="padding: 10px !important;">
-                                                <textarea class="form-control" name="deskripsi[]" id="deskripsi_1" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
+                                                <textarea class="form-control form-control-sm" name="deskripsi[]" id="deskripsi_1" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                                             </td>
                                             @if(isset($multiple_gudang))
                                                 @if(isset($gudang))
                                                     @foreach($gudang as $v)
-                                                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_{{ $v->id }}_1"
+                                                    <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_{{ $v->id }}_1"
                                                             name="kuantitas_{{ $v->id }}[]" @if($loop->index == 0) value="1" @endif onkeyup="change_harga(1)" onblur="check_null(this)" step="any"></td>
                                                     @endforeach
                                                 @else
-                                                <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_1"
+                                                <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_1"
                                                         name="kuantitas[]" value="1" onkeyup="change_harga(1)" onblur="check_null(this)" step="any"></td>
                                                 @endif
                                             @else
-                                            <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_1"
+                                            <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_1"
                                                     name="kuantitas[]" value="1" onkeyup="change_harga(1)" onblur="check_null(this)" step="any"></td>
                                             @endif
-                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_1"
+                                            <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="harga_satuan_1"
                                                     name="harga_satuan[]" value="0" onblur="change_harga(1)"></td>
                                             <td style="padding: 10px !important;">
-                                                    <div class="input-group">
+                                                    <div class="input-group input-group-sm">
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text">%</span>
                                                         </div>
@@ -311,7 +319,7 @@
                                                     </div>
                                             </td>
                                             <td style="padding: 10px !important;">
-                                                <div class="input-group">
+                                                <div class="input-group input-group-sm">
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text">Rp</span>
                                                     </div>
@@ -322,13 +330,13 @@
                                                 </div>
                                             </td>
                                             <td style="padding: 10px !important;">
-                                                <select class="form-control" id="pajak_1" name="pajak[]"
+                                                <select class="form-control form-control-sm" id="pajak_1" name="pajak[]"
                                                     onchange="get_pajak(this, 1)" required>
                                                     <option value="0" data-persen="0">Pilih pajak</option>
                                                     <option value="11" data-persen="11">PPN</option>
                                                 </select>
                                             </td>
-                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_1" name="jumlah[]" value="0" onblur="change_jumlah(1)"></td>
+                                            <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="jumlah_1" name="jumlah[]" value="0" onblur="change_jumlah(1)"></td>
                                             <td style="padding: 10px !important;"><a href="javascript:;" onclick="create_row()"><i
                                                         class="fa fa-plus text-primary"></i></a></td>
                                         </tr>
@@ -336,24 +344,24 @@
                                 </table>
                             </div>
                             <hr>
-                            <div class="row">
+                            <div class="row text-sm">
                                 <div class="col">
                                     @if(isset($pengaturan_dokumen))
                                     @foreach($pengaturan_dokumen as $v)
                                     <div class="form-group has-float-label">
                                         <span>Upload {{ $v->nama }}</span>
-                                        <input type="file" class="form-control" name="{{ $v->id }}" id="file_{{ $v->id }}">
+                                        <input type="file" class="form-control form-control-sm" name="{{ $v->id }}" id="file_{{ $v->id }}">
                                         <input type="number" name="id_dokumen[]" value="{{ $v->id }}" hidden id="id_{{ $v->id }}">
                                     </div>
                                     @endforeach
                                     @endif
                                     <div class="form-group has-float-label">
                                         <span>Pesan</span>
-                                        <textarea class="form-control" name="pesan" id="pesan"></textarea>
+                                        <textarea class="form-control form-control-sm" name="pesan" id="pesan"></textarea>
                                     </div>
                                     <div class="form-group has-float-label">
                                         <span>Memo</span>
-                                        <textarea class="form-control" name="memo" id="memo"></textarea>
+                                        <textarea class="form-control form-control-sm" name="memo" id="memo"></textarea>
                                     </div>
                                     
                                 </div>
@@ -556,7 +564,6 @@
             }else{
                 AutoNumeric.set('#harga_satuan_' + no,AutoNumeric.getNumber('#harga_satuan_' + no));
             }
-
             subtotal[no] = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
             diskon = $('#diskon_per_baris_' + no).val() ? parseFloat($('#diskon_per_baris_' + no).val()) : 0;
             diskon_per_baris[no] = subtotal[no] * diskon / 100;
@@ -695,7 +702,7 @@
             $('#list').append(`
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
-                        <select class="form-control" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
+                        <select class="form-control form-control-sm" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
                             <option selected disabled hidden>Pilih produk</option>
                             @foreach ($produk as $v)
                                 <option value="{{ $v->id }}" data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}</option>
@@ -703,22 +710,22 @@
                         </select>
                     </th>
                     <td style="padding: 10px !important;">
-                        <textarea class="form-control" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
+                        <textarea class="form-control form-control-sm" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                     </td>
                     @if(isset($multiple_gudang))
                         @if(isset($gudang))
                             @foreach($gudang as $v)
-                                <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_{{ $v->id }}_${i}" name="kuantitas_{{ $v->id }}[]" @if($loop->index == 0) value="1" @endif onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
+                                <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_{{ $v->id }}_${i}" name="kuantitas_{{ $v->id }}[]" @if($loop->index == 0) value="1" @endif onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
                             @endforeach
                         @else
-                            <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
+                            <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
                         @endif
                     @else
-                        <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
+                        <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
                     @endif
-                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_harga(${i})"></td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_harga(${i})"></td>
                     <td style="padding: 10px !important;">
-                        <div class="input-group">
+                        <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">%</span>
                             </div>
@@ -726,7 +733,7 @@
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
-                        <div class="input-group">
+                        <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Rp</span>
                             </div>
@@ -734,12 +741,12 @@
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
-                        <select class="form-control" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required>
+                        <select class="form-control form-control-sm" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required>
                             <option value="0" data-persen="0" >Pilih pajak</option>
                             <option value="11" data-persen="11">PPN</option>
                         </select>
                     </td>
-                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})"></td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})"></td>
                     <td style="padding: 10px !important;">
                         <a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>
                         <a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a>
@@ -769,11 +776,24 @@
 
         $( document ).ready(function() {
             $('#info_pengiriman').prop('checked', true).trigger("change");
+
+            $('#pelanggan').selectpicker();
+
+            const fp_transaksi = flatpickr("#tanggal_transaksi", {
+                dateFormat: "d/m/Y"
+            });
+            fp_transaksi.setDate(new Date('{{ date("Y-m-d") }}'));
+
+            const fp_pengiriman = flatpickr("#tanggal_pengiriman", {
+                dateFormat: "d/m/Y"
+            });
+            fp_pengiriman.setDate(new Date('{{ date("Y-m-d") }}'));
+
             @if(isset($penjualan))
-                $('#pelanggan').val('{{ $penjualan->id_pelanggan }}')
+                $('#pelanggan').selectpicker('val','{{ $penjualan->id_pelanggan }}')
                 $('#email').val('{{ $penjualan->email }}')
                 $('#alamat').val('{{ $penjualan->alamat }}')
-                $('#tanggal_transaksi').val('{{ $penjualan->tanggal_transaksi }}')
+                fp_transaksi.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
                 $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
                 $('#gudang').val('{{ $penjualan->id_gudang }}')
 
@@ -784,7 +804,7 @@
                         $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
                         $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
                         $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
-                        $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').blur();
+                        change_harga(x, {{ $v->harga_satuan }});
                         $('#diskon_per_baris_'+x).val('{{ $v->diskon_per_baris }}').trigger('keyup');
                         @if($v->pajak != 0)
                             $('#pajak_'+x).val('11').trigger('change');
@@ -807,5 +827,24 @@
             $('.form-control').removeAttr('disabled');
         });
         @endif
+
+        function alamat_pelanggan(thisElement) {
+            var selected = $(thisElement).find('option:selected').val();
+            $('#alamat_penawaran').empty();
+            $.ajax({
+                url: '{{ url("pelanggan/alamat_penawaran") }}',
+                type: 'GET',
+                data: {
+                    id: selected
+                },
+                success: function (response) {
+                    $('#alamat_penawaran').append('<option selected disabled hidden value="">Pilih alamat penawaran</option>');
+                    for(var i = 0; i < response.length; i++){
+                        console.log(response[i]);
+                        $('#alamat_penawaran').append('<option value="'+response[i].id+'">'+response[i].alamat+'</option>');
+                    }
+                }
+            });
+        }
     </script>
 @endsection

@@ -682,11 +682,15 @@ class PenjualanController extends Controller
             Transaksi_produk::where('id_transaksi',$id)->delete();
             if($penjualan->id_penawaran){
                 $penawaran = Penjualan::find($penjualan->id_penawaran);
-                $penawaran->status = 'open';
-                $penawaran->save();
-                $penjualan->delete();
-                DB::commit();
-                return redirect('penjualan/detail/'.$penawaran->id);
+                if($penawaran){
+                    $penawaran->status = 'open';
+                    $penawaran->save();
+                    $penjualan->delete();
+                    DB::commit();
+                    return redirect('penjualan/detail/'.$penawaran->id);
+                }else{
+                    return redirect('penjualan');
+                }
             }else{
                 $penjualan->delete();
                 DB::commit();
@@ -718,12 +722,18 @@ class PenjualanController extends Controller
             //
             if($penjualan->id_pemesanan){
                 $pemesanan = Penjualan::find($penjualan->id_pemesanan);
-                $pemesanan->id_pengiriman = null;
-                $pemesanan->status = 'open';
-                $pemesanan->save();
-                $penjualan->delete();
-                DB::commit();
-                return redirect('penjualan/detail/'.$pemesanan->id);
+                if($pemesanan){
+                    $pemesanan->id_pengiriman = null;
+                    $pemesanan->status = 'open';
+                    $pemesanan->save();
+                    $penjualan->delete();
+                    DB::commit();
+                    return redirect('penjualan/detail/'.$pemesanan->id);
+                }else{
+                    $penjualan->delete();
+                    DB::commit();
+                    return redirect('penjualan');
+                }
             }else{
                 return redirect('penjualan');
             }
@@ -770,18 +780,32 @@ class PenjualanController extends Controller
             Stok_gudang::where('id_transaksi',$id)->delete();
             if(isset($penjualan->id_pengiriman)){
                 $pengiriman = Penjualan::find($penjualan->id_pengiriman);
-                $pengiriman->status = 'open';
-                $pengiriman->save();
-                $penjualan->delete();
-                DB::commit();
-                return redirect('penjualan/detail/'.$pengiriman->id);
+                if($pengiriman){
+                    $pengiriman->status = 'open';
+                    $pengiriman->save();
+                    $penjualan->delete();
+                    DB::commit();
+                    return redirect('penjualan/detail/'.$pengiriman->id);
+                }else{
+                    $penjualan->delete();
+                    DB::commit();
+                    return redirect('penjualan');
+                }
+                
             }else if(isset($penjualan->id_pemesanan)){
                 $pemesanan = Penjualan::find($penjualan->id_pemesanan);
-                $pemesanan->status = 'open';
-                $pemesanan->save();
-                $penjualan->delete();
-                DB::commit();
-                return redirect('penjualan/detail/'.$pemesanan->id);
+                if($pemesanan){
+                    $pemesanan->status = 'open';
+                    $pemesanan->save();
+                    $penjualan->delete();
+                    DB::commit();
+                    return redirect('penjualan/detail/'.$pemesanan->id);
+                }else{
+                    $penjualan->delete();
+                    DB::commit();
+                    return redirect('penjualan');
+                }
+                
             }else{
                 $penjualan->delete();
                 DB::commit();

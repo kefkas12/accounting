@@ -61,7 +61,6 @@
                                         <div class="form-group row mb-2">
                                             <label for="alamat" class="col-sm-4 col-form-label">Alamat<button type="button" id="tambah_alamat" class="btn btn-primary ml-3" onclick="additional_alamat()">Tambah</button></label>
                                             <div class="col-sm-8" id="additional_alamat">
-                                                <textarea class="form-control mb-2" id="alamat" name="alamat" placeholder="Contoh: Jalan Indonesia Block C No. 22">{{ isset($pelanggan) ? $pelanggan->alamat : '' }}</textarea>
                                             </div>
                                         </div>
 
@@ -95,7 +94,6 @@
     </script>
     @endif
     <script>
-        var value = '';
         function additional_alamat(value = null){
             if(value){
                 $('#additional_alamat').append(

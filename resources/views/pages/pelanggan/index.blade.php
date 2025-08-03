@@ -60,7 +60,7 @@
                                 <tr>
                                     <td><a href="{{ url('pelanggan/detail').'/'.$v->id }}">{{ $v->nama }}</a></td>
                                     <td>{{ $v->nama_perusahaan }}</td>
-                                    <td>{{ $v->alamat }}</td>
+                                    <td>@foreach($v->additional_alamat as $w) {{ $loop->index+1 }}. {{ $w->alamat }} <br> @endforeach</td>
                                     <td>{{ $v->email }}</td>
                                     <td>{{ $v->nomor_handphone }}</td>
                                 </tr>

@@ -498,7 +498,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                @if($penjualan->status != 'draf')
+                                @if($penjualan->status != 'draf' && $penjualan->status != 'closed')
                                 <div class="btn-group dropup">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
                                         aria-expanded="false">
@@ -539,7 +539,7 @@
                                     </div>
                                 </div>
                                 @endif
-                                @if($penjualan->status != 'draf')
+                                @if($penjualan->status != 'draf' && $penjualan->status != 'closed')
                                 @if($penjualan->jenis != 'pengiriman')
                                 <div class="btn-group dropup">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"

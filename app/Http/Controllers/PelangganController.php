@@ -18,9 +18,11 @@ class PelangganController extends Controller
     public function index()
     {
         $data['sidebar'] = 'pelanggan';
-        $data['pelanggan'] = Kontak::where('tipe','pelanggan')
+        $data['pelanggan'] = Kontak::with('additional_alamat')
+                                    ->where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
+
         return view('pages.pelanggan.index', $data);
     }
 
@@ -73,10 +75,12 @@ class PelangganController extends Controller
         }
 
         for($i = 0; $i < count($_POST['additional_alamat']); $i++){
+            if($_POST['additional_alamat'][$i]){
                 $additional_alamat = new Alamat;
                 $additional_alamat->id_kontak = $id;
                 $additional_alamat->alamat = $_POST['additional_alamat'][$i];
                 $additional_alamat->save();
+            }   
         }
 
         $pelanggan =  Kontak::find($id);
@@ -86,13 +90,10 @@ class PelangganController extends Controller
         $pelanggan->email = $_POST['email'];
         $pelanggan->nomor_handphone = $_POST['nomor_handphone'];
         $pelanggan->nomor_telepon = $_POST['nomor_telepon'];
-        $pelanggan->alamat = $_POST['alamat'];
         $pelanggan->fax = $_POST['fax'];
         $pelanggan->npwp = $_POST['npwp'];
         $pelanggan->tipe = 'pelanggan';
         $pelanggan->save();
-
-        
 
         return redirect('pelanggan');
     }
