@@ -205,7 +205,8 @@
                                                     </div>
                                                     <input type="number" class="form-control" id="diskon_per_baris_1"
                                                         name="diskon_per_baris[]" placeholder="0"
-                                                        onkeyup="change_diskon_per_baris(1)" onblur="check_null(this)" step="any">
+                                                        onkeyup="change_diskon_per_baris(1)" onblur="check_null(this)" 
+                                                        step="any">
                                                 </div>
                                             </td>
                                             <td style="padding: 10px !important;">
@@ -577,7 +578,10 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">%</span>
                             </div>
-                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                            <input type="number" class="form-control" id="diskon_per_baris_${i}" 
+                                name="diskon_per_baris[]"  placeholder="0"
+                                onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" 
+                                step="any">
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
@@ -585,7 +589,10 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Rp</span>
                             </div>
-                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" 
+                            name="nilai_diskon_per_baris[]"  placeholder="0"
+                            onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" 
+                            step="any">
                         </div>
                     </td>
                     <td style="padding: 10px !important;">

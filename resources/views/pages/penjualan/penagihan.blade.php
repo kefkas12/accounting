@@ -628,7 +628,10 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text" @if(isset($pemesanan) || isset($pengiriman)) style="background-color: #e9ecefc4;" @endif>%</span>
                             </div>
-                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" value="0" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
+                            <input type="number" class="form-control" id="diskon_per_baris_${i}" 
+                                name="diskon_per_baris[]" placeholder="0" 
+                                onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" 
+                                step="any" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
@@ -636,7 +639,10 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text" @if(isset($pemesanan) || isset($pengiriman)) style="background-color: #e9ecefc4;" @endif>Rp</span>
                             </div>
-                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" value="0" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
+                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" 
+                                name="nilai_diskon_per_baris[]" placeholder="0" 
+                                onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" 
+                                step="any" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
@@ -735,7 +741,7 @@
                     id: selected
                 },
                 success: function (response) {
-                    $('#alamat').append('<option selected disabled hidden value="">Pilih Alamat Pemesanan</option>');
+                    $('#alamat').append('<option selected disabled hidden value="">Pilih Alamat Penagihan</option>');
                     for(var i = 0; i < response.length; i++){
                         console.log(response[i]);
                         $('#alamat').append('<option value="'+response[i].id+'">'+response[i].alamat+'</option>');
