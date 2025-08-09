@@ -211,7 +211,7 @@ Route::controller(PelangganController::class)->prefix('pelanggan')->group(functi
 	Route::post('/edit/{id}', 'edit');
 	Route::get('/{status}/{id}', 'detail');
 
-	Route::get('/alamat_penawaran', 'alamat_penawaran');
+	Route::get('/alamat', 'alamat');
 });
 
 Route::controller(SupplierController::class)->prefix('supplier')->group(function () {

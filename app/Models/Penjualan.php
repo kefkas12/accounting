@@ -106,6 +106,7 @@ class Penjualan extends Model
         $this->sisa_tagihan = $request->input('input_sisa_tagihan');
         $this->total = $request->input('input_total');
         $this->alamat = $request->input('alamat_penawaran') ? $request->input('alamat_penawaran') : $request->input('alamat');
+        $this->detail_alamat = $request->input('detail_alamat');
         $this->email = $request->input('email');
         $this->jenis = $jenis;
         $this->id_jurnal = $idJurnal;

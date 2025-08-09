@@ -247,6 +247,10 @@ class PenjualanController extends Controller
     {
         $data['sidebar'] = 'penjualan';
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['multiple_gudang'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Multiple gudang')
+                                                ->where('status','active')
+                                                ->first();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
@@ -273,6 +277,10 @@ class PenjualanController extends Controller
         $data['sidebar'] = 'penjualan';
         $data['produk_penawaran'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
                                                 ->where('fitur','Produk penawaran')
+                                                ->where('status','active')
+                                                ->first();
+        $data['multiple_gudang'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Multiple gudang')
                                                 ->where('status','active')
                                                 ->first();
         if(isset($data['produk_penawaran'])){
@@ -393,8 +401,13 @@ class PenjualanController extends Controller
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
-        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
                                     ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
         if($id != null){
             $data['penawaran'] = true;
             $data['penjualan'] = Penjualan::where('id',$id)->first();
@@ -412,6 +425,10 @@ class PenjualanController extends Controller
     {
         $data['sidebar'] = 'penjualan';
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['multiple_gudang'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Multiple gudang')
+                                                ->where('status','active')
+                                                ->first();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
@@ -429,11 +446,20 @@ class PenjualanController extends Controller
     {
         $data['sidebar'] = 'penjualan';
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['multiple_gudang'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Multiple gudang')
+                                                ->where('status','active')
+                                                ->first();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
-        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
                                     ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
         if($id != null){
             $data['pemesanan'] = true;
             $data['penjualan'] = Penjualan::join('kontak','id_pelanggan','=','kontak.id')
@@ -455,11 +481,20 @@ class PenjualanController extends Controller
     {
         $data['sidebar'] = 'penjualan';
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['multiple_gudang'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Multiple gudang')
+                                                ->where('status','active')
+                                                ->first();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
-        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
                                     ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
         if($id != null){
             $data['pemesanan'] = true;
             $data['penjualan'] = Penjualan::where('id',$id)->first();
@@ -472,6 +507,10 @@ class PenjualanController extends Controller
     {
         $data['sidebar'] = 'penjualan';
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['multiple_gudang'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Multiple gudang')
+                                                ->where('status','active')
+                                                ->first();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();

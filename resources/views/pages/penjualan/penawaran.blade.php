@@ -7,7 +7,33 @@
 
     <style>
         .select2-container {
-            width: 200px !important;
+            width: 150px !important;
+        }
+
+        /* Ubah tombol dropdown selectpicker jadi mirip input bootstrap */
+        .bootstrap-select .dropdown-toggle {
+            border: 1px solid #ced4da !important; /* Border Bootstrap */
+            border-radius: 0.25rem !important;     /* Radius Bootstrap */
+            background-color: #fff !important;     /* Background putih */
+            color: #495057 !important;             /* Warna teks Bootstrap */
+            height: calc(1.5em + .5rem + 2px) !important; /* Tinggi form-control-sm */
+            padding: .25rem .5rem !important;      /* Padding form-control-sm */
+        }
+
+        /* Placeholder abu-abu */
+        .bootstrap-select .dropdown-toggle.bs-placeholder,
+        .bootstrap-select .dropdown-toggle .filter-option-inner-inner {
+            color: #6c757d !important; /* Warna placeholder */
+        }
+
+        /* Hilangkan bayangan saat normal maupun hover */
+        .bootstrap-select .dropdown-toggle,
+        .bootstrap-select .dropdown-toggle:focus,
+        .bootstrap-select .dropdown-toggle:hover {
+            box-shadow: none !important;   /* Hilangkan shadow */
+            outline: none !important;      /* Hilangkan outline biru */
+            background-color: #fff !important; /* Tetap putih saat hover */
+            border-color: #ced4da !important;  /* Border tetap sama */
         }
     </style>
     <!-- Page content -->
@@ -15,18 +41,14 @@
         <!-- Dark table -->
         <div class="row">
             <div class="col">
-                <div class="card mb-5">
-                    <div class="card-header border-0">
-                        <div class="row">
-                            <div class="col">
+                <div class="card">
+                    <div class="card-body border-0 text-sm">
+                        <div class="form-row">
+                            <div class="form-group col-md-9 pr-2">
                                 <a href="{{ url('penjualan') }}">Penjualan</a>
-                            </div>
-                        </div>
-                        <div class="row text-sm">
-                            <div class="col">
                                 <h2>Buat Penawaran Penjualan</h2>
                             </div>
-                            <div class="col-sm-3 d-flex justify-content-end">
+                            <div class="form-group col-md-3 pr-2">
                                 <select class="form-control" onchange="location = this.value;">
                                     <option selected disabled hidden>Penawaran Penjualan</option>
                                     <option value="{{ url('penjualan/penagihan') }}">Penagihan Penjualan</option>
@@ -35,63 +57,61 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
-                    <form method="POST" id="insertForm"
-                        @if(isset($penjualan)) 
-                            action="{{ url('penjualan/penawaran').'/'.$penjualan->id }}" 
-                        @else
-                            action="{{ url('penjualan/penawaran') }}"
-                        @endif
-                    >
-                        @csrf
-                        <div class="card-body">
+                        <form method="POST" id="insertForm"
+                            @if(isset($penjualan)) 
+                                action="{{ url('penjualan/penawaran').'/'.$penjualan->id }}" 
+                            @else
+                                action="{{ url('penjualan/penawaran') }}"
+                            @endif
+                            enctype="multipart/form-data"
+                        >
+                            @csrf
                             <div class="form-row border-bottom mb-3">
-                                <label class="form-group has-float-label col-md-3 pr-2">
-                                    <span>Pelanggan <span class="text-danger">*</span></span>
-                                    <select class="selectpicker form-control form-control-sm" data-style="btn-white" data-live-search="true" id="pelanggan" name="pelanggan" onchange="alamat_pelanggan(this)" required>
-                                        <option selected disabled hidden value="">Pilih pelanggan</option>
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="pelanggan">Pelanggan <span class="text-danger">*</span></label>
+                                    <select class="selectpicker form-control form-control-sm" data-live-search="true" title="Pilih Pelanggan" id="pelanggan" name="pelanggan" onchange="alamat_pelanggan(this)" required>
                                         @foreach ($pelanggan as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
                                         @endforeach
                                     </select>
                                 </label>
-                                
-                                <label class="form-group has-float-label col-md-3 pr-2">
-                                    <span>No RFQ</span>
-                                    <input type="text" class="form-control form-control-sm" id="no_rfq" name="no_rfq">
-                                </label>
-                                <label class="form-group has-float-label col-md-3 pr-2">
-                                    <span>Email</span>
+                                <label class="form-group col-md-3 pr-2" style="display:none">
+                                    <label for="email">Email</label>
                                     <input type="email" class="form-control form-control-sm" id="email" name="email">
                                 </label>
-                                <div class="form-group col-md-3 d-flex justify-content-end">
-                                    <h1><strong>Total &nbsp; <span id="total_faktur"> Rp 0,00</span></strong></h1>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <label class="form-group has-float-label col-md-3 pr-2">
-                                    <span>PIC</span>
-                                    <input type="text" class="form-control form-control-sm" id="pic"
-                                        name="pic">
-                                </label>
-                                <label class="form-group has-float-label col-md-3 pr-2">
-                                    <span>Tgl. transaksi</span>
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="tanggal_transaksi">Tgl. Transaksi</label>
                                     <input type="date" class="form-control form-control-sm" id="tanggal_transaksi"
                                         name="tanggal_transaksi" style="background-color: #ffffff !important;">
                                 </label>
-                                <label class="form-group has-float-label col-md-3 pr-2">
-                                    <span>Alamat</span>
-                                    <select class="form-control form-control-sm" id="alamat_penawaran" name="alamat_penawaran">
-                                        <option selected disabled value="">Pilih alamat</option>
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="alamat">Pilih Alamat</label>
+                                    <select class="form-control form-control-sm" id="alamat" name="alamat">
+                                        <option selected disabled value="">Nothing Selected</option>
                                     </select>
                                 </label>
-                                <label class="form-group has-float-label col-md-3 pr-2">
-                                    <span>Alamat</span>
-                                    <textarea class="form-control form-control-sm" name="alamat" id="alamat"></textarea>
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="detail_alamat">Detail Alamat</label>
+                                    <textarea class="form-control form-control-sm" name="detail_alamat" id="detail_alamat" rows="1"></textarea>
                                 </label>
+                                <!-- <div class="form-group col-md-3 d-flex justify-content-end"> -->
+                                    <!-- <h1><strong>Total &nbsp; <span id="total_faktur"> Rp 0,00</span></strong></h1> -->
+                                <!-- </div> -->
+                            </div>
+                            <div class="form-row">
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="no_rfq">No RFQ</label>
+                                    <input type="text" class="form-control form-control-sm" id="no_rfq" name="no_rfq">
+                                </label>
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="pic">PIC</label>
+                                    <input type="text" class="form-control form-control-sm" id="pic"
+                                        name="pic">
+                                </label>
+                                
                                 <label class="form-group has-float-label col-md-3 pr-2" style="display: none">
-                                    <span style="display: none">Tgl. kedaluarsa</span>
+                                    <label for="tanggal_jatuh_tempo" style="display: none">Tgl. kedaluarsa</label>
                                     <input type="date" class="form-control" id="tanggal_jatuh_tempo"
                                         name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                 </label>
@@ -104,14 +124,14 @@
                                         <tr>
                                             @if(isset($penjualan))
                                                 @if(isset($produk_penawaran))
-                                                <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Produk Penawaran</th>
+                                                <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Produk Penawaran</th>
                                                 @endif
-                                                <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Produk</th>
+                                                <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Produk</th>
                                             @else
                                                 @if(isset($produk_penawaran))
-                                                <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Produk Penawaran</th>
+                                                <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Produk Penawaran</th>
                                                 @else
-                                                <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Produk</th>
+                                                <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Produk</th>
                                                 @endif
                                             @endif
                                             <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Deskripsi</th>
@@ -130,7 +150,7 @@
                                                 @if(isset($produk_penawaran))
                                                 <td style="padding: 10px !important;">
                                                     <select class="form-control form-control-sm" name="produk_penawaran[]" id="produk_penawaran_1" onchange="get_data(this, 1)" required>
-                                                        <option selected disabled hidden value="">Pilih produk penawaran</option>
+                                                        <option selected disabled hidden value="">Pilih Produk Penawaran</option>
                                                         @foreach ($produk_penawaran as $v)
                                                             <option value="{{ $v->id }}">{{ $v->nama }}</option>
                                                         @endforeach
@@ -151,7 +171,7 @@
                                                 @if(isset($produk_penawaran))
                                                 <td style="padding: 10px !important;">
                                                     <select class="form-control form-control-sm" name="produk_penawaran[]" id="produk_penawaran_1" onchange="get_data(this, 1)" required>
-                                                        <option selected disabled hidden value="">Pilih produk penawaran</option>
+                                                        <option selected disabled hidden value="">Pilih Produk Penawaran</option>
                                                         @foreach ($produk_penawaran as $v)
                                                             <option value="{{ $v->id }}">{{ $v->nama }}</option>
                                                         @endforeach
@@ -184,7 +204,7 @@
                                                         <span class="input-group-text">%</span>
                                                     </div>
                                                     <input type="number" class="form-control" id="diskon_per_baris_1"
-                                                        name="diskon_per_baris[]"
+                                                        name="diskon_per_baris[]" placeholder="0"
                                                         onkeyup="change_diskon_per_baris(1)" onblur="check_null(this)" step="any">
                                                 </div>
                                             </td>
@@ -194,7 +214,7 @@
                                                         <span class="input-group-text">Rp</span>
                                                     </div>
                                                     <input type="number" class="form-control" id="nilai_diskon_per_baris_1"
-                                                        name="nilai_diskon_per_baris[]"
+                                                        name="nilai_diskon_per_baris[]" placeholder="0"
                                                         onkeyup="change_nilai_diskon_per_baris(1)" onblur="check_null(this)"
                                                         step="any">
                                                 </div>
@@ -217,19 +237,17 @@
                                 </table>
                             </div>
                             <hr>
-                            <div class="row text-sm">
-                                <div class="col">
-                                    <label class="form-group has-float-label pr-4">
-                                        <span>Pesan</span>
-                                        <textarea class="form-control form-control-sm" name="pesan" id="pesan"></textarea>
-                                    </label>
-                                    <label class="form-group has-float-label pr-4">
-                                        <span>Memo</span>
-                                        <textarea class="form-control form-control-sm" name="memo" id="memo"></textarea>
-                                    </label>
-                                </div>
-                                <div class="col ">
-                                    <div class="row mb-3">
+                            <div class="form-row">
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="pesan">Pesan</label>
+                                    <textarea class="form-control form-control-sm" name="pesan" id="pesan"></textarea>
+                                </label>
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="memo">Memo</label>
+                                    <textarea class="form-control form-control-sm" name="memo" id="memo"></textarea>
+                                </label>
+                                <div class="col-md-6">
+                                    <div class="row mb-1">
                                         <div class="col">
                                             <span>Subtotal</span>
                                         </div>
@@ -238,7 +256,7 @@
                                             <input type="text" id="input_subtotal" name="input_subtotal" hidden>
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
+                                    <div class="row mb-1">
                                         <div class="col">
                                             <span>Diskon per baris</span>
                                         </div>
@@ -257,8 +275,7 @@
                                             <input type="text" id="input_ppn" name="input_ppn" hidden>
                                         </div>
                                     </div>
-                                    <hr class="bg-white">
-                                    <div class="row mb-3">
+                                    <div class="row mb-2 mt-2 pt-1 border-top ">
                                         <div class="col">
                                             <span>Total</span>
                                         </div>
@@ -267,17 +284,16 @@
                                             <input type="text" id="input_total" name="input_total" hidden>
                                         </div>
                                     </div>
-                                    <div class="row mb-5">
+                                    <div class="row mb-2">
                                         <div class="col">
                                             <span>Sisa Tagihan</span>
                                         </div>
                                         <div class="col d-flex justify-content-end">
                                             <span id="sisa_tagihan">Rp 0,00</span>
-                                            <input type="text" id="input_sisa_tagihan" name="input_sisa_tagihan"
-                                                hidden>
+                                            <input type="text" id="input_sisa_tagihan" name="input_sisa_tagihan" hidden>
                                         </div>
                                     </div>
-                                    <div class="row my-5">
+                                    <div class="row my-4">
                                         <div class="col d-flex justify-content-end">
                                             <a href="{{ url('penjualan') }}" class="btn btn-light">Batalkan</a>
                                             <button type="submit" class="btn btn-primary" onclick="buat();">@if(isset($penjualan)) Simpan perubahan @else Buat @endif</button>
@@ -285,8 +301,9 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -338,7 +355,7 @@
             @if(isset($penjualan))
             $("#produk_penawaran_" + id).select2({
                 allowClear: true,
-                placeholder: 'Pilih produk penawaran',
+                placeholder: 'Pilih Produk Penawaran',
                 width: '100px'
             });
             $("#produk_" + id).select2({
@@ -350,7 +367,7 @@
             @if(isset($produk_penawaran))
             $("#produk_penawaran_" + id).select2({
                 allowClear: true,
-                placeholder: 'Pilih produk penawaran',
+                placeholder: 'Pilih Produk Penawaran',
                 width: '100px'
             });
             @else
@@ -381,7 +398,11 @@
         }
 
         function get_data(thisElement, no) {
-            var selected = $(thisElement).find('option:selected').data('harga_jual');
+            @if(isset($produk_penawaran))
+                var selected = 0;
+            @else
+                var selected = $(thisElement).find('option:selected').data('harga_jual');
+            @endif
             // $('#harga_satuan_' + no).val(selected);
             // $('#jumlah_' + no).val(selected);
             AutoNumeric.set('#harga_satuan_' + no,selected);
@@ -532,7 +553,7 @@
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
                         <select class="form-control form-control-sm" name="produk_penawaran[]" id="produk_penawaran_${i}" onchange="get_data(this, ${i})" required>
-                            <option selected disabled hidden value="">Pilih produk penawaran</option>
+                            <option selected disabled hidden value="">Pilih Produk Penawaran</option>
                             @foreach ($produk_penawaran as $v)
                                 <option value="{{ $v->id }}">{{ $v->nama }}</option>
                             @endforeach
@@ -575,7 +596,7 @@
                     </td>
                     <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})"></td>
                     <td style="padding: 10px !important;">
-                        <a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>
+                        <!--<a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>-->
                         <a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a>
                     </td>
                 </tr>
@@ -620,7 +641,7 @@
                     </td>
                     <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})"></td>
                     <td style="padding: 10px !important;">
-                        <a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>
+                        <!--<a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>-->
                         <a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a>
                     </td>
                 </tr>
@@ -632,7 +653,7 @@
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
                         <select class="form-control form-control-sm" name="produk_penawaran[]" id="produk_penawaran_${i}" onchange="get_data(this, ${i})" required>
-                            <option selected disabled hidden value="">Pilih produk penawaran</option>
+                            <option selected disabled hidden value="">Pilih Produk Penawaran</option>
                             @foreach ($produk_penawaran as $v)
                                 <option value="{{ $v->id }}">{{ $v->nama }}</option>
                             @endforeach
@@ -667,7 +688,7 @@
                     </td>
                     <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})"></td>
                     <td style="padding: 10px !important;">
-                        <a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>
+                        <!--<a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>-->
                         <a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a>
                     </td>
                 </tr>
@@ -712,7 +733,7 @@
                     </td>
                     <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})"></td>
                     <td style="padding: 10px !important;">
-                        <a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>
+                        <!--<a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>-->
                         <a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a>
                     </td>
                 </tr>
@@ -739,7 +760,7 @@
                 $('#email').val('{{ $penjualan->email }}')
                 $('#no_rfq').val('{{ $penjualan->no_rfq }}')
                 $('#pic').val('{{ $penjualan->pic }}')
-                $('#alamat').val('{{ $penjualan->alamat }}')
+                $('#detail_alamat').val('{{ $penjualan->detail_alamat }}')
                 fp.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
                 $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
 
@@ -774,18 +795,18 @@
 
         function alamat_pelanggan(thisElement) {
             var selected = $(thisElement).find('option:selected').val();
-            $('#alamat_penawaran').empty();
+            $('#alamat').empty();
             $.ajax({
-                url: '{{ url("pelanggan/alamat_penawaran") }}',
+                url: '{{ url("pelanggan/alamat") }}',
                 type: 'GET',
                 data: {
                     id: selected
                 },
                 success: function (response) {
-                    $('#alamat_penawaran').append('<option selected disabled hidden value="">Pilih alamat penawaran</option>');
+                    $('#alamat').append('<option selected disabled hidden value="">Pilih alamat penawaran</option>');
                     for(var i = 0; i < response.length; i++){
                         console.log(response[i]);
-                        $('#alamat_penawaran').append('<option value="'+response[i].id+'">'+response[i].alamat+'</option>');
+                        $('#alamat').append('<option value="'+response[i].id+'">'+response[i].alamat+'</option>');
                     }
                 }
             });
