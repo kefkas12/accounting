@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Detail_penjualan extends Model
 {
@@ -26,5 +27,10 @@ class Detail_penjualan extends Model
     public function produk_penawaran(): BelongsTo
     {
         return $this->belongsTo(Produk_penawaran::class, 'id_produk_penawaran');
+    }
+
+    public function stok_gudang(): HasMany
+    {
+        return $this->hasMany(Stok_gudang::class, 'id_detail_transaksi');
     }
 }

@@ -296,8 +296,8 @@
                                     </div>
                                     <div class="row my-4">
                                         <div class="col d-flex justify-content-end">
-                                            <a href="{{ url('penjualan') }}" class="btn btn-light">Batalkan</a>
-                                            <button type="submit" class="btn btn-primary" onclick="buat();">@if(isset($penjualan)) Simpan perubahan @else Buat @endif</button>
+                                            <a href="{{ url('penjualan').'/detail/'.$penjualan->id }}" class="btn btn-light">Batalkan</a>
+                                            <button type="submit" class="btn btn-primary" >@if(isset($penjualan)) Simpan perubahan @else Buat @endif</button>
                                         </div>
                                     </div>
                                 </div>
@@ -757,18 +757,22 @@
             //     width: 'resolve'
             // });
             $('#pelanggan').selectpicker();
-            const fp = flatpickr("#tanggal_transaksi", {
+            const fp_transaksi = flatpickr("#tanggal_transaksi", {
                 dateFormat: "d/m/Y" // Contoh format: DD/MM/YYYY
             });
-            fp.setDate(new Date('{{ date("Y-m-d") }}'));
+            fp_transaksi.setDate(new Date('{{ date("Y-m-d") }}'));
             @if(isset($penjualan))
                 // $('#pelanggan').val('id_pelanggan').trigger('change')
-                $('#pelanggan').selectpicker('val','{{ $penjualan->id_pelanggan }}')
+                const pel = $('#pelanggan')
+                pel.selectpicker('val','{{ $penjualan->id_pelanggan }}');
+                alamat_pelanggan(pel[0]).then(function() {
+                    $('#alamat').val('{{ $penjualan->alamat }}');
+                })
                 $('#email').val('{{ $penjualan->email }}')
                 $('#no_rfq').val('{{ $penjualan->no_rfq }}')
                 $('#pic').val('{{ $penjualan->pic }}')
                 $('#detail_alamat').val('{{ $penjualan->detail_alamat }}')
-                fp.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
+                fp_transaksi.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
                 $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
 
                 $('#pesan').val('{{ $penjualan->pesan }}')
@@ -803,17 +807,16 @@
         function alamat_pelanggan(thisElement) {
             var selected = $(thisElement).find('option:selected').val();
             $('#alamat').empty();
-            $.ajax({
+            return $.ajax({
                 url: '{{ url("pelanggan/alamat") }}',
                 type: 'GET',
                 data: {
                     id: selected
                 },
                 success: function (response) {
-                    $('#alamat').append('<option selected disabled hidden value="">Pilih alamat penawaran</option>');
+                    $('#alamat').append('<option selected disabled hidden value="">Pilih alamat</option>');
                     for(var i = 0; i < response.length; i++){
-                        console.log(response[i]);
-                        $('#alamat').append('<option value="'+response[i].id+'">'+response[i].alamat+'</option>');
+                        $('#alamat').append('<option>'+response[i].alamat+'</option>');
                     }
                 }
             });

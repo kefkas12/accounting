@@ -157,6 +157,7 @@ class PenjualanController extends Controller
             $data['penjualan'] = Penjualan::with([
                                                     'detail_penjualan.produk',
                                                     'detail_penjualan.produk_penawaran',
+                                                    'detail_penjualan.stok_gudang',
                                                     'detail_pembayaran_penjualan' => function ($query){
                                                         $query->orderBy('detail_pembayaran_penjualan.id_pembayaran_penjualan','desc');
                                                     },
@@ -182,6 +183,17 @@ class PenjualanController extends Controller
                                             ->first();
             }
             if($data['penjualan']->jenis == 'pemesanan'){
+                $data['multiple_gudang'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Multiple gudang')
+                                                ->where('status','active')
+                                                ->first();
+                if(Auth::user()->id_gudang){
+                    $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
+                                            ->get();
+                }else{
+                    $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                            ->get();
+                }
                 $data['penagihan'] = Penjualan::where('id_pemesanan',$id)
                                                 ->where('jenis','penagihan')
                                                 ->get();
@@ -201,6 +213,21 @@ class PenjualanController extends Controller
             $count_pengiriman = Penjualan::where('id_pemesanan',$data['penjualan']->id_pemesanan)
                                                 ->where('jenis','pengiriman')
                                                 ->count();
+            if($data['penjualan']->jenis == 'penagihan'){
+                $data['multiple_gudang'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Multiple gudang')
+                                                ->where('status','active')
+                                                ->first();
+                if(Auth::user()->id_gudang){
+                    $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
+                                            ->get();
+                }else{
+                    $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                            ->get();
+                }
+
+                $data['dokumen_penjualan'] = Dokumen_penjualan::with('dokumen')->where('id_penagihan',$id)->get();
+            }
             if($data['penjualan']->jenis == 'penagihan' && $count_pengiriman > 0){
                 $data['pengiriman'] = Penjualan::where('id_pemesanan',$data['penjualan']->id_pemesanan)
                                                 ->where('jenis','pengiriman')
@@ -300,7 +327,7 @@ class PenjualanController extends Controller
         if($id != null){
             $data['pemesanan'] = true;
             $data['penjualan'] = Penjualan::where('id',$id)->first();
-            $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
+            $data['detail_penjualan'] = Detail_penjualan::with('stok_gudang')->where('id_penjualan',$id)->get();
             if($data['penjualan']->id_penawaran && isset($data['produk_penawaran'])){
                 $data['detail_penawaran'] = Detail_penjualan::with('produk_penawaran')
                                                             ->where('id_penjualan',$data['penjualan']->id_penawaran)->get();
@@ -569,10 +596,25 @@ class PenjualanController extends Controller
         $penjualan = new Penjualan;
         $penjualan->insert($request, $jurnal->id, 'penagihan', null,$is_requester);
 
+        $multiple_gudang = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                    ->where('fitur','Multiple gudang')
+                                                    ->where('status','active')
+                                                    ->first();
+        $gudang = Gudang::where('id_company',Auth::user()->id_company)->get();
+
+
         for ($i = 0; $i < count($request->input('produk')); $i++) {
+            $kuantitas = 0;
             $produk = Produk::find($request->input('produk')[$i]);
             if($produk->batas_stok_minimum){
-                $produk->stok = $produk->stok - $request->input('kuantitas')[$i];
+                if($multiple_gudang && $gudang->count() > 0){
+                    foreach($gudang as $v){
+                        $kuantitas += $request->input('kuantitas_'.$v->id)[$i];
+                    }
+                    $produk->stok = $produk->stok - $kuantitas;
+                }else{
+                    $produk->stok = $produk->stok - $request->input('kuantitas')[$i];
+                }
                 $produk->save();
             }
         }

@@ -6,10 +6,10 @@
     <div class="mt--6">
         <div class="row">
             <div class="col">
-                <div class="card mb-5">
-                    <div class="card-header bg-transparent border-0">
-                        <div class="row justify-content-between">
-                            <div class="col-sm-6">
+                <div class="card">
+                    <div class="card-body border-0 text-sm">
+                        <div class="form-row">
+                            <div class="form-group col-md-9 pr-2">
                                 <h2>
                                     @if ($penjualan->jenis == 'penagihan')
                                         Penagihan
@@ -51,26 +51,18 @@
                                     </button>
                                 </h2>
                             </div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;"></div>
-                            <div class="col-sm-2 d-flex justify-content-end">
-                                <a href="{{ URL::previous() }}" class="btn btn-dark">Kembali ke <span class="text-capitalize">{{ $penjualan->jenis }}</span></a>
+                            <div class="form-group col-md-3 pr-2 d-flex justify-content-end">
+                                <a href="{{ URL::previous() }}" class="btn btn-dark">Kembali ke Penjualan</a>
                             </div>
                         </div>
-                    </div>
-                    <div class="card-body " style="font-size: 14px;">
-                        <div class="row border-bottom mb-3 pb-3">
-                            <div class="col-sm-2">Pelanggan <br> PIC</div>
-                            <div class="col-sm-2"><strong>{{ $penjualan->nama_pelanggan }}</strong> <br> <strong>{{ $penjualan->pic }}</strong></div>
-                            <div class="col-sm-2">Email @if($penjualan->no_rfq) <br> No RFQ @endif</div>
-                            <div class="col-sm-2"><strong>{{ $penjualan->email }}</strong> @if($penjualan->no_rfq) <br> <strong>{{ $penjualan->no_rfq }}</strong>@endif</div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">@if($penjualan->jenis != 'pengiriman') @if($penjualan->jenis == 'penawaran') Total @else Sisa tagihan @endif @else Ongkos Kirim @endif</div>
-                            <div class="col-sm-2 d-flex justify-content-end">
-                                @if($penjualan->jenis != 'pengiriman')<strong> Rp. {{ number_format($penjualan->sisa_tagihan, 2, ',', '.') }}</strong> @else <strong> Rp. {{ number_format($penjualan->ongkos_kirim, 2, ',', '.') }}</strong> @endif
-                            </div>
+                        <div class="form-row border-bottom pb-3">
+                            <div class="col-md-3">Pelanggan <br> <strong>{{ $penjualan->nama_pelanggan }}</strong></div>
+                            <div class="col-md-3">Tgl. Transaksi <br> <strong>{{ date('d/m/Y', strtotime($penjualan->tanggal_transaksi)) }}</strong></div>
+                            <div class="col-md-3">Alamat <br> @if($penjualan->alamat)<strong>{{ $penjualan->alamat }}</strong>@else - @endif</div>
+                            <div class="col-md-3">Detail Alamat <br> @if($penjualan->detail_alamat)<strong>{{ $penjualan->detail_alamat }}</strong>@else - @endif</div>
                         </div>
                         @if($jurnal)
-                        <div class="row mb-2">
+                        <div class="row border-bottom mb-2">
                             <div class="col-sm-2"></div>
                             <div class="col-sm-2"></div>
                             <div class="col-sm-6" style="margin-right: -25px !important;"></div>
@@ -82,51 +74,27 @@
                             </div>
                         </div>
                         @endif
-                        <div class="row">
-                            <div class="col-sm-2">Alamat penagihan</div>
-                            <div class="col-sm-2">
-                                @if ($penjualan->alamat)
-                                    <strong>{{ $penjualan->alamat }}</strong>
-                                @else
-                                    -
-                                @endif
-                            </div>
-                            <div class="col-sm-2">Tgl. Transaksi</div>
-                            <div class="col-sm-2">
-                                <strong>{{ date('d/m/Y', strtotime($penjualan->tanggal_transaksi)) }}</strong>
-                            </div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">No Transaksi </div>
-                            <div class="col-sm-2 d-flex justify-content-end"><strong>{{ $penjualan->no_str }}</strong></div>
+                        @if($penjualan->jenis == 'pemesanan' || $penjualan->jenis == 'pengiriman')
+                        <div class="form-row border-bottom pt-3">
+                            <div class="form-group col-md-3">Gudang <br> <strong><a href="{{ url('gudang/detail').'/'.$penjualan->id_gudang }}">{{ $penjualan->nama_gudang }}</a></strong></div>
+                            <div class="form-group col-md-3">Kirim melalui <br> <strong>{{ $penjualan->kirim_melalui }}</strong></div>
+                            <div class="form-group col-md-3">No. pelacakan <br> <strong>{{ $penjualan->no_pelacakan }}</strong></div>
                         </div>
+                        @endif
+                        <div class="form-row border-bottom pt-3">
+                            <div class="form-group col-md-3">No RFQ <br> <strong>{{ $penjualan->no_rfq }}</strong></div>
+                            <div class="form-group col-md-3">PIC <br> <strong>{{ $penjualan->pic }}</strong></div>
+                            <div class="form-group col-md-3"></div>
+                            <div class="form-group col-md-3">No Transaksi <br> <strong>{{ $penjualan->no_str }}</strong></div>
+                        </div>
+                        @if($penjualan->penawaran)
                         <div class="row my-3">
-                            @if($penjualan->jenis == 'pemesanan' || $penjualan->jenis == 'pengiriman')
-                            <div class="col-sm-2">Alamat pengiriman</div>
-                            <div class="col-sm-2">
-                                @if ($penjualan->alamat_pengiriman)
-                                    <strong>{{ $penjualan->alamat_pengiriman }}</strong>
-                                @else
-                                    -
-                                @endif
-                            </div>
-                            @endif
-                            <div class="col-sm-2">
-                                @if(isset($penjualan->tanggal_pengiriman))
-                                    Tgl. pengiriman
-                                @endif
-                            </div>
-                            <div class="col-sm-2">
-                                @if(isset($penjualan->tanggal_pengiriman))
-                                <strong>{{ date('d/m/Y',strtotime($penjualan->tanggal_pengiriman)) }}</strong>
-                                @endif
-                            </div>
-                            @if($penjualan->penawaran)
                             <div class="col-sm-2" style="margin-right: -25px !important;">
                                 No. Penawaran
                             </div>
                             <div class="col-sm-2 d-flex justify-content-end">
                                 <a href="{{ url('penjualan/detail').'/'.$penjualan->penawaran->id }}">{{ $penjualan->penawaran->no_str }}</a>
                             </div>
-                            @endif
                             @if($penjualan->jenis != 'pengiriman')
                             @if($penjualan->pemesanan)
                             <div class="col-sm-2"></div>
@@ -140,22 +108,11 @@
                             @endif
                             @endif
                         </div>
+                        @endif
                         @if($penjualan->jenis == 'pemesanan' || $penjualan->jenis == 'pengiriman')
+                        @if($penjualan->pemesanan)
                         <div class="row my-3">
-                            @if($penjualan->kirim_melalui)
-                            <div class="col-sm-2">Kirim melalui</div>
-                            <div class="col-sm-2"><strong>{{ $penjualan->kirim_melalui }}</strong></div>
-                            @else
-                            <div class="col-sm-4"></div>
-                            @endif
                             
-                            @if($penjualan->id_gudang)
-                            <div class="col-sm-2">Gudang</div>
-                            <div class="col-sm-2">
-                                <a href="{{ url('gudang/detail').'/'.$penjualan->id_gudang }}">{{ $penjualan->nama_gudang }}</a>
-                            </div>
-                            @endif
-                            @if($penjualan->pemesanan)
                             <div class="col-sm-2" >
                                 No. Pemesanan
                             </div>
@@ -165,28 +122,8 @@
                             @endif
                         </div>
                         @endif
-                        @if($penjualan->no_pelacakan || ($penjualan->jenis == 'pengiriman' && isset($penjualan->nama_gudang)))
-                        <div class="row my-3">
-                            <div class="col-sm-2">
-                                @if($penjualan->no_pelacakan)
-                                No. pelacakan
-                                @endif
-                            </div>
-                            <div class="col-sm-2">
-                                @if($penjualan->no_pelacakan)
-                                <strong>{{ $penjualan->no_pelacakan }}</strong>
-                                @else
-                                -
-                                @endif
-                            </div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                        </div>
-                        @endif
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-bordered">
                                 <thead class="thead-light">
                                     <tr>
                                         @if($penjualan->jenis == 'penawaran' && isset($produk_penawaran))
@@ -194,7 +131,21 @@
                                         @endif
                                         <th>Produk</th>
                                         <th>Deskripsi</th>
+                                        @if($penjualan->jenis == 'penawaran')
                                         <th>Kuantitas</th>
+                                        @else
+                                            @if(isset($multiple_gudang))
+                                                @if(isset($gudang))
+                                                    @foreach($gudang as $v)
+                                                    <th scope="col" style="min-width: 50px !important; padding: 10px !important;">Kuantitas {{ $v->nama }}</th>
+                                                    @endforeach
+                                                @else
+                                                <th scope="col" style="min-width: 50px !important; padding: 10px !important;">Kuantitas</th>
+                                                @endif
+                                            @else
+                                            <th scope="col" style="min-width: 50px !important; padding: 10px !important;">Kuantitas</th>
+                                            @endif
+                                        @endif
                                         <th>Unit</th>
                                         @if($penjualan->jenis != 'pengiriman')
                                         <th>Harga Satuan</th>
@@ -212,7 +163,19 @@
                                             @endif
                                             <th>@if(isset($v->produk))<a href="{{ url('produk').'/detail/'.$v->produk->id }}">{{ $v->produk->nama }}</a>@else - @endif</th>
                                             <td>{{ $v->deskripsi }}</td>
+                                            @if(isset($multiple_gudang))
+                                            @php
+                                                $stokMap = [];
+                                                foreach ($v->stok_gudang as $w) {
+                                                    $stokMap[$w->id_gudang] = $w->stok;
+                                                }
+                                            @endphp
+                                            @foreach($gudang as $g)
+                                            <td>{{ $stokMap[$g->id] ?? 0 }}</td>
+                                            @endforeach
+                                            @else
                                             <td>{{ $v->kuantitas }}</td>
+                                            @endif
                                             <td>Buah</td>
                                             @if($penjualan->jenis != 'pengiriman')
                                             <td>Rp. {{ number_format($v->harga_satuan, 2, ',', '.') }}</td>
@@ -235,7 +198,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        <hr>
                         @if($penjualan->jenis == 'pengiriman')
                         <div class="row my-3">
                             <div class="col-sm-2">Pesan</div>
@@ -303,119 +265,99 @@
                             </div>
                         </form>
                         @else
-                        <div class="row my-3">
-                            <div class="col-sm-2">Pesan</div>
-                            <div class="col-sm-2">@if($penjualan->pesan){{ $penjualan->pesan }} @else - @endif</div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                Subtotal
-                            </div>
-                            <div class="col-sm-2 d-flex justify-content-end">
-                                <strong>Rp. {{ number_format($penjualan->subtotal, 2, ',', '.') }}</strong>
+                        <div class="card-body border-0 text-sm">
+                            <div class="form-row">
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="pesan">Pesan <br> <strong>@if($penjualan->pesan){{ $penjualan->pesan }} @else - @endif</strong></label>
+                                </label>
+                                <label class="form-group col-md-5 pr-2">
+                                    <label for="memo">Memo <br> <strong>@if($penjualan->pesan){{ $penjualan->memo }} @else - @endif</strong></label>
+                                </label>
+                                <div class="form-group col-md-4">
+                                    <div class="row mb-1">
+                                        <div class="col">
+                                            <span>Subtotal</span>
+                                        </div>
+                                        <div class="col d-flex justify-content-end">
+                                            <strong>Rp. {{ number_format($penjualan->subtotal, 2, ',', '.') }}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-1">
+                                        <div class="col">
+                                            <span>Diskon per baris</span>
+                                        </div>
+                                        <div class="col d-flex justify-content-end">
+                                            <strong>Rp. {{ number_format($penjualan->diskon_per_baris, 2, ',', '.') }}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-1">
+                                        <div class="col">
+                                            <span>PPN 11%</span>
+                                        </div>
+                                        <div class="col d-flex justify-content-end">
+                                            <strong>Rp. {{ number_format($penjualan->ppn, 2, ',', '.') }}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-1">
+                                        <div class="col">
+                                            <span>Total</span>
+                                        </div>
+                                        <div class="col d-flex justify-content-end">
+                                            <strong>Rp. {{ number_format($penjualan->total, 2, ',', '.') }}</strong>
+                                        </div>
+                                    </div>
+                                    @if($penjualan->jenis == 'penagihan')
+                                    <div class="row mb-2">
+                                        <div class="col">
+                                            <span>Jumlah Terbayar</span>
+                                        </div>
+                                        <div class="col d-flex justify-content-end">
+                                            <strong>Rp. {{ number_format($penjualan->jumlah_terbayar, 2, ',', '.') }}</strong>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    @if($penjualan->jumlah_terbayar != 0)
+                                    <div class="row mb-2">
+                                        <div class="col">
+                                            <span>Sisa Tagihan</span>
+                                        </div>
+                                        <div class="col d-flex justify-content-end">
+                                            <strong>Rp. {{ number_format($penjualan->sisa_tagihan, 2, ',', '.') }}</strong>
+                                        </div>
+                                    </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                        <div class="row my-3">
-                            <div class="col-sm-2">Memo</div>
-                            <div class="col-sm-2">@if($penjualan->pesan){{ $penjualan->memo }} @else - @endif</div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                Diskon per baris
-                            </div>
-                            <div class="col-sm-2 d-flex justify-content-end">
-                                <strong>Rp. {{ number_format($penjualan->diskon_per_baris, 2, ',', '.') }}</strong>
-                            </div>
-                        </div>
-                        @if ($penjualan->diskon_per_baris)
-                        <div class="row my-3">
-                            <div class="col-sm-2">
-                                @if(isset($dokumen_penjualan))
-                                @foreach($dokumen_penjualan as $v) 
-                                    {{ $v->dokumen->nama }} 
-                                @endforeach
-                                @endif
-                            </div>
-                            <div class="col-sm-2">
-                                @if(isset($dokumen_penjualan))
-                                @foreach($dokumen_penjualan as $v) 
-                                <a href="{{ asset('storage/uploads') }}/{{ $v->nama }}" target="_blank">Dokumen {{ $loop->index+1 }}</a>
-                                @endforeach
-                                @endif
-                            </div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                PPN 11%
-                            </div>
-                            <div class="col-sm-2 d-flex justify-content-end">
-                                <strong>Rp. {{ number_format($penjualan->ppn, 2, ',', '.') }}</strong>
-                            </div>
-                        </div>
-                        @endif
-                        <div class="row my-3">
-                            @if (!$penjualan->diskon_per_baris)
-                            <div class="col-sm-2">
-                                @if(isset($dokumen_penjualan))
-                                @foreach($dokumen_penjualan as $v) 
-                                    {{ $v->dokumen->nama }} 
-                                @endforeach
-                                @endif
-                            </div>
-                            <div class="col-sm-2">
-                                @if(isset($dokumen_penjualan))
-                                @foreach($dokumen_penjualan as $v) 
-                                <a href="{{ asset('storage/uploads') }}/{{ $v->nama }}" target="_blank">Dokumen {{ $loop->index+1 }}</a>
-                                @endforeach
-                                @endif
-                            </div>
-                            @else
-                            <div class="col-sm-4">
-                                
+                            @if ($penjualan->diskon_per_baris && isset($dokumen_penjualan))
+                            <div class="row my-3">
+                                <div class="col-sm-2">
+                                    @foreach($dokumen_penjualan as $v) 
+                                        {{ $v->dokumen->nama }} 
+                                    @endforeach
+                                </div>
+                                <div class="col-sm-2">
+                                    @foreach($dokumen_penjualan as $v) 
+                                    <a href="{{ asset('storage/uploads') }}/{{ $v->nama }}" target="_blank">Dokumen {{ $loop->index+1 }}</a>
+                                    @endforeach
+                                </div>
                             </div>
                             @endif
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                Total
+                            @if (!$penjualan->diskon_per_baris && isset($dokumen_penjualan))
+                            <div class="row my-3">
+                                <div class="col-sm-2">
+                                    @foreach($dokumen_penjualan as $v) 
+                                        {{ $v->dokumen->nama }} 
+                                    @endforeach
+                                </div>
+                                <div class="col-sm-2">
+                                    @foreach($dokumen_penjualan as $v) 
+                                    <a href="{{ asset('storage/uploads') }}/{{ $v->nama }}" target="_blank">Dokumen {{ $loop->index+1 }}</a>
+                                    @endforeach
+                                </div>
                             </div>
-                            <div class="col-sm-2 d-flex justify-content-end">
-                                <strong>Rp. {{ number_format($penjualan->total, 2, ',', '.') }}</strong>
-                            </div>
-                        </div>
-                        @if($penjualan->jenis == 'penagihan')
-                        <hr>
-                        <div class="row my-3">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                Jumlah Terbayar
-                            </div>
-                            <div class="col-sm-2 d-flex justify-content-end">
-                                <strong>Rp. {{ number_format($penjualan->jumlah_terbayar, 2, ',', '.') }}</strong>
-                            </div>
-                        </div>
+                            @endif
                         @endif
-                        @if($penjualan->jumlah_terbayar != 0)
-                        <div class="row my-3">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                Sisa Tagihan
-                            </div>
-                            <div class="col-sm-2 d-flex justify-content-end">
-                                <strong>Rp. {{ number_format($penjualan->sisa_tagihan, 2, ',', '.') }}</strong>
-                            </div>
-                        </div>
-                        @endif
-                        @endif
-                {{-- </div>
-                </div> --}}
-                        <hr>
                         @if(isset($log))
                         <div class="row my-3">
                             <div class="col-sm-7">
@@ -438,29 +380,29 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($pengiriman as $v)
-                                        <tr>
-                                            <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
-                                            <td>
-                                                <div>
-                                                    <div class="row"><a
-                                                            href="{{ url('penjualan/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
-                                                    </div>
-                                                    <div class="row text-xs">
-                                                    </div>
+                                    <tr>
+                                        <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
+                                        <td>
+                                            <div>
+                                                <div class="row"><a
+                                                        href="{{ url('penjualan/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
                                                 </div>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm 
-                                                @if ($v->status == 'open') btn-warning
-                                                @elseif($v->status == 'partial') btn-info
-                                                @elseif($v->status == 'paid') btn-success
-                                                @elseif($v->status == 'overdue') btn-danger 
-                                                @elseif($v->status == 'closed') btn-dark @endif
-                                                ml-2">
-                                                    {{ $v->status }}
-                                                </button>
-                                            </td>
-                                        </tr>
+                                                <div class="row text-xs">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm 
+                                            @if ($v->status == 'open') btn-warning
+                                            @elseif($v->status == 'partial') btn-info
+                                            @elseif($v->status == 'paid') btn-success
+                                            @elseif($v->status == 'overdue') btn-danger 
+                                            @elseif($v->status == 'closed') btn-dark @endif
+                                            ml-2">
+                                                {{ $v->status }}
+                                            </button>
+                                        </td>
+                                    </tr>
                                     @endforeach
                                 </tbody>
                             </table>

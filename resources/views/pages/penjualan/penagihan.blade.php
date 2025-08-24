@@ -90,13 +90,13 @@
                                         name="tanggal_transaksi" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
                                 </div>
                                 <label class="form-group col-md-3 pr-2">
-                                    <label for="alamat">Pilih Alamat Penagihan</label>
+                                    <label for="alamat">Pilih Alamat</label>
                                     <select class="form-control form-control-sm" id="alamat" name="alamat">
                                         <option selected disabled value="">Nothing Selected</option>
                                     </select>
                                 </label>
                                 <label class="form-group col-md-3 pr-2">
-                                    <label for="detail_alamat">Detail Alamat Penagihan</label>
+                                    <label for="detail_alamat">Detail Alamat</label>
                                     <textarea class="form-control form-control-sm" name="detail_alamat" id="detail_alamat" rows="1"></textarea>
                                 </label>
                                 <div class="form-group col-md-3 pr-2"  style="display:none">
@@ -113,7 +113,7 @@
                                 <!-- </div> -->
                             </div>
                             <div class="form-row">
-                                <div class="col-md-3 pr-2">
+                                <div class="col-md-3 pr-2" style="display:none">
                                     <div class="form-group info_pengiriman" style="display:none">
                                         <label for="tanggal_pengiriman">Tgl. Pengiriman</label>
                                         <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
@@ -149,12 +149,12 @@
                                     </select>
                                 </div>
                                 <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
-                                    <label for="kirim_melalui">Kirim melalui</label>
+                                    <label for="kirim_melalui">Kirim Melalui</label>
                                     <input type="text" class="form-control form-control-sm" id="kirim_melalui"
                                         name="kirim_melalui">
                                 </div>
                                 <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
-                                    <label for="no_pelacakan">No. pelacakan</label>
+                                    <label for="no_pelacakan">No. Pelacakan</label>
                                     <input type="text" class="form-control form-control-sm" id="no_pelacakan" name="no_pelacakan">
                                 </div>
                                 @if(isset($pemesanan))
@@ -680,6 +680,7 @@
             $('#info_pengiriman').prop('checked', true).trigger("change");
 
             $('#pelanggan').selectpicker();
+            
             const fp_transaksi = flatpickr("#tanggal_transaksi", {
                 dateFormat: "d/m/Y" // Contoh format: DD/MM/YYYY
             });
@@ -695,7 +696,11 @@
             });
             fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
             @if(isset($penjualan))
-                $('#pelanggan').selectpicker('val','{{ $penjualan->id_pelanggan }}')
+                const pel = $('#pelanggan')
+                pel.selectpicker('val','{{ $penjualan->id_pelanggan }}').trigger('change')
+                alamat_pelanggan(pel[0]).then(function() {
+                    $('#alamat').val('{{ $penjualan->alamat }}');
+                })
                 $('#email').val('{{ $penjualan->email }}')
                 $('#detail_alamat').val('{{ $penjualan->detail_alamat }}')
                 fp.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
@@ -734,7 +739,7 @@
         function alamat_pelanggan(thisElement) {
             var selected = $(thisElement).find('option:selected').val();
             $('#alamat').empty();
-            $.ajax({
+            return $.ajax({
                 url: '{{ url("pelanggan/alamat") }}',
                 type: 'GET',
                 data: {
@@ -744,7 +749,7 @@
                     $('#alamat').append('<option selected disabled hidden value="">Pilih Alamat Penagihan</option>');
                     for(var i = 0; i < response.length; i++){
                         console.log(response[i]);
-                        $('#alamat').append('<option value="'+response[i].id+'">'+response[i].alamat+'</option>');
+                        $('#alamat').append('<option>'+response[i].alamat+'</option>');
                     }
                 }
             });

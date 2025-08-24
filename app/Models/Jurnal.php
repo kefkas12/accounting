@@ -249,13 +249,32 @@ class Jurnal extends Model
         }
 
         //potong persediaan
-        for ($i = 0; $i < count($request->input('produk')); $i++) {
-            $produk = Produk::find($request->input('produk')[$i]);
-            $this->createDetailJurnal($this->id, 62, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata, 0);
-            $this->updateAkunBalance(62, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata, 0);
+        $multiple_gudang = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                    ->where('fitur','Multiple gudang')
+                                                    ->where('status','active')
+                                                    ->first();
+        $gudang = Gudang::where('id_company',Auth::user()->id_company)->get();
 
-            $this->createDetailJurnal($this->id, 6, 0, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata);
-            $this->updateAkunBalance(6, 0, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata);
+        for ($i = 0; $i < count($request->input('produk')); $i++) {
+            $kuantitas = 0;
+            $produk = Produk::find($request->input('produk')[$i]);
+            if($multiple_gudang && $gudang->count() > 0){
+                foreach($gudang as $v){
+                    $kuantitas += $request->input('kuantitas_'.$v->id)[$i];
+                }
+                $this->createDetailJurnal($this->id, 62, $kuantitas * $produk->harga_beli_rata_rata, 0);
+                $this->updateAkunBalance(62, $kuantitas * $produk->harga_beli_rata_rata, 0);
+
+                $this->createDetailJurnal($this->id, 6, 0, $kuantitas * $produk->harga_beli_rata_rata);
+                $this->updateAkunBalance(6, 0, $kuantitas * $produk->harga_beli_rata_rata);
+            }else{
+                $this->createDetailJurnal($this->id, 62, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata, 0);
+                $this->updateAkunBalance(62, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata, 0);
+
+                $this->createDetailJurnal($this->id, 6, 0, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata);
+                $this->updateAkunBalance(6, 0, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata);
+            }
+            
         }
 
         

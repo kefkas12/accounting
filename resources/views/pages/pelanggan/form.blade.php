@@ -59,16 +59,16 @@
                                         </div>
 
                                         <div class="form-group row mb-2">
-                                            <label for="alamat" class="col-sm-4 col-form-label">Alamat<button type="button" id="tambah_alamat" class="btn btn-primary ml-3" onclick="additional_alamat()">Tambah</button></label>
+                                            <label for="alamat" class="col-sm-4 col-form-label">Alamat<button type="button" id="tambah_alamat" class="btn btn-sm btn-primary ml-3" onclick="additional_alamat()">Tambah</button></label>
                                             <div class="col-sm-8" id="additional_alamat">
                                             </div>
                                         </div>
 
-                                        <div class="d-flex justify-content-end">
-                                            <button type="submit" class="btn btn-success btn-lg px-5">
-                                                <i class="fa fa-save" style="font-size: 1.5em;"></i>
+                                        <div class="d-flex justify-content-end mr-3">
+                                            <a href="{{ url('pelanggan') }}" class="btn btn-light">Cancel</a>
+                                            <button type="submit" class="btn btn-success">
+                                                Simpan
                                             </button>
-                                            <a href="{{ url('pelanggan') }}" class="btn btn-light btn-lg px-5"><i class="fa fa-trash" style="font-size: 1.5em;"></i></a>
                                         </div>
                                     </div>
                                 </div>

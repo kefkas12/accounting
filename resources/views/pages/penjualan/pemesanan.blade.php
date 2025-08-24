@@ -148,13 +148,13 @@
                                         name="tanggal_transaksi" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
                                 </div>
                                 <label class="form-group col-md-3 pr-2">
-                                    <label for="alamat">Pilih Alamat Pemesanan</label>
+                                    <label for="alamat">Pilih Alamat</label>
                                     <select class="form-control form-control-sm" id="alamat" name="alamat">
                                         <option selected disabled value="">Nothing Selected</option>
                                     </select>
                                 </label>
                                 <label class="form-group col-md-3 pr-2">
-                                    <label for="detail_alamat">Detail Alamat Pemesanan</label>
+                                    <label for="detail_alamat">Detail Alamat</label>
                                     <textarea class="form-control form-control-sm" name="detail_alamat" id="detail_alamat" rows="1"></textarea>
                                 </label>
                                 <div class="form-group col-md-3 pr-2"  style="display:none">
@@ -811,12 +811,25 @@
             fp_pengiriman.setDate(new Date('{{ date("Y-m-d") }}'));
 
             @if(isset($penjualan))
-                $('#pelanggan').selectpicker('val','{{ $penjualan->id_pelanggan }}')
+                const pel = $('#pelanggan')
+                pel.selectpicker('val','{{ $penjualan->id_pelanggan }}')
+                alamat_pelanggan(pel[0]).then(function() {
+                    $('#alamat').val('{{ $penjualan->alamat }}');
+                })
                 $('#email').val('{{ $penjualan->email }}')
                 $('#detail_alamat').val('{{ $penjualan->detail_alamat }}')
                 fp_transaksi.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
                 $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
                 $('#gudang').val('{{ $penjualan->id_gudang }}')
+
+                console.log('{{ $penjualan->pesan }}');
+                console.log('{{ $penjualan->memo }}');
+
+                $('#kirim_melalui').val('{{ $penjualan->kirim_melalui }}')
+                $('#no_pelacakan').val('{{ $penjualan->no_pelacakan }}')
+
+                $('#pesan').val('{{ $penjualan->pesan }}')
+                $('#memo').val('{{ $penjualan->memo }}')
 
                 var x = 1;
                 load_select_2(x);
@@ -824,7 +837,19 @@
                     @foreach($detail_penjualan as $v)
                         $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
                         $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
+                        @if(isset($multiple_gudang))
+                        @php
+                            $stokMap = [];
+                            foreach ($v->stok_gudang as $w) {
+                                $stokMap[$w->id_gudang] = $w->stok;
+                            }
+                        @endphp
+                        @foreach($gudang as $g)
+                        $('#kuantitas_'+{{ $g->id }}+'_'+x).val('{{ $stokMap[$g->id] ?? 0 }}').trigger('keyup');
+                        @endforeach
+                        @else
                         $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
+                        @endif
                         change_harga(x, {{ $v->harga_satuan }});
                         $('#diskon_per_baris_'+x).val('{{ $v->diskon_per_baris }}').trigger('keyup');
                         @if($v->pajak != 0)
@@ -852,17 +877,17 @@
         function alamat_pelanggan(thisElement) {
             var selected = $(thisElement).find('option:selected').val();
             $('#alamat').empty();
-            $.ajax({
+            return $.ajax({
                 url: '{{ url("pelanggan/alamat") }}',
                 type: 'GET',
                 data: {
                     id: selected
                 },
                 success: function (response) {
-                    $('#alamat').append('<option selected disabled hidden value="">Pilih Alamat Pemesanan</option>');
+                    $('#alamat').append('<option selected disabled hidden value="">Pilih Alamat</option>');
                     for(var i = 0; i < response.length; i++){
                         console.log(response[i]);
-                        $('#alamat').append('<option value="'+response[i].id+'">'+response[i].alamat+'</option>');
+                        $('#alamat').append('<option>'+response[i].alamat+'</option>');
                     }
                 }
             });
