@@ -345,7 +345,7 @@ class Penjualan extends Model
                         }
                     }
                 }else{
-                    $this->updateStokGudang(
+                    $this->insertStokGudang(
                         $this->id,
                         $detail_penjualan->id,
                         $request->input('produk')[$i],
@@ -461,7 +461,7 @@ class Penjualan extends Model
     {
         $detail_penjualan = Detail_penjualan::where('id_penjualan',$this->id)->delete();
 
-        $produk = $request->input('produk') ? $request->input('produk') : $request->input('produk_penawaran');
+        $index = $request->input('produk') ? $request->input('produk') : $request->input('produk_penawaran');
 
         $multiple_gudang = Pengaturan_produk::where('id_company',Auth::user()->id_company)
                                                     ->where('fitur','Multiple gudang')
@@ -470,7 +470,7 @@ class Penjualan extends Model
 
         $gudang = Gudang::where('id_company',Auth::user()->id_company)->get();
 
-        for ($i = 0; $i < count($produk); $i++) {
+        for ($i = 0; $i < count($index); $i++) {
             $kuantitas = 0;
             $harga_satuan = $request->input('harga_satuan')[$i] != '' || $request->input('harga_satuan')[$i] != null ? number_format((float)str_replace(",", "", $_POST['harga_satuan'][$i]), 2, '.', '') : 0;
             $jumlah = $request->input('jumlah')[$i] != '' || $request->input('jumlah')[$i] != null ? number_format((float)str_replace(",", "", $_POST['jumlah'][$i]), 2, '.', '') : 0;
@@ -487,7 +487,7 @@ class Penjualan extends Model
             }
             $detail_penjualan->deskripsi = $request->input('deskripsi')[$i];
 
-            if($jenis== 'pemesanan' && $multiple_gudang && $gudang->count() > 0){
+            if(($jenis== 'pemesanan' || $jenis== 'penagihan' ) && $multiple_gudang && $gudang->count() > 0){
                 foreach($gudang as $v){
                     $kuantitas += $request->input('kuantitas_'.$v->id)[$i];
                 }
@@ -500,7 +500,6 @@ class Penjualan extends Model
             $detail_penjualan->nilai_diskon_per_baris = $request->input('nilai_diskon_per_baris')[$i];
             $detail_penjualan->pajak = $jumlah * $pajak / 100;
             $detail_penjualan->jumlah = $jumlah;
-
             $detail_penjualan->save();
 
             $jenis_transaksi = "";
@@ -538,7 +537,7 @@ class Penjualan extends Model
             }
             if($jenis == 'pemesanan' || $jenis == 'penagihan'){
                 if($multiple_gudang && $gudang->count() > 0){
-                    $stok_gudang = Stok_gudang::where('id_transaksi',$this->id)->delete();
+                    Stok_gudang::where('id_transaksi',$this->id)->delete();
                     foreach($gudang as $v){
                         if($request->input('kuantitas_'.$v->id)[$i]){
                             $this->updateStokGudang(
@@ -565,6 +564,8 @@ class Penjualan extends Model
                         $jenis_transaksi
                     );
                 }
+            }else if($jenis == 'pengiriman'){
+                // $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i]);
             }
         }
     }

@@ -496,6 +496,7 @@
             diskon_per_baris[no] = subtotal[no] * diskon / 100;
             AutoNumeric.set('#jumlah_' + no,subtotal[no] - diskon_per_baris[no]);
             get_pajak($('#pajak_' + no), no);
+            change_diskon_per_baris(no);
             load();
         }
 
@@ -768,7 +769,7 @@
                     id: selected
                 },
                 success: function (response) {
-                    $('#alamat').append('<option selected disabled hidden value="">Pilih Alamat Penagihan</option>');
+                    $('#alamat').append('<option selected disabled hidden value="">Pilih Alamat</option>');
                     for(var i = 0; i < response.length; i++){
                         console.log(response[i]);
                         $('#alamat').append('<option>'+response[i].alamat+'</option>');
