@@ -344,7 +344,11 @@
                                     </div>
                                     <div class="row my-4">
                                         <div class="col d-flex justify-content-end">
+                                            @if(isset($penjualan))
+                                            <a href="{{ url('penjualan').'/detail/'.$penjualan->id }}" class="btn btn-light">Batalkan</a>
+                                            @else
                                             <a href="{{ url('penjualan') }}" class="btn btn-light">Batalkan</a>
+                                            @endif
                                             <button type="submit" class="btn btn-primary">@if(isset($pembelian)) Simpan perubahan @elseif(isset($pemesanan)) Buat @else Buat Faktur @endif</button>
                                         </div>
                                     </div>
@@ -697,22 +701,40 @@
             fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
             @if(isset($penjualan))
                 const pel = $('#pelanggan')
-                pel.selectpicker('val','{{ $penjualan->id_pelanggan }}').trigger('change')
+                pel.selectpicker('val','{{ $penjualan->id_pelanggan }}')
                 alamat_pelanggan(pel[0]).then(function() {
                     $('#alamat').val('{{ $penjualan->alamat }}');
                 })
                 $('#email').val('{{ $penjualan->email }}')
                 $('#detail_alamat').val('{{ $penjualan->detail_alamat }}')
-                fp.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
+                fp_transaksi.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
                 $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
                 $('#gudang').val('{{ $penjualan->id_gudang }}')
+
+                $('#kirim_melalui').val('{{ $penjualan->kirim_melalui }}')
+                $('#no_pelacakan').val('{{ $penjualan->no_pelacakan }}')
+
+                $('#pesan').val('{{ $penjualan->pesan }}')
+                $('#memo').val('{{ $penjualan->memo }}')
 
                 var x = 1;
                 load_select_2(x);
                 @foreach($detail_penjualan as $v)
-                    $('#produk_'+x).val('{{ $v->id_produk }}');
+                    $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
                     $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
-                    $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
+                    @if(isset($multiple_gudang))
+                    @php
+                        $stokMap = [];
+                        foreach ($v->stok_gudang as $w) {
+                            $stokMap[$w->id_gudang] = $w->stok;
+                        }
+                    @endphp
+                    @foreach($gudang as $g)
+                        $('#kuantitas_'+{{ $g->id }}+'_'+x).val('{{ $stokMap[$g->id] ?? 0 }}').trigger('keyup');
+                    @endforeach
+                    @else
+                        $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
+                    @endif
                     change_harga(x, {{ $v->harga_satuan }});
                     $('#diskon_per_baris_'+x).val('{{ $v->diskon_per_baris }}').trigger('keyup');
                     @if($v->pajak != 0)

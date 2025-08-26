@@ -433,7 +433,11 @@
                                     </div>
                                     <div class="row my-4">
                                         <div class="col d-flex justify-content-end">
+                                            @if(isset($penjualan))
+                                            <a href="{{ url('penjualan').'/detail/'.$penjualan->id }}" class="btn btn-light">Batalkan</a>
+                                            @else
                                             <a href="{{ url('penjualan') }}" class="btn btn-light">Batalkan</a>
+                                            @endif
                                             <button type="submit" class="btn btn-primary">Buat</button>
                                         </div>
                                     </div>
@@ -809,7 +813,6 @@
                 dateFormat: "d/m/Y"
             });
             fp_pengiriman.setDate(new Date('{{ date("Y-m-d") }}'));
-
             @if(isset($penjualan))
                 const pel = $('#pelanggan')
                 pel.selectpicker('val','{{ $penjualan->id_pelanggan }}')
@@ -821,9 +824,6 @@
                 fp_transaksi.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
                 $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
                 $('#gudang').val('{{ $penjualan->id_gudang }}')
-
-                console.log('{{ $penjualan->pesan }}');
-                console.log('{{ $penjualan->memo }}');
 
                 $('#kirim_melalui').val('{{ $penjualan->kirim_melalui }}')
                 $('#no_pelacakan').val('{{ $penjualan->no_pelacakan }}')
@@ -845,10 +845,10 @@
                             }
                         @endphp
                         @foreach($gudang as $g)
-                        $('#kuantitas_'+{{ $g->id }}+'_'+x).val('{{ $stokMap[$g->id] ?? 0 }}').trigger('keyup');
+                            $('#kuantitas_'+{{ $g->id }}+'_'+x).val('{{ $stokMap[$g->id] ?? 0 }}').trigger('keyup');
                         @endforeach
                         @else
-                        $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
+                            $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
                         @endif
                         change_harga(x, {{ $v->harga_satuan }});
                         $('#diskon_per_baris_'+x).val('{{ $v->diskon_per_baris }}').trigger('keyup');

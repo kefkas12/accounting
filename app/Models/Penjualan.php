@@ -304,7 +304,7 @@ class Penjualan extends Model
                     $transaksi_produk->tanggal = $request->input('tanggal_transaksi');
                     $transaksi_produk->tipe = $tipe;
                     $transaksi_produk->jenis = 'penjualan';
-                    $transaksi_produk->qty = -$request->input('kuantitas')[$i];
+                    $transaksi_produk->qty = -$detail_penjualan->kuantitas;
 
                     $produk = Produk::where('id',$request->input('produk')[$i])->first();
                     $transaksi_produk->unit = $produk->unit;
@@ -320,7 +320,7 @@ class Penjualan extends Model
                 $transaksi_produk->tanggal = $request->input('tanggal_transaksi');
                 $transaksi_produk->tipe = $tipe;
                 $transaksi_produk->jenis = 'penjualan';
-                $transaksi_produk->qty = -$kuantitas;
+                $transaksi_produk->qty = -$detail_penjualan->kuantitas;
 
                 $produk = Produk::where('id',$request->input('produk')[$i])->first();
                 $transaksi_produk->unit = $produk->unit;
@@ -377,11 +377,11 @@ class Penjualan extends Model
         $stok_gudang->id_detail_transaksi = $id_detail_transaksi;
         $stok_gudang->id_produk = $produk;
         $stok_gudang->id_gudang = $gudang;
-        if($jenis == 'pemesanan'){
-            $stok_gudang->stok = $kuantitas;
-        }else{
-            $stok_gudang->stok = $stok_gudang->stok - $kuantitas;
-        }
+        // if($jenis == 'pemesanan'){
+        $stok_gudang->stok = $kuantitas;
+        // }else{
+            // $stok_gudang->stok = $stok_gudang->stok - $kuantitas;
+        // }
         $stok_gudang->tanggal = $tanggal;
         $stok_gudang->tipe = $tipe;
         $stok_gudang->jenis = $jenis;
@@ -428,12 +428,6 @@ class Penjualan extends Model
             $this->status = 'paid';
         }
 
-        if($request->input('detail_alamat') != null){
-            Alamat::create([
-                'id_kontak' => $this->id_pelanggan,
-                'alamat' => $request->input('detail_alamat')
-            ]);
-        } 
         if($jenis == 'pemesanan'){
             $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
             $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;

@@ -296,7 +296,11 @@
                                     </div>
                                     <div class="row my-4">
                                         <div class="col d-flex justify-content-end">
+                                            @if(isset($penjualan))
                                             <a href="{{ url('penjualan').'/detail/'.$penjualan->id }}" class="btn btn-light">Batalkan</a>
+                                            @else
+                                            <a href="{{ url('penjualan') }}" class="btn btn-light">Batalkan</a>
+                                            @endif
                                             <button type="submit" class="btn btn-primary" >@if(isset($penjualan)) Simpan perubahan @else Buat @endif</button>
                                         </div>
                                     </div>
