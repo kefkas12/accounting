@@ -61,42 +61,49 @@
                             <div class="form-group col-md-3">Alamat <br> @if($penjualan->alamat)<strong>{{ $penjualan->alamat }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-md-3">Detail Alamat <br> @if($penjualan->detail_alamat)<strong>{{ $penjualan->detail_alamat }}</strong>@else <strong> - </strong> @endif</div>
                         </div>
-                        @if($penjualan->jenis != 'penawaran')
-                        <div class="form-row">
-                            <div class="form-group col-md-3">Gudang <br> @if($penjualan->nama_gudang)<strong><a href="{{ url('gudang/detail').'/'.$penjualan->id_gudang }}">{{ $penjualan->nama_gudang }}</a></strong>@else <strong> - </strong> @endif</div>
-                            <div class="form-group col-md-3">Kirim melalui <br> @if($penjualan->kirim_melalui)<strong>{{ $penjualan->kirim_melalui }}</strong>@else <strong> - </strong> @endif</div>
-                            <div class="form-group col-md-3">No. pelacakan <br> @if($penjualan->no_pelacakan)<strong>{{ $penjualan->no_pelacakan }}</strong>@else <strong> - </strong> @endif</div>
-                        </div>
-                        @endif
                         <div class="form-row">
                             <div class="form-group col-md-3">No RFQ <br> @if($penjualan->no_rfq)<strong>{{ $penjualan->no_rfq }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-md-3">PIC <br> @if($penjualan->pic)<strong>{{ $penjualan->pic }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-md-3">No Transaksi <br> @if($penjualan->no_str)<strong>{{ $penjualan->no_str }}</strong>@else <strong> - </strong> @endif</div>
+                            
+                        </div>
+                        @if($penjualan->jenis != 'penawaran')
+                        <div class="form-row">
+                            <div class="form-group col-md-3" style="display:none">
+                                Gudang <br>
+                                @if($penjualan->nama_gudang)
+                                <strong><a href="{{ url('gudang/detail').'/'.$penjualan->id_gudang }}">{{ $penjualan->nama_gudang }}</a></strong>
+                                @else
+                                <strong> - </strong> 
+                                @endif
+                            </div>
+                            <div class="form-group col-md-3">
+                                Kirim melalui <br> 
+                                @if($penjualan->kirim_melalui)
+                                <strong>{{ $penjualan->kirim_melalui }}</strong>
+                                @else
+                                <strong> - </strong>
+                                @endif
+                            </div>
+                            <div class="form-group col-md-3">No. pelacakan <br> @if($penjualan->no_pelacakan)<strong>{{ $penjualan->no_pelacakan }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-md-3">
                                 @if ($jurnal)
                                     <a href="#" data-toggle="modal" data-target="#jurnalEntryModal">Lihat Jurnal Entry</a>
                                 @endif
                             </div>
                         </div>
+                        @endif
                         @if($penjualan->penawaran)
-                        <div class="row my-3">
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                No. Penawaran
-                            </div>
-                            <div class="col-sm-2 d-flex justify-content-end">
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+                                No. Penawaran <br>
                                 <a href="{{ url('penjualan/detail').'/'.$penjualan->penawaran->id }}">{{ $penjualan->penawaran->no_str }}</a>
                             </div>
-                            @if($penjualan->jenis != 'pengiriman')
                             @if($penjualan->pemesanan)
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                No. Pemesanan
-                            </div>
-                            <div class="col-sm-2 d-flex justify-content-end">
+                            <div class="form-group col-md-3">
+                                No. Pemesanan <br>
                                 <a href="{{ url('penjualan/detail').'/'.$penjualan->pemesanan->id }}">{{ $penjualan->pemesanan->no_str }}</a>
                             </div>
-                            @endif
                             @endif
                         </div>
                         @endif

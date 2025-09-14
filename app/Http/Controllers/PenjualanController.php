@@ -26,6 +26,7 @@ use App\Models\Produk_penawaran;
 use App\Models\Status_pengiriman;
 use App\Models\Stok_gudang;
 use App\Models\Transaksi_produk;
+use App\Models\Transaksi_produk_penawaran;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -431,8 +432,33 @@ class PenjualanController extends Controller
                                     ->where('company.id', $data['penjualan']->id_company)
                                     ->first();
 
-        return Pdf::view('pdf.penjualan.pemesanan' , $data)->format('a4')
-                ->name('pemesanan_penjualan.pdf');
+        // return Pdf::view('pdf.penjualan.pemesanan' , $data)->format('a4')->name('pemesanan_penjualan.pdf');
+
+        $html = view('pdf.penjualan.pemesanan', $data)->render();
+
+        // Buat objek mPDF
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4', // Ukuran sertifikat
+            'orientation' => 'L', // L = Landscape
+            'margin_left' => 0,  // Hilangkan margin kiri
+            'margin_right' => 0, // Hilangkan margin kanan
+            'margin_top' => 0,   // Hilangkan margin atas
+            'margin_bottom' => 0 // Hilangkan margin bawah
+        ]);
+
+        // Atur background agar full-page
+        // $mpdf->SetDefaultBodyCSS('background', "url('https://myedi.stma-trisakti.ac.id/img/background.png')");
+        // $mpdf->SetDefaultBodyCSS('background-image-resize', 6);
+
+        // Full page rendering
+        $mpdf->SetDisplayMode('fullpage');
+        
+        // Tambahkan HTML ke PDF
+        $mpdf->WriteHTML($html);
+        
+        // Output PDF langsung di browser
+        return response($mpdf->Output('pemesanan_penjualan.pdf', 'I'))->header('Content-Type', 'application/pdf');
     }
 
     public function penawaran_pemesanan($id)
@@ -463,7 +489,8 @@ class PenjualanController extends Controller
         if($id != null){
             $data['penawaran'] = true;
             $data['penjualan'] = Penjualan::where('id',$id)->first();
-            $data['detail_penjualan'] = Detail_penjualan::with('produk_penawaran')->where('id_penjualan',$id)->get();
+            $data['detail_penjualan'] = Detail_penjualan::with(['produk_penawaran.produk'])->where('id_penjualan',$id)->get();
+            // dd($data['detail_penjualan']);
         }
         $data['pengaturan_dokumen'] = Pengaturan_dokumen::where('id_company',Auth::user()->id_company)
                                                         ->where('status_penjualan','pemesanan')
@@ -781,15 +808,20 @@ class PenjualanController extends Controller
             Detail_penjualan::where('id_penjualan',$id)->delete();
             $penjualan->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
+            Transaksi_produk_penawaran::where('id_transaksi',$id)->delete();
             DB::commit();
             return redirect('penjualan');
         }else if($penjualan->jenis == 'pemesanan'){
             Detail_penjualan::where('id_penjualan',$id)->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
+            Stok_gudang::where('id_transaksi',$id)->delete();
+            Log::where('id_transaksi',$id)->delete();
+            Dokumen_penjualan::where('id_pemesanan',$id)->delete();
             if($penjualan->id_penawaran){
                 $penawaran = Penjualan::find($penjualan->id_penawaran);
                 if($penawaran){
                     $penawaran->status = 'open';
+                    $penawaran->id_pemesanan = null;
                     $penawaran->save();
                     $penjualan->delete();
                     DB::commit();
@@ -802,7 +834,6 @@ class PenjualanController extends Controller
                 DB::commit();
                 return redirect('penjualan');
             }
-            Dokumen_penjualan::where('id_pemesanan',$id)->delete();
         }else if($penjualan->jenis == 'pengiriman'){
             //updated
             $detail_jurnal = Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->get();

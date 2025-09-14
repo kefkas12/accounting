@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Gudang;
 use App\Models\Pembelian;
 use App\Models\Produk;
+use App\Models\Produk_penawaran;
 use App\Models\Satuan;
 use App\Models\Stok_gudang;
 use App\Models\Transaksi_produk;
@@ -64,11 +65,18 @@ class ProdukController extends Controller
     public function insert(Request $request)
     {
         $produk = new Produk();
+        if($_POST['produk_penawaran']){
+            $produk->id_produk_penawaran = $_POST['produk_penawaran'];
+        }
         $produk->id_company = Auth::user()->id_company;
         $produk->nama = $_POST['nama'];
-        $produk->kode = $_POST['kode'];
+        if($_POST['kode']){
+            $produk->kode = $_POST['kode'];
+        }
+        if($_POST['kategori']){
+            $produk->kategori = $_POST['kategori'];
+        }
         $produk->unit = $_POST['satuan'];
-        $produk->kategori = $_POST['kategori'];
         if(isset($_POST['batas_minimum'])){
             $produk->stok = 0;
             $produk->batas_stok_minimum = $_POST['batas_stok_minimum'];
@@ -82,11 +90,27 @@ class ProdukController extends Controller
     public function detail($status=null,$id=null)
     {
         $data['sidebar'] = 'produk';
+        $companyId = Auth::user()->id_company;
+
+        $usedIds = Produk::where('id_company', $companyId)
+                        ->pluck('id_produk_penawaran')     // Collection, bisa berisi null
+                        ->filter(fn ($v) => !is_null($v))  // singkirkan null
+                        ->unique()
+                        ->values();
+        $query = Produk_penawaran::where('id_company', $companyId);
+
+        if ($usedIds->isNotEmpty()) {
+            $query->whereNotIn('id', $usedIds);
+        }
+
+        $data['produk_penawaran'] = $query->get();
         $data['satuan'] = Satuan::where('id_company',Auth::user()->id_company)
                                     ->get();
         if($id){
-            $data['produk'] = Produk::where('id', $id)
-                                    ->where('id_company',Auth::user()->id_company)
+            $data['produk'] = Produk::leftJoin('produk_penawaran','produk.id_produk_penawaran','produk_penawaran.id')
+                                    ->select('produk.*','produk_penawaran.nama as nama_produk_penawaran')
+                                    ->where('produk.id', $id)
+                                    ->where('produk.id_company',Auth::user()->id_company)
                                     ->first();
             $data['gudang'] = Gudang::leftJoin('stok_gudang', function($join){
                                     $join->on( 'gudang.id', '=', 'stok_gudang.id_gudang')
@@ -110,8 +134,11 @@ class ProdukController extends Controller
                 $data['transaksi_produk'] = Transaksi_produk::where('id_produk',$id)
                                                 ->where('id_company',Auth::user()->id_company)
                                                 ->get();
-
                 return view('pages.produk.detail', $data);
+            }else if($status == 'hapus'){
+                $produk = Produk::find($id);
+                $produk->delete();
+                return redirect('produk');
             }
         }else{
             return view('pages.produk.form', $data);
@@ -120,6 +147,9 @@ class ProdukController extends Controller
     public function edit($id, Request $request)
     {
         $produk =  Produk::find($id);
+        if($_POST['produk_penawaran']){
+            $produk->id_produk_penawaran = $_POST['produk_penawaran'];
+        }
         $produk->id_company = Auth::user()->id_company;
         $produk->nama = $_POST['nama'];
         $produk->kode = $_POST['kode'];

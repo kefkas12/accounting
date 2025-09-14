@@ -45,7 +45,25 @@
                         <div class="col-sm-6">
                             <div class="d-flex">
                                 <div class="mr-auto p-2 bd-highlight">
-                                    Kode produk
+                                    Nama Produk Penawaran
+                                </div>
+                                <div class="p-2 bd-highlight">
+                                    <b>
+                                    @if (isset($produk) && $produk->nama_produk_penawaran != null)
+                                    <a href="{{ url('produk_penawaran/detail').'/'.$produk->id_produk_penawaran }}">
+                                        {{ $produk->nama_produk_penawaran }}
+                                    </a>
+                                    @else
+                                    -
+                                    @endif
+                                    </b>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="d-flex">
+                                <div class="mr-auto p-2 bd-highlight">
+                                    Kode Produk
                                 </div>
                                 <div class="p-2 bd-highlight">
                                     <b>
@@ -61,7 +79,7 @@
                         <div class="col-sm-6">
                             <div class="d-flex">
                                 <div class="mr-auto p-2 bd-highlight">
-                                    Deskripsi produk
+                                    Deskripsi Produk
                                 </div>
                                 <div class="p-2 bd-highlight">
                                     <b>
@@ -77,7 +95,7 @@
                         <div class="col-sm-6">
                             <div class="d-flex">
                                 <div class="mr-auto p-2 bd-highlight">
-                                    Kategori produk
+                                    Kategori Produk
                                 </div>
                                 <div class="p-2 bd-highlight">
                                     <b>
@@ -128,7 +146,7 @@
                         <div class="col-sm-6">
                             <div class="d-flex" >
                                 <div class="mr-auto p-2 bd-highlight">
-                                    Harga rata-rata
+                                    Harga Rata-Rata
                                 </div>
                                 <div class="p-2 bd-highlight">
                                     <b>
@@ -140,7 +158,7 @@
                         <div class="col-sm-6">
                             <div class="d-flex" >
                                 <div class="mr-auto p-2 bd-highlight">
-                                    Stok di gudang
+                                    Stok di Gudang
                                 </div>
                                 <div class="p-2 bd-highlight">
                                     <b>
@@ -152,7 +170,7 @@
                         <div class="col-sm-6">
                             <div class="d-flex" >
                                 <div class="mr-auto p-2 bd-highlight">
-                                    Batas stok minimum
+                                    Batas Stok Minimum
                                 </div>
                                 <div class="p-2 bd-highlight">
                                     <b>
