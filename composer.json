@@ -15,6 +15,7 @@
         "laravel/ui": "^4.2",
         "maatwebsite/excel": "^3.1",
         "milon/barcode": "^10.0",
+        "mpdf/mpdf": "^8.2",
         "spatie/laravel-pdf": "^1.5",
         "spatie/laravel-permission": "^6.7"
     },

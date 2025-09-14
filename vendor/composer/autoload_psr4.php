@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'voku\\' => array($vendorDir . '/voku/portable-ascii/src/voku'),
+    'setasign\\Fpdi\\' => array($vendorDir . '/setasign/fpdi/src'),
     'ZipStream\\' => array($vendorDir . '/maennchen/zipstream-php/src'),
     'Whoops\\' => array($vendorDir . '/filp/whoops/src/Whoops'),
     'Webmozart\\Assert\\' => array($vendorDir . '/webmozart/assert/src'),
@@ -45,8 +46,8 @@ return array(
     'Spatie\\Permission\\' => array($vendorDir . '/spatie/laravel-permission/src'),
     'Spatie\\LaravelPdf\\' => array($vendorDir . '/spatie/laravel-pdf/src'),
     'Spatie\\LaravelPackageTools\\' => array($vendorDir . '/spatie/laravel-package-tools/src'),
-    'Spatie\\LaravelIgnition\\' => array($vendorDir . '/spatie/error-solutions/legacy/laravel-ignition', $vendorDir . '/spatie/laravel-ignition/src'),
-    'Spatie\\Ignition\\' => array($vendorDir . '/spatie/error-solutions/legacy/ignition', $vendorDir . '/spatie/ignition/src'),
+    'Spatie\\LaravelIgnition\\' => array($vendorDir . '/spatie/laravel-ignition/src', $vendorDir . '/spatie/error-solutions/legacy/laravel-ignition'),
+    'Spatie\\Ignition\\' => array($vendorDir . '/spatie/ignition/src', $vendorDir . '/spatie/error-solutions/legacy/ignition'),
     'Spatie\\FlareClient\\' => array($vendorDir . '/spatie/flare-client-php/src'),
     'Spatie\\ErrorSolutions\\' => array($vendorDir . '/spatie/error-solutions/src'),
     'Spatie\\Browsershot\\' => array($vendorDir . '/spatie/browsershot/src'),
@@ -66,6 +67,9 @@ return array(
     'PhpOption\\' => array($vendorDir . '/phpoption/phpoption/src/PhpOption'),
     'PhpOffice\\PhpSpreadsheet\\' => array($vendorDir . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet'),
     'NunoMaduro\\Collision\\' => array($vendorDir . '/nunomaduro/collision/src'),
+    'Mpdf\\PsrLogAwareTrait\\' => array($vendorDir . '/mpdf/psr-log-aware-trait/src'),
+    'Mpdf\\PsrHttpMessageShim\\' => array($vendorDir . '/mpdf/psr-http-message-shim/src'),
+    'Mpdf\\' => array($vendorDir . '/mpdf/mpdf/src'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'Mockery\\' => array($vendorDir . '/mockery/mockery/library/Mockery'),
     'Matrix\\' => array($vendorDir . '/markbaker/matrix/classes/src'),

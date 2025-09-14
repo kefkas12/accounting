@@ -390,8 +390,33 @@ class PenjualanController extends Controller
                                     ->where('company.id', $data['penjualan']->id_company)
                                     ->first();
 
-        return Pdf::view('pdf.penjualan.penawaran' , $data)->format('a4')
-                ->name('penawaran_penjualan.pdf');
+        // return Pdf::view('pdf.penjualan.penawaran' , $data)->format('a4')->name('penawaran_penjualan.pdf');
+
+        $html = view('pdf.penjualan.penawaran', $data)->render();
+
+        // Buat objek mPDF
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4', // Ukuran sertifikat
+            'orientation' => 'L', // L = Landscape
+            'margin_left' => 0,  // Hilangkan margin kiri
+            'margin_right' => 0, // Hilangkan margin kanan
+            'margin_top' => 0,   // Hilangkan margin atas
+            'margin_bottom' => 0 // Hilangkan margin bawah
+        ]);
+
+        // Atur background agar full-page
+        // $mpdf->SetDefaultBodyCSS('background', "url('https://myedi.stma-trisakti.ac.id/img/background.png')");
+        // $mpdf->SetDefaultBodyCSS('background-image-resize', 6);
+
+        // Full page rendering
+        $mpdf->SetDisplayMode('fullpage');
+        
+        // Tambahkan HTML ke PDF
+        $mpdf->WriteHTML($html);
+        
+        // Output PDF langsung di browser
+        return response($mpdf->Output('penawaran_penjualan.pdf', 'I'))->header('Content-Type', 'application/pdf');
     }
 
     public function cetak_pemesanan($id){
