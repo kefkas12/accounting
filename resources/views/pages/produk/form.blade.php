@@ -19,8 +19,16 @@
                                         <input type="text" class="form-control" id="nama" name="nama" value="{{ isset($produk) ? $produk->nama : '' }}" required>
                                     </label>
                                     <label class="form-group has-float-label mb-2">
+                                        <span>Referensi Produk Penawaran</span>
+                                        <select class="form-control" name="produk_penawaran" id="produk_penawaran" value="{{ isset($produk) ? $produk->produk_penawaran : '' }}">
+                                            @foreach($produk_penawaran as $v)
+                                            <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </label>
+                                    <label class="form-group has-float-label mb-2">
                                         <span>Deskripsi</span>
-                                        <textarea class="form-control" name="deskripsi" id="deskripsi" rows="4">{{ isset($produk) ? $produk->deskripsi : '' }}</textarea>
+                                        <input type="text" class="form-control" name="deskripsi" id="deskripsi" value="{{ isset($produk) ? $produk->deskripsi : '' }}">
                                     </label>
                                     <label class="form-group has-float-label mb-2">
                                         <span>Harga Beli Satuan</span>
@@ -36,7 +44,7 @@
                                 <div class="col-sm-6">
                                     <label class="form-group has-float-label mb-2">
                                         <span>Kode produk / SKU</span>
-                                        <input type="number" class="form-control" id="kode" name="kode"  value="{{ isset($produk) ? $produk->kode : '' }}">
+                                        <input type="number" class="form-control" id="kode" name="kode" value="{{ isset($produk) ? $produk->kode : '' }}">
                                     </label>
                                     <label class="form-group has-float-label mb-2">
                                         <span>Kategori</span>
