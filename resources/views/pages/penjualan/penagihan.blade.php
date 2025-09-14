@@ -135,7 +135,7 @@
                                     <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
                                         name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                 </div>
-                                <div class="form-group col-md-3 pr-2">
+                                <div class="form-group col-md-3 pr-2" style="display:none">
                                     <label for="gudang">Gudang</label>
                                     <select class="form-control form-control-sm" id="gudang" name="gudang" @if(isset($pengiriman)) disabled @endif>
                                         <option selected disabled hidden>Pilih Gudang</option>

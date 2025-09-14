@@ -263,7 +263,7 @@ class Penjualan extends Model
             }
             $detail_penjualan->deskripsi = $request->input('deskripsi')[$i];
 
-            if(($jenis== 'pemesanan' || $jenis== 'penagihan' ) && $multiple_gudang && $gudang->count() > 0){
+            if(($jenis != 'penawaran' ) && $multiple_gudang && $gudang->count() > 0){
                 foreach($gudang as $v){
                     $kuantitas += $request->input('kuantitas_'.$v->id)[$i];
                 }
@@ -361,7 +361,16 @@ class Penjualan extends Model
                     );
                 }
             }else if($jenis == 'pengiriman'){
-                $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i]);
+                if($multiple_gudang && $gudang->count() > 0){
+                    foreach($gudang as $v){
+                        if($request->input('kuantitas_'.$v->id)[$i]){
+                            $kuantitas += $request->input('kuantitas_'.$v->id)[$i];
+                        }
+                    }
+                    $this->updateStok($request->input('produk')[$i], $kuantitas);
+                }else{
+                    $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i]);
+                }
             }
         }
     }
@@ -433,6 +442,10 @@ class Penjualan extends Model
         }
 
         if($jenis == 'pemesanan'){
+            $penawaran = Penjualan::where('id_pemesanan',$this->id)->first();
+            $this->no_rfq = $penawaran->no_rfq;
+            $this->pic = $penawaran->pic;
+
             $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
             $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
             $this->info_pengiriman = $request->input('info_pengiriman');
@@ -451,6 +464,26 @@ class Penjualan extends Model
         $this->pesan = $request->input('pesan') ? $request->input('pesan') : null;
         $this->memo = $request->input('memo') ? $request->input('memo') : null;
         $this->save();
+
+        Dokumen_penjualan::where('id_pemesanan',$this->id)->delete();
+
+        if($jenis == 'pemesanan' && isset($_POST['id_dokumen'])){
+            for($i = 0; $i < count($_POST['id_dokumen']) ; $i++ ){
+                if($request->file($_POST['id_dokumen'][$i])){
+                    $fileName = $request->file($_POST['id_dokumen'][$i])->getClientOriginalName();
+                    $uniqueFileName = time() . '.' . $fileName;
+    
+                    $filePath = $request->file($_POST['id_dokumen'][$i])->storeAs('uploads', $uniqueFileName, 'public');
+                    $dokumen_penjualan = new Dokumen_penjualan();
+                    $dokumen_penjualan->id_company = Auth::user()->id_company;
+                    $dokumen_penjualan->id_pemesanan = $this->id;
+                    $dokumen_penjualan->id_dokumen =$_POST['id_dokumen'][$i];
+                    $dokumen_penjualan->tanggal_upload = date('Y-m-d');
+                    $dokumen_penjualan->nama = $uniqueFileName;
+                    $dokumen_penjualan->save();
+                }
+            }
+        }
 
         $this->editDetailPenjualan($request, $tipe, $jenis,$this->id_gudang);
 

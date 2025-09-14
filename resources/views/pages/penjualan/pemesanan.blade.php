@@ -57,10 +57,10 @@
                             </div>
                         </div>
                         <form method="POST" id="insertForm"
-                            @if(isset($penawaran))
-                                action="{{ url('penjualan/penawaran').'/pemesanan/'.$penjualan->id }}"
-                            @elseif(isset($penjualan))
+                            @if(isset($penjualan))
                                 action="{{ url('penjualan/pemesanan').'/'.$penjualan->id }}"
+                            @elseif(isset($penawaran))
+                                action="{{ url('penjualan/penawaran').'/pemesanan/'.$penjualan->id }}"
                             @else
                                 action="{{ url('penjualan/pemesanan') }}"
                             @endif
@@ -304,7 +304,7 @@
                                         <tr>
                                             @if(isset($produk_penawaran))
                                                 <td style="padding: 10px !important;display:none;">
-                                                    <select class="form-control form-control-sm" name="produk_penawaran[]" id="produk_penawaran_1" required>
+                                                    <select class="form-control form-control-sm" name="produk_penawaran[]" id="produk_penawaran_1" required disabled>
                                                         <option selected disabled hidden value="">Pilih Produk Penawaran</option>
                                                         @foreach ($produk_penawaran as $v)
                                                             <option value="{{ $v->id }}">{{ $v->nama }}</option>
@@ -339,7 +339,8 @@
                                             <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_1"
                                                     name="kuantitas[]" value="1" onkeyup="change_harga(1)" onblur="check_null(this)" step="any"></td>
                                             @endif
-                                            <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="harga_satuan_1"
+                                            <td style="padding: 10px !important;">
+                                                <input type="text" class="form-control form-control-sm" id="harga_satuan_1"
                                                     name="harga_satuan[]" value="0" onblur="change_harga(1)"></td>
                                             <td style="padding: 10px !important;">
                                                     <div class="input-group input-group-sm">
@@ -386,7 +387,14 @@
                                     @if(isset($pengaturan_dokumen))
                                     @foreach($pengaturan_dokumen as $v)
                                     <div class="form-group">
-                                        <span>Upload {{ $v->nama }}</span>
+                                        <span>Upload {{ $v->nama }}</span> 
+                                        <!--  -->
+                                        @foreach($dokumen_penjualan as $w)
+                                            @if($v->id == $w->id_dokumen)
+                                            <a href="{{ asset('storage/uploads') }}/{{ $w->nama }}" target="_blank">{{ $w->nama }}</a>
+                                            @endif
+                                        @endforeach
+                                        <!--  -->
                                         <input type="file" class="form-control form-control-sm" name="{{ $v->id }}" id="file_{{ $v->id }}">
                                         <input type="number" name="id_dokumen[]" value="{{ $v->id }}" hidden id="id_{{ $v->id }}">
                                     </div>
@@ -837,6 +845,11 @@
                 dateFormat: "d/m/Y"
             });
             fp_pengiriman.setDate(new Date('{{ date("Y-m-d") }}'));
+
+            const fp_jatuh_tempo = flatpickr("#tanggal_jatuh_tempo", {
+                dateFormat: "d/m/Y"
+            });
+            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
             @if(isset($penjualan))
                 const pel = $('#pelanggan')
                 pel.selectpicker('val','{{ $penjualan->id_pelanggan }}')
@@ -845,8 +858,10 @@
                 })
                 $('#email').val('{{ $penjualan->email }}')
                 $('#detail_alamat').val('{{ $penjualan->detail_alamat }}')
+                
                 fp_transaksi.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
-                $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
+                fp_jatuh_tempo.setDate(new Date('{{ $penjualan->tanggal_jatuh_tempo }}'));
+
                 $('#gudang').val('{{ $penjualan->id_gudang }}')
 
                 $('#kirim_melalui').val('{{ $penjualan->kirim_melalui }}')
@@ -865,6 +880,7 @@
                         @else
                         $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
                         @endif
+                        $("#produk_"+x).prop("disabled", true);
                         $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
                         @if(isset($multiple_gudang))
                             @php
@@ -905,6 +921,7 @@
         @if(isset($penawaran))
         $('#insertForm').submit(function() {
             $('.form-control').removeAttr('disabled');
+            $("[name='produk[]']").prop("disabled", false);
         });
         @endif
 
