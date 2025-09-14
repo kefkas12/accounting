@@ -131,8 +131,12 @@ class Penjualan extends Model
                 $this->id_penawaran = $id_jenis;
             }
             $this->no_rfq = Penjualan::find($id_jenis) ? Penjualan::find($id_jenis)->no_rfq : null;
+            $this->pic = Penjualan::find($id_jenis) ? Penjualan::find($id_jenis)->pic : null;
+
         }elseif(($jenis == 'penagihan' || $jenis == 'pengiriman') && $id_jenis != null){
             $this->no_rfq = Penjualan::find($id_jenis)->no_rfq ? Penjualan::find($id_jenis)->no_rfq : null;
+            $this->pic = Penjualan::find($id_jenis)->pic ? Penjualan::find($id_jenis)->pic : null;
+
             $this->id_penawaran = Penjualan::find($id_jenis)->id_penawaran ? Penjualan::find($id_jenis)->id_penawaran : null;
             if(Penjualan::find($id_jenis)->jenis == 'pengiriman'){
                 $this->id_pemesanan = Penjualan::find($id_jenis)->id_pemesanan;
