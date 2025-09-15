@@ -95,29 +95,16 @@
                         @endif
                         @if($penjualan->penawaran)
                         <div class="form-row">
-                            <div class="form-group col-md-3">
-                                No. Penawaran <br>
-                                <a href="{{ url('penjualan/detail').'/'.$penjualan->penawaran->id }}">{{ $penjualan->penawaran->no_str }}</a>
-                            </div>
                             @if($penjualan->pemesanan)
                             <div class="form-group col-md-3">
                                 No. Pemesanan <br>
                                 <a href="{{ url('penjualan/detail').'/'.$penjualan->pemesanan->id }}">{{ $penjualan->pemesanan->no_str }}</a>
                             </div>
                             @endif
-                        </div>
-                        @endif
-                        @if($penjualan->jenis == 'pemesanan' || $penjualan->jenis == 'pengiriman')
-                        @if($penjualan->pemesanan)
-                        <div class="row my-3">
-                            
-                            <div class="col-sm-2" >
-                                No. Pemesanan
+                            <div class="form-group col-md-3">
+                                No. Penawaran <br>
+                                <a href="{{ url('penjualan/detail').'/'.$penjualan->penawaran->id }}">{{ $penjualan->penawaran->no_str }}</a>
                             </div>
-                            <div class="col-sm-2 @if($penjualan->jenis != 'pengiriman') d-flex justify-content-end @endif">
-                                <a href="{{ url('penjualan/detail').'/'.$penjualan->pemesanan->id }}">{{ $penjualan->pemesanan->no_str }}</a>
-                            </div>
-                            @endif
                         </div>
                         @endif
                         <div class="table-responsive">
@@ -712,6 +699,7 @@
                             <tr>
                                 <th scope="col">User</th>
                                 <th scope="col">Tanggal</th>
+                                <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -722,6 +710,7 @@
                                         <p class="text-xs mb-0 email">{{ $v->email }}</p>
                                     </td>
                                     <td>{{ $v->created_at }}</td>
+                                    <td>{{ $v->aksi }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

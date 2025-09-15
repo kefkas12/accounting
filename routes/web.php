@@ -157,6 +157,8 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::get('/pemesanan/{id}', 'pemesanan');
 	Route::get('/pemesanan/pengiriman/{id}', 'pemesanan_pengiriman');
 	Route::get('/pemesanan/penagihan/{id}', 'pemesanan_penagihan');
+
+	Route::get('/pengiriman/{id}', 'pengiriman');
 	Route::get('/pengiriman/penagihan/{id}', 'pengiriman_penagihan');
 	Route::get('/penagihan/{id}', 'penagihan');
 

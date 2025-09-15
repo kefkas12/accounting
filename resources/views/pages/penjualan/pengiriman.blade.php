@@ -151,7 +151,8 @@
                                     <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
                                         name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                 </div>
-                                <div class="form-group col-md-3 pr-2" style="display:none">
+                                @if(!$multiple_gudang)
+                                <div class="form-group col-md-3 pr-2">
                                     <label for="gudang">Gudang</label>
                                     <select class="form-control form-control-sm" id="gudang" name="gudang">
                                         <option selected disabled hidden>Pilih Gudang</option>
@@ -164,6 +165,7 @@
                                         @endif
                                     </select>
                                 </div>
+                                @endif
                                 <div class="col-md-3 pr-2" style="display:none">
                                     <div class="form-group info_pengiriman" style="display:none">
                                         <label for="tanggal_pengiriman">Tgl. Pengiriman</label>
@@ -213,7 +215,6 @@
                                             <th scope="col" style="min-width: 100px !important; padding: 10px !important;" hidden>Nilai Diskon</th>
                                             <th scope="col" style="min-width: 150px !important; padding: 10px !important;" hidden>Pajak</th>
                                             <th scope="col" style="min-width: 150px !important; padding: 10px !important;" hidden>Jumlah</th>
-                                            <th scope="col" style="min-width: 50px !important; padding: 10px !important;" hidden></th>
                                         </tr>
                                     </thead>
                                     <tbody id="list">
@@ -262,23 +263,23 @@
                                             <td style="padding: 10px !important;">
                                                 <input type="text" class="form-control form-control-sm" id="unit_1"
                                                     name="unit[]" readonly></td>
-                                            <td style="padding: 10px !important; display:none;" >
+                                            <td style="padding: 10px !important;display:none;" >
                                                 <input type="text" class="form-control form-control-sm" id="harga_satuan_1"
                                                     name="harga_satuan[]" value="0" onkeyup="change_harga(1)"
                                                     onblur="check_null(this)" step="any" @if(isset($pemesanan)) disabled @endif>
                                             </td>
-                                            <td style="padding: 10px !important;" hidden>
-                                                    <div class="input-group">
-                                                        <div class="input-group-prepend">
-                                                            <span class="input-group-text" @if(isset($pemesanan)) style="background-color: #e9ecefc4;" @endif>%</span>
-                                                        </div>
-                                                        <input type="number" class="form-control" id="diskon_per_baris_1"
-                                                            name="diskon_per_baris[]" value="0"
-                                                            onkeyup="change_diskon_per_baris(1)" onblur="check_null(this)" step="any" @if(isset($pemesanan)) disabled @endif>
+                                            <td style="padding: 10px !important;display:none;">
+                                                <div class="input-group input-group-sm">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" @if(isset($pemesanan)) style="background-color: #e9ecefc4;" @endif>%</span>
                                                     </div>
+                                                    <input type="number" class="form-control" id="diskon_per_baris_1"
+                                                        name="diskon_per_baris[]" value="0"
+                                                        onkeyup="change_diskon_per_baris(1)" onblur="check_null(this)" step="any" @if(isset($pemesanan)) disabled @endif>
+                                                </div>
                                             </td>
-                                            <td style="padding: 10px !important;" hidden>
-                                                <div class="input-group">
+                                            <td style="padding: 10px !important;display:none;">
+                                                <div class="input-group input-group-sm">
                                                     <div class="input-group-prepend">
                                                         <span class="input-group-text" @if(isset($pemesanan)) style="background-color: #e9ecefc4;" @endif>Rp</span>
                                                     </div>
@@ -287,14 +288,14 @@
                                                         onkeyup="change_nilai_diskon_per_baris(1)" onblur="check_null(this)" step="any" @if(isset($pemesanan)) disabled @endif>
                                                 </div>
                                             </td>
-                                            <td style="padding: 10px !important;" hidden>
-                                                <select class="form-control" id="pajak_1" name="pajak[]"
+                                            <td style="padding: 10px !important;display:none;">
+                                                <select class="form-control form-control-sm" id="pajak_1" name="pajak[]"
                                                     onchange="get_pajak(this, 1)" required @if(isset($pemesanan)) disabled @endif>
                                                     <option value="0" data-persen="0">Pilih pajak</option>
                                                     <option value="11" data-persen="11">PPN</option>
                                                 </select>
                                             </td>
-                                            <td style="padding: 10px !important;" hidden><input type="text" class="form-control form-control-sm" id="jumlah_1" name="jumlah[]" value="0" onblur="change_jumlah(1)" @if(isset($pemesanan)) disabled @endif></td>
+                                            <td style="padding: 10px !important;display:none;"><input type="text" class="form-control form-control-sm" id="jumlah_1" name="jumlah[]" value="0" onblur="change_jumlah(1)" @if(isset($pemesanan)) disabled @endif></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -676,7 +677,7 @@
                 <tr id="list_${i}">
                     @if(isset($produk_penawaran))
                         <td style="padding: 10px !important;display:none;">
-                            <select class="form-control form-control-sm" name="produk_penawaran[]" id="produk_penawaran_${i}" required>
+                            <select class="form-control form-control-sm" name="produk_penawaran[]" id="produk_penawaran_${i}" required disabled>
                                 <option selected disabled hidden value="">Pilih Produk Penawaran</option>
                                 @foreach ($produk_penawaran as $v)
                                     <option value="{{ $v->id }}">{{ $v->nama }}</option>
@@ -688,7 +689,9 @@
                         <select class="form-control form-control-sm" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required @if(isset($pemesanan)) disabled @endif>
                             <option selected disabled hidden>Pilih produk</option>
                             @foreach ($produk as $v)
-                                <option value="{{ $v->id }}" data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}</option>
+                                <option value="{{ $v->id }}" 
+                                    data-harga_jual="{{ $v->harga_jual }}">{{ $v->nama }}
+                                </option>
                             @endforeach
                         </select>
                     </th>
@@ -698,40 +701,56 @@
                     @if(isset($multiple_gudang))
                         @if(isset($gudang))
                             @foreach($gudang as $v)
-                                <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_{{ $v->id }}_${i}" name="kuantitas_{{ $v->id }}[]" @if($loop->index == 0) value="1" @endif onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                                <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_{{ $v->id }}_${i}"
+                                    name="kuantitas_{{ $v->id }}[]" @if($loop->index == 0) value="1" @endif onkeyup="change_harga(${i})"
+                                    onblur="check_null(this)" step="any"></td>
                             @endforeach
                         @else
-                            <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                            <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_${i}" 
+                                name="kuantitas[]" value="1" onkeyup="change_harga(${i})" 
+                                onblur="check_null(this)" step="any"></td>
                         @endif
                     @else
-                        <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                        <td style="padding: 10px !important;">
+                            <input type="number" class="form-control form-control-sm" id="kuantitas_${i}" 
+                                name="kuantitas[]" value="1" onkeyup="change_harga(${i})" 
+                                onblur="check_null(this)" step="any"></td>
                     @endif
-                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="unit_${i}" name="unit[]" readonly></td>
-                    <td style="padding: 10px !important;" id="harga_satuan_td_${i}"><input type="text" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any" @if(isset($pemesanan)) disabled @endif></td>
-                    <td style="padding: 10px !important;" id="diskon_per_baris_td_${i}">
-                        <div class="input-group">
+                    <td style="padding: 10px !important;">
+                        <input type="text" class="form-control form-control-sm" id="unit_${i}" 
+                            name="unit[]" readonly></td>
+                    <td style="padding: 10px !important;display:none;" id="harga_satuan_td_${i}">
+                        <input type="text" class="form-control form-control-sm" id="harga_satuan_${i}" 
+                            name="harga_satuan[]" value="0" onkeyup="change_harga(${i})" 
+                            onblur="check_null(this)" step="any" @if(isset($pemesanan)) disabled @endif></td>
+                    <td style="padding: 10px !important;display:none;" id="diskon_per_baris_td_${i}">
+                        <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
                                 <span class="input-group-text" @if(isset($pemesanan)) style="background-color: #e9ecefc4;" @endif>%</span>
                             </div>
-                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" value="0" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any" @if(isset($pemesanan)) disabled @endif>
+                            <input type="number" class="form-control" id="diskon_per_baris_${i}" 
+                                name="diskon_per_baris[]" value="0"
+                                onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any" @if(isset($pemesanan)) disabled @endif>
                         </div>
                     </td>
-                    <td style="padding: 10px !important;" id="nilai_diskon_per_baris_td_${i}">
-                        <div class="input-group">
+                    <td style="padding: 10px !important;display:none;" id="nilai_diskon_per_baris_td_${i}">
+                        <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
                                 <span class="input-group-text" @if(isset($pemesanan)) style="background-color: #e9ecefc4;" @endif>Rp</span>
                             </div>
-                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" value="0" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any" @if(isset($pemesanan)) disabled @endif>
+                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" 
+                                name="nilai_diskon_per_baris[]" value="0" 
+                                onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any" @if(isset($pemesanan)) disabled @endif>
                         </div>
                     </td>
-                    <td style="padding: 10px !important;" id="pajak_td_${i}">
-                        <select class="form-control" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required @if(isset($pemesanan)) disabled @endif>
+                    <td style="padding: 10px !important;display:none;" id="pajak_td_${i}">
+                        <select class="form-control form-control-sm" id="pajak_${i}" name="pajak[]" 
+                            onchange="get_pajak(this, ${i})" required @if(isset($pemesanan)) disabled @endif>
                             <option value="0" data-persen="0" >Pilih pajak</option>
                             <option value="11" data-persen="11">PPN</option>
                         </select>
                     </td>
-                    <td style="padding: 10px !important;" id="jumlah_td_${i}"><input type="text" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" step="any" @if(isset($pemesanan)) disabled @endif></td>
-                    @if(!isset($pemesanan))<td style="padding: 10px !important;"><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>@endif
+                    <td style="padding: 10px !important;display:none;" id="jumlah_td_${i}"><input type="text" class="form-control form-control-sm" id="jumlah_${i}" name="jumlah[]" value="0" step="any" @if(isset($pemesanan)) disabled @endif></td>
                 </tr>
             `);
             load_select_2(i);
@@ -784,7 +803,7 @@
                 $('#detail_alamat').val('{{ $penjualan->detail_alamat }}')
 
                 fp_transaksi.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
-                fp_pengiriman.setDate(new Date('{{ DateTime::createFromFormat("d/m/Y", $penjualan->tanggal_pengiriman)->format("Y-m-d") }}'));
+                fp_pengiriman.setDate(new Date('{{ $penjualan->tanggal_pengiriman }}'));
                 fp_jatuh_tempo.setDate(new Date('{{ $penjualan->tanggal_jatuh_tempo }}'));
                 
                 $('#gudang').val('{{ $penjualan->id_gudang }}')
@@ -832,11 +851,11 @@
                     @else
                         $('#pajak_'+x).val('0').trigger('change');
                     @endif
-                    $('#harga_satuan_td_'+x).hide();
-                    $('#diskon_per_baris_td_'+x).hide();
-                    $('#nilai_diskon_per_baris_td_'+x).hide();
-                    $('#pajak_td_'+x).hide();
-                    $('#jumlah_td_'+x).hide();
+                    // $('#harga_satuan_td_'+x).hide();
+                    // $('#diskon_per_baris_td_'+x).hide();
+                    // $('#nilai_diskon_per_baris_td_'+x).hide();
+                    // $('#pajak_td_'+x).hide();
+                    // $('#jumlah_td_'+x).hide();
                     create_row();
                     x++;
                 @endforeach

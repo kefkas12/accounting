@@ -110,7 +110,7 @@
                                         <tbody class="list">
                                             @foreach($penawaran as $v)
                                             <tr>
-                                                <td>{{ $v->tanggal_transaksi }}</td>
+                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
                                                 <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->no_rfq }}</td>
                                                 <td>{{ $v->nama_pelanggan }}</td>
