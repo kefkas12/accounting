@@ -187,7 +187,31 @@
                                     </div>
                                 </div>
                             </div>
-
+                            @if(isset($detail_pemesanan))
+                                Referensi Pemesanan
+                                <table class="table table-striped table-dark">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Produk</th>
+                                            <th>Deskripsi</th>
+                                            <th>Kuantitas</th>
+                                            <th>Unit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($detail_pemesanan as $v)
+                                        <tr>
+                                            <td>{{ $loop->index+1 }}</td>
+                                            <td>{{ $v->produk->nama }}</td>
+                                            <td>{{ $v->deskripsi }}</td>
+                                            <td>{{ $v->kuantitas }}</td>
+                                            <td>{{ $v->produk->unit }}</td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            @endif
                             <div style="overflow: auto">
                                 <table class="table align-items-center table-flush">
                                     <!-- Your table headers -->
@@ -813,6 +837,8 @@
 
                 $('#pesan').val('{{ $penjualan->pesan }}')
                 $('#memo').val('{{ $penjualan->memo }}')
+
+                $('#input_ongkos_kirim').val('{{ $penjualan->ongkos_kirim }}')
 
                 var x = 1;
                 load_select_2(x);
