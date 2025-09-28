@@ -113,8 +113,13 @@ class Penjualan extends Model
         $this->subtotal = $request->input('input_subtotal');
         $this->diskon_per_baris = $request->input('input_diskon_per_baris');
         $this->ppn = $request->input('input_ppn');
-        $this->sisa_tagihan = $request->input('input_sisa_tagihan');
-        $this->total = $request->input('input_total');
+        if($jenis == 'pengiriman' && $request->input('input_ongkos_kirim') > 0){
+            $this->sisa_tagihan = $request->input('input_sisa_tagihan') + $request->input('input_ongkos_kirim');
+            $this->total = $request->input('input_total') + $request->input('input_ongkos_kirim');
+        }else{
+            $this->sisa_tagihan = $request->input('input_sisa_tagihan');
+            $this->total = $request->input('input_total');
+        }
         $this->alamat = $request->input('alamat');
         $this->detail_alamat = $request->input('detail_alamat');
         $this->email = $request->input('email');
@@ -167,11 +172,11 @@ class Penjualan extends Model
                 $this->id_pemesanan = $id_jenis;
             }
         }
-        if($request->input('gudang')){
-            $gudang = Gudang::find((int)$request->input('gudang'));
-            $this->id_gudang = $gudang->id;
-            $this->nama_gudang = $gudang->nama;
-        }
+        // if($request->input('gudang')){
+        //     $gudang = Gudang::find((int)$request->input('gudang'));
+        //     $this->id_gudang = $gudang->id;
+        //     $this->nama_gudang = $gudang->nama;
+        // }
         $this->ongkos_kirim = $request->input('input_ongkos_kirim') ? $request->input('input_ongkos_kirim') : null;
         $this->pesan = $request->input('pesan') ? $request->input('pesan') : null;
         $this->memo = $request->input('memo') ? $request->input('memo') : null;
@@ -266,6 +271,7 @@ class Penjualan extends Model
                                                     ->where('fitur','Multiple gudang')
                                                     ->where('status','active')
                                                     ->first();
+
         $gudang = Gudang::where('id_company',Auth::user()->id_company)->get();
         
         for ($i = 0; $i < count($index); $i++) {
@@ -273,14 +279,6 @@ class Penjualan extends Model
             $harga_satuan = $request->input('harga_satuan')[$i] != '' || $request->input('harga_satuan')[$i] != null ? number_format((float)str_replace(",", "", $_POST['harga_satuan'][$i]), 2, '.', '') : 0;
             $jumlah = $request->input('jumlah')[$i] != '' || $request->input('jumlah')[$i] != null ? number_format((float)str_replace(",", "", $_POST['jumlah'][$i]), 2, '.', '') : 0;
             $pajak = $request->input('pajak')[$i] != '' || $request->input('pajak')[$i] != null ? number_format((float)str_replace(",", "", $_POST['pajak'][$i]), 2, '.', '') : 0;
-
-            if($jenis == 'pengiriman'){
-                if($multiple_gudang && $gudang->count() > 0){
-                    $this->updateStok($request->input('produk')[$i], $kuantitas,'insert');
-                }else{
-                    $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i],'insert');
-                }
-            }
 
             $detail_penjualan = new Detail_penjualan;
             $detail_penjualan->id_company = Auth::user()->id_company;
@@ -293,7 +291,7 @@ class Penjualan extends Model
             }
             $detail_penjualan->deskripsi = $request->input('deskripsi')[$i];
 
-            if(($jenis != 'penawaran' ) && $multiple_gudang && $gudang->count() > 0){
+            if(($jenis == 'pengiriman' ) && isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
                 foreach($gudang as $v){
                     $kuantitas += (int) $request->input('kuantitas_'.$v->id)[$i];
                 }
@@ -389,8 +387,8 @@ class Penjualan extends Model
 
                 $jenis_transaksi = $transaksi_produk->jenis;
             }
-            if($jenis != 'penawaran'){
-                if($multiple_gudang && $gudang->count() > 0){
+            if($jenis == 'pengiriman'){
+                if(isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
                     foreach($gudang as $v){
                         if($request->input('kuantitas_'.$v->id)[$i]){
                             $this->insertStokGudang(
@@ -405,6 +403,8 @@ class Penjualan extends Model
                             );
                         }
                     }
+                    if($jenis == 'pengiriman')
+                        $this->updateStok($request->input('produk')[$i], $kuantitas,'insert');
                 }else{
                     $this->insertStokGudang(
                         $this->id,
@@ -416,6 +416,8 @@ class Penjualan extends Model
                         $tipe,
                         $jenis_transaksi
                     );
+                    if($jenis == 'pengiriman')
+                        $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i],'insert');
                 }
             }
         }
@@ -455,7 +457,7 @@ class Penjualan extends Model
         $stok_gudang->save();
     }
 
-    public function ubah($request, $jenis = null)
+    public function ubah($request, $jenis = null, $id_jenis=null)
     {
         $this->tanggal_transaksi = DateTime::createFromFormat('d/m/Y', $request->tanggal_transaksi)->format('Y-m-d');
         
@@ -504,7 +506,18 @@ class Penjualan extends Model
         }
 
         if($jenis == 'pemesanan'){
-            $penawaran = Penjualan::where('id_pemesanan',$this->id)->first();
+            $penawaran = Penjualan::where('id_pemesanan',$this->id)->where('jenis','penawaran')->first();
+            $this->no_rfq = $penawaran->no_rfq;
+            $this->pic = $penawaran->pic;
+
+            $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
+            $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
+            $this->info_pengiriman = $request->input('info_pengiriman');
+            $this->sama_dengan_penagihan = $request->input('sama_dengan_penagihan');
+            $this->tanggal_pengiriman = DateTime::createFromFormat('d/m/Y', $request->tanggal_pengiriman)->format('Y-m-d') ? DateTime::createFromFormat('d/m/Y', $request->tanggal_pengiriman)->format('Y-m-d') : null;
+            $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
+        }else if ($jenis == 'pengiriman'){
+            $penawaran = Penjualan::where('id_pemesanan',$this->id_pemesanan)->where('jenis','penawaran')->first();
             $this->no_rfq = $penawaran->no_rfq;
             $this->pic = $penawaran->pic;
 
@@ -515,19 +528,19 @@ class Penjualan extends Model
             $this->tanggal_pengiriman = DateTime::createFromFormat('d/m/Y', $request->tanggal_pengiriman)->format('Y-m-d') ? DateTime::createFromFormat('d/m/Y', $request->tanggal_pengiriman)->format('Y-m-d') : null;
             $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
         }
-        if($request->input('gudang')){
-            $gudang = Gudang::find((int)$request->input('gudang'));
-            $this->id_gudang = $gudang->id;
-            $this->nama_gudang = $gudang->nama;
-        }else{
-            $this->id_gudang = null;
-            $this->nama_gudang = null;
-        }
+        // if($request->input('gudang')){
+        //     $gudang = Gudang::find((int)$request->input('gudang'));
+        //     $this->id_gudang = $gudang->id;
+        //     $this->nama_gudang = $gudang->nama;
+        // }else{
+        //     $this->id_gudang = null;
+        //     $this->nama_gudang = null;
+        // }
+        $this->ongkos_kirim = $request->input('input_ongkos_kirim') ? $request->input('input_ongkos_kirim') : null;
         $this->pesan = $request->input('pesan') ? $request->input('pesan') : null;
         $this->memo = $request->input('memo') ? $request->input('memo') : null;
         $this->save();
-
-        if($jenis == 'pemesanan' && isset($_POST['id_dokumen']) && $request->file($_POST['id_dokumen'])){
+        if($jenis == 'pemesanan' && isset($_POST['id_dokumen']) && $request->file($_POST['id_dokumen'][0])){
             Dokumen_penjualan::where('id_pemesanan',$this->id)->delete();
             for($i = 0; $i < count($_POST['id_dokumen']) ; $i++ ){
                 if($request->file($_POST['id_dokumen'][$i])){
@@ -545,7 +558,44 @@ class Penjualan extends Model
                 }
             }
         }
+        if($jenis == 'pengiriman' && isset($_POST['id_dokumen']) && $request->file($_POST['id_dokumen'][0])){
+            Dokumen_penjualan::where('id_pengiriman',$this->id)->delete();
+            for($i = 0; $i < count($_POST['id_dokumen']) ; $i++ ){
+                if($request->file($_POST['id_dokumen'][$i])){
+                    $fileName = $request->file($_POST['id_dokumen'][$i])->getClientOriginalName();
+                    $uniqueFileName = time() . '.' . $fileName;
+    
+                    $filePath = $request->file($_POST['id_dokumen'][$i])->storeAs('uploads', $uniqueFileName, 'public');
+                    $dokumen_penjualan = new Dokumen_penjualan();
+                    $dokumen_penjualan->id_company = Auth::user()->id_company;
+                    $dokumen_penjualan->id_pengiriman = $this->id;
+                    $dokumen_penjualan->id_dokumen =$_POST['id_dokumen'][$i];
+                    $dokumen_penjualan->tanggal_upload = date('Y-m-d');
+                    $dokumen_penjualan->nama = $uniqueFileName;
+                    $dokumen_penjualan->save();
+                }
+            }
+        }
 
+        if($jenis == 'penagihan' && isset($_POST['id_dokumen']) && $request->file($_POST['id_dokumen'])){
+            Dokumen_penjualan::where('id_penagihan',$this->id)->delete();
+            for($i = 0; $i < count($_POST['id_dokumen']) ; $i++ ){
+                if($request->file($_POST['id_dokumen'][$i])){
+                    $fileName = $request->file($_POST['id_dokumen'][$i])->getClientOriginalName();
+                    $uniqueFileName = time() . '.' . $fileName;
+    
+                    $filePath = $request->file($_POST['id_dokumen'][$i])->storeAs('uploads', $uniqueFileName, 'public');
+                    $dokumen_penjualan = new Dokumen_penjualan();
+                    $dokumen_penjualan->id_company = Auth::user()->id_company;
+                    $dokumen_penjualan->id_penagihan = $this->id;
+                    $dokumen_penjualan->id_dokumen =$_POST['id_dokumen'][$i];
+                    $dokumen_penjualan->tanggal_upload = date('Y-m-d');
+                    $dokumen_penjualan->nama = $uniqueFileName;
+                    $dokumen_penjualan->save();
+                }
+            }
+        }
+        
         $this->editDetailPenjualan($request, $tipe, $jenis,$this->id_gudang);
 
         $log = new Log;
@@ -580,7 +630,7 @@ class Penjualan extends Model
             $pajak = $request->input('pajak')[$i] != '' || $request->input('pajak')[$i] != null ? number_format((float)str_replace(",", "", $_POST['pajak'][$i]), 2, '.', '') : 0;
 
             if($jenis == 'pengiriman'){
-                if($multiple_gudang && $gudang->count() > 0){
+                if(isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
                     $this->updateStok($request->input('produk')[$i], $kuantitas, 'update', $this->id);
                 }else{
                     $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i], 'update', $this->id);
@@ -598,7 +648,7 @@ class Penjualan extends Model
             }
             $detail_penjualan->deskripsi = $request->input('deskripsi')[$i];
 
-            if(($jenis== 'pemesanan' || $jenis== 'penagihan' ) && $multiple_gudang && $gudang->count() > 0){
+            if(($jenis != 'penawaran') && isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
                 foreach($gudang as $v){
                     $kuantitas += $request->input('kuantitas_'.$v->id)[$i];
                 }
@@ -692,8 +742,8 @@ class Penjualan extends Model
                 $transaksi_produk->unit = $produk->unit;
                 $transaksi_produk->save();
             }
-            if($jenis != 'penawaran'){
-                if($multiple_gudang && $gudang->count() > 0){
+            if($jenis != 'penawaran' && $jenis != 'pemesanan'){
+                if(isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
                     foreach($gudang as $v){
                         if($request->input('kuantitas_'.$v->id)[$i]){
                             $this->updateStokGudang(

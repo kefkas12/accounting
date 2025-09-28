@@ -303,7 +303,7 @@
                                                 hidden>
                                         </div>
                                     </div>
-                                    <div class="row">
+                                    <div class="row mb-1">
                                         <div class="col">
                                             <span>PPN</span>
                                         </div>
@@ -312,6 +312,17 @@
                                             <input type="text" id="input_ppn" name="input_ppn" hidden>
                                         </div>
                                     </div>
+                                    @if(isset($penjualan->ongkos_kirim) && $penjualan->ongkos_kirim > 0)
+                                    <div class="row">
+                                        <div class="col">
+                                            <span>Ongkos Kirim</span>
+                                        </div>
+                                        <div class="col d-flex justify-content-end">
+                                            <span id="ongkos_kirim">Rp 0,00</span>
+                                            <input type="text" id="input_ongkos_kirim" name="input_ongkos_kirim" hidden>
+                                        </div>
+                                    </div>
+                                    @endif
                                     <div class="row mb-2 mt-2 pt-1 border-top ">
                                         <div class="col">
                                             <span>Total</span>
@@ -391,21 +402,40 @@
             $('#subtotal').text(rupiah(result_subtotal));
             $('#ppn').text(rupiah(result_ppn));
             $('#diskon_per_baris').text(rupiah(result_diskon_per_baris));
-            $('#total').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
             $('#total_faktur').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
-            @if(isset($penjualan) && $penjualan->jumlah_terbayar != 0)
-            $('#sisa_tagihan').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris - {{ $penjualan->jumlah_terbayar }}));
-            $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris - {{ $penjualan->jumlah_terbayar }});
+
+            @if(isset($penjualan->ongkos_kirim) && $penjualan->ongkos_kirim > 0)
+                $('#total').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris + {{ $penjualan->ongkos_kirim }}));
             @else
-            $('#sisa_tagihan').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
-            $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris);
+                $('#total').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
+            @endif
+            @if(isset($penjualan) && $penjualan->jumlah_terbayar != 0)
+                @if(isset($penjualan->ongkos_kirim) && $penjualan->ongkos_kirim > 0)
+                    $('#sisa_tagihan').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris - {{ $penjualan->jumlah_terbayar }} + {{ $penjualan->ongkos_kirim }}));
+                    $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris - {{ $penjualan->jumlah_terbayar }} + {{ $penjualan->ongkos_kirim }});
+                @else
+                    $('#sisa_tagihan').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris - {{ $penjualan->jumlah_terbayar }}));
+                    $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris - {{ $penjualan->jumlah_terbayar }});
+                @endif
+            @else
+                @if(isset($penjualan->ongkos_kirim) && $penjualan->ongkos_kirim > 0)
+                    $('#sisa_tagihan').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris + {{ $penjualan->ongkos_kirim }}));
+                    $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris + {{ $penjualan->ongkos_kirim }});
+                @else
+                    $('#sisa_tagihan').text(rupiah(result_subtotal + result_ppn - result_diskon_per_baris));
+                    $('#input_sisa_tagihan').val(result_subtotal + result_ppn - result_diskon_per_baris);
+                @endif
             @endif
 
             $('#input_subtotal').val(result_subtotal);
             $('#input_ppn').val(result_ppn);
             $('#input_diskon_per_baris').val(result_diskon_per_baris);
-            $('#input_total').val(result_subtotal + result_ppn - result_diskon_per_baris);
             
+            @if(isset($penjualan->ongkos_kirim) && $penjualan->ongkos_kirim > 0)
+            $('#input_total').val(result_subtotal + result_ppn - result_diskon_per_baris + {{ $penjualan->ongkos_kirim }});
+            @else
+            $('#input_total').val(result_subtotal + result_ppn - result_diskon_per_baris);
+            @endif
         }
 
         function load_select_2(id) {
@@ -619,7 +649,8 @@
                     @if(isset($multiple_gudang))
                         @if(isset($gudang))
                             @foreach($gudang as $v)
-                                <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_{{ $v->id }}_${i}" name="kuantitas_{{ $v->id }}[]" @if($loop->index == 0) value="1" @endif onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
+                                <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_{{ $v->id }}_${i}" 
+                                        name="kuantitas_{{ $v->id }}[]" @if($loop->index == 0) value="1" @endif onkeyup="change_harga(${i})" onblur="check_null(this)" step="any" @if(isset($pengiriman)) disabled @endif></td>
                             @endforeach
                         @else
                             <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
@@ -718,6 +749,11 @@
                 $('#pesan').val('{{ $penjualan->pesan }}')
                 $('#memo').val('{{ $penjualan->memo }}')
 
+
+                @if(isset($penjualan->ongkos_kirim) && $penjualan->ongkos_kirim > 0)
+                $('#ongkos_kirim').text(rupiah('{{ $penjualan->ongkos_kirim }}'));
+                $('#input_ongkos_kirim').val('{{ $penjualan->ongkos_kirim }}');
+                @endif
                 var x = 1;
                 load_select_2(x);
                 @foreach($detail_penjualan as $v)

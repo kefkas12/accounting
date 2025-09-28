@@ -186,21 +186,6 @@
                                     <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
                                         name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                 </div>
-                                @if($multiple_gudang && $gudang->count() > 0)
-                                <div class="form-group col-md-3 pr-2">
-                                    <label for="gudang">Gudang</label>
-                                    <select class="form-control form-control-sm" id="gudang" name="gudang">
-                                        <option selected disabled hidden>Pilih Gudang</option>
-                                        @if(isset($gudang))
-                                        @foreach($gudang as $v)
-                                        <option value="{{ $v->id }}">{{ $v->nama }}</option>
-                                        @endforeach
-                                        @else
-                                        <option disabled>No result found</option>
-                                        @endif
-                                    </select>
-                                </div>
-                                @endif
                                 <div class="col-md-3 pr-2" style="display:none">
                                     <div class="form-group info_pengiriman" style="display:none">
                                         <label for="tanggal_pengiriman">Tgl. Pengiriman</label>
@@ -387,20 +372,20 @@
                                         <textarea class="form-control form-control-sm" name="pesan" id="pesan"></textarea>
                                     </div>
                                     @if(isset($pengaturan_dokumen))
-                                    @foreach($pengaturan_dokumen as $v)
-                                    <div class="form-group">
-                                        <span>Upload {{ $v->nama }}</span> 
-                                        @if(isset($dokumen_penjualan))
-                                        @foreach($dokumen_penjualan as $w)
-                                            @if($v->id == $w->id_dokumen)
-                                            <a href="{{ asset('storage/uploads') }}/{{ $w->nama }}" target="_blank">{{ $w->nama }}</a>
+                                        @foreach($pengaturan_dokumen as $v)
+                                        <div class="form-group">
+                                            <span>Upload {{ $v->nama }}</span> 
+                                            @if(isset($dokumen_penjualan))
+                                            @foreach($dokumen_penjualan as $w)
+                                                @if($v->id == $w->id_dokumen)
+                                                <a href="{{ asset('storage/uploads') }}/{{ $w->nama }}" target="_blank">{{ $w->nama }}</a>
+                                                @endif
+                                            @endforeach
                                             @endif
+                                            <input type="file" class="form-control form-control-sm" name="{{ $v->id }}" id="file_{{ $v->id }}">
+                                            <input type="number" name="id_dokumen[]" value="{{ $v->id }}" hidden id="id_{{ $v->id }}">
+                                        </div>
                                         @endforeach
-                                        @endif
-                                        <input type="file" class="form-control form-control-sm" name="{{ $v->id }}" id="file_{{ $v->id }}">
-                                        <input type="number" name="id_dokumen[]" value="{{ $v->id }}" hidden id="id_{{ $v->id }}">
-                                    </div>
-                                    @endforeach
                                     @endif
                                 </div>
                                 <div class="form-group col-md-3 pr-2">

@@ -57,12 +57,12 @@
                             </div>
                         </div>
                         <form method="POST" 
-                            @if(isset($pemesanan))
+                            @if(isset($pemesanan_pengiriman))
                                 action="{{ url('penjualan/pemesanan').'/pengiriman/'.$penjualan->id }}" 
-                            @elseif(isset($penjualan)) 
-                                action="{{ url('penjualan/penagihan').'/'.$penjualan->id }}" 
+                            @elseif(isset($pemesanan)) 
+                                action="{{ url('penjualan/pengiriman').'/'.$penjualan->id }}" 
                             @else 
-                                action="{{ url('penjualan/penagihan') }}"
+                                action="{{ url('penjualan/pengiriman') }}"
                             @endif
                             id="insertForm"
                             enctype="multipart/form-data"
@@ -326,27 +326,34 @@
                             </div>
                             <hr>
                             <div class="form-row">
-                                <div class="col-md-6">
-                                    <div class="row">
-                                        <div class="form-group col-md-6 pr-2">
-                                            <label for="pesan">Pesan</label>
-                                            <textarea class="form-control form-control-sm" name="pesan" id="pesan"></textarea>
-                                        </div>
-                                        <div class="form-group col-md-6 pr-2">
-                                            <label for="memo">Memo</label>
-                                            <textarea class="form-control form-control-sm" name="memo" id="memo"></textarea>
-                                        </div>
+                                <div class="col-md-3 pr-2">
+                                    <div class="form-group">
+                                        <label for="pesan">Pesan</label>
+                                        <textarea class="form-control form-control-sm" name="pesan" id="pesan"></textarea>
                                     </div>
                                     <div class="row">
                                     @if(isset($pengaturan_dokumen))
                                         @foreach($pengaturan_dokumen as $v)
-                                        <div class="form-group col-md-6 pr-2">
+                                        <div class="form-group">
                                             <span>Upload {{ $v->nama }}</span>
+                                            @if(isset($dokumen_penjualan))
+                                            @foreach($dokumen_penjualan as $w)
+                                                @if($v->id == $w->id_dokumen)
+                                                <a href="{{ asset('storage/uploads') }}/{{ $w->nama }}" target="_blank">{{ $w->nama }}</a>
+                                                @endif
+                                            @endforeach
+                                            @endif
                                             <input type="file" class="form-control form-control-sm" name="{{ $v->id }}" id="file_{{ $v->id }}">
                                             <input type="number" name="id_dokumen[]" value="{{ $v->id }}" hidden id="id_{{ $v->id }}">
                                         </div>
                                         @endforeach
                                     @endif
+                                    </div>
+                                </div>
+                                <div class="form-group col-sm-3 pr-2">
+                                    <div class="form-group">
+                                        <label for="memo">Memo</label>
+                                        <textarea class="form-control form-control-sm" name="memo" id="memo"></textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -425,8 +432,12 @@
                                     </div>
                                     <div class="row my-5">
                                         <div class="col d-flex justify-content-end">
+                                            @if(isset($penjualan))
+                                            <a href="{{ url('penjualan').'/detail/'.$penjualan->id }}" class="btn btn-light">Batalkan</a>
+                                            @else
                                             <a href="{{ url('penjualan') }}" class="btn btn-light">Batalkan</a>
-                                            <button type="submit" class="btn btn-primary">@if(isset($pembelian)) Simpan perubahan @elseif(isset($pemesanan)) Buat penagihan @else Buat @endif</button>
+                                            @endif
+                                            <button type="submit" class="btn btn-primary">@if(isset($pembelian)) Simpan perubahan @elseif(isset($pemesanan)) Buat Pengiriman @else Buat @endif</button>
                                         </div>
                                     </div>
                                 </div>

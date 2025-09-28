@@ -165,6 +165,7 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::get('/detail/{id}', 'detail');
 	Route::get('/pembayaran/{id}', 'pembayaran');
 	Route::get('/receive_payment/{id}','receive_payment');
+
 	Route::post('/pembayaran', 'penerimaan_pembayaran');
 	Route::post('/penagihan', 'insert_penagihan');
 	Route::post('/penagihan/{id}', 'update_penagihan');
@@ -173,12 +174,14 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::post('/penawaran/{id}', 'update_penawaran');
 	Route::post('/penawaran/pemesanan/{id}', 'insert_penawaran_pemesanan');
 	Route::post('/penawaran/pengiriman/{id}', 'insert_penawaran_pengiriman');
-	Route::post('/pemesanan/pengiriman/{id}', 'insert_pemesanan_pengiriman');
-	Route::post('/pemesanan/penagihan/{id}', 'insert_pemesanan_penagihan');
-	Route::post('/pengiriman/penagihan/{id}', 'insert_pengiriman_penagihan');
 
+	Route::post('/pengiriman/{id}', 'update_pengiriman');
+	Route::post('/pengiriman/penagihan/{id}', 'insert_pengiriman_penagihan');
+	
 	Route::post('/pemesanan', 'insert_pemesanan');
 	Route::post('/pemesanan/{id}', 'update_pemesanan');
+	Route::post('/pemesanan/pengiriman/{id}', 'insert_pemesanan_pengiriman');
+	Route::post('/pemesanan/penagihan/{id}', 'insert_pemesanan_penagihan');
 
 	Route::post('/status_pengiriman', 'update_status_pengiriman');
 

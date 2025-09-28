@@ -257,19 +257,6 @@
                                 </table>
                             </div>
                             <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
-                            <br>
                         </div>
                         <div class="tab-pane fade" id="nav-info-gudang" role="tabpanel"
                             aria-labelledby="nav-info-gudang-tab">
