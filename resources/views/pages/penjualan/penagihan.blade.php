@@ -70,7 +70,50 @@
                             enctype="multipart/form-data"
                         >
                             @csrf
-                            <div class="form-row border-bottom mb-3">
+                            @if(isset($pengiriman))
+                            <div class="form-row border-bottom border-top border-left border-right text-center pt-3 mb-3">
+                                @if(isset($pengiriman))
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        <label>No Pengiriman</label> <br>
+                                        <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        <label>No Pemesanan</label> <br>
+                                        <a href="{{ url('penjualan/detail').'/'.$penjualan->id_pemesanan }}">{{ $penjualan->no_str_pemesanan }}</a>
+                                    </div>
+                                </div>
+                                @elseif(isset($pemesanan))
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        <label>No Pemesanan</label> <br>
+                                        <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
+                                    </div>
+                                </div>
+                                @endif
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        <label>No Penawaran</label> <br>
+                                        <a href="{{ url('penjualan/detail').'/'.$penjualan->id_penawaran }}">{{ $penjualan->no_str_penawaran }}</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        <label>No RFQ</label> <br>
+                                        <span>
+                                        @if($penjualan->no_rfq)
+                                            {{ $penjualan->no_rfq }}
+                                        @else
+                                            -
+                                        @endif
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                            <div class="form-row">
                                 <div class="form-group col-md-3 pr-2">
                                     <label for="pelanggan">Pelanggan <span class="text-danger">*</span></label>
                                     <select class="selectpicker form-control form-control-sm" data-live-search="true" title="Pilih Pelanggan" id="pelanggan" name="pelanggan" onchange="alamat_pelanggan(this)" required @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
@@ -157,17 +200,6 @@
                                     <label for="no_pelacakan">No. Pelacakan</label>
                                     <input type="text" class="form-control form-control-sm" id="no_pelacakan" name="no_pelacakan">
                                 </div>
-                                @if(isset($pemesanan))
-                                <div class="form-group col-md-3 pr-2">
-                                    <label for="nomor_pemesanan_penjualan">No Pemesanan Penjualan</label> <br>
-                                    <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
-                                </div>
-                                @elseif(isset($pengiriman))
-                                <div class="form-group col-md-3 pr-2">
-                                    <label for="nomor_pemesanan_penjualan">Pengiriman</label> <br>
-                                    <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
-                                </div>
-                                @endif
                             </div>
 
                             <div style="overflow: auto">
@@ -270,13 +302,20 @@
                                         <textarea class="form-control form-control-sm" name="pesan" id="pesan"></textarea>
                                     </div>
                                     @if(isset($pengaturan_dokumen))
-                                    @foreach($pengaturan_dokumen as $v)
-                                    <div class="form-group">
-                                        <span>Upload {{ $v->nama }}</span>
-                                        <input type="file" class="form-control form-control-sm" name="{{ $v->id }}" id="file_{{ $v->id }}">
-                                        <input type="number" name="id_dokumen[]" value="{{ $v->id }}" hidden id="id_{{ $v->id }}">
-                                    </div>
-                                    @endforeach
+                                        @foreach($pengaturan_dokumen as $v)
+                                        <div class="form-group">
+                                            <span>Upload {{ $v->nama }}</span>
+                                            @if(isset($dokumen_penjualan))
+                                            @foreach($dokumen_penjualan as $w)
+                                                @if($v->id == $w->id_dokumen)
+                                                <a href="{{ asset('storage/uploads') }}/{{ $w->nama }}" target="_blank">{{ $w->nama }}</a>
+                                                @endif
+                                            @endforeach
+                                            @endif
+                                            <input type="file" class="form-control form-control-sm" name="{{ $v->id }}" id="file_{{ $v->id }}">
+                                            <input type="number" name="id_dokumen[]" value="{{ $v->id }}" hidden id="id_{{ $v->id }}">
+                                        </div>
+                                        @endforeach
                                     @endif
                                 </div>
                                 <div class="form-group col-md-3 pr-2">
@@ -695,11 +734,11 @@
         };
 
         $("#info_pengiriman").change(function() {
-            if(this.checked) {
-                $('.info_pengiriman').show();
-            }else{
+            // if(this.checked) {
+                // $('.info_pengiriman').show();
+            // }else{
                 $('.info_pengiriman').hide();
-            }
+            // }
         });
 
         $('#sama_dengan_penagihan').change(function() {

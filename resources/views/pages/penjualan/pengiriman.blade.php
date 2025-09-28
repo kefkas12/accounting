@@ -73,7 +73,11 @@
                                 <div class="col-md-3 border-right">
                                     <div class="form-group">
                                         <label>No Pemesanan</label> <br>
+                                        @if(isset($pemesanan_pengiriman))
                                         <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
+                                        @else
+                                        <a href="{{ url('penjualan/detail').'/'.$penjualan->id_pemesanan }}">{{ $penjualan->no_str_pemesanan }}</a>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="col-md-3 border-right">

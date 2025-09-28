@@ -75,20 +75,26 @@
                             <div class="form-group col-md-3" >Gudang <br> @if($penjualan->nama_gudang)<strong><a href="{{ url('gudang/detail').'/'.$penjualan->id_gudang }}">{{ $penjualan->nama_gudang }}</a></strong>@else <strong> - </strong> @endif</div>
                         </div>
                         @endif
-                        @if($penjualan->penawaran)
                         <div class="form-row">
+                            @if($penjualan->pengiriman)
+                            <div class="form-group col-md-2">
+                                No. Pengiriman <br>
+                                <a href="{{ url('penjualan/detail').'/'.$penjualan->pengiriman->id }}">{{ $penjualan->pengiriman->no_str }}</a>
+                            </div>
+                            @endif
                             @if($penjualan->pemesanan)
                             <div class="form-group col-md-2">
                                 No. Pemesanan <br>
                                 <a href="{{ url('penjualan/detail').'/'.$penjualan->pemesanan->id }}">{{ $penjualan->pemesanan->no_str }}</a>
                             </div>
                             @endif
+                            @if($penjualan->penawaran)
                             <div class="form-group col-md-2">
                                 No. Penawaran <br>
                                 <a href="{{ url('penjualan/detail').'/'.$penjualan->penawaran->id }}">{{ $penjualan->penawaran->no_str }}</a>
                             </div>
+                            @endif
                         </div>
-                        @endif
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead class="thead-light">
@@ -239,11 +245,14 @@
                                             </div>
                                             <div class="row mb-1">
                                                 <div class="col">
-                                                    Gudang
+                                                    Lokasi
                                                 </div>
                                                 <div class="col d-flex justify-content-end">
                                                     <select class="form-control form-control-sm" name="gudang" id="gudang" required>
                                                         <option selected disabled hidden value="">Pilih Gudang</option>
+                                                        @if($penjualan->alamat)
+                                                        <option>{{ $penjualan->nama_pelanggan }} - {{ $penjualan->alamat }}</option>
+                                                        @endif
                                                         @foreach($gudang as $v)
                                                         <option value="{{ $v->id }}">{{ $v->nama }}</option>
                                                         @endforeach
@@ -377,7 +386,7 @@
                                 @endif
                             @endif
                             @if(isset($pengiriman))
-                            <div class="table-responsive mt-3">
+                            <div class="table-responsive mt-3" style="display:none">
                                 <div class="row">
                                     <div class="col">Pengiriman</div>
                                 </div>
@@ -700,7 +709,11 @@
                                 <tr>
                                     <td>
                                         <h6 class="mb-0 text-xs username"><a href="#">{{ $v->nama_status_pengiriman }}</a></h6>
+                                        @if($v->nama_gudang)
                                         <p class="text-xs mb-0 email">{{ $v->nama_gudang }}</p>
+                                        @else
+                                        <p class="text-xs mb-0 email">{{ $v->penerima }}</p>
+                                        @endif
                                     </td>
                                     <td>{{ $v->created_at }}</td>
                                 </tr>
