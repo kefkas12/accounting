@@ -58,11 +58,11 @@
                             </div>
                         </div>
                         <form method="POST" id="insertForm"
-                            @if(isset($pemesanan))
+                            @if(isset($pemesanan_penagihan))
                                 action="{{ url('penjualan/pemesanan').'/penagihan/'.$penjualan->id }}" 
-                            @elseif(isset($pengiriman))
+                            @elseif(isset($pengiriman_penagihan))
                                 action="{{ url('penjualan/pengiriman').'/penagihan/'.$penjualan->id }}" 
-                            @elseif(isset($penjualan)) 
+                            @elseif(isset($penagihan)) 
                                 action="{{ url('penjualan/penagihan').'/'.$penjualan->id }}" 
                             @else 
                                 action="{{ url('penjualan/penagihan') }}" 

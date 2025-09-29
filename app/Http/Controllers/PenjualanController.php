@@ -44,7 +44,7 @@ class PenjualanController extends Controller
         $this->middleware('auth');
     }
     public function index()
-    {
+    {   
         $data['sidebar'] = 'penjualan';
 
         $data['produk_penawaran'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
@@ -954,6 +954,7 @@ class PenjualanController extends Controller
             Stok_gudang::where('id_transaksi',$id)->delete();
             Log::where('id_transaksi',$id)->delete();
             Dokumen_penjualan::where('id_pengiriman',$id)->delete();
+            Status_pengiriman::where('id_pengiriman_penjualan',$id)->delete();
             $detail_jurnal = Detail_jurnal::where('id_jurnal',$penjualan->id_jurnal)->get();
             foreach($detail_jurnal as $v){
                 $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
@@ -970,6 +971,11 @@ class PenjualanController extends Controller
                 $produk->save();
             }
             Detail_penjualan::where('id_penjualan',$penjualan->id)->delete();
+            if($penjualan->id_penawaran){
+                $penawaran = Penjualan::find($penjualan->id_penawaran);
+                $penawaran->id_pengiriman = null;
+                $penawaran->save();
+            }
             if($penjualan->id_pemesanan){
                 $pemesanan = Penjualan::find($penjualan->id_pemesanan);
                 if($pemesanan){
@@ -1026,8 +1032,26 @@ class PenjualanController extends Controller
 
             Detail_penjualan::where('id_penjualan',$penjualan->id)->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
-
+            Dokumen_penjualan::where('id_penagihan',$id)->delete();
             Stok_gudang::where('id_transaksi',$id)->delete();
+            Log::where('id_transaksi',$id)->delete();
+
+            if($penjualan->id_penawaran){
+                $penawaran = Penjualan::find($penjualan->id_penawaran);
+                $penawaran->id_penagihan = null;
+                $penawaran->save();
+            }
+            if($penjualan->id_pemesanan){
+                $pemesanan = Penjualan::find($penjualan->id_pemesanan);
+                $pemesanan->id_penagihan = null;
+                $pemesanan->save();
+            }
+            if($penjualan->id_pengiriman){
+                $pengiriman = Penjualan::find($penjualan->id_pengiriman);
+                $pengiriman->id_penagihan = null;
+                $pengiriman->save();
+            }
+
             if(isset($penjualan->id_pengiriman)){
                 $pengiriman = Penjualan::find($penjualan->id_pengiriman);
                 if($pengiriman){

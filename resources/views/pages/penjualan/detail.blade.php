@@ -430,12 +430,14 @@
                             @endif
                             <div class="row">
                                 <div class="col-sm-6">
+                                    @if($penjualan->status == 'draf' || $penjualan->status == 'open')
                                     <form id="deleteForm" action="{{ url('penjualan/hapus') . '/' . $penjualan->id }}"
                                         method="post">
                                         @csrf
                                         <button type="submit"
                                             class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
                                     </form>
+                                    @endif
                                 </div>
                                 @if($penjualan->jenis == 'penagihan' && $penjualan->status != 'paid')
                                 <div class="col-sm-6 d-flex justify-content-end">

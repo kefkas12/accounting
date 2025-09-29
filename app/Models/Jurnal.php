@@ -200,7 +200,6 @@ class Jurnal extends Model
             $this->updateAkunBalance(59, $request->input('input_diskon_per_baris'), 0);
         }
 
-
         $this->createDetailJurnal($this->id, 58, 0, $request->input('input_subtotal'));
         $this->updateAkunBalance(58, 0, $request->input('input_subtotal'));
 
@@ -227,8 +226,8 @@ class Jurnal extends Model
             $this->no = $this->no('sales_invoice');
             $this->no_str = 'Sales Invoice #' . $this->no('sales_invoice');
         }
-        $this->debit = $request->input('input_total');
-        $this->kredit = $request->input('input_subtotal') + $request->input('input_ppn');
+        $this->debit = $request->input('input_total') + $request->input('input_subtotal') + $request->input('input_diskon_per_baris');
+        $this->kredit = $request->input('input_total') + $request->input('input_subtotal') + $request->input('input_ongkos_kirim') + $request->input('input_ppn');
         if($is_requester){
             $this->status = 'draf';
         }
@@ -249,6 +248,9 @@ class Jurnal extends Model
         $this->createDetailJurnal($this->id, 4, $request->input('input_total'), 0);
         $this->updateAkunBalance(4, $request->input('input_total'), 0);
 
+        $this->createDetailJurnal($this->id, 61, $request->input('input_subtotal'), 0);
+        $this->updateAkunBalance(61, $request->input('input_subtotal'), 0);
+
         if($request->input('input_diskon_per_baris')){
             $this->createDetailJurnal($this->id, 59, $request->input('input_diskon_per_baris'), 0);
             $this->updateAkunBalance(59, $request->input('input_diskon_per_baris'), 0);
@@ -257,24 +259,28 @@ class Jurnal extends Model
         $this->createDetailJurnal($this->id, 58, 0, $request->input('input_subtotal'));
         $this->updateAkunBalance(58, 0, $request->input('input_subtotal'));
         
+        if($request->input('input_ongkos_kirim') && $request->input('input_ongkos_kirim') > 0){
+            $this->createDetailJurnal($this->id, 5, 0, $request->input('input_subtotal') + $request->input('input_ongkos_kirim'));  
+            $this->updateAkunBalance(5, 0, $request->input('input_subtotal') + $request->input('input_ongkos_kirim'));
+        }else{
+            $this->createDetailJurnal($this->id, 5, 0, $request->input('input_subtotal'));  
+            $this->updateAkunBalance(5, 0, $request->input('input_subtotal'));
+        }
+
         if($request->input('input_ppn')){
             $this->createDetailJurnal($this->id, 43, 0, $request->input('input_ppn'));
             $this->updateAkunBalance(43, 0, $request->input('input_ppn'));
         }
 
-        $gudang = Gudang::where('id_company',Auth::user()->id_company)->get();
+        //produk
+        // for ($i = 0; $i < count($request->input('produk')); $i++) {
+        //     $produk = Produk::find($request->input('produk')[$i]);
+        //     $this->createDetailJurnal($this->id, 62, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata, 0);
+        //     $this->updateAkunBalance(62, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata, 0);
 
-        for ($i = 0; $i < count($request->input('produk')); $i++) {
-            $produk = Produk::find($request->input('produk')[$i]);
-            $this->createDetailJurnal($this->id, 62, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata, 0);
-            $this->updateAkunBalance(62, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata, 0);
-
-            $this->createDetailJurnal($this->id, 6, 0, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata);
-            $this->updateAkunBalance(6, 0, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata);
-            
-        }
-
-        
+        //     $this->createDetailJurnal($this->id, 6, 0, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata);
+        //     $this->updateAkunBalance(6, 0, $request->input('kuantitas')[$i] * $produk->harga_beli_rata_rata);    
+        // }
     }
 
     public function pengiriman_faktur($request, $id = null)

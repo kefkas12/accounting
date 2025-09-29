@@ -251,6 +251,32 @@ class Penjualan extends Model
             $penjualan->save();
         }
 
+        if($jenis == 'pengiriman'){
+            $penjualan = Penjualan::find($this->id);
+            if($penjualan->id_penawaran){
+                $penawaran = Penjualan::find($penjualan->id_penawaran);
+                $penawaran->id_pengiriman = $penjualan->id;
+                $penawaran->save();
+            }
+        }else if($jenis == 'penagihan'){
+            $penjualan = Penjualan::find($this->id);
+            if($penjualan->id_penawaran){
+                $penawaran = Penjualan::find($penjualan->id_penawaran);
+                $penawaran->id_penagihan = $penjualan->id;
+                $penawaran->save();
+            }
+            if($penjualan->id_pemesanan){
+                $pemesanan = Penjualan::find($penjualan->id_pemesanan);
+                $pemesanan->id_penagihan = $penjualan->id;
+                $pemesanan->save();
+            }
+            if($penjualan->id_pengiriman){
+                $pengiriman = Penjualan::find($penjualan->id_pengiriman);
+                $pengiriman->id_penagihan = $penjualan->id;
+                $pengiriman->save();
+            }
+        }
+
         $this->insertDetailPenjualan($request, $tipe, $jenis,$this->id_gudang);
 
 
@@ -460,7 +486,6 @@ class Penjualan extends Model
     public function ubah($request, $jenis = null, $id_jenis=null)
     {
         $this->tanggal_transaksi = DateTime::createFromFormat('d/m/Y', $request->tanggal_transaksi)->format('Y-m-d');
-        
         if($jenis == 'penagihan'){
             $this->no_str = 'Sales Invoice #' . $this->no;
             $tipe = 'Penagihan Penjualan #' . $this->no;
@@ -527,6 +552,10 @@ class Penjualan extends Model
             $this->sama_dengan_penagihan = $request->input('sama_dengan_penagihan');
             $this->tanggal_pengiriman = DateTime::createFromFormat('d/m/Y', $request->tanggal_pengiriman)->format('Y-m-d') ? DateTime::createFromFormat('d/m/Y', $request->tanggal_pengiriman)->format('Y-m-d') : null;
             $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
+        }else if ($jenis == 'penagihan'){
+            $penawaran = Penjualan::where('id_pemesanan',$this->id_pemesanan)->where('jenis','penawaran')->first();
+            $this->no_rfq = $penawaran->no_rfq;
+            $this->pic = $penawaran->pic;
         }
         // if($request->input('gudang')){
         //     $gudang = Gudang::find((int)$request->input('gudang'));
@@ -648,7 +677,7 @@ class Penjualan extends Model
             }
             $detail_penjualan->deskripsi = $request->input('deskripsi')[$i];
 
-            if(($jenis != 'penawaran') && isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
+            if($jenis == 'pengiriman' && isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
                 foreach($gudang as $v){
                     $kuantitas += $request->input('kuantitas_'.$v->id)[$i];
                 }
@@ -743,7 +772,7 @@ class Penjualan extends Model
                 $transaksi_produk->save();
             }
             if($jenis != 'penawaran' && $jenis != 'pemesanan'){
-                if(isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
+                if($jenis == 'pengiriman' && isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
                     foreach($gudang as $v){
                         if($request->input('kuantitas_'.$v->id)[$i]){
                             $this->updateStokGudang(
