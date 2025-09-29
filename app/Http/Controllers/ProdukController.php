@@ -112,17 +112,31 @@ class ProdukController extends Controller
                                     ->where('produk.id', $id)
                                     ->where('produk.id_company',Auth::user()->id_company)
                                     ->first();
-            $data['gudang'] = Gudang::leftJoin('stok_gudang', function($join){
-                                    $join->on( 'gudang.id', '=', 'stok_gudang.id_gudang')
-                                        ->where(function($query){
-                                                $query->where('stok_gudang.tipe','like','Faktur Pembelian%')
-                                                    ->orWhere('stok_gudang.tipe','like','Penagihan Pembelian%');
-                                        }); 
+            $data['gudang'] = Gudang::query()
+                                    ->leftJoin('stok_gudang', function($join){
+                                        $join->on( 'gudang.id', '=', 'stok_gudang.id_gudang');
+                                            // ->where(function($query){
+                                            //     $query->where('stok_gudang.tipe','like','Faktur Pembelian%')
+                                            //         ->orWhere('stok_gudang.tipe','like','Penagihan Pembelian%')
+                                            //         ->orWhere('stok_gudang.tipe','like','Pengiriman Penjualan%');
+                                            // }); 
                                     })
-                                    ->select('gudang.nama', DB::raw('COALESCE(SUM(CASE WHEN stok_gudang.id_produk = ' . $id . ' THEN stok_gudang.stok ELSE 0 END), 0) as stok'))
                                     ->where('gudang.id_company', Auth::user()->id_company)
-                                    ->groupBy('gudang.nama')
+                                    ->select('gudang.id','gudang.nama')
+                                    ->selectRaw("
+                                        COALESCE(SUM(
+                                            CASE 
+                                                WHEN stok_gudang.id_produk = ? AND (stok_gudang.tipe LIKE 'Faktur Pembelian%' OR stok_gudang.tipe LIKE 'Penagihan Pembelian%') 
+                                                    THEN stok_gudang.stok
+                                                WHEN stok_gudang.id_produk = ? AND (stok_gudang.tipe LIKE 'Pengiriman Penjualan%')
+                                                    THEN -stok_gudang.stok
+                                                ELSE 0
+                                            END
+                                        ), 0) as stok
+                                    ",[$id, $id])
+                                    ->groupBy('gudang.id','gudang.nama')
                                     ->get();
+
             $data['stok_gudang'] = Stok_gudang::select(DB::raw('sum(stok) as stok'))
                                                 ->where('id_produk',$id)
                                                 ->where('id_company', Auth::user()->id_company)

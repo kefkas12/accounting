@@ -174,7 +174,13 @@ class Jurnal extends Model
             $this->no_str = 'Sales Invoice #' . $this->no('sales_invoice');
         }
         $this->debit = $request->input('input_total') + $request->input('input_subtotal') + $request->input('input_diskon_per_baris');
-        $this->kredit = $request->input('input_total') + $request->input('input_subtotal') + $request->input('input_ongkos_kirim') + $request->input('input_ppn');
+
+        if($request->input('input_ongkos_kirim') && $request->input('input_ongkos_kirim') > 0){
+            $this->kredit = $request->input('input_subtotal') + $request->input('input_subtotal') + $request->input('input_ongkos_kirim') + $request->input('input_ppn');
+        }else{
+            $this->kredit = $request->input('input_subtotal') + $request->input('input_subtotal') + $request->input('input_ppn');
+        }
+        
         $this->save();
 
         if($id){
