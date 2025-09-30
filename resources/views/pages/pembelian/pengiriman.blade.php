@@ -214,20 +214,27 @@
                                 </table>
                             </div>
                             <hr>
-                            <div class="row">
-                                <div class="col"></div>
-                                <div class="col ">
-                                    <div class="row mb-3">
+                            <div class="form-row">
+                                <div class="form-group col-md-3 pr-2">
+                                    <label for="pesan">Pesan</label>
+                                    <textarea class="form-control form-control-sm" name="pesan" id="pesan"></textarea>
+                                </div>
+                                <div class="form-group col-sm-3 pr-2">
+                                    <label for="memo">Memo</label>
+                                    <textarea class="form-control form-control-sm" name="memo" id="memo"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row mb-1">
                                         <div class="col">
                                             <span>Ongkos kirim</span>
                                         </div>
                                         <div class="col d-flex justify-content-end">
-                                            <div class="input-group mb-3">
+                                            <div class="input-group input-group-sm mb-3">
                                                 <div class="input-group-prepend">
-                                                    <span class="input-group-text">Rp</span>
+                                                  <span class="input-group-text">Rp</span>
                                                 </div>
-                                                <input type="text" class="form-control"  id="input_ongkos_kirim" name="input_ongkos_kirim">
-                                                </div>
+                                                <input type="text" class="form-control form-control-sm"  id="input_ongkos_kirim" name="input_ongkos_kirim">
+                                              </div>
                                         </div>
                                     </div>
                                     <div class="row mb-3"  hidden>
@@ -269,7 +276,11 @@
                                     </div>
                                     <div class="row my-5">
                                         <div class="col d-flex justify-content-end">
+                                            @if(isset($pembelian))
+                                            <a href="{{ url('pembelian').'/detail/'.$pembelian->id }}" class="btn btn-light">Batalkan</a>
+                                            @else
                                             <a href="{{ url('pembelian') }}" class="btn btn-light">Batalkan</a>
+                                            @endif
                                             <button type="submit" class="btn btn-primary">Buat</button>
                                         </div>
                                     </div>
@@ -364,17 +375,18 @@
             $('#list').append(`
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
-                        <select class="form-control" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
-                            <option selected disabled hidden>Pilih produk</option>
+                        <select class="form-control form-control-sm" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
+                            <option selected disabled hidden value="">Pilih produk</option>
                             @foreach ($produk as $v)
                                 <option value="{{ $v->id }}" data-harga_beli="{{ $v->harga_beli }}">{{ $v->nama }}</option>
                             @endforeach
                         </select>
                     </th>
                     <td style="padding: 10px !important;">
-                        <textarea class="form-control" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
+                        <textarea class="form-control form-control-sm" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                     </td>
-                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                    <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_${i}" 
+                        name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
                     <td style="padding: 10px !important;"><input type="text" class="form-control" id="unit_${i}" name="unit[]" readonly></td>
                     <td style="padding: 10px !important;" id="harga_satuan_td_${i}"><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
                     <td style="padding: 10px !important;" id="diskon_per_baris_td_${i}">

@@ -561,19 +561,16 @@ class PenjualanController extends Controller
         //                             ->get();
         // }
         if($id != null){
-            $data['penawaran'] = true;
             $data['penawaran_pemesanan'] = true;
+            $data['penawaran'] = true;
             $data['penjualan'] = Penjualan::where('id',$id)->first();
             $data['detail_penjualan'] = Detail_penjualan::with(['produk_penawaran.produk'])
                                                         ->where('id_penjualan',$id)
                                                         ->get();
-            // dd($data['detail_penjualan']);
         }
         $data['pengaturan_dokumen'] = Pengaturan_dokumen::where('id_company',Auth::user()->id_company)
                                                         ->where('status_penjualan','pemesanan')
                                                         ->get();
-
-                                                        // dd($data['produk_penawaran']);
         return view('pages.penjualan.pemesanan', $data);
     }
 
@@ -591,6 +588,7 @@ class PenjualanController extends Controller
         $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
                                     ->get();
         if($id != null){
+            $data['penawaran_penagihan'] = true;
             $data['penawaran'] = true;
             $data['penjualan'] = Penjualan::where('id',$id)->first();
             $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
@@ -624,8 +622,8 @@ class PenjualanController extends Controller
                                     ->get();
         }
         if($id != null){
-            $data['pemesanan'] = true;
             $data['pemesanan_pengiriman'] = true;
+            $data['pemesanan'] = true;
             $data['penjualan'] = Penjualan::leftJoin('penjualan as penawaran', 'penawaran.id','=','penjualan.id_penawaran')
                                             ->leftJoin('penjualan as pemesanan', 'pemesanan.id','=','penjualan.id_pemesanan')
                                             ->select('penjualan.*','penawaran.no_str as no_str_penawaran')
@@ -667,6 +665,7 @@ class PenjualanController extends Controller
                                     ->get();
         }
         if($id != null){
+            $data['pemesanan_penagihan'] = true;
             $data['pemesanan'] = true;
             $data['penjualan'] = Penjualan::where('id',$id)->first();
             $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
@@ -688,8 +687,8 @@ class PenjualanController extends Controller
         $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
                                     ->get();
         if($id != null){
-            $data['pengiriman'] = true;
             $data['pengiriman_penagihan'] = true;
+            $data['pengiriman'] = true;
             $data['penjualan'] = Penjualan::leftJoin('penjualan as penawaran', 'penawaran.id','=','penjualan.id_penawaran')
                                             ->leftJoin('penjualan as pemesanan', 'pemesanan.id','=','penjualan.id_pemesanan')
                                             ->select('penjualan.*','penawaran.no_str as no_str_penawaran','pemesanan.no_str as no_str_pemesanan')

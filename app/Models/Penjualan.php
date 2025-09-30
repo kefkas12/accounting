@@ -149,7 +149,7 @@ class Penjualan extends Model
                 'id_kontak' => $this->id_pelanggan,
                 'alamat' => $request->input('detail_alamat')
             ]);
-        } 
+        }
         if($jenis == 'penawaran'){
             $this->no_rfq = $request->input('no_rfq');
             $this->pic = $request->input('pic');
@@ -159,7 +159,6 @@ class Penjualan extends Model
             }
             $this->no_rfq = Penjualan::find($id_jenis) ? Penjualan::find($id_jenis)->no_rfq : null;
             $this->pic = Penjualan::find($id_jenis) ? Penjualan::find($id_jenis)->pic : null;
-
         }elseif(($jenis == 'penagihan' || $jenis == 'pengiriman') && $id_jenis != null){
             $this->no_rfq = Penjualan::find($id_jenis)->no_rfq ? Penjualan::find($id_jenis)->no_rfq : null;
             $this->pic = Penjualan::find($id_jenis)->pic ? Penjualan::find($id_jenis)->pic : null;
