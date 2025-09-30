@@ -2,23 +2,52 @@
 
 @section('content')
     @include('layouts.headers.cards')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <style>
+        .select2-container {
+            width: 150px !important;
+        }
+
+        /* Ubah tombol dropdown selectpicker jadi mirip input bootstrap */
+        .bootstrap-select .dropdown-toggle {
+            border: 1px solid #ced4da !important; /* Border Bootstrap */
+            border-radius: 0.25rem !important;     /* Radius Bootstrap */
+            background-color: #fff !important;     /* Background putih */
+            color: #495057 !important;             /* Warna teks Bootstrap */
+            height: calc(1.5em + .5rem + 2px) !important; /* Tinggi form-control-sm */
+            padding: .25rem .5rem !important;      /* Padding form-control-sm */
+        }
+
+        /* Placeholder abu-abu */
+        .bootstrap-select .dropdown-toggle.bs-placeholder,
+        .bootstrap-select .dropdown-toggle .filter-option-inner-inner {
+            color: #6c757d !important; /* Warna placeholder */
+        }
+
+        .bootstrap-select .dropdown-toggle,
+        .bootstrap-select .dropdown-toggle:focus,
+        .bootstrap-select .dropdown-toggle:hover {
+            box-shadow: none !important;   /* Hilangkan shadow */
+            outline: none !important;      /* Hilangkan outline biru */
+            background-color: #fff !important; /* Tetap putih saat hover */
+            border-color: #ced4da !important;  /* Border tetap sama */
+        }
+    </style>
     <!-- Page content -->
     <div class="mt--6">
         <!-- Dark table -->
         <div class="row">
             <div class="col">
-                <div class="card mb-5">
-                    <div class="card-header border-0">
-                        <div class="row">
-                            <div class="col">
+                <div class="card">
+                    <div class="card-body border-0 text-sm">
+                        <div class="form-row">
+                            <div class="form-group col-md-9 pr-2">
                                 <a href="{{ url('pembelian') }}">Pembelian</a>
-                            </div>
-                        </div>
-                        <div class="row text-sm">
-                            <div class="col">
                                 <h2>Buat Pemesanan Pembelian</h2>
                             </div>
-                            <div class="col-sm-3 d-flex justify-content-end">
+                            <div class="form-group col-md-3 pr-2">
                                 <select class="form-control" onchange="location = this.value;">
                                     <option selected disabled hidden>Pemesanan Pembelian</option>
                                     <option value="{{ url('pembelian/faktur') }}">Faktur Pembelian</option>
@@ -26,78 +55,76 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
-                    <form method="POST"
-                        @if(isset($penawaran))
-                            action="{{ url('pembelian/penawaran').'/pemesanan/'.$pembelian->id }}" 
-                        @elseif(isset($pembelian))
-                            action="{{ url('pembelian/pemesanan').'/'.$pembelian->id }}" 
-                        @else
-                            action="{{ url('pembelian/pemesanan') }}" 
-                        @endif
-                        id="insertForm"
-                    >
-                        @csrf
-                        <div class="card-body">
+                        <form method="POST" id="insertForm"
+                            @if(isset($pembelian))
+                                action="{{ url('pembelian/pemesanan').'/'.$pembelian->id }}" 
+                            @else
+                                action="{{ url('pembelian/pemesanan') }}" 
+                            @endif
+                            enctype="multipart/form-data"
+                        >
+                            @csrf
                             <div class="form-row border-bottom mb-3">
-                                <div class="form-group has-float-label col-md-3 pr-2">
+                                <div class="form-group col-md-3 pr-2">
                                     <label for="supplier">Supplier / Pemasok <span class="text-danger">*</span></label>
-                                    <select class="form-control form-control-sm" id="supplier" name="supplier" required @if(isset($penawaran)) disabled @endif>
-                                        <option selected disabled value="">Pilih kontak</option>
+                                    <select class="selectpicker form-control form-control-sm" data-live-search="true" title="Pilih Supplier" id="supplier" name="supplier" onchange="alamat_supplier(this)" required @if(isset($penawaran)) disabled @endif>
                                         @foreach ($supplier as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group has-float-label col-md-3 pr-2">
+                                <div class="form-group col-md-3 pr-2" style="display:none">
                                     <label for="email">Email</label>
                                     <input type="email" class="form-control form-control-sm" id="email" name="email">
-                                    
                                 </div>
-                                <div class="form-group col-md-3">
-                                    <div class="form-check mb-4" >
+                                <div class="form-group col-md-3 pr-2">
+                                    <label for="tanggal_transaksi">Tgl. transaksi</label>
+                                    <input type="date" class="form-control form-control-sm" id="tanggal_transaksi"
+                                        name="tanggal_transaksi" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
+                                </div>
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="alamat">Pilih Alamat</label>
+                                    <select class="form-control form-control-sm" id="alamat" name="alamat">
+                                        <option selected disabled value="">Nothing Selected</option>
+                                    </select>
+                                </label>
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="detail_alamat">Detail Alamat</label>
+                                    <textarea class="form-control form-control-sm" name="detail_alamat" id="detail_alamat" rows="1"></textarea>
+                                </label>
+                                <div class="form-group col-md-3 pr-2" style="display:none">
+                                    <div class="form-check" >
                                         <input class="form-check-input" type="checkbox" id="info_pengiriman" name="info_pengiriman">
                                         <label class="form-check-label" for="info_pengiriman">
                                             Info Pengiriman
                                         </label>
                                     </div>
                                 </div>
-                                
-                                <div class="form-group col-md-3 d-flex justify-content-end">
+                                <!-- <div class="form-group col-md-3 d-flex justify-content-end">
                                     <h1><strong>Total &nbsp; <span id="total_faktur"> Rp 0,00</span></strong></h1>
-                                </div>
+                                </div> -->
                             </div>
                             <div class="form-row">
                                 <div class="col-md-3 pr-2">
-                                    <div class="form-group has-float-label">
-                                        <label for="alamat">Alamat</label>
-                                        <textarea class="form-control form-control-sm" name="alamat" id="alamat"></textarea>
-                                    </div>
-
-                                    <div class="form-group has-float-label info_pengiriman" style="display:none">
+                                    <div class="form-group info_pengiriman" style="display:none">
                                         <span class="alamat_pengiriman" style="display:none">Alamat Pengiriman</span>
-                                        <textarea class="form-control" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
+                                        <textarea class="form-control form-control-sm" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
                                     </div>
-                                    <div class="form-check mb-4 text-sm" >
+                                    <div class="form-check mb-4 text-sm" style="display:none">
                                         <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
                                         <label class="form-check-label" for="sama_dengan_penagihan">
-                                            Sama dengan penagihan
+                                            Alamat Pengiriman sama dengan pemesanan
                                         </label>
                                     </div>
                                 </div>
-                                <div class="form-group has-float-label col-md-3 pr-2">
-                                    <label for="tanggal_transaksi">Tgl. transaksi</label>
-                                    <input type="date" class="form-control form-control-sm" id="tanggal_transaksi"
-                                        name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
-                                </div>
-                                <div class="form-group has-float-label col-md-2 pr-2" hidden>
+                                <div class="form-group col-md-2 pr-2" style="display:none">
                                     <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
                                     <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
-                                        name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
+                                        name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                 </div>
-                                <div class="col-md-3 pr-2">
-                                    <div class="form-group has-float-label info_pengiriman" style="display:none">
+                                <div class="col-md-3 pr-2" style="display:none">
+                                    <div class="form-group info_pengiriman" style="display:none">
                                         <label for="tanggal_pengiriman">Tgl. pengiriman</label>
                                         <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
                                             name="tanggal_pengiriman" value="{{ date('Y-m-d') }}">
@@ -246,8 +273,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

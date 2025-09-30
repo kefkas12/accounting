@@ -2,35 +2,63 @@
 
 @section('content')
     @include('layouts.headers.cards')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <style>
+        .select2-container {
+            width: 150px !important;
+        }
+
+        /* Ubah tombol dropdown selectpicker jadi mirip input bootstrap */
+        .bootstrap-select .dropdown-toggle {
+            border: 1px solid #ced4da !important; /* Border Bootstrap */
+            border-radius: 0.25rem !important;     /* Radius Bootstrap */
+            background-color: #fff !important;     /* Background putih */
+            color: #495057 !important;             /* Warna teks Bootstrap */
+            height: calc(1.5em + .5rem + 2px) !important; /* Tinggi form-control-sm */
+            padding: .25rem .5rem !important;      /* Padding form-control-sm */
+        }
+
+        /* Placeholder abu-abu */
+        .bootstrap-select .dropdown-toggle.bs-placeholder,
+        .bootstrap-select .dropdown-toggle .filter-option-inner-inner {
+            color: #6c757d !important; /* Warna placeholder */
+        }
+
+        .bootstrap-select .dropdown-toggle,
+        .bootstrap-select .dropdown-toggle:focus,
+        .bootstrap-select .dropdown-toggle:hover {
+            box-shadow: none !important;   /* Hilangkan shadow */
+            outline: none !important;      /* Hilangkan outline biru */
+            background-color: #fff !important; /* Tetap putih saat hover */
+            border-color: #ced4da !important;  /* Border tetap sama */
+        }
+    </style>
     <!-- Page content -->
     <div class="mt--6">
         <!-- Dark table -->
         <div class="row">
             <div class="col">
-                <div class="card mb-5">
-                    <div class="card-header border-0">
+                <div class="card">
+                    <div class="card-body border-0 text-sm">
                         <div class="row">
-                            <div class="col">
+                            <div class="form-group col-md-9 pr-2">
                                 <a href="{{ url('pembelian') }}">Pembelian</a>
-                            </div>
-                        </div>
-                        <div class="row text-sm">
-                            <div class="col">
                                 <h2>Buat Pengiriman Pembelian</h2>
                             </div>
                         </div>
-                    </div>
-                    <form method="POST" id="insertForm"
-                        @if(isset($pemesanan))
-                            action="{{ url('pembelian/pemesanan').'/pengiriman/'.$pembelian->id }}" 
-                        @elseif(isset($pembelian))
-                            action="{{ url('pembelian/pemesanan').'/'.$pembelian->id }}" 
-                        @else
-                            action="{{ url('pembelian/pemesanan') }}" 
-                        @endif
-                    >
-                        @csrf
-                        <div class="card-body">
+                        <form method="POST" id="insertForm"
+                            @if(isset($pemesanan_pengiriman))
+                                action="{{ url('pembelian/pemesanan').'/pengiriman/'.$pembelian->id }}" 
+                            @elseif(isset($pemesanan))
+                                action="{{ url('pembelian/pengiriman').'/'.$pembelian->id }}" 
+                            @else
+                                action="{{ url('pembelian/pengiriman') }}" 
+                            @endif
+                            enctype="multipart/form-data"
+                        >
+                            @csrf
                             <div class="form-row text-sm">
                                 <div class="form-group col-md-3 pr-4">
                                     <label for="supplier">Supplier</label><br>
@@ -196,10 +224,10 @@
                                         <div class="col d-flex justify-content-end">
                                             <div class="input-group mb-3">
                                                 <div class="input-group-prepend">
-                                                  <span class="input-group-text">Rp</span>
+                                                    <span class="input-group-text">Rp</span>
                                                 </div>
                                                 <input type="text" class="form-control"  id="input_ongkos_kirim" name="input_ongkos_kirim">
-                                              </div>
+                                                </div>
                                         </div>
                                     </div>
                                     <div class="row mb-3"  hidden>
@@ -247,8 +275,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

@@ -2,23 +2,52 @@
 
 @section('content')
     @include('layouts.headers.cards')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <style>
+        .select2-container {
+            width: 150px !important;
+        }
+
+        /* Ubah tombol dropdown selectpicker jadi mirip input bootstrap */
+        .bootstrap-select .dropdown-toggle {
+            border: 1px solid #ced4da !important; /* Border Bootstrap */
+            border-radius: 0.25rem !important;     /* Radius Bootstrap */
+            background-color: #fff !important;     /* Background putih */
+            color: #495057 !important;             /* Warna teks Bootstrap */
+            height: calc(1.5em + .5rem + 2px) !important; /* Tinggi form-control-sm */
+            padding: .25rem .5rem !important;      /* Padding form-control-sm */
+        }
+
+        /* Placeholder abu-abu */
+        .bootstrap-select .dropdown-toggle.bs-placeholder,
+        .bootstrap-select .dropdown-toggle .filter-option-inner-inner {
+            color: #6c757d !important; /* Warna placeholder */
+        }
+
+        .bootstrap-select .dropdown-toggle,
+        .bootstrap-select .dropdown-toggle:focus,
+        .bootstrap-select .dropdown-toggle:hover {
+            box-shadow: none !important;   /* Hilangkan shadow */
+            outline: none !important;      /* Hilangkan outline biru */
+            background-color: #fff !important; /* Tetap putih saat hover */
+            border-color: #ced4da !important;  /* Border tetap sama */
+        }
+    </style>
     <!-- Page content -->
     <div class="mt--6">
         <!-- Dark table -->
         <div class="row">
             <div class="col">
-                <div class="card mb-5">
-                    <div class="card-header border-0">
-                        <div class="row">
-                            <div class="col">
+                <div class="card">
+                    <div class="card-body border-0 text-sm">
+                        <div class="form-row">
+                            <div class="form-group col-md-9 pr-2">
                                 <a href="{{ url('pembelian') }}">Pembelian</a>
-                            </div>
-                        </div>
-                        <div class="row text-sm">
-                            <div class="col">
                                 <h2>Buat Faktur Pembelian</h2>
                             </div>
-                            <div class="col-sm-3 d-flex justify-content-end">
+                            <div class="form-group col-md-3 pr-2">
                                 <select class="form-control" onchange="location = this.value;" @if(isset($pembelian)) disabled @endif>
                                     <option selected disabled hidden>Faktur Pembelian</option>
                                     <option value="{{ url('pembelian/faktur') }}">Faktur Pembelian</option>
@@ -26,71 +55,87 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
-                    <form method="POST"
-                        @if(isset($pemesanan))
-                        action="{{ url('pembelian/pemesanan').'/faktur/'.$pembelian->id }}"
-                        @elseif(isset($pengiriman))
-                        action="{{ url('pembelian/pengiriman').'/faktur/'.$pembelian->id }}"
-                        @elseif(isset($pembelian))
-                            action="{{ url('pembelian/faktur').'/'.$pembelian->id }}"
-                        @else
-                            action="{{ url('pembelian/faktur') }}"
-                        @endif
-                        id="insertForm">
-                        @csrf
-                        <div class="card-body">
-                            <div class="form-row">
-                                <div class="form-group col-md-3 pr-4">
+                        <form method="POST" id="insertForm"
+                            @if(isset($pemesanan_faktur))
+                                action="{{ url('pembelian/pemesanan').'/faktur/'.$pembelian->id }}"
+                            @elseif(isset($pengiriman_faktur))
+                                action="{{ url('pembelian/pengiriman').'/faktur/'.$pembelian->id }}"
+                            @elseif(isset($faktur))
+                                action="{{ url('pembelian/faktur').'/'.$pembelian->id }}"
+                            @else
+                                action="{{ url('pembelian/faktur') }}"
+                            @endif
+                            enctype="multipart/form-data"
+                        >
+                            @csrf
+                            <div class="form-row border-bottom mb-3">
+                                <div class="form-group col-md-3 pr-2">
                                     <label for="supplier">Supplier <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="supplier" name="supplier" required @if(isset($pembelian)) disabled @endif>
-                                        <option selected disabled value="">Pilih kontak</option>
+                                    <select class="selectpicker form-control form-control-sm" data-live-search="true" title="Pilih Supplier" id="supplier" name="supplier" onchange="alamat_supplier(this)" required @if(isset($pembelian)) disabled @endif>
                                         @foreach ($supplier as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-4 pr-4">
+                                <div class="form-group col-md-3 pr-2" style="display:none">
                                     <label for="email">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email">
+                                    <input type="email" class="form-control form-control-sm" id="email" name="email">
                                 </div>
-                                <div class="form-group col-md-2">
-                                    <label for="email">Pengiriman</label>
-                                    <div class="form-check mb-4" >
+                                <div class="form-group col-md-3 pr-2">
+                                    <label for="tanggal_transaksi">Tgl. Transaksi</label>
+                                    <input type="date" class="form-control form-control-sm" id="tanggal_transaksi"
+                                        name="tanggal_transaksi" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
+                                </div>
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="alamat">Pilih Alamat</label>
+                                    <select class="form-control form-control-sm" id="alamat" name="alamat">
+                                        <option selected disabled value="">Nothing Selected</option>
+                                    </select>
+                                </label>
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="detail_alamat">Detail Alamat</label>
+                                    <textarea class="form-control form-control-sm" name="detail_alamat" id="detail_alamat" rows="1"></textarea>
+                                </label>
+                                <div class="form-group col-md-3 pr-2" style="display:none">
+                                    <div class="form-check" >
                                         <input class="form-check-input" type="checkbox" id="info_pengiriman" name="info_pengiriman" >
                                         <label class="form-check-label" for="info_pengiriman">
                                             Info Pengiriman
                                         </label>
                                     </div>
                                 </div>
-                                <div class="form-group col-md-3 d-flex justify-content-end">
+                                <!-- <div class="form-group col-md-3 d-flex justify-content-end">
                                     Total Rp <span id="total_faktur">0</span>
-                                </div>
+                                </div> -->
                             </div>
                             <div class="form-row">
-                                <div class="col-md-3 pr-4">
+                                <div class="col-md-3 pr-2" style="display:none">
+                                    <div class="form-group info_pengiriman" style="display:none">
+                                        <label for="tanggal_pengiriman">Tgl. pengiriman</label>
+                                        <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
+                                            name="tanggal_pengiriman" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
+                                    </div>
+                                    <div class="form-group info_pengiriman" style="display:none">
+                                        <label for="alamat_pengiriman">Alamat Pengiriman</label><br>
+                                        <textarea class="form-control form-control-sm" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
+                                    </div>
+                                    <div class="form-check mb-4 text-sm" style="display:none">
+                                        <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
+                                        <label class="form-check-label" for="sama_dengan_penagihan">
+                                            Sama dengan penagihan
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 pr-2">
                                     <div class="form-group">
                                         <label for="alamat">Alamat Penagihan</label><br>
                                         <textarea class="form-control" name="alamat" id="alamat" rows="1"></textarea>
                                     </div>
-                                    <div class="form-group info_pengiriman" style="display:none">
-                                        <label for="alamat_pengiriman">Alamat Pengiriman</label><br>
-                                        <textarea class="form-control" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
-                                        <div class="form-check mb-4" >
-                                            <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
-                                            <label class="form-check-label" for="sama_dengan_penagihan">
-                                                Sama dengan penagihan
-                                            </label>
-                                        </div>
-                                    </div>
+                                    
                                 </div>
                                 
                                 <div class="col-md-2">
-                                    <div class="form-group pr-4">
-                                        <label for="tanggal_transaksi">Tgl. transaksi</label>
-                                        <input type="date" class="form-control" id="tanggal_transaksi" name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
-                                    </div>
                                     <div class="form-group pr-4">
                                         <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
                                         <input type="date" class="form-control" id="tanggal_jatuh_tempo" name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
@@ -108,11 +153,6 @@
                                     </div>
                                 </div>
                                 <div class="col-md-2 pr-4">
-                                    <div class="form-group info_pengiriman" style="display:none">
-                                        <label for="tanggal_pengiriman">Tgl. pengiriman</label>
-                                        <input type="date" class="form-control" id="tanggal_pengiriman"
-                                            name="tanggal_pengiriman" value="{{ date('Y-m-d') }}">
-                                    </div>
                                     <div class="form-group">
                                         <label for="gudang">Gudang</label>
                                         <select class="form-control" id="gudang" name="gudang" @if(isset($pengiriman)) disabled @endif>
@@ -143,14 +183,15 @@
 
                             <div style="overflow: auto">
                                 <table class="table align-items-center table-flush">
+                                    <!-- Your table headers -->
                                     <thead>
                                         <tr>
-                                            <th scope="col" style="min-width: 300px !important;padding: 10px !important;">Produk</th>
-                                            <th scope="col" style="min-width: 200px !important;padding: 10px !important;">Deskripsi</th>
-                                            <th scope="col" style="min-width: 100px !important;padding: 10px !important;">Kuantitas</th>
-                                            <th scope="col" style="min-width: 200px !important;padding: 10px !important;">Harga Satuan</th>
-                                            <th scope="col" style="min-width: 200px !important;padding: 10px !important;">Pajak</th>
-                                            <th scope="col" style="min-width: 200px !important;padding: 10px !important;">Jumlah</th>
+                                            <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Produk</th>
+                                            <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Deskripsi</th>
+                                            <th scope="col" style="min-width: 50px !important;padding: 10px !important;">Kuantitas</th>
+                                            <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Harga Satuan</th>
+                                            <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Pajak</th>
+                                            <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Jumlah</th>
                                             @if(!isset($pemesanan))<th scope="col" style="min-width: 50px !important;"></th>@endif
                                         </tr>
                                     </thead>
@@ -250,8 +291,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
