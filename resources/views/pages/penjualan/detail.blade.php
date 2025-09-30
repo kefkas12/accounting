@@ -329,6 +329,7 @@
                                                 <strong>Rp. {{ number_format($penjualan->diskon_per_baris, 2, ',', '.') }}</strong>
                                             </div>
                                         </div>
+                                        @if(isset($penjualan->ppn) && $penjualan->ppn > 0)
                                         <div class="row mb-1">
                                             <div class="col">
                                                 <span>PPN 11%</span>
@@ -337,7 +338,8 @@
                                                 <strong>Rp. {{ number_format($penjualan->ppn, 2, ',', '.') }}</strong>
                                             </div>
                                         </div>
-                                        @if(isset($penjualan->ongkos_kirim) && $penjualan->ppn > 0)
+                                        @endif
+                                        @if(isset($penjualan->ongkos_kirim) && $penjualan->ongkos_kirim > 0)
                                         <div class="row mb-1">
                                             <div class="col">
                                                 <span>Ongkos Kirim</span>
