@@ -471,7 +471,7 @@
             @if(isset($pembelian))
                 const sup = $('#supplier')
                 sup.selectpicker('val','{{ $pembelian->id_supplier }}')
-                alamat_supplier(pel[0]).then(function() {
+                alamat_supplier(sup[0]).then(function() {
                     $('#alamat').val('{{ $pembelian->alamat }}');
                 })
                 $('#email').val('{{ $pembelian->email }}')

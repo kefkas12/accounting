@@ -118,6 +118,7 @@ Route::controller(PembelianController::class)->prefix('pembelian')->group(functi
 	Route::get('/penawaran/cetak/{id}', 'cetak_penawaran');
 	Route::get('/pemesanan/cetak/{id}', 'cetak_pemesanan');
 
+	Route::get('/pemesanan/{id}', 'pemesanan');
 	Route::get('/pemesanan/pengiriman/{id}', 'pemesanan_pengiriman');
 	Route::get('/pemesanan/faktur/{id}', 'pemesanan_faktur');
 	

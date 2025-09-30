@@ -47,6 +47,14 @@
                                 <a href="{{ url('pembelian') }}">Pembelian</a>
                                 <h2>Buat Pengiriman Pembelian</h2>
                             </div>
+                            <div class="form-group col-md-3 pr-2">
+                                <select class="form-control" onchange="location = this.value;" @if(isset($pemesanan)) disabled @endif>
+                                    <option selected disabled hidden>Pengiriman Penjualan</option>
+                                    <option value="{{ url('pembelian/penagihan') }}">Penagihan Penjualan</option>
+                                    <option value="{{ url('pembelian/penawaran') }}">Penawaran Penjualan</option>
+                                    <option value="{{ url('pembelian/pemesanan') }}">Pemesanan Penjualan</option>
+                                </select>
+                            </div>
                         </div>
                         <form method="POST" id="insertForm"
                             @if(isset($pemesanan_pengiriman))
@@ -59,11 +67,10 @@
                             enctype="multipart/form-data"
                         >
                             @csrf
-                            <div class="form-row text-sm">
-                                <div class="form-group col-md-3 pr-4">
-                                    <label for="supplier">Supplier</label><br>
-                                    <a href="{{ url('supplier/detail').'/'.$pembelian->id_supplier }}">{{ $pembelian->nama }}</a>
-                                    <select class="form-control" id="supplier" name="supplier" required @if(isset($penawaran)) disabled @endif hidden>
+                            <div class="form-row border-bottom mb-3">
+                                <div class="form-group col-md-3 pr-2">
+                                    <label for="supplier">Supplier <span class="text-danger">*</span></label>
+                                    <select class="selectpicker form-control form-control-sm" data-live-search="true" title="Pilih Supplier" id="supplier" name="supplier" onchange="alamat_supplier(this)" required @if(isset($penawaran)) disabled @endif hidden>
                                         <option selected disabled>Pilih kontak</option>
                                         @foreach ($supplier as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
@@ -71,55 +78,73 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group col-md-3 pr-2">
+                                <div class="form-group col-md-3 pr-2" style="display:none">
                                     <label for="email">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email">
-                                    
+                                    <input type="email" class="form-control form-control-sm" id="email" name="email">
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-3 pr-4">
+                                    <label for="tanggal_transaksi">Tgl. transaksi</label>
+                                    <input type="date" class="form-control form-control-sm" id="tanggal_transaksi" 
+                                        name="tanggal_transaksi" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
                                 </div>
-                                
-                                <div class="form-group col-md-3 d-flex justify-content-end">
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="alamat">Pilih Alamat</label>
+                                    <select class="form-control form-control-sm" id="alamat" name="alamat">
+                                        <option selected disabled value="">Nothing Selected</option>
+                                    </select>
+                                </label>
+                                <label class="form-group col-md-3 pr-2">
+                                    <label for="detail_alamat">Detail Alamat</label>
+                                    <textarea class="form-control form-control-sm" name="detail_alamat" id="detail_alamat" rows="1"></textarea>
+                                </label>
+                                <div class="form-group col-md-3 pr-2" style="display:none">
+                                    <div class="form-check" >
+                                        <input class="form-check-input" type="checkbox" id="info_pengiriman" name="info_pengiriman">
+                                        <label class="form-check-label" for="info_pengiriman">
+                                            Info Pengiriman
+                                        </label>
+                                    </div>
+                                </div>
+                                <!-- <div class="form-group col-md-3 d-flex justify-content-end">
                                     Total Rp <span id="total_faktur">0,00</span>
-                                </div>
+                                </div> -->
                             </div>
-                            <div class="form-row text-sm">
-                                <div class="col-md-3 pr-4">
-                                    <div class="form-group">
-                                        <label for="alamat">Alamat Pengiriman</label><br>
-                                        <textarea class="form-control" name="alamat" id="alamat"></textarea>
-                                    </div>
-                                    <div class="form-group" style="display:none">
-                                        <label for="alamat_pengiriman">Alamat Pengiriman</label><br>
-                                        <textarea class="form-control" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
-                                        <div class="form-check mb-4" >
-                                            <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
-                                            <label class="form-check-label" for="sama_dengan_penagihan">
-                                                Sama dengan penagihan
-                                            </label>
-                                        </div>
-                                    </div>
+                            <div class="form-row">
+                                <div class="form-group info_pengiriman" style="display:none">
+                                    <label class="alamat_pengiriman" style="display:none">Alamat Pengiriman</label>
+                                    <textarea class="form-control form-control-sm" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
+                                </div>
+                                <div class="form-check mb-4 text-sm" style="display:none" >
+                                    <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
+                                    <label class="form-check-label" for="sama_dengan_penagihan">
+                                        Alamat Pengiriman sama dengan pemesanan
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-2 pr-2" style="display:none">
+                                    <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
+                                    <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
+                                        name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                 </div>
                                 <div class="col-md-2 pr-2">
                                     <div class="form-group">
                                         <label for="tanggal_transaksi">Tgl. transaksi</label>
-                                        <input type="date" class="form-control" id="tanggal_transaksi" name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
+                                        <input type="date" class="form-control form-control-sm" id="tanggal_transaksi" name="tanggal_transaksi" value="{{ date('Y-m-d') }}">
                                     </div>
                                     <div class="form-group" hidden>
                                         <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
-                                        <input type="date" class="form-control" id="tanggal_jatuh_tempo"
+                                        <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
                                             name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                     </div>
                                 </div>
                                 <div class="col-md-2 pr-2">
                                     <div class="form-group info_pengiriman" style="display:none">
                                         <label for="tanggal_pengiriman">Tgl. pengiriman</label>
-                                        <input type="date" class="form-control" id="tanggal_pengiriman"
+                                        <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
                                             name="tanggal_pengiriman" value="{{ date('Y-m-d') }}">
                                     </div>
                                     <div class="form-group">
                                         <label for="gudang">Gudang</label>
-                                        <select class="form-control" id="gudang" name="gudang" @if(isset($pemesanan)) disabled @endif>
+                                        <select class="form-control form-control-sm" id="gudang" name="gudang" @if(isset($pemesanan)) disabled @endif>
                                             <option selected disabled hidden>Pilih Gudang</option>
                                             @if(isset($gudang))
                                             @foreach($gudang as $v)
@@ -163,20 +188,19 @@
                                     <!-- Your table headers -->
                                     <thead>
                                         <tr>
-                                            <th scope="col" style="min-width: 300px !important; padding: 10px !important;">Produk</th>
-                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Deskripsi</th>
-                                            <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Kuantitas</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Produk</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Deskripsi</th>
+                                            <th scope="col" style="min-width: 50px !important; padding: 10px !important;">Kuantitas</th>
                                             <th scope="col" style="min-width: 100px !important; padding: 10px !important;">Unit</th>
-                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;" hidden>Harga Satuan</th>
-                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;" hidden>Pajak</th>
-                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;" hidden>Jumlah</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;" hidden>Harga Satuan</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;" hidden>Pajak</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;" hidden>Jumlah</th>
                                         </tr>
                                     </thead>
                                     <tbody id="list">
                                         <tr>
                                             <td style="padding: 10px !important;">
-                                                <select class="form-control" name="produk[]" id="produk_1" onchange="get_data(this, 1)"
-                                                    required readonly>
+                                                <select class="form-control form-control-sm" name="produk[]" id="produk_1" onchange="get_data(this, 1)" required @if(isset($pemesanan)) disabled @endif>
                                                     <option selected disabled hidden>Pilih produk</option>
                                                     @foreach ($produk as $v)
                                                         <option value="{{ $v->id }}"
@@ -186,28 +210,27 @@
                                                 </select>
                                             </td>
                                             <td style="padding: 10px !important;">
-                                                <textarea class="form-control" name="deskripsi[]" id="deskripsi_1" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
+                                                <textarea class="form-control form-control-sm" name="deskripsi[]" id="deskripsi_1" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                                             </td>
                                             <td style="padding: 10px !important;">
-                                                <input type="number" class="form-control" id="kuantitas_1"
+                                                <input type="number" class="form-control form-control-sm" id="kuantitas_1"
                                                     name="kuantitas[]" value="1" onkeyup="change_jumlah(1)"
                                                     onblur="check_null(this)" step="any"></td>
                                             <td style="padding: 10px !important;">
-                                                <input type="text" class="form-control" id="unit_1"
+                                                <input type="text" class="form-control form-control-sm" id="unit_1"
                                                     name="unit[]" readonly></td>
                                             <td style="padding: 10px !important;" hidden>
-                                                <input type="number" class="form-control" id="harga_satuan_1"
+                                                <input type="text" class="form-control form-control-sm" id="harga_satuan_1"
                                                     name="harga_satuan[]" value="0" onkeyup="change_jumlah(1)"
                                                     onblur="check_null(this)" step="any"></td>
                                             <td style="padding: 10px !important;" hidden>
-                                                <select class="form-control" id="pajak_1" name="pajak[]"
+                                                <select class="form-control form-control-sm" id="pajak_1" name="pajak[]"
                                                     onchange="get_pajak(this, 1)" required>
                                                     <option value="0" data-persen="0">Pilih pajak</option>
                                                     <option value="11" data-persen="11">PPN</option>
                                                 </select>
                                             </td>
-                                            <td style="padding: 10px !important;" hidden><input type="number" class="form-control" id="jumlah_1" name="jumlah[]"
-                                                    value="0" step="any"></td>
+                                            <td style="padding: 10px !important;display:none;"><input type="text" class="form-control form-control-sm" id="jumlah_1" name="jumlah[]" value="0" onblur="change_jumlah(1)" @if(isset($pemesanan)) disabled @endif></td>
                                             
                                         </tr>
                                     </tbody>
@@ -316,19 +339,42 @@
             $('#total').text(rupiah(result_subtotal + result_ppn));
             $('#total_faktur').text(rupiah(result_subtotal + result_ppn));
             $('#sisa_tagihan').text(rupiah(result_subtotal + result_ppn));
+            $('#input_sisa_tagihan').val(result_subtotal + result_ppn);
 
             $('#input_subtotal').val(result_subtotal);
             $('#input_ppn').val(result_ppn);
             $('#input_total').val(result_subtotal + result_ppn);
-            $('#input_sisa_tagihan').val(result_subtotal + result_ppn);
+        }
+
+        function load_select_2(id) {        
+            $("#produk_" + id).select2({
+                allowClear: true,
+                placeholder: 'Pilih produk',
+                width: '100px'
+            });
+
+            new AutoNumeric("#harga_satuan_" + id, {
+                commaDecimalCharDotSeparator: true,
+                watchExternalChanges: true,
+                modifyValueOnWheel : false
+            });
+            new AutoNumeric("#jumlah_" + id, {
+                commaDecimalCharDotSeparator: true,
+                watchExternalChanges: true,
+                modifyValueOnWheel : false
+            });
         }
 
         function get_data(thisElement, no) {
             var selected = $(thisElement).find('option:selected').data('harga_beli');
-            $('#harga_satuan_' + no).val(selected);
-            $('#jumlah_' + no).val(selected);
+            // $('#harga_satuan_' + no).val(selected);
+            // $('#jumlah_' + no).val(selected);
+            AutoNumeric.set('#harga_satuan_' + no,selected);
+            AutoNumeric.set('#jumlah_' + no,selected);
+
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0 ;
             subtotal[no] = kuantitas * parseFloat(selected);
+            get_pajak($('#pajak_' + no), no);
             load();
         }
 
@@ -336,7 +382,7 @@
             var selected = parseFloat($(thisElement).find('option:selected').data('persen'));
 
             if (selected != 0) {
-                ppn[no] = selected * $('#jumlah_' + no).val() / 100;
+                ppn[no] = selected * parseFloat(AutoNumeric.getNumber('#jumlah_' + no)) / 100;
             } else {
                 ppn[no] = 0;
             }
@@ -344,10 +390,25 @@
             load();
         }
 
+        function change_harga(no, val_harga_satuan = null) {
+            kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
+            
+            if(val_harga_satuan){
+                AutoNumeric.set('#harga_satuan_' + no,val_harga_satuan);
+            }else{
+                AutoNumeric.set('#harga_satuan_' + no,AutoNumeric.getNumber('#harga_satuan_' + no));
+            }
+            subtotal[no] = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
+            AutoNumeric.set('#jumlah_' + no,subtotal[no]);
+            get_pajak($('#pajak_' + no), no);
+            load();
+        }
+
         function change_jumlah(no) {
+            AutoNumeric.set('#jumlah_' + no,AutoNumeric.getNumber('#jumlah_' + no));
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0;
             harga_satuan = $('#harga_satuan_' + no).val() ? parseFloat($('#harga_satuan_' + no).val()) : 0;
-            subtotal[no] = kuantitas * harga_satuan;
+            subtotal[no] = kuantitas * parseFloat(AutoNumeric.getNumber('#harga_satuan_' + no));
             $('#jumlah_' + no).val(subtotal[no]);
 
             get_pajak($('#pajak_'+no), no);
@@ -375,10 +436,11 @@
             $('#list').append(`
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
-                        <select class="form-control form-control-sm" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
-                            <option selected disabled hidden value="">Pilih produk</option>
+                        <select class="form-control form-control-sm" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required @if(isset($pemesanan)) disabled @endif>
+                            <option selected disabled hidden>Pilih produk</option>
                             @foreach ($produk as $v)
-                                <option value="{{ $v->id }}" data-harga_beli="{{ $v->harga_beli }}">{{ $v->nama }}</option>
+                                <option value="{{ $v->id }}" 
+                                    data-harga_beli="{{ $v->harga_beli }}">{{ $v->nama }}</option>
                             @endforeach
                         </select>
                     </th>
@@ -387,66 +449,101 @@
                     </td>
                     <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_${i}" 
                         name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
-                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="unit_${i}" name="unit[]" readonly></td>
-                    <td style="padding: 10px !important;" id="harga_satuan_td_${i}"><input type="number" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="unit_${i}" name="unit[]" readonly></td>
+                    <td style="padding: 10px !important;" id="harga_satuan_td_${i}"><input type="text" class="form-control form-control-sm" id="harga_satuan_${i}" 
+                        name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
                     <td style="padding: 10px !important;" id="diskon_per_baris_td_${i}">
-                        <select class="form-control" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required>
-                            <option value="0" data-persen="0" >Pilih pajak</option>
-                            <option value="11" data-persen="11">PPN</option>
+                        <select class="form-control" id="pajak_${i}" name="pajak[]" 
+                        onchange="get_pajak(this, ${i})" required>
+                        <option value="0" data-persen="0" >Pilih pajak</option>
+                        <option value="11" data-persen="11">PPN</option>
                         </select>
                     </td>
-                    <td style="padding: 10px !important;" hidden><input type="number" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" step="any"></td>
-                    <td style="padding: 10px !important;" hidden><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>
+                    <td style="padding: 10px !important;display:none;" id="jumlah_td_${i}"><input type="text" class="form-control form-control-sm" id="jumlah_${i}" name="jumlah[]" value="0" step="any" @if(isset($pemesanan)) disabled @endif></td>
                 </tr>
             `);
+            load_select_2(i);
         };
 
         // $('#input_ongkos_kirim').on("keyup", function() {
         //     $('#total_faktur').text(rupiah(result_subtotal + result_ppn +(int)$(this).val()));
         // })
 
-        @if(isset($pembelian))
         $( document ).ready(function() {
-            $('#supplier').val('{{ $pembelian->id_supplier }}')
-            $('#email').val('{{ $pembelian->email }}')
-            $('#alamat_pengiriman').val('{{ $pembelian->alamat_pengiriman }}')
-            @if($pembelian->tanggal_pengiriman)
-            $('#tanggal_transaksi').val('{{ $pembelian->tanggal_pengiriman }}')
-            @else
-            $('#tanggal_transaksi').val('{{ date("Y-m-d") }}')
-            @endif
-            $('#tanggal_jatuh_tempo').val('{{ $pembelian->tanggal_jatuh_tempo }}')
-            $('#kirim_melalui').val('{{ $pembelian->kirim_melalui }}')
-            $('#no_pelacakan').val('{{ $pembelian->no_pelacakan }}')
-            $('#gudang').val('{{ $pembelian->id_gudang }}')
+            $('#info_pengiriman').prop('checked', true).trigger("change");
+            $('#supplier').selectpicker();
+            @if(isset($pembelian))
+                const sup = $('#supplier')
+                sup.selectpicker('val','{{ $pembelian->id_supplier }}')
+                alamat_supplier(sup[0]).then(function() {
+                    $('#alamat').val('{{ $pembelian->alamat }}');
+                })
+                $('#email').val('{{ $pembelian->email }}')
+                $('#detail_alamat').val('{{ $pembelian->detail_alamat }}')
 
-            var x = 1;
-            @foreach($detail_pembelian as $v)
-                $('#produk_'+x).val('{{ $v->id_produk }}');
-                $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
-                $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
-                $('#unit_'+x).val('{{ $v->unit }}');
-                $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').trigger('keyup');
-                @if($v->pajak != 0)
-                    $('#pajak_'+x).val('11').trigger('change');
+                $('#alamat_pengiriman').val('{{ $pembelian->alamat_pengiriman }}')
+                @if($pembelian->tanggal_pengiriman)
+                $('#tanggal_transaksi').val('{{ $pembelian->tanggal_pengiriman }}')
                 @else
-                    $('#pajak_'+x).val('0').trigger('change');
+                $('#tanggal_transaksi').val('{{ date("Y-m-d") }}')
                 @endif
-                $('#harga_satuan_td_'+x).hide();
-                $('#diskon_per_baris_td_'+x).hide();
-                create_row();
-                x++;
-            @endforeach
-            hapus(x);
+                $('#tanggal_jatuh_tempo').val('{{ $pembelian->tanggal_jatuh_tempo }}')
+                $('#kirim_melalui').val('{{ $pembelian->kirim_melalui }}')
+                $('#no_pelacakan').val('{{ $pembelian->no_pelacakan }}')
 
-            
+                $('#pesan').val('{{ $pembelian->pesan }}')
+                $('#memo').val('{{ $pembelian->memo }}')
+
+                $('#gudang').val('{{ $pembelian->id_gudang }}')
+
+                var x = 1;
+                load_select_2(x);
+                @foreach($detail_pembelian as $v)
+                    $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
+                    $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
+                    $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
+                    $('#unit_'+x).val('{{ $v->unit }}');
+                    $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').trigger('keyup');
+                    @if($v->pajak != 0)
+                        $('#pajak_'+x).val('11').trigger('change');
+                    @else
+                        $('#pajak_'+x).val('0').trigger('change');
+                    @endif
+                    // $('#harga_satuan_td_'+x).hide();
+                    // $('#diskon_per_baris_td_'+x).hide();
+                    create_row();
+                    x++;
+                @endforeach
+                hapus(x);   
+            @else
+                load_select_2(1);
+            @endif         
         });
-        @endif
+       
 
         @if(isset($penawaran) || isset($pemesanan))
         $('#insertForm').submit(function() {
             $('.form-control').removeAttr('disabled');
         });
         @endif
+
+        function alamat_supplier(thisElement) {
+            var selected = $(thisElement).find('option:selected').val();
+            $('#alamat').empty();
+            return $.ajax({
+                url: '{{ url("supplier/alamat") }}',
+                type: 'GET',
+                data: {
+                    id: selected
+                },
+                success: function (response) {
+                    $('#alamat').append('<option selected disabled hidden value="">Pilih Alamat</option>');
+                    for(var i = 0; i < response.length; i++){
+                        console.log(response[i]);
+                        $('#alamat').append('<option>'+response[i].alamat+'</option>');
+                    }
+                }
+            });
+        }
     </script>
 @endsection

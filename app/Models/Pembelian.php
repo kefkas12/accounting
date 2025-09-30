@@ -132,7 +132,7 @@ class Pembelian extends Model
         }
         if($request->input('detail_alamat') != null){
             Alamat::create([
-                'id_kontak' => $this->id_pelanggan,
+                'id_kontak' => $this->id_supplier,
                 'alamat' => $request->input('detail_alamat')
             ]);
         }
@@ -302,7 +302,7 @@ class Pembelian extends Model
     public function ubah($request, $jenis = null)
     {
         $this->tanggal_transaksi = date('Y-m-d',strtotime($request->tanggal_transaksi));
-        $this->id_pelanggan = $request->input('pelanggan');
+        $this->id_supplier = $request->input('supplier');
         $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
         $this->subtotal = $request->input('input_subtotal');
         $this->ppn = $request->input('input_ppn');

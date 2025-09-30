@@ -104,6 +104,7 @@
                                 <div class="form-group col-md-3 pr-2">
                                     <label for="pelanggan">Pelanggan <span class="text-danger">*</span></label>
                                     <select class="selectpicker form-control form-control-sm" data-live-search="true" title="Pilih Pelanggan" id="pelanggan" name="pelanggan" onchange="alamat_pelanggan(this)" required @if(isset($pemesanan)) disabled @endif>
+                                        <option selected disabled>Pilih kontak</option>
                                         @foreach ($pelanggan as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
                                                 {{ $v->nama_perusahaan }}</option>
