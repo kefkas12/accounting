@@ -142,7 +142,7 @@
                                     <label for="detail_alamat">Detail Alamat</label>
                                     <textarea class="form-control form-control-sm" name="detail_alamat" id="detail_alamat" rows="1"></textarea>
                                 </label>
-                                <div class="form-group col-md-3 pr-2"  style="display:none">
+                                <div class="form-group col-md-3 pr-2" style="display:none">
                                     <div class="form-check" >
                                         <input class="form-check-input" type="checkbox" id="info_pengiriman" name="info_pengiriman">
                                         <label class="form-check-label" for="info_pengiriman">
@@ -150,7 +150,6 @@
                                         </label>
                                     </div>
                                 </div>
-                                
                                 <!-- <div class="form-group col-md-3 d-flex justify-content-end"> -->
                                     <!-- <h1><strong>Total &nbsp; <span id="total_faktur"> Rp 0,00</span></strong></h1> -->
                                 <!-- </div> -->
@@ -787,7 +786,6 @@
 
                 $('#pesan').val('{{ $penjualan->pesan }}')
                 $('#memo').val('{{ $penjualan->memo }}')
-
 
                 @if(isset($penjualan->ongkos_kirim) && $penjualan->ongkos_kirim > 0)
                 $('#ongkos_kirim').text(rupiah('{{ $penjualan->ongkos_kirim }}'));
