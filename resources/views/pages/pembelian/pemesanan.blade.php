@@ -106,22 +106,39 @@
                                 </div> -->
                             </div>
                             <div class="form-row">
-                                <div class="col-md-3 pr-2">
-                                    <div class="form-group info_pengiriman" style="display:none">
-                                        <span class="alamat_pengiriman" style="display:none">Alamat Pengiriman</span>
-                                        <textarea class="form-control form-control-sm" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
-                                    </div>
-                                    <div class="form-check mb-4 text-sm" style="display:none">
-                                        <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
-                                        <label class="form-check-label" for="sama_dengan_penagihan">
-                                            Alamat Pengiriman sama dengan pemesanan
-                                        </label>
-                                    </div>
+                                <div class="form-group info_pengiriman" style="display:none">
+                                    <span class="alamat_pengiriman" style="display:none">Alamat Pengiriman</span>
+                                    <textarea class="form-control form-control-sm" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
+                                </div>
+                                <div class="form-check mb-4 text-sm" style="display:none">
+                                    <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
+                                    <label class="form-check-label" for="sama_dengan_penagihan">
+                                        Alamat Pengiriman sama dengan pemesanan
+                                    </label>
                                 </div>
                                 <div class="form-group col-md-2 pr-2" style="display:none">
                                     <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
                                     <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
                                         name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
+                                </div>
+                                <div class="form-group col-md-3 pr-2">
+                                    <label for="gudang">Gudang</label>
+                                    <select class="form-control form-control-sm" id="gudang" name="gudang">
+                                        @if(Auth::user()->id_gudang)
+                                            @foreach($gudang as $v)
+                                            <option value="{{ $v->id }}" selected>{{ $v->nama }}</option>
+                                            @endforeach
+                                        @else
+                                            <option selected disabled hidden>Pilih Gudang</option>
+                                            @if(isset($gudang))
+                                            @foreach($gudang as $v)
+                                            <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                            @endforeach
+                                            @else
+                                            <option disabled>No result found</option>
+                                            @endif
+                                        @endif
+                                    </select>
                                 </div>
                                 <div class="col-md-3 pr-2" style="display:none">
                                     <div class="form-group info_pengiriman" style="display:none">
@@ -129,43 +146,26 @@
                                         <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
                                             name="tanggal_pengiriman" value="{{ date('Y-m-d') }}">
                                     </div>
-                                    <div class="form-group has-float-label">
-                                        <label for="gudang">Gudang</label>
-                                        <select class="form-control form-control-sm" id="gudang" name="gudang">
-                                            @if(Auth::user()->id_gudang)
-                                                @foreach($gudang as $v)
-                                                <option value="{{ $v->id }}" selected>{{ $v->nama }}</option>
-                                                @endforeach
-                                            @else
-                                                <option selected disabled hidden>Pilih Gudang</option>
-                                                @if(isset($gudang))
-                                                @foreach($gudang as $v)
-                                                <option value="{{ $v->id }}">{{ $v->nama }}</option>
-                                                @endforeach
-                                                @else
-                                                <option disabled>No result found</option>
-                                                @endif
-                                            @endif
-                                        </select>
-                                    </div>
                                 </div>
-                                <div class="col-md-3 info_pengiriman" style="display:none">
-                                    <div class="form-group has-float-label">
+                                <div class="col-md-3 pr-2 info_pengiriman" style="display:none">
+                                    <div class="form-group">
                                         <label for="kirim_melalui">Kirim melalui</label>
                                         <input type="text" class="form-control form-control-sm" id="kirim_melalui"
                                             name="kirim_melalui">
                                     </div>
-                                    <div class="form-group has-float-label">
+                                </div>
+                                <div class="col-md-3 pr-2 info_pengiriman" style="display:none">
+                                    <div class="form-group">
                                         <label for="no_pelacakan">No. pelacakan</label>
                                         <input type="text" class="form-control form-control-sm" id="no_pelacakan" name="no_pelacakan">
                                     </div>
                                 </div>
+                                @if(isset($penawaran))
                                 <div class="form-group col-md-3 pr-4">
-                                    @if(isset($penawaran))
                                     <label for="nomor_penawaran_pembelian">No Penawaran Pembelian</label> <br>
                                     <a href="{{ url('pembelian/detail').'/'.$pembelian->id }}">{{ $pembelian->no_str }}</a>
-                                    @endif
                                 </div>
+                                @endif
                             </div>
 
                             <div style="overflow: auto">
@@ -173,7 +173,7 @@
                                     <!-- Your table headers -->
                                     <thead>
                                         <tr>
-                                            <th scope="col" style="min-width: 200px !important; padding: 10px !important;">Produk</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Produk</th>
                                             <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Deskripsi</th>
                                             <th scope="col" style="min-width: 50px !important; padding: 10px !important;">Kuantitas</th>
                                             <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Harga Satuan</th>
@@ -216,19 +216,17 @@
                                 </table>
                             </div>
                             <hr>
-                            <div class="row text-sm">
-                                <div class="col">
-                                    <div class="form-group  has-float-label">
-                                        <label for="pesan">Pesan</label>
-                                        <textarea class="form-control form-control-sm" name="pesan" id="pesan"></textarea>
-                                    </div>
-                                    <div class="form-group  has-float-label">
-                                        <label for="memo">Memo</label>
-                                        <textarea class="form-control form-control-sm" name="memo" id="memo"></textarea>
-                                    </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-3 pr-2">
+                                    <label for="pesan">Pesan</label>
+                                    <textarea class="form-control form-control-sm" name="pesan" id="pesan"></textarea>
                                 </div>
-                                <div class="col ">
-                                    <div class="row mb-3">
+                                <div class="form-group col-md-3 pr-2">
+                                    <label for="memo">Memo</label>
+                                    <textarea class="form-control form-control-sm" name="memo" id="memo"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row mb-1">
                                         <div class="col">
                                             <span>Subtotal</span>
                                         </div>
@@ -237,7 +235,7 @@
                                             <input type="text" id="input_subtotal" name="input_subtotal" hidden>
                                         </div>
                                     </div>
-                                    <div class="row">
+                                    <div class="row mb-1">
                                         <div class="col">
                                             <span>PPN</span>
                                         </div>
@@ -246,8 +244,7 @@
                                             <input type="text" id="input_ppn" name="input_ppn" hidden>
                                         </div>
                                     </div>
-                                    <hr class="bg-white">
-                                    <div class="row mb-3">
+                                    <div class="row mb-2 mt-2 pt-1 border-top ">
                                         <div class="col">
                                             <span>Total</span>
                                         </div>
@@ -256,7 +253,7 @@
                                             <input type="text" id="input_total" name="input_total" hidden>
                                         </div>
                                     </div>
-                                    <div class="row mb-5">
+                                    <div class="row mb-1">
                                         <div class="col">
                                             <span>Sisa Tagihan</span>
                                         </div>
@@ -265,9 +262,13 @@
                                             <input type="text" id="input_sisa_tagihan" name="input_sisa_tagihan" hidden>
                                         </div>
                                     </div>
-                                    <div class="row my-5">
+                                    <div class="row my-4">
                                         <div class="col d-flex justify-content-end">
+                                            @if(isset($pembelian))
+                                            <a href="{{ url('pembelian').'/detail/'.$pembelian->id }}" class="btn btn-light">Batalkan</a>
+                                            @else
                                             <a href="{{ url('pembelian') }}" class="btn btn-light">Batalkan</a>
+                                            @endif
                                             <button type="submit" class="btn btn-primary">Buat</button>
                                         </div>
                                     </div>
@@ -311,7 +312,8 @@
         function load_select_2(id) {
             $("#produk_" + id).select2({
                 allowClear: true,
-                placeholder: 'Pilih produk'
+                placeholder: 'Pilih produk',
+                width: '100px'
             });
             // $('#produk_'+id).on('select2:select', function (e) {
             //     if(id >= x){
@@ -341,6 +343,7 @@
 
             kuantitas = $('#kuantitas_' + no).val() ? parseFloat($('#kuantitas_' + no).val()) : 0 ;
             subtotal[no] = kuantitas * parseFloat(selected);
+            get_pajak($('#pajak_' + no), no);
             load();
         }
 
@@ -401,7 +404,7 @@
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
                         <select class="form-control form-control-sm" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required>
-                            <option selected disabled hidden>Pilih produk</option>
+                            <option selected disabled hidden value="">Pilih produk</option>
                             @foreach ($produk as $v)
                                 <option value="{{ $v->id }}" data-harga_beli="{{ $v->harga_beli }}">{{ $v->nama }}</option>
                             @endforeach
@@ -420,7 +423,7 @@
                     </td>
                     <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})"></td>
                     <td style="padding: 10px !important;">
-                        <a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>
+                        <!--<a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>-->
                         <a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a>
                     </td>
                 </tr>
@@ -448,21 +451,51 @@
 
         $( document ).ready(function() {
             $('#info_pengiriman').prop('checked', true).trigger("change");
+
+            $('#supplier').selectpicker();
+
+            const fp_transaksi = flatpickr("#tanggal_transaksi", {
+                dateFormat: "d/m/Y"
+            });
+            fp_transaksi.setDate(new Date('{{ date("Y-m-d") }}'));
+
+            const fp_pengiriman = flatpickr("#tanggal_pengiriman", {
+                dateFormat: "d/m/Y"
+            });
+            fp_pengiriman.setDate(new Date('{{ date("Y-m-d") }}'));
+
+            const fp_jatuh_tempo = flatpickr("#tanggal_jatuh_tempo", {
+                dateFormat: "d/m/Y"
+            });
+            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
             @if(isset($pembelian))
-                $('#supplier').val('{{ $pembelian->id_supplier }}')
+                const sup = $('#supplier')
+                sup.selectpicker('val','{{ $pembelian->id_supplier }}')
+                alamat_supplier(pel[0]).then(function() {
+                    $('#alamat').val('{{ $pembelian->alamat }}');
+                })
                 $('#email').val('{{ $pembelian->email }}')
                 $('#alamat').val('{{ $pembelian->alamat }}')
-                $('#tanggal_transaksi').val('{{ $pembelian->tanggal_transaksi }}')
-                $('#tanggal_jatuh_tempo').val('{{ $pembelian->tanggal_jatuh_tempo }}')
+
+                fp_transaksi.setDate(new Date('{{ $pembelian->tanggal_transaksi }}'));
+                fp_jatuh_tempo.setDate(new Date('{{ $pembelian->tanggal_jatuh_tempo }}'));
+
                 $('#gudang').val('{{ $pembelian->id_gudang }}')
+
+                $('#kirim_melalui').val('{{ $pembelian->kirim_melalui }}')
+                $('#no_pelacakan').val('{{ $pembelian->no_pelacakan }}')
+
+                $('#pesan').val('{{ $pembelian->pesan }}')
+                $('#memo').val('{{ $pembelian->memo }}')
 
                 var x = 1;
                 load_select_2(x);
                 @foreach($detail_pembelian as $v)
-                    $('#produk_'+x).val('{{ $v->id_produk }}');
+                    $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
                     $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
                     $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
-                    $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').trigger('keyup');
+                    // $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').trigger('keyup');
+                    change_harga(x, {{ $v->harga_satuan }});
                     @if($v->pajak != 0)
                         $('#pajak_'+x).val('11').trigger('change');
                     @else
@@ -482,5 +515,24 @@
             $('.form-control').removeAttr('disabled');
         });
         @endif
+
+        function alamat_supplier(thisElement) {
+            var selected = $(thisElement).find('option:selected').val();
+            $('#alamat').empty();
+            return $.ajax({
+                url: '{{ url("supplier/alamat") }}',
+                type: 'GET',
+                data: {
+                    id: selected
+                },
+                success: function (response) {
+                    $('#alamat').append('<option selected disabled hidden value="">Pilih Alamat</option>');
+                    for(var i = 0; i < response.length; i++){
+                        console.log(response[i]);
+                        $('#alamat').append('<option>'+response[i].alamat+'</option>');
+                    }
+                }
+            });
+        }
     </script>
 @endsection

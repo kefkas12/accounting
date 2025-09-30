@@ -105,37 +105,46 @@ Route::controller(KasBankController::class)->prefix('kas_bank')->group(function 
 });
 
 Route::controller(PembelianController::class)->prefix('pembelian')->group(function () {
+	
+	
 	Route::get('/', 'index');
-	Route::get('/faktur', 'faktur');
-	Route::get('/pemesanan', 'pemesanan');
 	Route::get('/penawaran', 'penawaran');
+	Route::get('/pemesanan', 'pemesanan');
+	Route::get('/faktur', 'faktur');
+
+	Route::get('/penawaran/{id}', 'penawaran');
+	Route::get('/penawaran/pemesanan/{id}', 'penawaran_pemesanan');
 
 	Route::get('/penawaran/cetak/{id}', 'cetak_penawaran');
 	Route::get('/pemesanan/cetak/{id}', 'cetak_pemesanan');
 
-	Route::get('/penawaran/{id}', 'penawaran');
-	Route::get('/penawaran/pemesanan/{id}', 'penawaran_pemesanan');
 	Route::get('/pemesanan/pengiriman/{id}', 'pemesanan_pengiriman');
 	Route::get('/pemesanan/faktur/{id}', 'pemesanan_faktur');
+	
 	Route::get('/pengiriman/faktur/{id}', 'pengiriman_faktur');
 	Route::get('/faktur/{id}', 'faktur');
 
 	Route::get('/detail/{id}', 'detail');
 	Route::get('/pembayaran/{id}', 'pembayaran');
 	Route::get('/receive_payment/{id}','receive_payment');
+
 	Route::post('/pembayaran', 'penerimaan_pembayaran');
-	Route::post('/hapus/{id}', 'hapus');
 	Route::post('/faktur', 'insert_faktur');
 	Route::post('/faktur/{id}', 'update_faktur');
+
+	Route::post('/hapus/{id}', 'hapus');
 	
 	Route::post('/penawaran', 'insert_penawaran');
 	Route::post('/penawaran/{id}', 'update_penawaran');
 	Route::post('/penawaran/pemesanan/{id}', 'insert_penawaran_pemesanan');
+	
+	Route::post('/pemesanan', 'insert_pemesanan');
+	Route::post('/pemesanan/{id}', 'update_pemesanan');
 	Route::post('/pemesanan/pengiriman/{id}', 'insert_pemesanan_pengiriman');
 	Route::post('/pemesanan/faktur/{id}', 'insert_pemesanan_faktur');
-	Route::post('/pengiriman/faktur/{id}', 'insert_pengiriman_faktur');
 
-	Route::post('/pemesanan', 'insert_pemesanan');
+	Route::post('/pengiriman/{id}', 'update_pengiriman');
+	Route::post('/pengiriman/faktur/{id}', 'insert_pengiriman_faktur');
 
 	Route::post('/receive_payment/hapus/{id}', 'hapus_pembayaran');
 });
@@ -174,14 +183,14 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::post('/penawaran/{id}', 'update_penawaran');
 	Route::post('/penawaran/pemesanan/{id}', 'insert_penawaran_pemesanan');
 	Route::post('/penawaran/pengiriman/{id}', 'insert_penawaran_pengiriman');
-
-	Route::post('/pengiriman/{id}', 'update_pengiriman');
-	Route::post('/pengiriman/penagihan/{id}', 'insert_pengiriman_penagihan');
 	
 	Route::post('/pemesanan', 'insert_pemesanan');
 	Route::post('/pemesanan/{id}', 'update_pemesanan');
 	Route::post('/pemesanan/pengiriman/{id}', 'insert_pemesanan_pengiriman');
 	Route::post('/pemesanan/penagihan/{id}', 'insert_pemesanan_penagihan');
+
+	Route::post('/pengiriman/{id}', 'update_pengiriman');
+	Route::post('/pengiriman/penagihan/{id}', 'insert_pengiriman_penagihan');
 
 	Route::post('/status_pengiriman', 'update_status_pengiriman');
 
@@ -225,6 +234,8 @@ Route::controller(SupplierController::class)->prefix('supplier')->group(function
 	Route::post('/insert', 'insert');
 	Route::post('/edit/{id}', 'edit');
 	Route::get('/{status}/{id}', 'detail');	
+
+	Route::get('/alamat', 'alamat');
 });
 
 Route::controller(ProdukController::class)->prefix('produk')->group(function () {

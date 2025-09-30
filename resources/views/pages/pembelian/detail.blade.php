@@ -6,195 +6,94 @@
     <div class="mt--6">
         <div class="row">
             <div class="col">
-                <div class="card mb-5">
-                    <div class="card-header bg-transparent border-0">
-                        <h2>
-                        @if ($pembelian->jenis == 'faktur')
-                            Faktur 
-                        @elseif($pembelian->jenis == 'penawaran')
-                            Penawaran 
-                        @elseif($pembelian->jenis == 'pemesanan')
-                            Pemesanan 
-                        @elseif($pembelian->jenis == 'pengiriman')
-                            Pengiriman
+                <div class="card">
+                    <div class="card-body border-0 text-sm">
+                        <div class="form-row">
+                            <div class="form-group col-md-10">
+                                <h2>
+                                @if ($pembelian->jenis == 'faktur')
+                                    Faktur 
+                                @elseif($pembelian->jenis == 'penawaran')
+                                    Penawaran 
+                                @elseif($pembelian->jenis == 'pemesanan')
+                                    Pemesanan 
+                                @elseif($pembelian->jenis == 'pengiriman')
+                                    Pengiriman
+                                @endif
+                                Pembelian #{{ $pembelian->no }}
+                                    @if($pembelian->status == 'open')
+                                    <button class="btn btn-sm btn-warning ml-2" style="background-color: #F59E0B">
+                                    @elseif($pembelian->status == 'partial')
+                                    <button class="btn btn-sm btn-info ml-2">
+                                    @elseif($pembelian->status == 'paid')
+                                    <button class="btn btn-sm btn-success ml-2">
+                                    @elseif($pembelian->status == 'overdue')
+                                    <button class="btn btn-sm btn-danger ml-2">
+                                    @elseif($pembelian->status == 'closed')
+                                    <button class="btn btn-sm btn-dark ml-2">
+                                    @endif
+                                    
+                                        @if ($pembelian->status == 'open')
+                                        @if ($pembelian->jenis == 'pemesanan')
+                                            Belum ditagih
+                                        @else
+                                            Belum Dibayar
+                                        @endif
+                                        @elseif($pembelian->status == 'partial')
+                                            Terbayar Sebagian
+                                        @elseif($pembelian->status == 'paid')
+                                            Lunas
+                                        @elseif($pembelian->status == 'overdue')
+                                            Lewat Jatuh Tempo
+                                        @elseif($pembelian->status == 'closed')
+                                            Selesai
+                                        @elseif($pembelian->status == 'draf')
+                                            Draf
+                                        @endif
+                                    </button>
+                                </h2>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <a href="{{ url('pembelian') }}" class="btn btn-dark">Kembali ke Pembelian</a>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-sm-2">Supplier <br> @if($pembelian->nama_supplier)<strong>{{ $pembelian->nama_supplier }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-sm-2">Tgl. Transaksi <br> @if($pembelian->tanggal_transaksi)<strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_transaksi)) }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-sm-2">Alamat <br> @if($pembelian->alamat)<strong>{{ $pembelian->alamat }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-sm-2">Detail Alamat <br> @if($pembelian->detail_alamat)<strong>{{ $pembelian->detail_alamat }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-md-2">No Transaksi <br> @if($pembelian->no_str)<strong>{{ $pembelian->no_str }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-md-2">@if ($jurnal) Jurnal <br> <a href="#" data-toggle="modal" data-target="#jurnalEntryModal">Lihat Jurnal Entry</a> @endif </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-sm-2">Kirim melalui <br> @if($pembelian->kirim_melalui)<strong>{{ $pembelian->kirim_melalui }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-sm-2">No. pelacakan <br> @if($pembelian->no_pelacakan)<strong>{{ $pembelian->no_pelacakan }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-sm-2"></div>
+                            <div class="form-group col-sm-2"></div>
+                            <div class="form-group col-sm-2"></div>
+                            <div class="form-group col-sm-2"></div>
+                        </div>
+                        @if($pembelian->jenis != 'penawaran')
+                        <div class="form-row" style="display:none">
+                            <div class="form-group col-md-3" >Gudang <br> @if($pembelian->nama_gudang)<strong><a href="{{ url('gudang/detail').'/'.$pembelian->id_gudang }}">{{ $pembelian->nama_gudang }}</a></strong>@else <strong> - </strong> @endif</div>
+                        </div>
                         @endif
-                        Pembelian #{{ $pembelian->no }}
-                            @if($pembelian->status == 'open')
-                            <button class="btn btn-sm btn-warning ml-2" style="background-color: #F59E0B">
-                            @elseif($pembelian->status == 'partial')
-                            <button class="btn btn-sm btn-info ml-2">
-                            @elseif($pembelian->status == 'paid')
-                            <button class="btn btn-sm btn-success ml-2">
-                            @elseif($pembelian->status == 'overdue')
-                            <button class="btn btn-sm btn-danger ml-2">
-                            @elseif($pembelian->status == 'closed')
-                            <button class="btn btn-sm btn-dark ml-2">
-                            @endif
-                             
-                                @if ($pembelian->status == 'open')
-                                @if ($pembelian->jenis == 'pemesanan')
-                                    Belum ditagih
-                                @else
-                                    Belum Dibayar
-                                @endif
-                                @elseif($pembelian->status == 'partial')
-                                    Terbayar Sebagian
-                                @elseif($pembelian->status == 'paid')
-                                    Lunas
-                                @elseif($pembelian->status == 'overdue')
-                                    Lewat Jatuh Tempo
-                                @elseif($pembelian->status == 'closed')
-                                    Selesai
-                                @endif
-                            </button>
-                        </h2>
-                    </div>
-                    <div class="card-body " style="font-size: 12px;">
-                        <div class="row">
-                            <div class="col-sm-2">Supplier</div>
-                            <div class="col-sm-2"><strong>{{ $pembelian->nama_supplier }}</strong></div>
-                            <div class="col-sm-2">Email</div>
-                            <div class="col-sm-2"><strong>{{ $pembelian->email }}</strong></div>
-                            @hasanyrole('pemilik')
-                            <div class="col-sm-4 d-flex justify-content-end">
-                                <h3>Sisa tagihan Rp. {{ number_format($pembelian->sisa_tagihan, 2, ',', '.') }} <br>
-                                    @if ($jurnal)
-                                    <a href="#" data-toggle="modal" data-target="#exampleModal">Lihat Jurnal Entry</a>
-                                    @endif
-                                </h3>
-                            </div>
-                            @endhasallroles
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-sm-2">@if($pembelian->jenis == 'pengiriman') Alamat pengiriman @else Alamat supplier @endif</div>
-                            <div class="col-sm-2"><strong>@if($pembelian->jenis == 'pengiriman') {{ $pembelian->alamat_pengiriman }} @else {{ $pembelian->alamat }} @endif</strong></div>
-                            <div class="col-sm-2">Tgl. Transaksi</div>
-                            <div class="col-sm-2">
-                                <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_transaksi)) }}</strong>
-                            </div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">No Transaksi </div>
-                            <div class="col-sm-2"><strong>{{ $pembelian->no_str }}</strong></div>
-                        </div>
-                        <div class="row my-2">
-                            <div class="col-sm-2">@if($pembelian->jenis == 'pemesanan')@if($pembelian->alamat_pengiriman) Alamat pengiriman @endif @endif</div>
-                            <div class="col-sm-2"><strong>@if($pembelian->jenis == 'pemesanan') @if($pembelian->alamat_pengiriman) {{ $pembelian->alamat_pengiriman }} @endif  @endif </strong></div>
-                            <div class="col-sm-2">
-                                @if($pembelian->jenis == 'pengiriman')
-                                    Kirim Melalui
-                                @else
-                                    @if ($pembelian->jenis == 'faktur' || $pembelian->jenis == 'pemesanan')
-                                        Tgl. Jatuh Tempo
-                                    @elseif($pembelian->jenis == 'penawaran')
-                                        Tgl. kedaluarsa
-                                    @endif
-                                @endif
-                            </div>
-                            <div class="col-sm-2">
-                                @if($pembelian->jenis == 'pengiriman')
-                                    @if($pembelian->kirim_melalui)
-                                    {{ $pembelian->kirim_melalui }}
-                                    @else
-                                    -
-                                    @endif
-                                @else
-                                    @if($pembelian->tanggal_jatuh_tempo)
-                                    <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_jatuh_tempo)) }}</strong>
-                                    @endif
-                                @endif
-                            </div>
-                            @if($pembelian->penawaran)
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                No. Penawaran
-                            </div>
-                            <div class="col-sm-2">
-                                <a href="{{ url('pembelian/detail').'/'.$pembelian->penawaran->id }}">{{ $pembelian->penawaran->no_str }}</a>
+                        <div class="form-row">
+                            @if($pembelian->pengiriman)
+                            <div class="form-group col-md-2">
+                                No. Pengiriman <br>
+                                <a href="{{ url('pembelian/detail').'/'.$pembelian->pengiriman->id }}">{{ $pembelian->pengiriman->no_str }}</a>
                             </div>
                             @endif
                             @if($pembelian->pemesanan)
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                No. Pemesanan
-                            </div>
-                            <div class="col-sm-2">
+                            <div class="form-group col-md-2">
+                                No. Pemesanan <br>
                                 <a href="{{ url('pembelian/detail').'/'.$pembelian->pemesanan->id }}">{{ $pembelian->pemesanan->no_str }}</a>
                             </div>
                             @endif
-                            @if(!$pembelian->pemesanan && !$pembelian->penawaran)
-                            <div class="col-sm-2" style="margin-right: -25px !important;">
-                                @if($pembelian->nama_gudang) Gudang @endif
-                            </div>
-                            <div class="col-sm-2">
-                                @if($pembelian->nama_gudang) <a href="{{ url('gudang/detail').'/'.$pembelian->id_gudang }}">{{ $pembelian->nama_gudang }}</a> @endif
-                            </div>
-                            @endif
                         </div>
-                        @if($pembelian->tanggal_pengiriman)
-                        @if($pembelian->jenis == 'pemesanan' || $pembelian->jenis == 'faktur')
-                        <div class="row my-2">
-                            <div class="col-sm-4"></div>
-                            <div class="col-sm-2">Tgl. pengiriman</div>
-                            <div class="col-sm-2">
-                                <strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_pengiriman)) }}</strong>
-                            </div>
-                        </div>
-                        @elseif($pembelian->jenis == 'pengiriman')
-                        <div class="row my-2">
-                            <div class="col-sm-4"></div>
-                            <div class="col-sm-2">No. Pelacakan</div>
-                            <div class="col-sm-2">
-                                @if($pembelian->no_pelacakan)
-                                <strong>{{ $pembelian->no_pelacakan }}</strong>
-                                @else
-                                -
-                                @endif
-                            </div>
-                        </div>
-                        @endif
-                        @else
-                        <div class="row my-2">
-                            <div class="col-sm-4"></div>
-                            <div class="col-sm-2">
-                                @if($pembelian->jenis == 'pengiriman')
-                                    No. Pelacakan
-                                @endif
-                            </div>
-                            <div class="col-sm-2">
-                                @if($pembelian->jenis == 'pengiriman')
-                                    @if($pembelian->no_pelacakan)
-                                    <strong>{{ $pembelian->no_pelacakan }}</strong>
-                                    @else
-                                    -
-                                    @endif
-                                @endif
-                            </div>
-                            <div class="col-sm-2" style="margin-right: -25px !important;">@if($pembelian->nama_gudang) Gudang @endif</div>
-                            <div class="col-sm-2">@if($pembelian->nama_gudang) <a href="{{ url('gudang/detail').'/'.$pembelian->id_gudang }}">{{ $pembelian->nama_gudang }}</a> @endif</div>
-                        </div>
-                        @endif
-                        @if($pembelian->kirim_melalui)
-                        @if($pembelian->jenis == 'pemesanan')
-                        <div class="row my-2">
-                            <div class="col-sm-4"></div>
-                            <div class="col-sm-2">Kirim Melalui</div>
-                            <div class="col-sm-2">
-                                <strong>{{ $pembelian->kirim_melalui }}</strong>
-                            </div>
-                        </div>
-                        @endif
-                        @endif
-                        @if($pembelian->no_pelacakan)
-                        @if($pembelian->jenis == 'pemesanan')
-                        <div class="row my-2">
-                            <div class="col-sm-4"></div>
-                            <div class="col-sm-2">No. pelacakan</div>
-                            <div class="col-sm-2">
-                                {{ $pembelian->no_pelacakan }}
-                            </div>
-                        </div>
-                        @endif
-                        @endif
                         <div class="table-responsive">
-                            <table class="table my-4">
+                            <table class="table table-bordered">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Produk</th>
@@ -202,11 +101,9 @@
                                         <th>Kuantitas</th>
                                         <th>Unit</th>
                                         @if($pembelian->jenis != 'pengiriman')
-                                        @hasanyrole('pemilik')
                                         <th>Harga Satuan</th>
                                         <th>Pajak</th>
                                         <th>Jumlah</th>
-                                        @endhasallroles
                                         @endif
                                     </tr>
                                 </thead>
@@ -218,107 +115,139 @@
                                             <td>{{ $v->kuantitas }}</td>
                                             <td>Buah</td>
                                             @if($pembelian->jenis != 'pengiriman')
-                                            @hasanyrole('pemilik')
                                             <td>Rp. {{ number_format($v->harga_satuan, 2, ',', '.') }}</td>
                                             <td>@if($v->pajak != 0) PPN @endif</td>
-                                            <td>Rp. {{ number_format($v->jumlah, 2, ',', '.') }}</td>
-                                            @endhasallroles
+                                            <td style="margin-right: 25px !important;">Rp. {{ number_format($v->jumlah, 2, ',', '.') }}</td>
                                             @endif
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
-                        <div class="row my-3">
-                            <div class="col-sm-7">
-                                <div class="row my-3">
-                                    <div class="col-sm-3">Pesan</div>
-                                    <div class="col-sm-3">-</div>
-                                </div>
-                                <div class="row my-3">
-                                    <div class="col-sm-3">Memo</div>
-                                    <div class="col-sm-3">-</div>
-                                </div>
-                            </div>
+                        <div class="card-body border-0 text-sm">
                             @if($pembelian->jenis == 'pengiriman')
-                            @if($pembelian->ongkos_kirim)
-                            <div class="col-sm-5">
-                                <div class="row my-3">
-                                    <div class="col-sm-6">
-                                        <h4>Ongkos kirim</h4>
+                                <div class="form-row">
+                                    <div class="form-group col-md-4 pr-2">
+                                        <div class="row mb-1">
+                                            <div class="col">
+                                                Pesan
+                                            </div>
+                                            <div class="col">
+                                                <strong>@if($pembelian->pesan){{ $pembelian->pesan }} @else - @endif</strong>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-1">
+                                            <div class="col">
+                                                Memo
+                                            </div>
+                                            <div class="col">
+                                                <strong>@if($pembelian->pesan){{ $pembelian->memo }} @else - @endif</strong>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-sm-6 d-flex justify-content-end">
-                                        <h4>Rp. {{ number_format($pembelian->ongkos_kirim, 2, ',', '.') }}</h4>
+                                    <div class="form-group col-md-4">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <div class="row my-1">
+                                            <div class="col">
+                                                Ongkos kirim
+                                            </div>
+                                            <div class="col d-flex justify-content-end">
+                                                <h4>Rp. {{ number_format($pembelian->ongkos_kirim, 2, ',', '.') }}</h4>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            @endif
+                                @if(isset($log))
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 pr-2">
+                                        <a href="#" data-toggle="modal" data-target="#logUpdateModal">Terakhir diproses oleh {{ $log->name }} pada {{ date('d F Y h:i:s', strtotime($log->created_at)) }}</a>
+                                    </div>
+                                </div>
+                                @endif
                             @else
-                            @hasanyrole('pemilik')
-                            <div class="col-sm-5">
-                                <div class="row my-3">
-                                    <div class="col-sm-6">
-                                        <h4>Subtotal</h4>
+                                @hasanyrole('pemilik')
+                                <div class="form-row">
+                                    <div class="form-group col-md-4 pr-2">
+                                        <div class="row mb-1">
+                                            <div class="col">
+                                                Pesan
+                                            </div>
+                                            <div class="col">
+                                                <strong>@if($pembelian->pesan){{ $pembelian->pesan }} @else - @endif</strong>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-1">
+                                            <div class="col">
+                                                Memo
+                                            </div>
+                                            <div class="col">
+                                                <strong>@if($pembelian->pesan){{ $pembelian->memo }} @else - @endif</strong>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="col-sm-6 d-flex justify-content-end">
-                                        <h4>Rp. {{ number_format($pembelian->subtotal, 2, ',', '.') }}</h4>
+                                    <div class="form-group col-md-4">
                                     </div>
-                                </div>
-                                @if($pembelian->ongkos_kirim)
-                                <div class="row my-3">
-                                    <div class="col-sm-6">
-                                        <h4>Ongkos Kirim</h4>
+                                    <div class="form-group col-md-4">
+                                        <div class="row mb-1">
+                                            <div class="col">
+                                                <span>Subtotal</span>
+                                            </div>
+                                            <div class="col d-flex justify-content-end">
+                                                <strong>Rp. {{ number_format($pembelian->subtotal, 2, ',', '.') }}</strong>
+                                            </div>
+                                        </div>
+                                        @if(isset($pembelian->ppn) && $pembelian->ppn > 0)
+                                        <div class="row mb-1">
+                                            <div class="col">
+                                                <span>PPN 11%</span>
+                                            </div>
+                                            <div class="col-sm-6 d-flex justify-content-end">
+                                                <strong>Rp. {{ number_format($pembelian->ppn, 2, ',', '.') }}</strong>
+                                            </div>
+                                        </div>
+                                        @endif
+                                        @if(isset($pembelian->ongkos_kirim) && $pembelian->ongkos_kirim > 0)
+                                        <div class="row mb-1">
+                                            <div class="col">
+                                                <span>Ongkos Kirim</span>
+                                            </div>
+                                            <div class="col d-flex justify-content-end">
+                                                <strong>Rp. {{ number_format($pembelian->ongkos_kirim, 2, ',', '.') }}</strong>
+                                            </div>
+                                        </div>
+                                        @endif
+                                        <div class="row mb-1">
+                                            <div class="col">
+                                                <span>Total</span>
+                                            </div>
+                                            <div class="col d-flex justify-content-end">
+                                                <strong>Rp. {{ number_format($pembelian->total, 2, ',', '.') }}</strong>
+                                            </div>
+                                        </div>
+                                        @if($pembelian->jenis == 'penagihan')
+                                        <div class="row mb-2">
+                                            <div class="col">
+                                                <span>Jumlah Terbayar</span>
+                                            </div>
+                                            <div class="col d-flex justify-content-end">
+                                                <strong>Rp. {{ number_format($pembelian->jumlah_terbayar, 2, ',', '.') }}</strong>
+                                            </div>
+                                        </div>
+                                        @endif
+                                        @if($pembelian->jumlah_terbayar != 0)
+                                        <div class="row mb-2">
+                                            <div class="col">
+                                                <span>Sisa Tagihan</span>
+                                            </div>
+                                            <div class="col d-flex justify-content-end">
+                                                <strong>Rp. {{ number_format($pembelian->sisa_tagihan, 2, ',', '.') }}</strong>
+                                            </div>
+                                        </div>
+                                        @endif
                                     </div>
-                                    <div class="col-sm-6 d-flex justify-content-end">
-                                        <h4>Rp. {{ number_format($pembelian->ongkos_kirim, 2, ',', '.') }}</h4>
-                                    </div>
-                                </div>
-                                @endif
-                                @if($pembelian->ppn)
-                                <div class="row my-3">
-                                    <div class="col-sm-6">
-                                        <h4>PPN 11%</h4>
-                                    </div>
-                                    <div class="col-sm-6 d-flex justify-content-end">
-                                        <h4>Rp. {{ number_format($pembelian->ppn, 2, ',', '.') }}</h4>
-                                    </div>
-                                </div>
-                                @endif
-                                <hr>
-                                <div class="row my-3">
-                                    <div class="col-sm-6">
-                                        <h4>Total</h4>
-                                    </div>
-                                    <div class="col-sm-6 d-flex justify-content-end">
-                                        <h4>Rp. {{ number_format($pembelian->total, 2, ',', '.') }}</h4>
-                                    </div>
-                                </div>
-                                @if($pembelian->jumlah_terbayar != 0)
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <h4>Jumlah Terbayar</h4>
-                                    </div>
-                                    <div class="col-sm-6 d-flex justify-content-end">
-                                        <h4>Rp. {{ number_format($pembelian->jumlah_terbayar, 2, ',', '.') }}</h4>
-                                    </div>
-                                </div>
-                                @endif
-                                <hr>
-                                <div class="row my-3">
-                                    <div class="col-sm-6">
-                                        <h2>Sisa Tagihan</h2>
-                                    </div>
-                                    <div class="col-sm-6 d-flex justify-content-end">
-                                        <h2>Rp. {{ number_format($pembelian->sisa_tagihan, 2, ',', '.') }}</h2>
-                                    </div>
-                                </div>
-                            </div>
-                            @endhasallroles
+                                @endhasallroles
                             @endif
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-sm-7">Terakhir diubah oleh pada {{ $pembelian->updated_at }}</div>
                         </div>
                         <div class="row my-4">
                             <div class="col-sm-6">

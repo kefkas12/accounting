@@ -15,6 +15,7 @@ use App\Models\Jurnal;
 use App\Models\Kontak;
 use App\Models\Pembayaran_pembelian;
 use App\Models\Pembelian;
+use App\Models\Pengaturan_dokumen;
 use App\Models\Produk;
 use App\Models\Stok_gudang;
 use App\Models\Transaksi_produk;
@@ -92,7 +93,6 @@ class PembelianController extends Controller
                                             }
                                             ])
                                         ->leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
-                                        ->leftJoin('pembelian as penawaran', 'pembelian.id_penawaran', '=', 'penawaran.id')
                                         ->leftJoin('pembelian as pemesanan', 'pembelian.id_pemesanan', '=', 'pemesanan.id')
                                         ->select('pembelian.*','kontak.nama as nama_supplier')
                                         ->where('pembelian.id',$id)
@@ -155,8 +155,9 @@ class PembelianController extends Controller
         
         
         if($id != null){
+            $data['pemesanan'] = true;
             $data['pembelian'] = Pembelian::where('id',$id)->first();
-            $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
+            $data['detail_pembelian'] = Detail_pembelian::with('stok_gudang')->where('id_pembelian',$id)->get();
         }
         return view('pages.pembelian.pemesanan', $data);
     }
@@ -205,10 +206,33 @@ class PembelianController extends Controller
                                     ->where('company.id', $data['pembelian']->id_company)
                                     ->first();
 
-        // return view('pdf.pembelian.penawaran' , $data);
+        // return Pdf::view('pdf.pembelian.pemesanan' , $data)->format('a4')->name('pemesanan_pembelian.pdf');
 
-        return Pdf::view('pdf.pembelian.pemesanan' , $data)->format('a4')
-                ->name('pemesanan_pembelian.pdf');
+        $html = view('pdf.pembelian.pemesanan', $data)->render();
+
+        // Buat objek mPDF
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4', // Ukuran sertifikat
+            'orientation' => 'L', // L = Landscape
+            'margin_left' => 0,  // Hilangkan margin kiri
+            'margin_right' => 0, // Hilangkan margin kanan
+            'margin_top' => 0,   // Hilangkan margin atas
+            'margin_bottom' => 0 // Hilangkan margin bawah
+        ]);
+
+        // Atur background agar full-page
+        // $mpdf->SetDefaultBodyCSS('background', "url('https://myedi.stma-trisakti.ac.id/img/background.png')");
+        // $mpdf->SetDefaultBodyCSS('background-image-resize', 6);
+
+        // Full page rendering
+        $mpdf->SetDisplayMode('fullpage');
+        
+        // Tambahkan HTML ke PDF
+        $mpdf->WriteHTML($html);
+        
+        // Output PDF langsung di browser
+        return response($mpdf->Output('pemesanan_pembelian.pdf', 'I'))->header('Content-Type', 'application/pdf');
     }
 
     public function penawaran_pemesanan($id)
@@ -218,8 +242,13 @@ class PembelianController extends Controller
         $data['supplier'] = Kontak::where('tipe','supplier')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
-        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
                                     ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
         if($id != null){
             $data['penawaran'] = true;
             $data['pembelian'] = Pembelian::where('id',$id)->first();
@@ -250,15 +279,22 @@ class PembelianController extends Controller
         $data['supplier'] = Kontak::where('tipe','supplier')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
-        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
                                     ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
         if($id != null){
+            $data['pemesanan_pengiriman'] = true;
             $data['pemesanan'] = true;
             $data['pembelian'] = Pembelian::join('kontak','id_supplier','=','kontak.id')
                                             ->select('pembelian.*','kontak.nama')->where('pembelian.id',$id)->first();
             $data['detail_pembelian'] = Detail_pembelian::join('produk','detail_pembelian.id_produk','=','produk.id')
                                                         ->select('detail_pembelian.*','produk.unit')
-                                                        ->where('detail_pembelian.id_pembelian',$id)->get();
+                                                        ->where('detail_pembelian.id_pembelian',$id)
+                                                        ->get();
         }
         return view('pages.pembelian.pengiriman', $data);
     }
@@ -295,10 +331,17 @@ class PembelianController extends Controller
                                     ->get();
         }
         if($id != null){
+            $data['pengiriman_faktur'] = true;
             $data['pengiriman'] = true;
-            $data['pembelian'] = Pembelian::where('id',$id)->first();
+            $data['pembelian'] = Pembelian::leftJoin('pembelian as pemesanan', 'pemesanan.id','=','pembelian.id_pemesanan')
+                                            ->select('pembelian.*','pemesanan.no_str as no_str_pemesanan')
+                                            ->where('pembelian.id',$id)->first();
             $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
         }
+        $data['pengaturan_dokumen'] = Pengaturan_dokumen::where('id_company',Auth::user()->id_company)
+                                                        ->where('status_pembelian','faktur')
+                                                        ->get();
+
         return view('pages.pembelian.faktur', $data);
     }
 
@@ -332,12 +375,15 @@ class PembelianController extends Controller
 
     public function insert_faktur(Request $request)
     {
+        $approval = new Approval;
+        $is_requester = $approval->check_requester('Faktur Pembelian');
+
         DB::beginTransaction();
         $jurnal = new Jurnal;
-        $jurnal->pembelian($request);
+        $jurnal->pembelian($request,null,$is_requester);
 
         $pembelian = new Pembelian;
-        $pembelian->insert($request, $jurnal->id, 'faktur');
+        $pembelian->insert($request, $jurnal->id, 'faktur', null,$is_requester);
 
         for ($i = 0; $i < count($request->input('produk')); $i++) {
             $produk = Produk::find($request->input('produk')[$i]);
@@ -377,9 +423,12 @@ class PembelianController extends Controller
 
     public function insert_penawaran(Request $request)
     {
+        $approval = new Approval;
+        $is_requester = $approval->check_requester('Penawaran Pembelian');
+
         DB::beginTransaction();
         $pembelian = new Pembelian;
-        $pembelian->insert($request, null, 'penawaran');
+        $pembelian->insert($request, null, 'penawaran',null,$is_requester);
         DB::commit();
 
         return redirect('pembelian/detail/'.$pembelian->id);
@@ -453,6 +502,19 @@ class PembelianController extends Controller
 
         return redirect('pembelian/detail/'.$pembelian->id);
     }
+
+    public function update_pengiriman(Request $request, $id)
+    {
+        DB::beginTransaction();
+        $pembelian = Pembelian::find($id);
+        $jurnal = Jurnal::find($pembelian->id_jurnal);
+        $jurnal->pengiriman_pembelian($request, $id);
+        $pembelian->ubah($request, 'pengiriman');
+        DB::commit();
+
+        return redirect('pembelian/detail/'.$pembelian->id);
+    }
+
     public function insert_pengiriman_faktur(Request $request, $id)
     {
         DB::beginTransaction();

@@ -328,7 +328,7 @@ class Jurnal extends Model
         $this->updateAkunBalance(33, 0, $request->input('input_total'));
     }
 
-    public function pembelian(Request $request, $id = null)
+    public function pembelian(Request $request, $id = null, $is_requester = null)
     {
         $this->id_company = Auth::user()->id_company;
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');

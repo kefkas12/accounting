@@ -11,7 +11,7 @@
                     @csrf
                     <div class="card">
                         <div class="card-body ">
-                            <h2 class="text-primary mb-3 pb-3" style="border-bottom: 1px solid rgb(199, 206, 215);">Buat Kontak Pelanggan</h2>
+                            <h2 class="text-primary mb-3 pb-3" style="border-bottom: 1px solid rgb(199, 206, 215);">Buat Kontak Supplier / Pemasok</h2>
                             <div class="row">
                                 <div class="col-sm-8">
                                     <div class="form-group row mb-2">
@@ -57,12 +57,13 @@
                                             <input type="text" class="form-control" id="npwp" name="npwp" placeholder="Contoh: 12.3765.748.0-132.546" value="{{ isset($supplier) ? $supplier->npwp : '' }}">
                                         </div>
                                     </div>
+
                                     <div class="form-group row mb-2">
-                                        <label for="alamat" class="col-sm-4 col-form-label">Alamat</label>
-                                        <div class="col-sm-8">
-                                            <textarea class="form-control" id="alamat" name="alamat" placeholder="Contoh: Jalan Indonesia Block C No. 22"> {{ isset($supplier) ? $supplier->alamat : '' }}</textarea>
+                                        <label for="alamat" class="col-sm-4 col-form-label">Alamat<button type="button" id="tambah_alamat" class="btn btn-sm btn-primary ml-3" onclick="additional_alamat()">Tambah</button></label>
+                                        <div class="col-sm-8" id="additional_alamat">
                                         </div>
                                     </div>
+
                                     <div class="d-flex justify-content-end">
                                         <button type="submit" class="btn btn-success btn-lg px-5">
                                                 <i class="fa fa-save" style="font-size: 1.5em;"></i>
@@ -83,7 +84,26 @@
     </div>
     @if(isset($supplier))
     <script>
+    $( document ).ready(function() {
         $('#form').attr('action','{{ url("supplier/edit")."/".$supplier->id }}')
+        @foreach($additional_alamat as $v)
+        additional_alamat('{{ $v->alamat }}');
+        @endforeach
+    });
     </script>
     @endif
+    <script>
+        function additional_alamat(value = null){
+            if(value){
+                $('#additional_alamat').append(
+                    `<textarea class="form-control mb-2" name="additional_alamat[]" placeholder="Contoh: Jalan Indonesia Block C No. 22">${value}</textarea>`
+                );
+            }else{
+                $('#additional_alamat').append(
+                    `<textarea class="form-control mb-2" name="additional_alamat[]" placeholder="Contoh: Jalan Indonesia Block C No. 22"></textarea>`
+                );
+            }
+            
+        }
+    </script>
 @endsection

@@ -130,7 +130,7 @@
                                 <div class="col-md-3 pr-2">
                                     <div class="form-group">
                                         <label for="alamat">Alamat Penagihan</label><br>
-                                        <textarea class="form-control" name="alamat" id="alamat" rows="1"></textarea>
+                                        <textarea class="form-control form-control-sm" name="alamat" id="alamat" rows="1"></textarea>
                                     </div>
                                     
                                 </div>
@@ -138,18 +138,18 @@
                                 <div class="col-md-2">
                                     <div class="form-group pr-4">
                                         <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
-                                        <input type="date" class="form-control" id="tanggal_jatuh_tempo" name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
+                                        <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo" name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
                                     </div>
                                 </div>
                                 <div class="col-md-2 info_pengiriman" style="display:none">
                                     <div class="form-group pr-4">
                                         <label for="kirim_melalui">Kirim melalui</label>
-                                        <input type="text" class="form-control" id="kirim_melalui"
+                                        <input type="text" class="form-control form-control-sm" id="kirim_melalui"
                                             name="kirim_melalui">
                                     </div>
                                     <div class="form-group pr-4">
                                         <label for="no_pelacakan">No. pelacakan</label>
-                                        <input type="text" class="form-control" id="no_pelacakan" name="no_pelacakan">
+                                        <input type="text" class="form-control form-control-sm" id="no_pelacakan" name="no_pelacakan">
                                     </div>
                                 </div>
                                 <div class="col-md-2 pr-4">
@@ -198,7 +198,7 @@
                                     <tbody id="list">
                                         <tr>
                                             <th style="padding: 10px !important;">
-                                                <select class="form-control" name="produk[]" id="produk_1"  onchange="get_data(this, 1)" required @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
+                                                <select class="form-control form-control-sm" name="produk[]" id="produk_1"  onchange="get_data(this, 1)" required @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
                                                     <option selected disabled>Pilih produk</option>
                                                     @foreach ($produk as $v)
                                                         <option value="{{ $v->id }}" data-harga_beli="{{ $v->harga_beli }}">{{ $v->nama }}</option>
@@ -206,38 +206,36 @@
                                                 </select>
                                             </th>
                                             <td style="padding: 10px !important;">
-                                                <textarea class="form-control" name="deskripsi[]" id="deskripsi_1" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
+                                                <textarea class="form-control form-control-sm" name="deskripsi[]" id="deskripsi_1" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                                             </td>
                                             <td style="padding: 10px !important;">
-                                                <input type="number" class="form-control" id="kuantitas_1" name="kuantitas[]" value="1" onkeyup="change_harga(1)" onblur="check_null(this)" step="any" @if(isset($pengiriman)) disabled @endif></td>
+                                                <input type="number" class="form-control form-control-sm" id="kuantitas_1" name="kuantitas[]" value="1" onkeyup="change_harga(1)" onblur="check_null(this)" step="any" @if(isset($pengiriman)) disabled @endif></td>
                                             <td style="padding: 10px !important;">
-                                                <input type="text" class="form-control"  id="harga_satuan_1" name="harga_satuan[]" value="0" onblur="change_harga(1)" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif></td>
+                                                <input type="text" class="form-control form-control-sm"  id="harga_satuan_1" name="harga_satuan[]" value="0" onblur="change_harga(1)" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif></td>
                                             <td style="padding: 10px !important;">
-                                                <select class="form-control" id="pajak_1" name="pajak[]" onchange="get_pajak(this, 1)" required @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
+                                                <select class="form-control form-control-sm" id="pajak_1" name="pajak[]" onchange="get_pajak(this, 1)" required @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
                                                     <option value="0"  data-persen="0">Pilih pajak</option>
                                                     <option value="11" data-persen="11">PPN</option>
                                                 </select>
                                             </td>
-                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_1" name="jumlah[]" value="0" onblur="change_jumlah(1)" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif></td>
+                                            <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="jumlah_1" name="jumlah[]" value="0" onblur="change_jumlah(1)" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif></td>
                                             @if(!isset($pemesanan))<td style="padding: 10px !important;"><a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a></td>@endif
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <hr>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-group col-md-6">
-                                        <label for="pesan">Pesan</label><br>
-                                        <textarea class="form-control" name="pesan" id="pesan"></textarea>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        <label for="memo">Memo</label><br>
-                                        <textarea class="form-control" name="memo" id="memo"></textarea>
-                                    </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-3 pr-2">
+                                    <label for="pesan">Pesan</label><br>
+                                    <textarea class="form-control form-control-sm" name="pesan" id="pesan"></textarea>
                                 </div>
-                                <div class="col">
-                                    <div class="row mb-3">
+                                <div class="form-group col-md-3 pr-2">
+                                    <label for="memo">Memo</label>
+                                    <textarea class="form-control form-control-sm" name="memo" id="memo"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row mb-1">
                                         <div class="col">
                                             <span>Subtotal</span>
                                         </div>
@@ -246,16 +244,7 @@
                                             <input type="text" id="input_subtotal" name="input_subtotal" hidden>
                                         </div>
                                     </div>
-                                    <div class="row mb-3 ongkos_kirim" style="display: none">
-                                        <div class="col">
-                                            <span>Ongkos Kirim</span>
-                                        </div>
-                                        <div class="col d-flex justify-content-end">
-                                            <span id="ongkos_kirim" >Rp 0,00</span>
-                                            <input type="text" id="input_ongkos_kirim" name="input_ongkos_kirim" hidden>
-                                        </div>
-                                    </div>
-                                    <div class="row">
+                                    <div class="row mb-1">
                                         <div class="col">
                                             <span>PPN</span>
                                         </div>
@@ -264,8 +253,18 @@
                                             <input type="text" id="input_ppn" name="input_ppn" hidden>
                                         </div>
                                     </div>
-                                    <hr class="bg-white">
-                                    <div class="row mb-3">
+                                    @if(isset($pembelian->ongkos_kirim) && $pembelian->ongkos_kirim > 0)
+                                    <div class="row">
+                                        <div class="col">
+                                            <span>Ongkos Kirim</span>
+                                        </div>
+                                        <div class="col d-flex justify-content-end">
+                                            <span id="ongkos_kirim" >Rp 0,00</span>
+                                            <input type="text" id="input_ongkos_kirim" name="input_ongkos_kirim" hidden>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    <div class="row mb-2 mt-2 pt-1 border-top ">
                                         <div class="col">
                                             <span>Total</span>
                                         </div>
@@ -274,7 +273,7 @@
                                             <input type="text" id="input_total" name="input_total" hidden>
                                         </div>
                                     </div>
-                                    <div class="row mb-5">
+                                    <div class="row mb-1">
                                         <div class="col">
                                             <span>Sisa Tagihan</span>
                                         </div>
@@ -283,9 +282,13 @@
                                             <input type="text" id="input_sisa_tagihan" name="input_sisa_tagihan" hidden>
                                         </div>
                                     </div>
-                                    <div class="row my-5">
+                                    <div class="row my-4">
                                         <div class="col d-flex justify-content-end">
+                                            @if(isset($pembelian))
+                                            <a href="{{ url('pembelian').'/detail/'.$pembelian->id }}" class="btn btn-light">Batalkan</a>
+                                            @else
                                             <a href="{{ url('pembelian') }}" class="btn btn-light">Batalkan</a>
+                                            @endif
                                             <button type="submit" class="btn btn-primary" onclick="buat();">@if(isset($pembelian)) Simpan perubahan @else Buat Faktur @endif</button>
                                         </div>
                                     </div>
@@ -442,29 +445,26 @@
             $('#list').append(`
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
-                        <select class="form-control" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
-                            <option selected disabled>Pilih produk</option>
+                        <select class="form-control form-control-sm" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
+                            <option selected disabled value="">Pilih produk</option>
                             @foreach ($produk as $v)
                                 <option value="{{ $v->id }}" data-harga_beli="{{ $v->harga_beli }}">{{ $v->nama }}</option>
                             @endforeach
                         </select>
                     </th>
                     <td style="padding: 10px !important;">
-                        <textarea class="form-control" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
+                        <textarea class="form-control form-control-sm" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                     </td>
-                    <td style="padding: 10px !important;"><input type="number" class="form-control" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any" @if(isset($pengiriman)) disabled @endif></td>
-                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onblur="change_harga(${i})" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif></td>
+                    <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any" @if(isset($pengiriman)) disabled @endif></td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onblur="change_harga(${i})" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif></td>
                     <td style="padding: 10px !important;">
-                        <select class="form-control" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
+                        <select class="form-control form-control-sm" id="pajak_${i}" name="pajak[]" onchange="get_pajak(this, ${i})" required @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
                             <option value="0" data-persen="0">Pilih pajak</option>
                             <option value="11" data-persen="11">PPN</option>
                         </select>
                     </td>
-                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif></td>
-                    <td style="padding: 10px !important;">
-                        <a href="javascript:;" onclick="create_row()"><i class="fa fa-plus text-primary"></i></a><br>
-                        <a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a>
-                    </td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="jumlah_${i}" name="jumlah[]" value="0" onblur="change_jumlah(${i})" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif></td>
+                    @if(!isset($pemesanan) || !isset($pengiriman))<td style="padding: 10px !important;"><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>@endif
                 </tr>
             `);
             load_select_2(i);
@@ -487,29 +487,49 @@
         })
 
         $( document ).ready(function() {
+            $('#info_pengiriman').prop('checked', true).trigger("change");
+
+            $('#supplier').selectpicker();
+
+            const fp_transaksi = flatpickr("#tanggal_transaksi", {
+                dateFormat: "d/m/Y" // Contoh format: DD/MM/YYYY
+            });
+            fp_transaksi.setDate(new Date('{{ date("Y-m-d") }}'));
+
+            const fp_jatuh_tempo = flatpickr("#tanggal_jatuh_tempo", {
+                dateFormat: "d/m/Y"
+            });
+            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
             @if(isset($pembelian))
-                $('#supplier').val('{{ $pembelian->id_supplier }}')
+                const sup = $('#supplier')
+                sup.selectpicker('val','{{ $pembelian->id_supplier }}')
+                alamat_supplier(pel[0]).then(function() {
+                    $('#alamat').val('{{ $pembelian->alamat }}');
+                })
                 $('#email').val('{{ $pembelian->email }}')
-                $('#alamat').val('{{ $pembelian->alamat }}')
-                $('#tanggal_transaksi').val('{{ $pembelian->tanggal_transaksi }}')
-                $('#tanggal_jatuh_tempo').val('{{ $pembelian->tanggal_jatuh_tempo }}')
+                $('#detail_alamat').val('{{ $pembelian->detail_alamat }}')
+                fp_transaksi.setDate(new Date('{{ $pembelian->tanggal_transaksi }}'));
+                $('#tanggal_jatuh_tempo').val('{{ $pembelian->tanggal_jatuh_tempo }}');
                 $('#gudang').val('{{ $pembelian->id_gudang }}')
 
-                @if($pembelian->ongkos_kirim > 0)
-                    $('.ongkos_kirim').show();
-                    $('#ongkos_kirim').text(rupiah({{ $pembelian->ongkos_kirim }}));
-                    $('#input_ongkos_kirim').val({{ $pembelian->ongkos_kirim }});
-                @else
-                    $('.ongkos_kirim').hide();
-                @endif
+                $('#kirim_melalui').val('{{ $pembelian->kirim_melalui }}')
+                $('#no_pelacakan').val('{{ $pembelian->no_pelacakan }}')
 
+                $('#pesan').val('{{ $pembelian->pesan }}')
+                $('#memo').val('{{ $pembelian->memo }}')
+
+                @if(isset($pembelian->ongkos_kirim) && $pembelian->ongkos_kirim > 0)
+                $('#ongkos_kirim').text(rupiah('{{ $pembelian->ongkos_kirim }}'));
+                $('#input_ongkos_kirim').val('{{ $pembelian->ongkos_kirim }}');
+                @endif
                 var x = 1;
                 load_select_2(x);
                 @foreach($detail_pembelian as $v)
-                    $('#produk_'+x).val('{{ $v->id_produk }}');
+                    $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
                     $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
                     $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
-                    $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').trigger('keyup');
+                    // $('#harga_satuan_'+x).val('{{ $v->harga_satuan }}').trigger('keyup');
+                    change_harga(x, {{ $v->harga_satuan }});
                     @if($v->pajak != 0)
                         $('#pajak_'+x).val('11').trigger('change');
                     @else
@@ -529,5 +549,24 @@
             $('.form-control').removeAttr('disabled');
         });
         @endif
+
+        function alamat_supplier(thisElement) {
+            var selected = $(thisElement).find('option:selected').val();
+            $('#alamat').empty();
+            return $.ajax({
+                url: '{{ url("supplier/alamat") }}',
+                type: 'GET',
+                data: {
+                    id: selected
+                },
+                success: function (response) {
+                    $('#alamat').append('<option selected disabled hidden value="">Pilih Alamat</option>');
+                    for(var i = 0; i < response.length; i++){
+                        console.log(response[i]);
+                        $('#alamat').append('<option>'+response[i].alamat+'</option>');
+                    }
+                }
+            });
+        }
     </script>
 @endsection
