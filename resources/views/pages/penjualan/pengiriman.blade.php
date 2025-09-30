@@ -56,15 +56,14 @@
                                 </select>
                             </div>
                         </div>
-                        <form method="POST" 
+                        <form method="POST" id="insertForm"
                             @if(isset($pemesanan_pengiriman))
                                 action="{{ url('penjualan/pemesanan').'/pengiriman/'.$penjualan->id }}" 
-                            @elseif(isset($pemesanan)) 
+                            @elseif(isset($pengiriman)) 
                                 action="{{ url('penjualan/pengiriman').'/'.$penjualan->id }}" 
                             @else 
                                 action="{{ url('penjualan/pengiriman') }}"
                             @endif
-                            id="insertForm"
                             enctype="multipart/form-data"
                         >
                             @csrf
@@ -355,10 +354,8 @@
                                     </div>
                                 </div>
                                 <div class="form-group col-sm-3 pr-2">
-                                    <div class="form-group">
-                                        <label for="memo">Memo</label>
-                                        <textarea class="form-control form-control-sm" name="memo" id="memo"></textarea>
-                                    </div>
+                                    <label for="memo">Memo</label>
+                                    <textarea class="form-control form-control-sm" name="memo" id="memo"></textarea>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="row mb-1">

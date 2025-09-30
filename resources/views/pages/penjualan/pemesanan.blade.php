@@ -59,7 +59,7 @@
                         <form method="POST" id="insertForm"
                             @if(isset($penawaran_pemesanan))
                                 action="{{ url('penjualan/penawaran').'/pemesanan/'.$penjualan->id }}"
-                            @elseif(isset($penawaran))
+                            @elseif(isset($pemesanan))
                                 action="{{ url('penjualan/pemesanan').'/'.$penjualan->id }}"
                             @else
                                 action="{{ url('penjualan/pemesanan') }}"
@@ -157,7 +157,7 @@
                                     <label for="detail_alamat">Detail Alamat</label>
                                     <textarea class="form-control form-control-sm" name="detail_alamat" id="detail_alamat" rows="1"></textarea>
                                 </label>
-                                <div class="form-group col-md-3 pr-2"  style="display:none">
+                                <div class="form-group col-md-3 pr-2" style="display:none">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="info_pengiriman" name="info_pengiriman">
                                         <label class="form-check-label" for="info_pengiriman">
@@ -168,8 +168,7 @@
                                 <!-- <div class="form-group col-md-3 d-flex justify-content-end"> -->
                                     <!-- <h1><strong>Total &nbsp; <span id="total_faktur"> Rp 0,00</span></strong></h1> -->
                                 <!-- </div> -->
-                            </div>
-                            
+                            </div>    
                             <div class="form-row">
                                 <div class="form-group info_pengiriman" style="display:none">
                                     <label class="alamat_pengiriman" style="display:none">Alamat Pengiriman</label>
@@ -468,7 +467,6 @@
         var kuantitas_array = [];
 
         function load() {
-
             result_subtotal = 0;
             for (var key in subtotal) {
                 result_subtotal += subtotal[key];
@@ -707,30 +705,6 @@
             load();
         }
 
-        function clear_row(no) {
-            @if(isset($penjualan))
-            $('#produk_penawaran_'+no).val('');
-            $('#produk_'+no).val('').trigger('change');
-            @else
-            @if(isset($produk_penawaran))
-            $('#produk_penawaran_'+no).val('');
-            @else
-            $('#produk_'+no).val('').trigger('change');
-            @endif
-            @endif
-            $('#deskripsi_'+no).val('');
-            $('#kuantitas_'+no).val('');
-            AutoNumeric.set('#harga_satuan_' + no,0);
-            $('#diskon_per_baris_'+no).val("");
-            $('#nilai_diskon_per_baris_'+no).val("");
-            $('#pajak_'+no).val(0).trigger('change');
-            AutoNumeric.set('#jumlah_' + no,0);
-            subtotal[no] = 0;
-            ppn[no] = 0;
-            diskon_per_baris[no] = 0;
-            load();
-        }
-
         function create_row() {
             i++;
             $('#list').append(`
@@ -897,7 +871,6 @@
                         create_row();
                         x++;
                     @endforeach
-                    
                 @endif
                 hapus(x);
             @else
