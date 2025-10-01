@@ -133,7 +133,7 @@ class PembelianController extends Controller
                                                 ->where('jenis','pengiriman')
                                                 ->count();
 
-            if($data['pembelian']->jenis == 'penagihan' && $count_pengiriman > 0){
+            if($data['pembelian']->jenis == 'faktur' && $count_pengiriman > 0){
                 $data['pengiriman'] = Pembelian::where('id_pemesanan',$data['pembelian']->id_pemesanan)
                                                 ->where('jenis','pengiriman')
                                                 ->get();
@@ -592,25 +592,35 @@ class PembelianController extends Controller
             Detail_pembelian::where('id_pembelian',$id)->delete();
             $pembelian->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
+            Log::where('id_transaksi',$id)->delete();
             DB::commit();
             return redirect('pembelian');
         }else if($pembelian->jenis == 'pemesanan'){
-            Detail_pembelian::where('id_pembelian',$pembelian->id)->delete();
+            Detail_pembelian::where('id_pembelian',$id)->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
+            Stok_gudang::where('id_transaksi',$id)->delete();
+            Log::where('id_transaksi',$id)->delete();
             if($pembelian->id_penawaran){
                 $penawaran = Pembelian::find($pembelian->id_penawaran);
-                $penawaran->status = 'open';
-                $penawaran->save();
-                $pembelian->delete();
-                DB::commit();
-                return redirect('pembelian/detail/'.$penawaran->id);
+                if($penawaran){
+                    $penawaran->status = 'open';
+                    $penawaran->id_pemesanan = null;
+                    $penawaran->save();
+                    $pembelian->delete();
+                    DB::commit();
+                    return redirect('pembelian/detail/'.$penawaran->id);
+                }else{
+                    return redirect('pembelian');
+                }
             }else{
                 $pembelian->delete();
                 DB::commit();
                 return redirect('pembelian');
             }
         }else if($pembelian->jenis == 'pengiriman'){
-            //updated
+            Transaksi_produk::where('id_transaksi',$id)->delete();
+            Stok_gudang::where('id_transaksi',$id)->delete();
+            Log::where('id_transaksi',$id)->delete();
             $detail_jurnal = Detail_jurnal::where('id_jurnal',$pembelian->id_jurnal)->get();
             foreach($detail_jurnal as $v){
                 $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
@@ -618,27 +628,29 @@ class PembelianController extends Controller
                 $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
                 $akun_company->save();
             }
-
             Detail_jurnal::where('id_jurnal',$pembelian->id_jurnal)->delete();
             Jurnal::find($pembelian->id_jurnal)->delete();
-
             $detail_pembelian = Detail_pembelian::where('id_pembelian',$pembelian->id)->get();
             foreach($detail_pembelian as $v){
                 $produk = Produk::find($v->id_produk);
                 $produk->stok = $produk->stok - $v->kuantitas;
                 $produk->save();
             }
-
             Detail_pembelian::where('id_pembelian',$pembelian->id)->delete();
-            Transaksi_produk::where('id_transaksi',$id)->delete();
             if($pembelian->id_pemesanan){
                 $pemesanan = Pembelian::find($pembelian->id_pemesanan);
-                $pemesanan->id_pemesanan = null;
-                $pemesanan->status = 'open';
-                $pemesanan->save();
-                $pembelian->delete();
-                DB::commit();
-                return redirect('pembelian/detail/'.$pemesanan->id);
+                if($pemesanan){
+                    $pemesanan->id_pengiriman = null;
+                    $pemesanan->status = 'open';
+                    $pemesanan->save();
+                    $pembelian->delete();
+                    DB::commit();
+                    return redirect('pembelian/detail/'.$pemesanan->id);
+                }else{
+                    $pembelian->delete();
+                    DB::commit();
+                return redirect('pembelian');
+                }
             }else{
                 return redirect('pembelian');
             }
@@ -691,23 +703,51 @@ class PembelianController extends Controller
 
             Detail_pembelian::where('id_pembelian',$pembelian->id)->delete();
             Transaksi_produk::where('id_transaksi',$id)->delete();
-
-            $pengiriman = Pembelian::find($pembelian->id_pemesanan);
             Stok_gudang::where('id_transaksi',$id)->delete();
-            if(isset($pengiriman->id_pemesanan) && $pembelian->jenis == 'faktur'){
-                $pengiriman = Pembelian::find($pengiriman->id_pemesanan);
-                $pengiriman->status = 'open';
+            Log::where('id_transaksi',$id)->delete();
+
+            if($pembelian->id_penawaran){
+                $penawaran = Pembelian::find($pembelian->id_penawaran);
+                $penawaran->id_faktur = null;
+                $penawaran->save();
+            }
+            if($pembelian->id_pemesanan){
+                $pemesanan = Pembelian::find($pembelian->id_pemesanan);
+                $pemesanan->id_faktur = null;
+                $pemesanan->save();
+            }
+            if($pembelian->id_pengiriman){
+                $pengiriman = Pembelian::find($pembelian->id_pengiriman);
+                $pengiriman->id_faktur = null;
                 $pengiriman->save();
-                $pembelian->delete();
-                DB::commit();
-                return redirect('pembelian/detail/'.$pengiriman->id);
+            }
+
+            if(isset($pembelian->id_pengiriman)){
+                $pengiriman = Pembelian::find($pembelian->id_pengiriman);
+                if($pengiriman){
+                    $pengiriman->status = 'open';
+                    $pengiriman->save();
+                    $pembelian->delete();
+                    DB::commit();
+                    return redirect('pembelian/detail/'.$pengiriman->id);
+                }else{
+                    $pembelian->delete();
+                    DB::commit();
+                    return redirect('pembelian');
+                }
             }else if(isset($pembelian->id_pemesanan)){
                 $pemesanan = Pembelian::find($pembelian->id_pemesanan);
-                $pemesanan->status = 'open';
-                $pemesanan->save();
-                $pembelian->delete();
-                DB::commit();
-                return redirect('pembelian/detail/'.$pemesanan->id);
+                if($pemesanan){
+                    $pemesanan->status = 'open';
+                    $pemesanan->save();
+                    $pembelian->delete();
+                    DB::commit();
+                    return redirect('pembelian/detail/'.$pemesanan->id);
+                }else{
+                    $pembelian->delete();
+                    DB::commit();
+                    return redirect('pembelian');
+                }
             }else{
                 $pembelian->delete();
                 DB::commit();

@@ -188,7 +188,7 @@
                                     </div>
                                     <div class="form-group col-md-4">
                                     </div>
-                                    <div class="form-group col-md-4">
+                                    <div class="col-md-4">
                                         <div class="row mb-1">
                                             <div class="col">
                                                 <span>Subtotal</span>
@@ -246,121 +246,210 @@
                                         </div>
                                         @endif
                                     </div>
-                                @endhasallroles
-                            @endif
-                        </div>
-                        <div class="row my-4">
-                            <div class="col-sm-6">
-                                @hasanyrole('pemilik')
-                                <form id="deleteForm" action="{{ url('pembelian/hapus') . '/' . $pembelian->id }}"
-                                    method="post">
-                                    @csrf
-                                    <button type="submit"
-                                        class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
-                                </form>
-                                @endhasallroles
-                            </div>
-                            @if($pembelian->jenis == 'faktur' && $pembelian->status != 'paid')
-                            <div class="col-sm-6 d-flex justify-content-end">
-                                <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
-                                <div class="btn-group dropup">
-                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-                                        aria-expanded="false">
-                                        Tindakan
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <!-- Dropdown menu links -->
-                                        @if($pembelian->jenis == 'faktur')
-                                            <a class="dropdown-item" href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}">Kirim Pembayaran</a>
-                                        @elseif($pembelian->jenis == 'penawaran')
-                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
-                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
-                                        @elseif($pembelian->jenis == 'pemesanan')
-                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
-                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
-                                        @endif
-                                    </div>
                                 </div>
-                            </div>
-                            @else
-                            <div class="col-sm-6 d-flex justify-content-end">
-                                <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
-                                @if($pembelian->jenis == 'penawaran' || $pembelian->jenis == 'pemesanan')
-                                <div class="btn-group dropup mr-2">
-                                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
-                                        aria-expanded="false">
-                                        Cetak
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        @if($pembelian->jenis == 'penawaran')
-                                        <a target="_blank" class="dropdown-item" href="{{ url('pembelian/penawaran/cetak') . '/' . $pembelian->id }}">Cetak Penawaran</a>
-                                        @elseif($pembelian->jenis == 'pemesanan')
-                                        <a target="_blank" class="dropdown-item" href="{{ url('pembelian/pemesanan/cetak') . '/' . $pembelian->id }}">Cetak Pemesanan</a>
-                                        @endif
+                                @endhasallroles
+                                @if(isset($log))
+                                <div class="form-row">
+                                    <div class="form-group col-md-6 pr-2">
+                                        <a href="#" data-toggle="modal" data-target="#logUpdateModal">Terakhir diproses oleh {{ $log->name }} pada {{ date('d F Y h:i:s', strtotime($log->created_at)) }}</a>
                                     </div>
                                 </div>
                                 @endif
-                                <div class="btn-group dropup">
-                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-                                        aria-expanded="false">
-                                        Tindakan
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <!-- Dropdown menu links -->
-                                        @hasanyrole('pemilik')
-                                        @if($pembelian->jenis == 'faktur')
-                                            <a class="dropdown-item" href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}">Terima Pembayaran</a>
-                                        @elseif($pembelian->jenis == 'penawaran')
-                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
-                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
-                                        @elseif($pembelian->jenis == 'pemesanan')
-                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
-                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
-                                        @elseif($pembelian->jenis == 'pengiriman')
-                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis. '/faktur/' . $pembelian->id }}">Buat penagihan</a>
-                                        @endif
-                                        @endhasallroles
-                                        @hasanyrole('pergudangan')
-                                        <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
-                                        @endhasallroles
-                                    </div>
-                                </div>
-                            </div>
                             @endif
-                        </div>
-                        @if(count($pembelian->detail_pembayaran_pembelian) != 0)
-                        <div class="table-responsive">
-                            Pembayaran
-                            <table class="table my-4">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Tanggal</th>
-                                        <th>No.</th>
-                                        <th>Setor Ke</th>
-                                        <th>Cara pembayaran</th>
-                                        <th>Status pembayaran</th>
-                                        <th>Jumlah</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($pembelian->detail_pembayaran_pembelian as $v)
+                            @if(isset($pengiriman))
+                            <div class="table-responsive mt-3" style="display:none">
+                                <div class="row">
+                                    <div class="col">Pengiriman</div>
+                                </div>
+                                <table class="table my-4">
+                                    <thead class="thead-light">
                                         <tr>
-                                            <th>{{ $v->pembayaran_pembelian->tanggal_transaksi }}</th>
+                                            <th>Tgl. pengiriman</th>
+                                            <th>No.</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($pengiriman as $v)
+                                        <tr>
+                                            <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
                                             <td>
                                                 <div>
-                                                    <div class="row"><a href="{{ url('pembelian/receive_payment').'/'.$v->pembayaran_pembelian->id }}">{{ $v->pembayaran_pembelian->no_str }}</a></div>
+                                                    <div class="row"><a
+                                                            href="{{ url('pembelian/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
+                                                    </div>
                                                     <div class="row text-xs">
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>{{ $v->pembayaran_pembelian->setor }}</td>
-                                            <td>{{ $v->pembayaran_pembelian->cara_pembayaran }}</td>
-                                            <td>{{ $v->pembayaran_pembelian->status_pembayaran }}</td>
-                                            <td>{{ $v->jumlah }}</td>
+                                            <td>
+                                                <button class="btn btn-sm 
+                                                @if ($v->status == 'open') btn-warning
+                                                @elseif($v->status == 'partial') btn-info
+                                                @elseif($v->status == 'paid') btn-success
+                                                @elseif($v->status == 'overdue') btn-danger 
+                                                @elseif($v->status == 'closed') btn-dark @endif
+                                                ml-2">
+                                                    {{ $v->status }}
+                                                </button>
+                                            </td>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            @endif
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    @hasanyrole('pemilik')
+                                        @if($pembelian->status == 'draf' || $pembelian->status == 'open')
+                                        <form id="deleteForm" action="{{ url('pembelian/hapus') . '/' . $pembelian->id }}"
+                                            method="post">
+                                            @csrf
+                                            <button type="submit"
+                                                class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
+                                        </form>
+                                        @endif
+                                    @endhasallroles
+                                </div>
+                                @if($pembelian->jenis == 'faktur' && $pembelian->status != 'paid')
+                                <div class="col-sm-6 d-flex justify-content-end">
+                                    <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
+                                    <div class="btn-group dropup mr-2">
+                                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
+                                            aria-expanded="false">
+                                            Cetak
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <!-- Dropdown menu links -->
+                                            @if($pembelian->jenis == 'penagihan')
+                                                <a class="dropdown-item" href="{{ url('pembelian/cetak/penagihan') . '/' . $pembelian->id }}" target="_blank">Cetak Faktur</a>
+                                                <a class="dropdown-item" href="{{ url('pembelian/cetak/surat_jalan') . '/' . $pembelian->id }}" target="_blank">Cetak Surat Jalan</a>
+                                            @elseif($pembelian->jenis == 'penawaran')
+                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/penagihan/' . $pembelian->id }}">Buat Penagihan</a>
+                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
+                                            @elseif($pembelian->jenis == 'pemesanan')
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/penagihan/' . $pembelian->id }}">Buat Penagihan</a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @if($pembelian->status != 'draf' && $pembelian->status != 'closed')
+                                    <div class="btn-group dropup">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                            aria-expanded="false">
+                                            Tindakan
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <!-- Dropdown menu links -->
+                                            @if($pembelian->jenis == 'faktur')
+                                                <a class="dropdown-item" href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}">Kirim Pembayaran</a>
+                                            @elseif($pembelian->jenis == 'penawaran')
+                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
+                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
+                                            @elseif($pembelian->jenis == 'pemesanan')
+                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @endif
+                                </div>
+                                @else
+                                <div class="col-sm-6 d-flex justify-content-end">
+                                    @if($pembelian->status == 'draf' || $pembelian->status == 'open')
+                                    <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
+                                    @endif
+                                    @if($pembelian->jenis == 'penawaran' || $pembelian->jenis == 'pemesanan')
+                                    <div class="btn-group dropup mr-2">
+                                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
+                                            aria-expanded="false">
+                                            Cetak
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            @if($pembelian->jenis == 'penawaran')
+                                            <a target="_blank" class="dropdown-item" href="{{ url('pembelian/penawaran/cetak') . '/' . $pembelian->id }}">Cetak Penawaran</a>
+                                            @elseif($pembelian->jenis == 'pemesanan')
+                                            <a target="_blank" class="dropdown-item" href="{{ url('pembelian/pemesanan/cetak') . '/' . $pembelian->id }}">Cetak Pemesanan</a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @endif
+                                    @if($pembelian->status != 'draf' && $pembelian->status != 'closed')
+                                        @if($pembelian->jenis != 'pengiriman')
+                                        <div class="btn-group dropup">
+                                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                                aria-expanded="false">
+                                                Tindakan
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <!-- Dropdown menu links -->
+                                                @hasanyrole('pemilik')
+                                                @if($pembelian->jenis == 'faktur')
+                                                    <a class="dropdown-item" href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}">Terima Pembayaran</a>
+                                                @elseif($pembelian->jenis == 'penawaran')
+                                                    <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
+                                                    <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
+                                                @elseif($pembelian->jenis == 'pemesanan')
+                                                    <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                                    <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Penagihan</a>
+                                                @elseif($pembelian->jenis == 'pengiriman')
+                                                    <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis. '/faktur/' . $pembelian->id }}">Buat penagihan</a>
+                                                @endif
+                                                @endhasallroles
+                                                @hasanyrole('pergudangan')
+                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                                @endhasallroles
+                                            </div>
+                                        </div>
+                                        @else
+                                        <a class="btn btn-outline-primary" href="{{ url('pembelian/cetak/surat_jalan') . '/' . $pembelian->id }}" target="_blank">Cetak Surat Jalan</a>
+                                        <a href="{{ url('pembelian').'/pengiriman/penagihan/'.$pembelian->id }}" class="btn btn-primary">Buat penagihan</a>
+                                        @endif
+                                    @endif
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        @if(count($pembelian->detail_pembayaran_pembelian) != 0)
+                        <div class="row my-4">
+                            <div class="col">
+                                Pembayaran
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="table-responsive">
+                                    <table class="table my-4">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Tanggal</th>
+                                                <th>No.</th>
+                                                <th>Setor Ke</th>
+                                                <th>Cara pembayaran</th>
+                                                <th>Status pembayaran</th>
+                                                <th>Jumlah</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($pembelian->detail_pembayaran_pembelian as $v)
+                                                <tr>
+                                                    <th>{{ $v->pembayaran_pembelian->tanggal_transaksi }}</th>
+                                                    <td>
+                                                        <div>
+                                                            <div class="row"><a href="{{ url('pembelian/receive_payment').'/'.$v->pembayaran_pembelian->id }}">{{ $v->pembayaran_pembelian->no_str }}</a></div>
+                                                            <div class="row text-xs">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>{{ $v->pembayaran_pembelian->setor }}</td>
+                                                    <td>{{ $v->pembayaran_pembelian->cara_pembayaran }}</td>
+                                                    <td><button class="btn btn-sm btn-success">{{ $v->pembayaran_pembelian->status_pembayaran }}</button></td>
+                                                    <td>Rp {{ number_format($v->jumlah, 2, ',', '.') }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                         @endif
                         @if(isset($faktur) && count($faktur) > 0)

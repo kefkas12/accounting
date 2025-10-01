@@ -311,7 +311,7 @@
                                     </div>
                                     <div class="form-group col-md-4">
                                     </div>
-                                    <div class="form-group col-md-4">
+                                    <div class="col-md-4">
                                         <div class="row mb-1">
                                             <div class="col">
                                                 <span>Subtotal</span>
@@ -443,7 +443,6 @@
                                 @if($penjualan->jenis == 'penagihan' && $penjualan->status != 'paid')
                                 <div class="col-sm-6 d-flex justify-content-end">
                                     <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
-                                    <a href="#" class="btn btn-outline-primary">Upload</a>
                                     <div class="btn-group dropup mr-2">
                                         <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
                                             aria-expanded="false">
@@ -505,29 +504,29 @@
                                     </div>
                                     @endif
                                     @if($penjualan->status != 'draf' && $penjualan->status != 'closed')
-                                    @if($penjualan->jenis != 'pengiriman')
-                                    <div class="btn-group dropup">
-                                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-                                            aria-expanded="false">
-                                            Tindakan
-                                        </button>
-                                        <div class="dropdown-menu">
-                                            <!-- Dropdown menu links -->
-                                            @if($penjualan->jenis == 'penagihan')
-                                                <a class="dropdown-item" href="{{ url('penjualan/pembayaran') . '/' . $penjualan->id }}">Terima Pembayaran</a>
-                                            @elseif($penjualan->jenis == 'penawaran')
+                                        @if($penjualan->jenis != 'pengiriman')
+                                        <div class="btn-group dropup">
+                                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                                aria-expanded="false">
+                                                Tindakan
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <!-- Dropdown menu links -->
+                                                @if($penjualan->jenis == 'penagihan')
+                                                    <a class="dropdown-item" href="{{ url('penjualan/pembayaran') . '/' . $penjualan->id }}">Terima Pembayaran</a>
+                                                @elseif($penjualan->jenis == 'penawaran')
+                                                    <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
+                                                    <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pemesanan/' . $penjualan->id }}">Buat Pemesanan</a>
+                                                @elseif($penjualan->jenis == 'pemesanan')
+                                                <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pengiriman/' . $penjualan->id }}">Buat Pengiriman</a>
                                                 <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
-                                                <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pemesanan/' . $penjualan->id }}">Buat Pemesanan</a>
-                                            @elseif($penjualan->jenis == 'pemesanan')
-                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pengiriman/' . $penjualan->id }}">Buat Pengiriman</a>
-                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
-                                            @endif
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
-                                    @else
-                                    <a class="btn btn-outline-primary" href="{{ url('penjualan/cetak/surat_jalan') . '/' . $penjualan->id }}" target="_blank">Cetak Surat Jalan</a>
-                                    <a href="{{ url('penjualan').'/pengiriman/penagihan/'.$penjualan->id }}" class="btn btn-primary">Buat penagihan</a>
-                                    @endif
+                                        @else
+                                        <a class="btn btn-outline-primary" href="{{ url('penjualan/cetak/surat_jalan') . '/' . $penjualan->id }}" target="_blank">Cetak Surat Jalan</a>
+                                        <a href="{{ url('penjualan').'/pengiriman/penagihan/'.$penjualan->id }}" class="btn btn-primary">Buat penagihan</a>
+                                        @endif
                                     @endif
                                 </div>
                                 @endif
@@ -541,7 +540,6 @@
                             </div>
                             <div class="col-sm-12">
                                 <div class="table-responsive">
-                                    
                                     <table class="table my-4">
                                         <thead class="thead-light">
                                             <tr>
@@ -629,8 +627,6 @@
                             </div>
                         </div>
                         @endif
-                    </div>
-                        
                     </div>
                 </div>
             </div>

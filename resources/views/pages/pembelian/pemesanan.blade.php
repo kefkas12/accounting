@@ -322,16 +322,27 @@
             //     }
             // });
             
-            new AutoNumeric("#harga_satuan_" + id, {
+            const harga_satuan_autonumeric_${id} = new AutoNumeric("#harga_satuan_" + id, {
                 commaDecimalCharDotSeparator: true,
                 watchExternalChanges: true,
                 modifyValueOnWheel : false
             });
-            new AutoNumeric("#jumlah_" + id, {
+            const jumlah_autonumeric_${id} = new AutoNumeric("#jumlah_" + id, {
                 commaDecimalCharDotSeparator: true,
                 watchExternalChanges: true,
                 modifyValueOnWheel : false
             });
+
+            // Kunci fitur remove/unformat
+            harga_satuan_autonumeric_${id}.remove = function() {
+                console.warn("Remove is locked!");
+                return this;
+            };
+
+            jumlah_autonumeric_${id}.remove = function() {
+                console.warn("Remove is locked!");
+                return this;
+            };
         }
 
         function get_data(thisElement, no) {

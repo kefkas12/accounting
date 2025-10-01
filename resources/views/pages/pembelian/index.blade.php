@@ -252,7 +252,7 @@
         let pengirimanTable = new DataTable('#pengirimanTable', {
                                 columnDefs: [
                                     {
-                                        target: 4,
+                                        target: 3,
                                         visible: false
                                     }
                                 ]

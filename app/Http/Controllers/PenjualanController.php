@@ -1064,7 +1064,6 @@ class PenjualanController extends Controller
                     DB::commit();
                     return redirect('penjualan');
                 }
-                
             }else if(isset($penjualan->id_pemesanan)){
                 $pemesanan = Penjualan::find($penjualan->id_pemesanan);
                 if($pemesanan){
@@ -1078,7 +1077,6 @@ class PenjualanController extends Controller
                     DB::commit();
                     return redirect('penjualan');
                 }
-                
             }else{
                 $penjualan->delete();
                 DB::commit();
