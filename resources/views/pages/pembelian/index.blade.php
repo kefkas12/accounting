@@ -2,6 +2,7 @@
 
 @section('content')
     @include('layouts.headers.cards')
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.1/css/dataTables.dataTables.css" />
     <!-- Page content -->
     <div class="mt--6">
         <!-- Dark table -->
@@ -9,23 +10,21 @@
             <div class="col">
                 <div class="card mb-5">
                     <div class="card-header border-0" style="padding: 1rem 0.5rem">
-                        <div class="row mb-3">
+                        <div class="row mb-3 pb-3" style="border-bottom: 1px solid rgb(199, 206, 215);">
                             <div class="col">
-                                <b>Pembelian</b>
+                                <h2 class="text-primary"><strong>Pembelian</strong></h2>
                             </div>
                             <div class="col d-flex justify-content-end">
-                                <div class="input-group-prepend">
-                                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Buat pembelian</button>
-                                    <div class="dropdown-menu">
-                                      <a class="dropdown-item" href="{{ url('pembelian/faktur') }}">Faktur Pembelian</a>
-                                      <a class="dropdown-item" href="{{ url('pembelian/pemesanan') }}">Pemesanan Pembelian</a>
-                                      <a class="dropdown-item" href="{{ url('pembelian/penawaran') }}" hidden>Penawaran Pembelian</a>
-                                    </div>
-                                  </div>
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Buat pembelian</button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{{ url('pembelian/faktur') }}">Faktur Pembelian</a>
+                                    <a class="dropdown-item" href="{{ url('pembelian/pemesanan') }}">Pemesanan Pembelian</a>
+                                    <a class="dropdown-item" href="{{ url('pembelian/penawaran') }}" hidden>Penawaran Pembelian</a>
+                                </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-3" style="padding-right: 0px !important;">
+                            <div class="col" style="padding-right: 0px !important;">
                                 <div class="card border-warning">
                                     <div class="card-header border-warning" style="padding: 0.5rem 0.75rem !important;background:#FBF3DD;">
                                         Belum dibayar
@@ -35,7 +34,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-3" style="padding-right: 0px !important;">
+                            <div class="col" style="padding-right: 0px !important;">
                                 <div class="card border-danger">
                                     <div class="card-header border-danger"  style="padding: 0.5rem 0.75rem !important; background:#FDECEE;">
                                         Telat dibayar
@@ -45,7 +44,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-3" style="padding-right: 0px !important;">
+                            <div class="col" style="padding-right: 0px !important;">
                                 <div class="card border-success">
                                     <div class="card-header border-success" style="padding: 0.5rem 0.75rem !important; background:#E8F5EB;">
                                         Pelunasan 30 hari terakhir
@@ -55,7 +54,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-3" style="padding-right: 0px !important;">
+                            <div class="col" style="padding-right: 0px !important;">
                             </div>
                         </div>
                     </div>
@@ -81,7 +80,7 @@
                             <div class="tab-pane fade @if(!auth()->user()->hasRole('pergudangan')) show active @endif" id="nav-faktur-pembelian" role="tabpanel"
                                 aria-labelledby="nav-faktur-pembelian-tab">
                                 <div class="table-responsive">
-                                    <table class="table align-items-center table-flush">
+                                    <table class="table align-items-center table-flush" id="fakturTable">
                                         <thead >
                                             <tr>
                                                 <th scope="col">Tanggal</th>
@@ -120,7 +119,7 @@
                             <div class="tab-pane fade @if(auth()->user()->hasRole('pergudangan')) show active @endif" id="nav-pengiriman" role="tabpanel"
                                 aria-labelledby="nav-pengiriman-tab">
                                 <div class="table-responsive">
-                                    <table class="table align-items-center table-flush">
+                                    <table class="table align-items-center table-flush" id="pengirimanTable">
                                         <thead >
                                             <tr>
                                                 <th scope="col">Tanggal</th>
@@ -153,7 +152,7 @@
                             <div class="tab-pane fade" id="nav-pemesanan-pembelian" role="tabpanel"
                                 aria-labelledby="nav-pemesanan-pembelian-tab">
                                 <div class="table-responsive">
-                                    <table class="table align-items-center table-flush">
+                                    <table class="table align-items-center table-flush" id="pemesananTable">
                                         <thead >
                                             <tr>
                                                 <th scope="col">Tanggal</th>
@@ -192,7 +191,7 @@
                             <div hidden class="tab-pane fade" id="nav-penawaran-pembelian" role="tabpanel"
                                 aria-labelledby="nav-penawaran-pembelian-tab">
                                 <div class="table-responsive">
-                                    <table class="table align-items-center table-flush">
+                                    <table class="table align-items-center table-flush" id="penawaranTable">
                                         <thead >
                                             <tr>
                                                 <th scope="col">Tanggal</th>
@@ -232,6 +231,40 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
     <script>
+        let penawaranTable = new DataTable('#penawaranTable', {
+                                columnDefs: [
+                                    {
+                                        target: 6,
+                                        visible: false
+                                    }
+                                ]
+                            });
+        let pemesananTable = new DataTable('#pemesananTable', {
+                                columnDefs: [
+                                    {
+                                        target: 6,
+                                        visible: false
+                                    }
+                                ]
+                            });
+        let pengirimanTable = new DataTable('#pengirimanTable', {
+                                columnDefs: [
+                                    {
+                                        target: 4,
+                                        visible: false
+                                    }
+                                ]
+                            });
+        let fakturTable = new DataTable('#fakturTable', {
+                                columnDefs: [
+                                    {
+                                        target: 7,
+                                        visible: false
+                                    }
+                                ]
+                            });
+
     </script>
 @endsection
