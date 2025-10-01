@@ -68,7 +68,47 @@
                             enctype="multipart/form-data"
                         >
                             @csrf
-                            <div class="form-row border-bottom mb-3">
+                            @if(isset($pengiriman))
+                            <div class="form-row border-bottom border-top border-left border-right text-center pt-3 mb-3">
+                                @if(isset($pengiriman))
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        <label>No Pengiriman</label> <br>
+                                        <a href="{{ url('pembelian/detail').'/'.$pembelian->id }}">{{ $pembelian->no_str }}</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        <label>No Pemesanan</label> <br>
+                                        <a href="{{ url('pembelian/detail').'/'.$pembelian->id_pemesanan }}">{{ $pembelian->no_str_pemesanan }}</a>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        <label>Gudang</label> <br>
+                                        <span>{{ $pembelian->nama_gudang }}</span>
+                                    </div>
+                                </div>
+                                @elseif(isset($pemesanan))
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        <label>No Pemesanan</label> <br>
+                                        <a href="{{ url('pembelian/detail').'/'.$pembelian->id }}">{{ $pembelian->no_str }}</a>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                            @elseif(isset($pemesanan))
+                            <div class="form-row border-bottom border-top border-left border-right text-center pt-3 mb-3">
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        <label>No Pemesanan</label> <br>
+                                        <a href="{{ url('pembelian/detail').'/'.$pembelian->id }}">{{ $pembelian->no_str }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
+                            <div class="form-row">
                                 <div class="form-group col-md-3 pr-2">
                                     <label for="supplier">Supplier <span class="text-danger">*</span></label>
                                     <select class="selectpicker form-control form-control-sm" data-live-search="true" title="Pilih Supplier" id="supplier" name="supplier" onchange="alamat_supplier(this)" required @if(isset($pembelian)) disabled @endif>
@@ -127,52 +167,39 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-md-3 pr-2">
-                                    <div class="form-group">
-                                        <label for="alamat">Alamat Penagihan</label><br>
-                                        <textarea class="form-control form-control-sm" name="alamat" id="alamat" rows="1"></textarea>
-                                    </div>
-                                    
+                                <div class="form-group col-md-2 pr-2" style="display:none">
+                                        <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
+                                        <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo" 
+                                            name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
+                                </div>
+                                <div class="form-group col-md-3 pr-2" style="display:none">
+                                    <label for="gudang">Gudang</label>
+                                    <select class="form-control form-control-sm" id="gudang" name="gudang" @if(isset($pengiriman)) disabled @endif>
+                                        @if(Auth::user()->id_gudang)
+                                            @foreach($gudang as $v)
+                                            <option value="{{ $v->id }}" selected>{{ $v->nama }}</option>
+                                            @endforeach
+                                        @else
+                                            <option selected disabled hidden>Pilih Gudang</option>
+                                            @if(isset($gudang))
+                                            @foreach($gudang as $v)
+                                            <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                            @endforeach
+                                            @else
+                                            <option disabled>No result found</option>
+                                            @endif
+                                        @endif
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
+                                    <label for="kirim_melalui">Kirim melalui</label>
+                                    <input type="text" class="form-control form-control-sm" id="kirim_melalui" name="kirim_melalui">
+                                </div>
+                                <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
+                                    <label for="no_pelacakan">No. pelacakan</label>
+                                    <input type="text" class="form-control form-control-sm" id="no_pelacakan" name="no_pelacakan">
                                 </div>
                                 
-                                <div class="col-md-2">
-                                    <div class="form-group pr-4">
-                                        <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
-                                        <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo" name="tanggal_jatuh_tempo" value="{{ date('Y-m-d', strtotime("+30 days")) }}">
-                                    </div>
-                                </div>
-                                <div class="col-md-2 info_pengiriman" style="display:none">
-                                    <div class="form-group pr-4">
-                                        <label for="kirim_melalui">Kirim melalui</label>
-                                        <input type="text" class="form-control form-control-sm" id="kirim_melalui"
-                                            name="kirim_melalui">
-                                    </div>
-                                    <div class="form-group pr-4">
-                                        <label for="no_pelacakan">No. pelacakan</label>
-                                        <input type="text" class="form-control form-control-sm" id="no_pelacakan" name="no_pelacakan">
-                                    </div>
-                                </div>
-                                <div class="col-md-2 pr-4">
-                                    <div class="form-group">
-                                        <label for="gudang">Gudang</label>
-                                        <select class="form-control" id="gudang" name="gudang" @if(isset($pengiriman)) disabled @endif>
-                                            @if(Auth::user()->id_gudang)
-                                                @foreach($gudang as $v)
-                                                <option value="{{ $v->id }}" selected>{{ $v->nama }}</option>
-                                                @endforeach
-                                            @else
-                                                <option selected disabled hidden>Pilih Gudang</option>
-                                                @if(isset($gudang))
-                                                @foreach($gudang as $v)
-                                                <option value="{{ $v->id }}">{{ $v->nama }}</option>
-                                                @endforeach
-                                                @else
-                                                <option disabled>No result found</option>
-                                                @endif
-                                            @endif
-                                        </select>
-                                    </div>
-                                </div>                                
                                 <div class="form-group col-md-3 pr-4">
                                     @if(isset($pemesanan))
                                     <label for="nomor_pemesanan_pembelian">No Pemesanan Pembelian</label> <br>
@@ -192,7 +219,7 @@
                                             <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Harga Satuan</th>
                                             <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Pajak</th>
                                             <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Jumlah</th>
-                                            @if(!isset($pemesanan))<th scope="col" style="min-width: 50px !important;"></th>@endif
+                                            @if(!isset($pemesanan))<th scope="col" style="min-width: 50px !important;padding: 10px !important;"></th>@endif
                                         </tr>
                                     </thead>
                                     <tbody id="list">
@@ -355,7 +382,8 @@
         function load_select_2(id) {
             $("#produk_" + id).select2({
                 allowClear: true,
-                placeholder: 'Pilih produk'
+                placeholder: 'Pilih produk',
+                width: '100px'
             });
             // $('#produk_'+id).on('select2:select', function (e) {
             //     if(id >= x){
@@ -471,11 +499,11 @@
         };
 
         $("#info_pengiriman").change(function() {
-            if(this.checked) {
-                $('.info_pengiriman').show();
-            }else{
+            // if(this.checked) {
+                // $('.info_pengiriman').show();
+            // }else{
                 $('.info_pengiriman').hide();
-            }
+            // }
         });
 
         $('#sama_dengan_penagihan').change(function() {
@@ -503,7 +531,7 @@
             @if(isset($pembelian))
                 const sup = $('#supplier')
                 sup.selectpicker('val','{{ $pembelian->id_supplier }}')
-                alamat_supplier(pel[0]).then(function() {
+                alamat_supplier(sup[0]).then(function() {
                     $('#alamat').val('{{ $pembelian->alamat }}');
                 })
                 $('#email').val('{{ $pembelian->email }}')

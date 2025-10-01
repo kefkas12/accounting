@@ -190,6 +190,7 @@ class Pembelian extends Model
         $log->id_user = Auth::user()->id;
         $log->id_transaksi = $this->id;
         $log->transaksi = 'pembelian';
+        $log->aksi = 'insert';
         $log->save();
     }
 

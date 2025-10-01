@@ -112,6 +112,15 @@
                                     </div>
                                 </div>
                             </div>
+                            @elseif(isset($pemesanan))
+                            <div class="form-row border-bottom border-top border-left border-right text-center pt-3 mb-3">
+                                <div class="col-md-3 border-right">
+                                    <div class="form-group">
+                                        <label>No Pemesanan</label> <br>
+                                        <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
+                                    </div>
+                                </div>
+                                </div>
                             @endif
                             <div class="form-row">
                                 <div class="form-group col-md-3 pr-2">
@@ -192,8 +201,7 @@
                                 </div>
                                 <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
                                     <label for="kirim_melalui">Kirim Melalui</label>
-                                    <input type="text" class="form-control form-control-sm" id="kirim_melalui"
-                                        name="kirim_melalui">
+                                    <input type="text" class="form-control form-control-sm" id="kirim_melalui" name="kirim_melalui">
                                 </div>
                                 <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
                                     <label for="no_pelacakan">No. Pelacakan</label>

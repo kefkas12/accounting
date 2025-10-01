@@ -13,6 +13,7 @@ use App\Models\Detail_pembelian;
 use App\Models\Gudang;
 use App\Models\Jurnal;
 use App\Models\Kontak;
+use App\Models\Log;
 use App\Models\Pembayaran_pembelian;
 use App\Models\Pembelian;
 use App\Models\Pengaturan_dokumen;
@@ -79,30 +80,82 @@ class PembelianController extends Controller
     }
     public function detail($id)
     {
-        $data['sidebar'] = 'pembelian';
-        $data['pembelian'] = Pembelian::with([
-                                            'detail_pembelian.produk',
-                                            'detail_pembayaran_pembelian' => function ($query){
-                                                $query->orderBy('detail_pembayaran_pembelian.id_pembayaran_pembelian','desc');
-                                            },
-                                            'penawaran' => function ($query){
-                                                $query->select('id', 'no_str');
-                                            },
-                                            'pemesanan' => function ($query){
-                                                $query->select('id', 'no_str');
-                                            }
-                                            ])
-                                        ->leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
-                                        ->leftJoin('pembelian as pemesanan', 'pembelian.id_pemesanan', '=', 'pemesanan.id')
-                                        ->select('pembelian.*','kontak.nama as nama_supplier')
-                                        ->where('pembelian.id',$id)
-                                        ->where('pembelian.id_company',Auth::user()->id_company)
-                                        ->first();
-        $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
-                                        ->leftJoin('pembelian','jurnal.id','=','pembelian.id_jurnal')
-                                        ->select('jurnal.*')
-                                        ->where('pembelian.id',$id)
-                                        ->first();
+        // Cari data pembelian berdasarkan ID
+        $pembelian = Pembelian::findOrFail($id);
+
+        if ($pembelian->id_company !== Auth::user()->id_company) {
+            abort(403, 'Unauthorized action.');
+        }else{
+            $data['sidebar'] = 'pembelian';
+            $data['pembelian'] = Pembelian::with([
+                                                'detail_pembelian.produk',
+                                                'detail_pembelian.stok_gudang',
+                                                'detail_pembayaran_pembelian' => function ($query){
+                                                    $query->orderBy('detail_pembayaran_pembelian.id_pembayaran_pembelian','desc');
+                                                },
+                                                'penawaran' => function ($query){
+                                                    $query->select('id', 'no_str');
+                                                },
+                                                'pemesanan' => function ($query){
+                                                    $query->select('id', 'no_str');
+                                                },
+                                                'pengiriman' => function ($query){
+                                                    $query->select('id', 'no_str');
+                                                }
+                                                ])
+                                            ->leftJoin('kontak','pembelian.id_supplier','=','kontak.id')
+                                            ->leftJoin('pembelian as pemesanan', 'pembelian.id_pemesanan', '=', 'pemesanan.id')
+                                            ->leftJoin('pembelian as pengiriman', 'pembelian.id_pengiriman', '=', 'pengiriman.id')
+                                            ->select('pembelian.*','kontak.nama as nama_supplier')
+                                            ->where('pembelian.id',$id)
+                                            ->where('pembelian.id_company',Auth::user()->id_company)
+                                            ->first();
+            
+            if($data['pembelian']->jenis == 'pemesanan'){
+                $data['faktur'] = Pembelian::where('id_pemesanan',$id)
+                                                ->where('jenis','faktur')
+                                                ->get();
+            }
+
+            if($data['pembelian']->jenis == 'pengiriman'){
+                if(Auth::user()->id_gudang){
+                    $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
+                                            ->get();
+                }else{
+                    $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                            ->get();
+                }
+                $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                                ->get();
+            }
+
+            $count_pengiriman = Pembelian::where('id_pemesanan',$data['pembelian']->id_pemesanan)
+                                                ->where('jenis','pengiriman')
+                                                ->count();
+
+            if($data['pembelian']->jenis == 'penagihan' && $count_pengiriman > 0){
+                $data['pengiriman'] = Pembelian::where('id_pemesanan',$data['pembelian']->id_pemesanan)
+                                                ->where('jenis','pengiriman')
+                                                ->get();
+            }
+
+            $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                                            ->leftJoin('pembelian','jurnal.id','=','pembelian.id_jurnal')
+                                            ->select('jurnal.*')
+                                            ->where('pembelian.id',$id)
+                                            ->first();
+            $data['log'] = Log::leftJoin('users','id_user','=','users.id')
+                                ->select('log.*','users.name')
+                                ->where('log.id_transaksi',$id)
+                                ->orderBy('log.id','DESC')
+                                ->first();
+
+            $data['status_update'] = Log::leftJoin('users','id_user','=','users.id')
+                                ->select('log.*','users.name','users.email')
+                                ->where('log.id_transaksi',$id)
+                                ->orderBy('log.id','DESC')
+                                ->get();
+        }
         return view('pages.pembelian.detail', $data);
     }
 
@@ -292,6 +345,10 @@ class PembelianController extends Controller
             $data['pembelian'] = Pembelian::join('kontak','id_supplier','=','kontak.id')
                                             ->select('pembelian.*','kontak.nama')->where('pembelian.id',$id)->first();
             $data['detail_pembelian'] = Detail_pembelian::join('produk','detail_pembelian.id_produk','=','produk.id')
+                                                        ->select('detail_pembelian.*','produk.unit')
+                                                        ->where('detail_pembelian.id_pembelian',$id)
+                                                        ->get();
+            $data['detail_pemesanan'] = Detail_pembelian::join('produk','detail_pembelian.id_produk','=','produk.id')
                                                         ->select('detail_pembelian.*','produk.unit')
                                                         ->where('detail_pembelian.id_pembelian',$id)
                                                         ->get();

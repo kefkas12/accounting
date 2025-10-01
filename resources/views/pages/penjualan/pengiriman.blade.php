@@ -116,7 +116,7 @@
                                     <input type="email" class="form-control form-control-sm" id="email" name="email">
                                 </div>
                                 <div class="form-group col-md-3 pr-4">
-                                    <label for="tanggal_transaksi">Tgl. transaksi</label>
+                                    <label for="tanggal_transaksi">Tgl. Transaksi</label>
                                     <input type="date" class="form-control form-control-sm" id="tanggal_transaksi" 
                                         name="tanggal_transaksi" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
                                 </div>
@@ -151,7 +151,7 @@
                                     </label>
                                 </div>
                                 <div class="form-group col-md-2 pr-2" style="display:none">
-                                    <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
+                                    <label for="tanggal_jatuh_tempo">Tgl. Jatuh Tempo</label>
                                     <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
                                         name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                 </div>
@@ -170,25 +170,19 @@
                                     </select>
                                 </div>
                                 @endif
-                                <div class="col-md-3 pr-2" style="display:none">
-                                    <div class="form-group info_pengiriman" style="display:none">
-                                        <label for="tanggal_pengiriman">Tgl. Pengiriman</label>
-                                        <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
-                                            name="tanggal_pengiriman" style="background-color: #ffffff !important;">
-                                    </div>
+                                <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
+                                    <label for="tanggal_pengiriman">Tgl. Pengiriman</label>
+                                    <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
+                                        name="tanggal_pengiriman" style="background-color: #ffffff !important;">
                                 </div>
-                                <div class="col-md-3 pr-2 info_pengiriman" style="display:none">
-                                    <div class="form-group">
-                                        <label for="kirim_melalui">Kirim Melalui</label>
-                                        <input type="text" class="form-control form-control-sm" id="kirim_melalui"
-                                            name="kirim_melalui">
-                                    </div>
+                                <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
+                                    <label for="kirim_melalui">Kirim Melalui</label>
+                                    <input type="text" class="form-control form-control-sm" id="kirim_melalui"
+                                        name="kirim_melalui">
                                 </div>
-                                <div class="col-md-3 pr-2 info_pengiriman" style="display:none">
-                                    <div class="form-group">
-                                        <label for="no_pelacakan">No. Pelacakan</label>
-                                        <input type="text" class="form-control form-control-sm" id="no_pelacakan" name="no_pelacakan">
-                                    </div>
+                                <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
+                                    <label for="no_pelacakan">No. Pelacakan</label>
+                                    <input type="text" class="form-control form-control-sm" id="no_pelacakan" name="no_pelacakan">
                                 </div>
                             </div>
                             @if(isset($detail_pemesanan))

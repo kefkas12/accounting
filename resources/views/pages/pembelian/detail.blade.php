@@ -66,8 +66,8 @@
                             <div class="form-group col-md-2">@if ($jurnal) Jurnal <br> <a href="#" data-toggle="modal" data-target="#jurnalEntryModal">Lihat Jurnal Entry</a> @endif </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-sm-2">Kirim melalui <br> @if($pembelian->kirim_melalui)<strong>{{ $pembelian->kirim_melalui }}</strong>@else <strong> - </strong> @endif</div>
-                            <div class="form-group col-sm-2">No. pelacakan <br> @if($pembelian->no_pelacakan)<strong>{{ $pembelian->no_pelacakan }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-sm-2">Kirim Melalui <br> @if($pembelian->kirim_melalui)<strong>{{ $pembelian->kirim_melalui }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-sm-2">No. Pelacakan <br> @if($pembelian->no_pelacakan)<strong>{{ $pembelian->no_pelacakan }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-sm-2"></div>
                             <div class="form-group col-sm-2"></div>
                             <div class="form-group col-sm-2"></div>
@@ -363,7 +363,7 @@
                             </table>
                         </div>
                         @endif
-                        @if(isset($faktur))
+                        @if(isset($faktur) && count($faktur) > 0)
                         <div class="table-responsive">
                             Faktur Pembelian
                             <table class="table my-4">
@@ -415,11 +415,11 @@
     </div>
     <!-- Modal -->
     @if ($jurnal)
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="jurnalEntryModal" tabindex="-1" aria-labelledby="jurnalEntryModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">{{ $jurnal->no_str }}</h5>
+                    <h5 class="modal-title" id="jurnalEntryModalLabel">{{ $jurnal->no_str }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -461,6 +461,41 @@
         </div>
     </div>
     @endif
+    <div class="modal fade" id="logUpdateModal" tabindex="-1" aria-labelledby="logUpdateModalLabel" aria-hidden="true">
+        <div class="modal-dialog @if($pembelian->status != 'draf') modal-lg @else modal-sm text-center @endif">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logUpdateModalLabel">Log Update</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">User</th>
+                                <th scope="col">Tanggal</th>
+                                <th scope="col">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($status_update as $v)
+                                <tr>
+                                    <td>
+                                        <h6 class="mb-0 text-xs username"><a href="#">{{ $v->name }}</a></h6>
+                                        <p class="text-xs mb-0 email">{{ $v->email }}</p>
+                                    </td>
+                                    <td>{{ date('d M Y H:i:s', strtotime($v->created_at)) }}</td>
+                                    <td>{{ $v->aksi }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         function confirmDelete(event) {
             event.preventDefault();

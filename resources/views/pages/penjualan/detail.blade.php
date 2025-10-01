@@ -66,9 +66,8 @@
                         <div class="form-row">
                             <div class="form-group col-md-2">No RFQ <br> @if($penjualan->no_rfq)<strong>{{ $penjualan->no_rfq }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-md-2">PIC <br> @if($penjualan->pic)<strong>{{ $penjualan->pic }}</strong>@else <strong> - </strong> @endif</div>
-                            <div class="form-group col-md-2">Kirim melalui <br> @if($penjualan->kirim_melalui)<strong>{{ $penjualan->kirim_melalui }}</strong>@else <strong> - </strong> @endif</div>
-                            <div class="form-group col-md-2">No. pelacakan <br> @if($penjualan->no_pelacakan)<strong>{{ $penjualan->no_pelacakan }}</strong>@else <strong> - </strong> @endif</div>
-                            
+                            <div class="form-group col-md-2">Kirim Melalui <br> @if($penjualan->kirim_melalui)<strong>{{ $penjualan->kirim_melalui }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-md-2">No. Pelacakan <br> @if($penjualan->no_pelacakan)<strong>{{ $penjualan->no_pelacakan }}</strong>@else <strong> - </strong> @endif</div>
                         </div>
                         @if($penjualan->jenis != 'penawaran')
                         <div class="form-row" style="display:none">
@@ -586,7 +585,6 @@
                             </div>
                             <div class="col-sm-12">
                                 <div class="table-responsive">
-                                    
                                     <table class="table my-4">
                                         <thead class="thead-light">
                                             <tr>
@@ -754,7 +752,7 @@
                                         <h6 class="mb-0 text-xs username"><a href="#">{{ $v->name }}</a></h6>
                                         <p class="text-xs mb-0 email">{{ $v->email }}</p>
                                     </td>
-                                    <td>{{ $v->created_at }}</td>
+                                    <td>{{ date('d M Y H:i:s', strtotime($v->created_at)) }}</td>
                                     <td>{{ $v->aksi }}</td>
                                 </tr>
                             @endforeach
