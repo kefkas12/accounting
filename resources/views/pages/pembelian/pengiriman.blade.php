@@ -49,10 +49,9 @@
                             </div>
                             <div class="form-group col-md-3 pr-2">
                                 <select class="form-control" onchange="location = this.value;" @if(isset($pemesanan)) disabled @endif>
-                                    <option selected disabled hidden>Pengiriman Penjualan</option>
-                                    <option value="{{ url('pembelian/penagihan') }}">Penagihan Penjualan</option>
-                                    <option value="{{ url('pembelian/penawaran') }}">Penawaran Penjualan</option>
-                                    <option value="{{ url('pembelian/pemesanan') }}">Pemesanan Penjualan</option>
+                                    <option selected disabled hidden>Pengiriman Pembelian</option>
+                                    <option value="{{ url('pembelian/faktur') }}">Faktur Pembelian</option>
+                                    <option value="{{ url('pembelian/pemesanan') }}">Pemesanan Pembelian</option>
                                 </select>
                             </div>
                         </div>
@@ -80,7 +79,10 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 border-right">
-
+                                    <div class="form-group">
+                                        <label>Gudang</label> <br>
+                                        <span>{{ $pembelian->nama_gudang }}</span>
+                                    </div>
                                 </div>
                                 <div class="col-md-3 border-right">
 
@@ -146,7 +148,7 @@
                                     <input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
                                         name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;" value="{{ date('Y-m-d', strtotime('+30 days')) }}">
                                 </div>
-                                <div class="form-group col-md-3 pr-2">
+                                <div class="form-group col-md-3 pr-2" style="display:none">
                                     <label for="gudang">Gudang</label>
                                     <select class="form-control form-control-sm" id="gudang" name="gudang" @if(isset($pemesanan)) disabled @endif>
                                         <option selected disabled hidden>Pilih Gudang</option>
