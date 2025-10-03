@@ -260,7 +260,7 @@
         let fakturTable = new DataTable('#fakturTable', {
                                 columnDefs: [
                                     {
-                                        target: 7,
+                                        target: 6,
                                         visible: false
                                     }
                                 ]

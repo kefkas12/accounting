@@ -385,12 +385,6 @@
                 placeholder: 'Pilih produk',
                 width: '100px'
             });
-            // $('#produk_'+id).on('select2:select', function (e) {
-            //     if(id >= x){
-            //         x += 1;
-            //         create_row();
-            //     }
-            // });
             
             new AutoNumeric("#harga_satuan_" + id, {
                 commaDecimalCharDotSeparator: true,
@@ -401,6 +395,27 @@
                 commaDecimalCharDotSeparator: true,
                 watchExternalChanges: true,
                 modifyValueOnWheel : false
+            });
+
+            // ==== Anti drag-copy ====
+            const $harga  = $("#harga_satuan_" + id);
+            const $jumlah = $("#jumlah_" + id);
+
+            // 1) Cegah mulai drag dari field AutoNumeric (sumber)
+            [$harga, $jumlah].forEach($el => {
+                $el.attr("draggable", "false")                 // hint untuk browser
+                .on("dragstart", e => e.preventDefault());  // benar-benar blok
+            });
+
+            // 2) Cegah drop ke field angka lain (target)
+            //    Sesuaikan selector target sesuai form kamu.
+            $(document).on("drop", "input[type=number], input.autonum, #harga_satuan_"+id+", #jumlah_"+id, function(e){
+                e.preventDefault();
+            });
+
+            // (Opsional) Safari/WebKit agar makin kuat
+            [$harga, $jumlah].forEach($el => {
+                $el.css("-webkit-user-drag", "none");
             });
         }
 

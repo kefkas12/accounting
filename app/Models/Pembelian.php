@@ -285,34 +285,36 @@ class Pembelian extends Model
         $stok_gudang->save();
     }
 
-    public function updateStokGudang($id_transaksi, $id_detail_transaksi, $produk, $gudang, $kuantitas, $tanggal, $tipe, $jenis)
-    {
-        $stok_gudang = new Stok_gudang;
-        $stok_gudang->id_company = Auth::user()->id_company;
-        $stok_gudang->id_transaksi = $id_transaksi;
-        $stok_gudang->id_detail_transaksi = $id_detail_transaksi;
-        $stok_gudang->id_produk = $produk;
-        $stok_gudang->id_gudang = $gudang;
-        $stok_gudang->stok = $stok_gudang->stok + $kuantitas;
-        $stok_gudang->tanggal = $tanggal;
-        $stok_gudang->tipe = $tipe;
-        $stok_gudang->jenis = $jenis;
-        $stok_gudang->save();
-    }
-
     public function ubah($request, $jenis = null)
     {
-        $this->tanggal_transaksi = date('Y-m-d',strtotime($request->tanggal_transaksi));
+        $this->tanggal_transaksi = DateTime::createFromFormat('d/m/Y', $request->tanggal_transaksi)->format('Y-m-d');
+        if($jenis == 'faktur'){
+            $this->no_str = 'Purchase Invoice #' . $this->no;
+            $tipe = 'Faktur Pembelian #' . $this->no;
+        }else if($jenis == 'pengiriman'){
+            $this->no_str = 'Purchase Delivery #' . $this->no;
+            $tipe = 'Pengiriman Pembelian #' . $this->no;
+        }else if($jenis == 'pemesanan'){
+            $this->no_str = 'Purchase Order #' . $this->no;
+            $tipe = 'Pemesanan Pembelian #' . $this->no;
+        }
+        
         $this->id_supplier = $request->input('supplier');
-        $this->tanggal_jatuh_tempo = $request->input('tanggal_jatuh_tempo');
+        $date = DateTime::createFromFormat('d/m/Y', $request->tanggal_jatuh_tempo);
+
+        if ($date) {
+            $this->tanggal_jatuh_tempo = $date->format('Y-m-d');
+        } else {
+            $date = DateTime::createFromFormat('Y-m-d', $request->tanggal_jatuh_tempo);
+            $this->tanggal_jatuh_tempo = $date ? $date->format('Y-m-d') : null;
+        }
         $this->subtotal = $request->input('input_subtotal');
         $this->ppn = $request->input('input_ppn');
         $this->sisa_tagihan = $request->input('input_total') - $this->jumlah_terbayar;
         $this->total = $request->input('input_total');
         $this->alamat = $request->input('alamat');
+        $this->detail_alamat = $request->input('detail_alamat');
         $this->email = $request->input('email');
-        $this->pesan = $request->input('pesan');
-        $this->memo = $request->input('memo');
         if($this->sisa_tagihan == $this->total){
             $this->status = 'open';
         }elseif($this->sisa_tagihan < $this->total && $this->sisa_tagihan > 0){
@@ -325,37 +327,60 @@ class Pembelian extends Model
             $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
             $this->info_pengiriman = $request->input('info_pengiriman');
             $this->sama_dengan_penagihan = $request->input('sama_dengan_penagihan');
-            $this->tanggal_pengiriman = $request->input('tanggal_pengiriman') ? $request->input('tanggal_pengiriman') : null;
+            $this->tanggal_pengiriman = DateTime::createFromFormat('d/m/Y', $request->tanggal_pengiriman)->format('Y-m-d') ? DateTime::createFromFormat('d/m/Y', $request->tanggal_pengiriman)->format('Y-m-d') : null;
             $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
-            if($request->input('gudang')){
-                $gudang = Gudang::find((int)$request->input('gudang'));
-                $this->id_gudang = $gudang->id;
-                $this->nama_gudang = $gudang->nama;
-            }else{
-                $this->id_gudang = null;
-                $this->nama_gudang = null;
-            }
-        }
+            
+        }else if ($jenis == 'pengiriman'){
+            $penawaran = Penjualan::where('id_pemesanan',$this->id_pemesanan)->where('jenis','penawaran')->first();
+            $this->no_rfq = $penawaran->no_rfq;
+            $this->pic = $penawaran->pic;
 
+            $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
+            $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
+            $this->info_pengiriman = $request->input('info_pengiriman');
+            $this->sama_dengan_penagihan = $request->input('sama_dengan_penagihan');
+            $this->tanggal_pengiriman = DateTime::createFromFormat('d/m/Y', $request->tanggal_pengiriman)->format('Y-m-d') ? DateTime::createFromFormat('d/m/Y', $request->tanggal_pengiriman)->format('Y-m-d') : null;
+            $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
+        }
+        if($request->input('gudang')){
+            $gudang = Gudang::find((int)$request->input('gudang'));
+            $this->id_gudang = $gudang->id;
+            $this->nama_gudang = $gudang->nama;
+        }else{
+            $this->id_gudang = null;
+            $this->nama_gudang = null;
+        }
+        $this->ongkos_kirim = $request->input('input_ongkos_kirim') ? $request->input('input_ongkos_kirim') : null;
+        $this->pesan = $request->input('pesan') ? $request->input('pesan') : null;
+        $this->memo = $request->input('memo') ? $request->input('memo') : null;
         $this->save();
 
-        $this->editDetailPembelian($request);
+        $this->editDetailPembelian($request, $tipe, $jenis);
 
         $log = new Log;
         $log->id_user = Auth::user()->id;
         $log->id_transaksi = $this->id;
         $log->transaksi = 'pembelian';
+        $log->aksi = 'edit';
         $log->save();
     }
 
-    protected function editDetailPembelian(Request $request)
+    protected function editDetailPembelian(Request $request, $tipe, $jenis = null)
     {
         $detail_pembelian = Detail_pembelian::where('id_pembelian',$this->id)->delete();
+
+        Transaksi_produk::where('id_transaksi',$this->id)->delete();
+        Stok_gudang::where('id_transaksi',$this->id)->delete();
+
         for ($i = 0; $i < count($request->input('produk')); $i++) {
             $harga_satuan = $request->input('harga_satuan')[$i] != '' || $request->input('harga_satuan')[$i] != null ? number_format((float)str_replace(",", "", $_POST['harga_satuan'][$i]), 2, '.', '') : 0;
             $jumlah = $request->input('jumlah')[$i] != '' || $request->input('jumlah')[$i] != null ? number_format((float)str_replace(",", "", $_POST['jumlah'][$i]), 2, '.', '') : 0;
             $pajak = $request->input('pajak')[$i] != '' || $request->input('pajak')[$i] != null ? number_format((float)str_replace(",", "", $_POST['pajak'][$i]), 2, '.', '') : 0;
             
+            if($jenis == 'pengiriman'){
+                $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i], 'update', $this->id);
+            }
+
             $detail_pembelian = new Detail_pembelian;
             $detail_pembelian->id_company = Auth::user()->id_company;
             $detail_pembelian->id_pembelian = $this->id;
@@ -367,6 +392,61 @@ class Pembelian extends Model
             $detail_pembelian->jumlah = $jumlah;
 
             $detail_pembelian->save();
+
+            $jenis_transaksi = "";
+
+            if($jenis != 'penawaran') {
+                $transaksi_produk = new Transaksi_produk;
+                $transaksi_produk->id_company = Auth::user()->id_company;
+                $transaksi_produk->id_transaksi = $this->id;
+                $transaksi_produk->id_produk = $request->input('produk')[$i];
+
+                $date = DateTime::createFromFormat('d/m/Y', $request->tanggal_transaksi);
+
+                if ($date) {
+                    $transaksi_produk->tanggal = $date->format('Y-m-d');
+                } else {
+                    $date = DateTime::createFromFormat('Y-m-d', $request->tanggal_transaksi);
+                    $transaksi_produk->tanggal = $date ? $date->format('Y-m-d') : null;
+                }
+
+                $transaksi_produk->tipe = $tipe;
+                $transaksi_produk->jenis = 'pembelian';
+                $transaksi_produk->qty = $detail_pembelian->kuantitas;
+
+                $produk = Produk::where('id',$request->input('produk')[$i])->first();
+                $transaksi_produk->unit = $produk->unit;
+                $transaksi_produk->save();
+            }
+
+            if($jenis != 'pemesanan') {
+                $this->updateStokGudang(
+                    $this->id,
+                    $detail_penjualan->id,
+                    $request->input('produk')[$i],
+                    $id_gudang,
+                    $request->input('kuantitas')[$i],
+                    DateTime::createFromFormat('d/m/Y', $request->tanggal_transaksi)->format('Y-m-d'),
+                    $tipe,
+                    $jenis_transaksi
+                );
+            }
         }
+    }
+
+    public function updateStokGudang($id_transaksi, $id_detail_transaksi, $produk, $gudang, $kuantitas, $tanggal, $tipe, $jenis)
+    {
+        $stok_gudang = new Stok_gudang;
+        $stok_gudang->id_company = Auth::user()->id_company;
+        $stok_gudang->id_transaksi = $id_transaksi;
+        $stok_gudang->id_detail_transaksi = $id_detail_transaksi;
+        $stok_gudang->id_produk = $produk;
+        $stok_gudang->id_gudang = $gudang;
+        $stok_gudang->stok = $kuantitas;
+        // $stok_gudang->stok = $stok_gudang->stok + $kuantitas;
+        $stok_gudang->tanggal = $tanggal;
+        $stok_gudang->tipe = $tipe;
+        $stok_gudang->jenis = $jenis;
+        $stok_gudang->save();
     }
 }

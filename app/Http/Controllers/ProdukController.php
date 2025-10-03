@@ -126,7 +126,7 @@ class ProdukController extends Controller
                                     ->selectRaw("
                                         COALESCE(SUM(
                                             CASE 
-                                                WHEN stok_gudang.id_produk = ? AND (stok_gudang.tipe LIKE 'Faktur Pembelian%' OR stok_gudang.tipe LIKE 'Penagihan Pembelian%') 
+                                                WHEN stok_gudang.id_produk = ? AND (stok_gudang.tipe LIKE 'Pengiriman Pembelian%') 
                                                     THEN stok_gudang.stok
                                                 WHEN stok_gudang.id_produk = ? AND (stok_gudang.tipe LIKE 'Pengiriman Penjualan%')
                                                     THEN -stok_gudang.stok

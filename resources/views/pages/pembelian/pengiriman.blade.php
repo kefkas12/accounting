@@ -239,11 +239,11 @@
                                             <td style="padding: 10px !important;">
                                                 <input type="text" class="form-control form-control-sm" id="unit_1"
                                                     name="unit[]" readonly></td>
-                                            <td style="padding: 10px !important;" hidden>
+                                            <td style="padding: 10px !important;display:none;">
                                                 <input type="text" class="form-control form-control-sm" id="harga_satuan_1"
                                                     name="harga_satuan[]" value="0" onkeyup="change_jumlah(1)"
                                                     onblur="check_null(this)" step="any"></td>
-                                            <td style="padding: 10px !important;" hidden>
+                                            <td style="padding: 10px !important;display:none;">
                                                 <select class="form-control form-control-sm" id="pajak_1" name="pajak[]"
                                                     onchange="get_pajak(this, 1)" required>
                                                     <option value="0" data-persen="0">Pilih pajak</option>
@@ -383,6 +383,27 @@
                 watchExternalChanges: true,
                 modifyValueOnWheel : false
             });
+
+            // ==== Anti drag-copy ====
+            const $harga  = $("#harga_satuan_" + id);
+            const $jumlah = $("#jumlah_" + id);
+
+            // 1) Cegah mulai drag dari field AutoNumeric (sumber)
+            [$harga, $jumlah].forEach($el => {
+                $el.attr("draggable", "false")                 // hint untuk browser
+                .on("dragstart", e => e.preventDefault());  // benar-benar blok
+            });
+
+            // 2) Cegah drop ke field angka lain (target)
+            //    Sesuaikan selector target sesuai form kamu.
+            $(document).on("drop", "input[type=number], input.autonum, #harga_satuan_"+id+", #jumlah_"+id, function(e){
+                e.preventDefault();
+            });
+
+            // (Opsional) Safari/WebKit agar makin kuat
+            [$harga, $jumlah].forEach($el => {
+                $el.css("-webkit-user-drag", "none");
+            });
         }
 
         function get_data(thisElement, no) {
@@ -467,16 +488,22 @@
                     <td style="padding: 10px !important;">
                         <textarea class="form-control form-control-sm" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                     </td>
-                    <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_${i}" 
-                        name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
-                    <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="unit_${i}" name="unit[]" readonly></td>
-                    <td style="padding: 10px !important;" id="harga_satuan_td_${i}"><input type="text" class="form-control form-control-sm" id="harga_satuan_${i}" 
-                        name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" onblur="check_null(this)" step="any"></td>
-                    <td style="padding: 10px !important;" id="diskon_per_baris_td_${i}">
-                        <select class="form-control" id="pajak_${i}" name="pajak[]" 
+                    <td style="padding: 10px !important;">
+                        <input type="number" class="form-control form-control-sm" id="kuantitas_${i}" 
+                            name="kuantitas[]" value="1" onkeyup="change_jumlah(${i})" 
+                            onblur="check_null(this)" step="any"></td>
+                    <td style="padding: 10px !important;">
+                        <input type="text" class="form-control form-control-sm" id="unit_${i}" 
+                            name="unit[]" readonly></td>
+                    <td style="padding: 10px !important;display:none;" id="harga_satuan_td_${i}">
+                        <input type="text" class="form-control form-control-sm" id="harga_satuan_${i}" 
+                            name="harga_satuan[]" value="0" onkeyup="change_jumlah(${i})" 
+                            onblur="check_null(this)" step="any"></td>
+                    <td style="padding: 10px !important;display:none;" id="pajak_td_${i}">
+                        <select class="form-control form-control-sm" id="pajak_${i}" name="pajak[]" 
                         onchange="get_pajak(this, ${i})" required>
-                        <option value="0" data-persen="0" >Pilih pajak</option>
-                        <option value="11" data-persen="11">PPN</option>
+                            <option value="0" data-persen="0" >Pilih pajak</option>
+                            <option value="11" data-persen="11">PPN</option>
                         </select>
                     </td>
                     <td style="padding: 10px !important;display:none;" id="jumlah_td_${i}"><input type="text" class="form-control form-control-sm" id="jumlah_${i}" name="jumlah[]" value="0" step="any" @if(isset($pemesanan)) disabled @endif></td>
