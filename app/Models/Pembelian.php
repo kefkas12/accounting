@@ -170,16 +170,16 @@ class Pembelian extends Model
             $pembelian->save();
         }
 
-        if($jenis == 'penagihan'){
+        if($jenis == 'faktur'){
             $pembelian = Pembelian::find($this->id);
             if($pembelian->id_pemesanan){
                 $pemesanan = Pembelian::find($pembelian->id_pemesanan);
-                $pemesanan->id_penagihan = $pembelian->id;
+                $pemesanan->id_faktur = $pembelian->id;
                 $pemesanan->save();
             }
             if($pembelian->id_pengiriman){
                 $pengiriman = Pembelian::find($pembelian->id_pengiriman);
-                $pengiriman->id_penagihan = $pembelian->id;
+                $pengiriman->id_faktur = $pembelian->id;
                 $pengiriman->save();
             }
         }
@@ -331,10 +331,6 @@ class Pembelian extends Model
             $this->alamat_pengiriman = $request->input('sama_dengan_penagihan') ? $this->alamat : $request->input('alamat_pengiriman');
             
         }else if ($jenis == 'pengiriman'){
-            $penawaran = Penjualan::where('id_pemesanan',$this->id_pemesanan)->where('jenis','penawaran')->first();
-            $this->no_rfq = $penawaran->no_rfq;
-            $this->pic = $penawaran->pic;
-
             $this->kirim_melalui = $request->input('kirim_melalui') ? $request->input('kirim_melalui') : null;
             $this->no_pelacakan = $request->input('no_pelacakan') ? $request->input('no_pelacakan') : null;
             $this->info_pengiriman = $request->input('info_pengiriman');
@@ -355,7 +351,7 @@ class Pembelian extends Model
         $this->memo = $request->input('memo') ? $request->input('memo') : null;
         $this->save();
 
-        $this->editDetailPembelian($request, $tipe, $jenis);
+        $this->editDetailPembelian($request, $tipe, $jenis,$this->id_gudang);
 
         $log = new Log;
         $log->id_user = Auth::user()->id;
@@ -365,7 +361,7 @@ class Pembelian extends Model
         $log->save();
     }
 
-    protected function editDetailPembelian(Request $request, $tipe, $jenis = null)
+    protected function editDetailPembelian(Request $request, $tipe, $jenis = null, $id_gudang)
     {
         $detail_pembelian = Detail_pembelian::where('id_pembelian',$this->id)->delete();
 
@@ -419,10 +415,10 @@ class Pembelian extends Model
                 $transaksi_produk->save();
             }
 
-            if($jenis != 'pemesanan') {
+            if($jenis != 'penawaran' && $jenis != 'pemesanan') {
                 $this->updateStokGudang(
                     $this->id,
-                    $detail_penjualan->id,
+                    $detail_pembelian->id,
                     $request->input('produk')[$i],
                     $id_gudang,
                     $request->input('kuantitas')[$i],

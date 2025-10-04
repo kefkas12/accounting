@@ -199,13 +199,6 @@
                                     <label for="no_pelacakan">No. pelacakan</label>
                                     <input type="text" class="form-control form-control-sm" id="no_pelacakan" name="no_pelacakan">
                                 </div>
-                                
-                                <div class="form-group col-md-3 pr-4">
-                                    @if(isset($pemesanan))
-                                    <label for="nomor_pemesanan_pembelian">No Pemesanan Pembelian</label> <br>
-                                    <a href="{{ url('pembelian/detail').'/'.$pembelian->id }}">{{ $pembelian->no_str }}</a>
-                                    @endif
-                                </div>
                             </div>
 
                             <div style="overflow: auto">

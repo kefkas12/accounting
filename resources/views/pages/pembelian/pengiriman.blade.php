@@ -161,12 +161,10 @@
                                         @endif
                                     </select>
                                 </div>
-                                <div class="col-md-3 pr-2" style="display:none">
-                                    <div class="form-group info_pengiriman" style="display:none">
-                                        <label for="tanggal_pengiriman">Tgl. pengiriman</label>
-                                        <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
-                                            name="tanggal_pengiriman" style="background-color: #ffffff !important;">
-                                    </div>
+                                <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
+                                    <label for="tanggal_pengiriman">Tgl. pengiriman</label>
+                                    <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
+                                        name="tanggal_pengiriman" style="background-color: #ffffff !important;">
                                 </div>
                                 <div class="form-group col-md-3 info_pengiriman" style="display:none">
                                     <label for="kirim_melalui">Kirim Melalui</label>

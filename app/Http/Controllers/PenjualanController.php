@@ -351,9 +351,8 @@ class PenjualanController extends Controller
                                                         ->select('detail_penjualan.*','produk.unit')
                                                         ->where('detail_penjualan.id_penjualan',$id)
                                                         ->get();
-            if($data['penjualan']->id_pemesanan && isset($data['produk_penawaran'])){
-                $data['detail_pemesanan'] = Detail_penjualan::with(['produk_penawaran.produk'])
-                                                            ->join('produk','detail_penjualan.id_produk','=','produk.id')
+            if($data['penjualan']->id_pemesanan){
+                $data['detail_pemesanan'] = Detail_penjualan::join('produk','detail_penjualan.id_produk','=','produk.id')
                                                             ->select('detail_penjualan.*','produk.unit')
                                                             ->where('detail_penjualan.id_penjualan',$data['penjualan']->id_pemesanan)
                                                             ->get();

@@ -182,13 +182,64 @@ class PembelianController extends Controller
         $data['supplier'] = Kontak::where('tipe','supplier')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
-        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
                                     ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
         if($id != null){
-            $data['pembelian'] = Pembelian::where('id',$id)->first();
-            $data['detail_pembelian'] = Detail_pembelian::where('id_pembelian',$id)->get();
+            $data['faktur'] = true;
+            $data['pembelian'] = Pembelian::leftJoin('pembelian as pemesanan', 'pemesanan.id','=','pembelian.id_pemesanan')
+                                            ->leftJoin('pembelian as pengiriman', 'pengiriman.id','=','pembelian.id_pengiriman')
+                                            ->select('pembelian.*','pemesanan.no_str as no_str_pemesanan','pengiriman.no_str as no_str_pengiriman')
+                                            ->where('pembelian.id',$id)->first();
+            if($data['pembelian']->id_pemesanan){
+                $data['pemesanan'] = true;
+            }
+            if($data['pembelian']->id_pengiriman){
+                $data['pengiriman'] = true;
+            }
+            $data['detail_pembelian'] = Detail_pembelian::with('stok_gudang')->where('id_pembelian',$id)->get();
         }
         return view('pages.pembelian.faktur', $data);
+    }
+
+    public function pengiriman($id=null)
+    {
+        $data['sidebar'] = 'pembelian';
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['supplier'] = Kontak::where('tipe','supplier')
+                                    ->where('id_company',Auth::user()->id_company)
+                                    ->get();
+        if(Auth::user()->id_gudang){
+            $data['gudang'] = Gudang::where('id',Auth::user()->id_gudang)
+                                    ->get();
+        }else{
+            $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        }
+        if($id != null){
+            $data['pengiriman'] = true;
+            $data['pembelian'] = Pembelian::leftJoin('pembelian as pemesanan', 'pemesanan.id','=','pembelian.id_pemesanan')
+                                            ->select('pembelian.*','pemesanan.no_str as no_str_pemesanan')
+                                            ->where('pembelian.id',$id)->first();
+            if($data['pembelian']->id_pemesanan){
+                $data['pemesanan'] = true;
+            }
+            $data['detail_pembelian'] = Detail_pembelian::join('produk','detail_pembelian.id_produk','=','produk.id')
+                                                        ->select('detail_pembelian.*','produk.unit')
+                                                        ->where('detail_pembelian.id_pembelian',$id)
+                                                        ->get();
+            if($data['pembelian']->id_pemesanan){
+                $data['detail_pemesanan'] = Detail_pembelian::join('produk','detail_pembelian.id_produk','=','produk.id')
+                                                            ->select('detail_pembelian.*','produk.unit')
+                                                            ->where('detail_pembelian.id_pembelian',$data['pembelian']->id_pemesanan)
+                                                            ->get();
+            }
+        }
+        return view('pages.pembelian.pengiriman', $data);
     }
 
     public function pemesanan($id=null)
@@ -206,10 +257,10 @@ class PembelianController extends Controller
                                     ->get();
         }
         
-        
         if($id != null){
             $data['pemesanan'] = true;
-            $data['pembelian'] = Pembelian::where('id',$id)->first();
+            $data['pembelian'] = Pembelian::leftJoin('penjualan as penawaran', 'penawaran.id','=','penjualan.id_penawaran')
+                                            ->where('id',$id)->first();
             $data['detail_pembelian'] = Detail_pembelian::with('stok_gudang')->where('id_pembelian',$id)->get();
         }
         return view('pages.pembelian.pemesanan', $data);
