@@ -345,10 +345,10 @@
                                             @if($pembelian->jenis == 'faktur')
                                                 <a class="dropdown-item" href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}">Kirim Pembayaran</a>
                                             @elseif($pembelian->jenis == 'penawaran')
-                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Faktur</a>
                                                 <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
                                             @elseif($pembelian->jenis == 'pemesanan')
                                                 <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                            @elseif($pembelian->jenis == 'pengiriman')
                                                 <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Faktur</a>
                                             @endif
                                         </div>
@@ -388,11 +388,9 @@
                                                 @if($pembelian->jenis == 'faktur')
                                                     <a class="dropdown-item" href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}">Terima Pembayaran</a>
                                                 @elseif($pembelian->jenis == 'penawaran')
-                                                    <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Faktur</a>
                                                     <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
                                                 @elseif($pembelian->jenis == 'pemesanan')
                                                     <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
-                                                    <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Faktur</a>
                                                 @elseif($pembelian->jenis == 'pengiriman')
                                                     <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis. '/faktur/' . $pembelian->id }}">Buat Faktur</a>
                                                 @endif
