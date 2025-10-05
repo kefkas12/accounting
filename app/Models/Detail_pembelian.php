@@ -12,6 +12,17 @@ class Detail_pembelian extends Model
     use HasFactory;
     protected $table = 'detail_pembelian';
 
+    protected $fillable = [
+        'id_company', 
+        'id_pembelian',
+        'id_produk',
+        'deskripsi',
+        'kuantitas',
+        'harga_satuan',
+        'pajak',
+        'jumlah'
+    ];
+
     public $timestamps = false;
 
     public function pembelian(): BelongsTo

@@ -448,18 +448,17 @@ class Penjualan extends Model
         }
     }
 
-    public function updateStok($produk, $kuantitas, $status, $id_penjualan = null)
+    public function updateStok($id_produk, $kuantitas, $status, $id_penjualan = null)
     {
+        $produk = Produk::find($id_produk);
         if($status == 'update'){
-            $detail_penjualan = Detail_penjualan::where('id_penjualan',$id_penjualan)->get();
-            foreach($detail_penjualan as $v){
-                $produk = Produk::find($v->id_produk);
-                $produk->stok = $produk->stok + $v->kuantitas;
-                $produk->save();
-            }
+            $detail_penjualan = Detail_penjualan::where('id_penjualan',$id_penjualan)
+                                                ->where('id_produk',$id_produk)
+                                                ->first();
+            $produk->stok = $produk->stok + $detail_penjualan->kuantitas - $kuantitas;
+        }else{
+            $produk->stok = $produk->stok - $kuantitas;
         }
-        $produk = Produk::find($produk);
-        $produk->stok = $produk->stok - $kuantitas;
         $produk->save();
     }
 
@@ -636,8 +635,6 @@ class Penjualan extends Model
 
     protected function editDetailPenjualan(Request $request, $tipe, $jenis = null, $id_gudang)
     {
-        $detail_penjualan = Detail_penjualan::where('id_penjualan',$this->id)->delete();
-
         $index = $request->input('produk') ? $request->input('produk') : $request->input('produk_penawaran');
 
         $multiple_gudang = Pengaturan_produk::where('id_company',Auth::user()->id_company)
@@ -656,14 +653,6 @@ class Penjualan extends Model
             $harga_satuan = $request->input('harga_satuan')[$i] != '' || $request->input('harga_satuan')[$i] != null ? number_format((float)str_replace(",", "", $_POST['harga_satuan'][$i]), 2, '.', '') : 0;
             $jumlah = $request->input('jumlah')[$i] != '' || $request->input('jumlah')[$i] != null ? number_format((float)str_replace(",", "", $_POST['jumlah'][$i]), 2, '.', '') : 0;
             $pajak = $request->input('pajak')[$i] != '' || $request->input('pajak')[$i] != null ? number_format((float)str_replace(",", "", $_POST['pajak'][$i]), 2, '.', '') : 0;
-
-            if($jenis == 'pengiriman'){
-                if(isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
-                    $this->updateStok($request->input('produk')[$i], $kuantitas, 'update', $this->id);
-                }else{
-                    $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i], 'update', $this->id);
-                }
-            }
 
             $detail_penjualan = new Detail_penjualan;
             $detail_penjualan->id_company = Auth::user()->id_company;
@@ -689,6 +678,18 @@ class Penjualan extends Model
             $detail_penjualan->nilai_diskon_per_baris = $request->input('nilai_diskon_per_baris')[$i];
             $detail_penjualan->pajak = $jumlah * $pajak / 100;
             $detail_penjualan->jumlah = $jumlah;
+
+            if($jenis == 'pengiriman'){
+                if(isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
+                    $this->updateStok($request->input('produk')[$i], $kuantitas, 'update', $this->id);
+                }else{
+                    $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i], 'update', $this->id);
+                }
+            }
+            Detail_penjualan::where('id_penjualan',$this->id)
+                            ->where('id_produk',$request->input('produk')[$i])
+                            ->delete();
+
             $detail_penjualan->save();
 
             $jenis_transaksi = "";

@@ -93,7 +93,7 @@
                             <div class="form-row border-bottom mb-3">
                                 <div class="form-group col-md-3 pr-2">
                                     <label for="supplier">Supplier <span class="text-danger">*</span></label>
-                                    <select class="selectpicker form-control form-control-sm" data-live-search="true" title="Pilih Supplier" id="supplier" name="supplier" onchange="alamat_supplier(this)" required @if(isset($penawaran)) disabled @endif hidden>
+                                    <select class="selectpicker form-control form-control-sm" data-live-search="true" title="Pilih Supplier" id="supplier" name="supplier" onchange="alamat_supplier(this)" required @if(isset($pemesanan)) disabled @endif hidden>
                                         <option selected disabled>Pilih kontak</option>
                                         @foreach ($supplier as $v)
                                             <option value="{{ $v->id }}">{{ $v->nama }} -
@@ -322,7 +322,7 @@
                                             @else
                                             <a href="{{ url('pembelian') }}" class="btn btn-light">Batalkan</a>
                                             @endif
-                                            <button type="submit" class="btn btn-primary">Buat</button>
+                                            <button type="submit" class="btn btn-primary">Buat Pengiriman</button>
                                         </div>
                                     </div>
                                 </div>

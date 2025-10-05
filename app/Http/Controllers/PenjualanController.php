@@ -432,8 +432,9 @@ class PenjualanController extends Controller
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
         if($id != null){
+            $data['penawaran'] = true;
             $data['penjualan'] = Penjualan::where('id',$id)->first();
-            $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
+            $data['detail_penjualan'] = Detail_penjualan::with('stok_gudang')->where('id_penjualan',$id)->get();
         }
         return view('pages.penjualan.penawaran', $data);
     }

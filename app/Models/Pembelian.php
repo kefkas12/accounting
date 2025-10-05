@@ -255,18 +255,18 @@ class Pembelian extends Model
         }
     }
 
-    public function updateStok($produk, $kuantitas, $status, $id_pembelian = null)
+    public function updateStok($id_produk, $kuantitas, $status, $id_pembelian = null)
     {
+        $produk = Produk::find($id_produk);
         if($status == 'update'){
-            $detail_pembelian = Detail_pembelian::where('id_pembelian',$id_pembelian)->get();
-            foreach($detail_pembelian as $v){
-                $produk = Produk::find($v->id_produk);
-                $produk->stok = $produk->stok + $v->kuantitas;
-                $produk->save();
-            }
+            $detail_pembelian = Detail_pembelian::where('id_pembelian',$id_pembelian)
+                                                ->where('id_produk',$id_produk)
+                                                ->first();
+            $produk->stok = $produk->stok - $detail_pembelian->kuantitas + $kuantitas;
+        }else{
+            $produk->stok = $produk->stok + $kuantitas;
         }
-        $produk = Produk::find($produk);
-        $produk->stok = $produk->stok + $kuantitas;
+        
         $produk->save();
     }
 
@@ -363,8 +363,6 @@ class Pembelian extends Model
 
     protected function editDetailPembelian(Request $request, $tipe, $jenis = null, $id_gudang)
     {
-        $detail_pembelian = Detail_pembelian::where('id_pembelian',$this->id)->delete();
-
         Transaksi_produk::where('id_transaksi',$this->id)->delete();
         Stok_gudang::where('id_transaksi',$this->id)->delete();
 
@@ -373,10 +371,6 @@ class Pembelian extends Model
             $jumlah = $request->input('jumlah')[$i] != '' || $request->input('jumlah')[$i] != null ? number_format((float)str_replace(",", "", $_POST['jumlah'][$i]), 2, '.', '') : 0;
             $pajak = $request->input('pajak')[$i] != '' || $request->input('pajak')[$i] != null ? number_format((float)str_replace(",", "", $_POST['pajak'][$i]), 2, '.', '') : 0;
             
-            if($jenis == 'pengiriman'){
-                $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i], 'update', $this->id);
-            }
-
             $detail_pembelian = new Detail_pembelian;
             $detail_pembelian->id_company = Auth::user()->id_company;
             $detail_pembelian->id_pembelian = $this->id;
@@ -387,6 +381,13 @@ class Pembelian extends Model
             $detail_pembelian->pajak = $jumlah * $pajak / 100;
             $detail_pembelian->jumlah = $jumlah;
 
+            if($jenis == 'pengiriman'){
+                $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i], 'update', $this->id);
+            }
+            Detail_pembelian::where('id_pembelian',$this->id)
+                            ->where('id_produk',$request->input('produk')[$i])
+                            ->delete();
+            
             $detail_pembelian->save();
 
             $jenis_transaksi = "";

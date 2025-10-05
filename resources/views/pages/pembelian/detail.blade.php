@@ -66,9 +66,9 @@
                             <div class="form-group col-md-2">@if ($jurnal) Jurnal <br> <a href="#" data-toggle="modal" data-target="#jurnalEntryModal">Lihat Jurnal Entry</a> @endif </div>
                         </div>
                         <div class="form-row">
+                            <div class="form-group col-sm-2">Gudang <br> @if($pembelian->nama_gudang)<strong>{{ $pembelian->nama_gudang }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-sm-2">Kirim Melalui <br> @if($pembelian->kirim_melalui)<strong>{{ $pembelian->kirim_melalui }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-sm-2">No. Pelacakan <br> @if($pembelian->no_pelacakan)<strong>{{ $pembelian->no_pelacakan }}</strong>@else <strong> - </strong> @endif</div>
-                            <div class="form-group col-sm-2"></div>
                             <div class="form-group col-sm-2"></div>
                             <div class="form-group col-sm-2"></div>
                             <div class="form-group col-sm-2"></div>
@@ -153,7 +153,7 @@
                                                 Ongkos kirim
                                             </div>
                                             <div class="col d-flex justify-content-end">
-                                                <h4>Rp. {{ number_format($pembelian->ongkos_kirim, 2, ',', '.') }}</h4>
+                                                <strong>Rp. {{ number_format($pembelian->ongkos_kirim, 2, ',', '.') }}</strong>
                                             </div>
                                         </div>
                                     </div>

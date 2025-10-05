@@ -490,7 +490,7 @@
                     $('#alamat').val('{{ $pembelian->alamat }}');
                 })
                 $('#email').val('{{ $pembelian->email }}')
-                $('#alamat').val('{{ $pembelian->alamat }}')
+                $('#detail_alamat').val('{{ $pembelian->detail_alamat }}')
 
                 fp_transaksi.setDate(new Date('{{ $pembelian->tanggal_transaksi }}'));
                 fp_jatuh_tempo.setDate(new Date('{{ $pembelian->tanggal_jatuh_tempo }}'));

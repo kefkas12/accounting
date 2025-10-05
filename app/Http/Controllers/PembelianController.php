@@ -259,8 +259,7 @@ class PembelianController extends Controller
         
         if($id != null){
             $data['pemesanan'] = true;
-            $data['pembelian'] = Pembelian::leftJoin('penjualan as penawaran', 'penawaran.id','=','penjualan.id_penawaran')
-                                            ->where('id',$id)->first();
+            $data['pembelian'] = Pembelian::where('id',$id)->first();
             $data['detail_pembelian'] = Detail_pembelian::with('stok_gudang')->where('id_pembelian',$id)->get();
         }
         return view('pages.pembelian.pemesanan', $data);
@@ -684,7 +683,7 @@ class PembelianController extends Controller
             $detail_pembelian = Detail_pembelian::where('id_pembelian',$pembelian->id)->get();
             foreach($detail_pembelian as $v){
                 $produk = Produk::find($v->id_produk);
-                $produk->stok = $produk->stok - $v->kuantitas;
+                $produk->stok = (int) $produk->stok - (int) $v->kuantitas;
                 $produk->save();
             }
             Detail_pembelian::where('id_pembelian',$pembelian->id)->delete();

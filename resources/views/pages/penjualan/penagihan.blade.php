@@ -406,7 +406,7 @@
                                             @else
                                             <a href="{{ url('penjualan') }}" class="btn btn-light">Batalkan</a>
                                             @endif
-                                            <button type="submit" class="btn btn-primary">@if(isset($pembelian)) Simpan perubahan @elseif(isset($pemesanan)) Buat @else Buat Faktur @endif</button>
+                                            <button type="submit" class="btn btn-primary" onclick="buat();">@if(isset($penjualan)) Simpan perubahan @else Buat Penagihan @endif</button>
                                         </div>
                                     </div>
                                 </div>
@@ -482,6 +482,13 @@
             @else
             $('#input_total').val(result_subtotal + result_ppn - result_diskon_per_baris);
             @endif
+        }
+
+        function buat() {
+            success = $('#pelanggan').val() != null ? true : false;
+            if(success == true){
+                $('#insertForm').submit();
+            }
         }
 
         function load_select_2(id) {

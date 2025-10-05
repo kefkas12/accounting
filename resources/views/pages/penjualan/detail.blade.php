@@ -210,20 +210,20 @@
                                     <div class="form-group col-md-4">
                                         <div class="row mb-1">
                                             <div class="col">
+                                                Ongkos Kirim
+                                            </div>
+                                            <div class="col d-flex justify-content-end">
+                                                <strong>Rp. {{ number_format($penjualan->ongkos_kirim, 2, ',', '.') }}</strong>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-1">
+                                            <div class="col">
                                                 Log Pengiriman
                                             </div>
                                             <div class="col d-flex justify-content-end">
                                                 <strong>
                                                     <a href="#" data-toggle="modal" data-target="#logPengirimanModal">Lihat Log</a>
                                                 </strong>
-                                            </div>
-                                        </div>
-                                        <div class="row mb-1">
-                                            <div class="col">
-                                                Ongkos Kirim
-                                            </div>
-                                            <div class="col d-flex justify-content-end">
-                                                <strong>Rp. {{ number_format($penjualan->ongkos_kirim, 2, ',', '.') }}</strong>
                                             </div>
                                         </div>
                                         @if($penjualan->status != 'closed')
