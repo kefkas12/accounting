@@ -105,14 +105,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row my-4" hidden>
-                            <div class="col-sm-6"></div>
-                            <div class="col-sm-6 d-flex justify-content-end">
-                                <a href="{{ url('penjualan') }}" class="btn btn-outline-danger">Batal</a>
-                                <button class="btn btn-primary">Buat Penerimaan</button>
-                            </div>
-                        </div>
-
                         <div class="row mb-4">
                             <div class="col-sm-6">
                                 <form id="deleteForm" action="{{ url('penjualan/receive_payment/hapus') . '/' . $detail_pembayaran_penjualan[0]->pembayaran_penjualan->id }}"

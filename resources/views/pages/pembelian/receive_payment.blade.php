@@ -105,7 +105,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row my-4">
+                        <div class="row mb-4">
                             <div class="col-sm-6">
                                 @hasanyrole('pemilik')
                                 <form id="deleteForm" action="{{ url('pembelian/receive_payment/hapus') . '/' . $pembayaran_pembelian->id }}"
@@ -188,7 +188,7 @@
                 }
             });
         }
-        
+
         var total = {};
 
         function change_total(no) {
