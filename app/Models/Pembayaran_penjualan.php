@@ -54,16 +54,18 @@ class Pembayaran_penjualan extends Model
     protected function insertDetailPembayaranPenjualan(Request $request)
     {
         for ($i = 0; $i < count($request->input('id_penjualan')); $i++) {
-            if($request->input('total')[$i] != '' && $request->input('total')[$i] != null ){
+            $total = $request->input('total')[$i] != '' || $request->input('total')[$i] != null ? number_format((float)str_replace(",", "", $_POST['total'][$i]), 2, '.', '') : 0;
+            if($request->input('subtotal')[$i] != '' && $request->input('subtotal')[$i] != null ){
                 $detail_penjualan = new Detail_pembayaran_penjualan;
+                $detail_penjualan->id_company = Auth::user()->id_company;
                 $detail_penjualan->id_pembayaran_penjualan = $this->id;
                 $detail_penjualan->id_penjualan = $request->input('id_penjualan')[$i];
-                $detail_penjualan->jumlah = $request->input('total')[$i];
+                $detail_penjualan->jumlah = $total;
                 $detail_penjualan->save();
 
                 $penjualan = Penjualan::find($request->input('id_penjualan')[$i]);
-                $penjualan->jumlah_terbayar = $request->input('total')[$i];
-                $penjualan->sisa_tagihan = $penjualan->sisa_tagihan - $request->input('total')[$i];
+                $penjualan->jumlah_terbayar = $total;
+                $penjualan->sisa_tagihan = $penjualan->sisa_tagihan - $total;
                 if($penjualan->sisa_tagihan == 0){
                     $penjualan->status = 'paid';
                 }else{

@@ -35,13 +35,15 @@ class Jurnal extends Model
         return $this->hasMany(Detail_jurnal::class, 'id_jurnal');
     }
 
-    public function pembayaran_penjualan(Request $request)
+    public function pembayaran_penjualan($request, $id = null)
     {
         $this->id_company = Auth::user()->id_company;
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');
         $this->kategori = 'receive_payment';
-        $this->no = $this->no('receive_payment');
-        $this->no_str = 'Receive Payment #' . $this->no('receive_payment');
+        if(!$id){
+            $this->no = $this->no('receive_payment');
+            $this->no_str = 'Receive Payment #' . $this->no('receive_payment');
+        }
         $this->debit = $request->input('subtotal');
         $this->kredit = $request->input('subtotal');
         $this->save();
@@ -49,31 +51,35 @@ class Jurnal extends Model
         $this->createDetailJurnal($this->id, $request->input('setor_ke'), $request->input('subtotal'), 0);
         $this->updateAkunBalance($request->input('setor_ke'), $request->input('subtotal'), 0);
 
+        // dd(count($request->input('id_penjualan')));
         for ($i = 0; $i < count($request->input('id_penjualan')); $i++) {
+            $total = $request->input('total')[$i] != '' || $request->input('total')[$i] != null ? number_format((float)str_replace(",", "", $_POST['total'][$i]), 2, '.', '') : 0;
             if($request->input('total')[$i] != '' && $request->input('total')[$i] != null ){
 
-                $this->createDetailJurnal($this->id, 4, 0, $request->input('total')[$i]);
-                $this->updateAkunBalance(4, 0, $request->input('total')[$i]);
+                $this->createDetailJurnal($this->id, 4, 0, $total);
+                $this->updateAkunBalance(4, 0, $total);
             }
         }
     }
 
-    public function pembayaran_pembelian(Request $request)
+    public function pembayaran_pembelian($request, $id = null)
     {
         $this->id_company = Auth::user()->id_company;
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');
         $this->kategori = 'purchase_payment';
-        $this->no = $this->no('purchase_payment');
-        $this->no_str = 'Purchase Payment #' . $this->no('purchase_payment');
+        if(!$id){
+            $this->no = $this->no('purchase_payment');
+            $this->no_str = 'Purchase Payment #' . $this->no('purchase_payment');
+        }
         $this->debit = $request->input('subtotal');
         $this->kredit = $request->input('subtotal');
         $this->save();
 
         for ($i = 0; $i < count($request->input('id_pembelian')); $i++) {
+            $total = $request->input('total')[$i] != '' || $request->input('total')[$i] != null ? number_format((float)str_replace(",", "", $_POST['total'][$i]), 2, '.', '') : 0;
             if($request->input('total')[$i] != '' && $request->input('total')[$i] != null ){
-
-                $this->createDetailJurnal($this->id, 33, $request->input('total')[$i], 0);
-                $this->updateAkunBalance(33, $request->input('total')[$i], 0);
+                $this->createDetailJurnal($this->id, 33, $total, 0);
+                $this->updateAkunBalance(33, $total, 0);
             }
         }
 

@@ -205,6 +205,8 @@ Route::controller(PenjualanController::class)->prefix('penjualan')->group(functi
 	Route::post('/selesai/{id}', 'insert_selesai');
 
 	Route::post('/upload/dokumen/{id}', 'upload_dokumen');
+
+	Route::post('/receive_payment/hapus/{id}', 'hapus_pembayaran');
 });
 
 Route::controller(PenawaranController::class)->prefix('penawaran')->group(function () {

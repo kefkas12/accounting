@@ -112,6 +112,20 @@
                                 <button class="btn btn-primary">Buat Penerimaan</button>
                             </div>
                         </div>
+
+                        <div class="row mb-4">
+                            <div class="col-sm-6">
+                                <form id="deleteForm" action="{{ url('penjualan/receive_payment/hapus') . '/' . $detail_pembayaran_penjualan[0]->pembayaran_penjualan->id }}"
+                                    method="post">
+                                    @csrf
+                                    <button type="submit"
+                                        class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
+                                </form>
+                            </div>
+                            <div class="col-sm-6 d-flex justify-content-end">
+                                <a href="" class="btn btn-outline-primary">Ubah</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -163,8 +177,25 @@
         </div>
     </div>
     <script>
-        $( document ).ready(function() {
-        });
+        function confirmDelete(event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Hapus',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            });
+        }
+
         var total = {};
 
         function change_total(no) {

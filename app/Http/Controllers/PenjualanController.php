@@ -676,16 +676,24 @@ class PenjualanController extends Controller
     public function pengiriman_penagihan($id)
     {
         $data['sidebar'] = 'penjualan';
-        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        $data['produk_penawaran'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Produk penawaran')
+                                                ->where('status','active')
+                                                ->first();
         // $data['multiple_gudang'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
         //                                         ->where('fitur','Multiple gudang')
         //                                         ->where('status','active')
         //                                         ->first();
+        if(isset($data['produk_penawaran'])){
+            $data['produk_penawaran'] = Produk_penawaran::where('id_company',Auth::user()->id_company)->get();
+        }
+        $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
+        
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
                                     ->get();
-        $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
-                                    ->get();
+        // $data['gudang'] = Gudang::where('id_company',Auth::user()->id_company)
+        //                             ->get();
         if($id != null){
             $data['pengiriman_penagihan'] = true;
             $data['pengiriman'] = true;
@@ -693,7 +701,10 @@ class PenjualanController extends Controller
                                             ->leftJoin('penjualan as pemesanan', 'pemesanan.id','=','penjualan.id_pemesanan')
                                             ->select('penjualan.*','penawaran.no_str as no_str_penawaran','pemesanan.no_str as no_str_pemesanan')
                                             ->where('penjualan.id',$id)->first();
-            $data['detail_penjualan'] = Detail_penjualan::where('id_penjualan',$id)->get();
+            $data['detail_penjualan'] = Detail_penjualan::with(['produk_penawaran.produk'])
+                                                        ->join('produk','detail_penjualan.id_produk','=','produk.id')
+                                                        ->select('detail_penjualan.*','produk.unit')
+                                                        ->where('detail_penjualan.id_penjualan',$id)->get();
         }
         $data['pengaturan_dokumen'] = Pengaturan_dokumen::where('id_company',Auth::user()->id_company)
                                                         ->where('status_penjualan','penagihan')
@@ -1083,6 +1094,44 @@ class PenjualanController extends Controller
                 return redirect('penjualan');
             }
         }
+    }
+
+    public function hapus_pembayaran($id){
+        DB::beginTransaction();
+
+        $pembayaran_penjualan = Pembayaran_penjualan::find($id);
+
+        $detail_jurnal = Detail_jurnal::where('id_jurnal',$pembayaran_penjualan->id_jurnal)->get();
+        foreach($detail_jurnal as $v){
+            $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                        ->where('id_akun',$v->id_akun)->first();
+            $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+            $akun_company->save();
+        }
+        Detail_jurnal::where('id_jurnal',$pembayaran_penjualan->id_jurnal)->delete();
+        Jurnal::find($pembayaran_penjualan->id_jurnal)->delete();
+
+        $pembayaran_penjualan->delete();
+        $detail_pembayaran_penjualan = Detail_pembayaran_penjualan::where('id_pembayaran_penjualan',$id)->first();
+        $penjualan = penjualan::find($detail_pembayaran_penjualan->id_penjualan);
+        if($penjualan->jumlah_terbayar - $detail_pembayaran_penjualan->jumlah > 0){
+            $penjualan->jumlah_terbayar = $penjualan->jumlah_terbayar - $detail_pembayaran_penjualan->jumlah;
+        }else{
+            $penjualan->jumlah_terbayar = null;
+        }
+        $penjualan->sisa_tagihan = $penjualan->sisa_tagihan + $detail_pembayaran_penjualan->jumlah;
+        if($penjualan->total == $penjualan->sisa_tagihan){
+            $penjualan->status = 'open';
+        }else{
+            $penjualan->status = 'partial';
+        }
+        $penjualan->tanggal_pembayaran = null;
+        $penjualan->save();
+
+        $detail_pembayaran_penjualan->delete();
+
+        DB::commit();
+        return redirect('penjualan/detail/'.$detail_pembayaran_penjualan->id_penjualan);
     }
 
     public function cetak_surat_jalan($id){

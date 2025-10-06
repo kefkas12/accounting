@@ -2,13 +2,11 @@
 
 @section('content')
     @include('layouts.headers.cards')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <!-- Page content -->
     <style>
-        .form-control {
-            height: 40px !important;
-
-        }
-
         .table th,
         .table td {
             padding: 10px !important;
@@ -18,11 +16,18 @@
         <div class="row">
             <div class="col">
                 <div class="card mb-5">
-                    <div class="card-header bg-transparent border-0">
-                        Transaksi <br>
-                        <h2>Pengiriman Pembayaran</h2>
+                    <div class="card-body border-0 text-sm">
+                        <div class="form-row">
+                            <div class="form-group col-md-9 pr-2">
+                                <a href="{{ url('pembelian') }}">Transaksi</a>
+                                <h2>Pengiriman Pembayaran</h2>
+                            </div>
+                        </div>
                     </div>
-                    <form method="POST" action="{{ url('pembelian/pembayaran') }}">
+                    <form method="POST" id="insertForm"
+                        action="{{ url('pembelian/pembayaran') }}"
+                        enctype="multipart/form-data"
+                    >
                         @csrf
                         <div class="card-body " style="padding: 0px !important;">
                             <div style="background-color: #E0F7FF; border-top: 2px solid #B3D7E5;">
@@ -34,7 +39,7 @@
                                 <div class="row mb-4">
                                     <div class="col-sm-3"><strong>{{ $pembayaran->nama_supplier }}</strong></div>
                                     <div class="col-sm-5">
-                                        <select class="form-control" name="setor_ke" id="setor_ke">
+                                        <select class="form-control form-control-sm" name="setor_ke" id="setor_ke">
                                             @foreach ($akun as $v)
                                                 <option value="{{ $v->id }}">({{ $v->nomor }}) - {{ $v->nama }}
                                                     ({{ $v->nama_kategori }})</option>
@@ -58,17 +63,17 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-sm-3">
-                                        <select class="form-control" name="cara_pembayaran" id="cara_pembayaran">
+                                        <select class="form-control form-control-sm" name="cara_pembayaran" id="cara_pembayaran">
                                             <option>Kas Tunai</option>
                                             <option>Cek & Giro</option>
                                             <option>Transfer Bank</option>
                                             <option>Kartu Kredit</option>
                                         </select>
                                     </div>
-                                    <div class="col-sm-3"><input type="date" class="form-control" id="tanggal_transaksi"
-                                            name="tanggal_transaksi" value="{{ date('Y-m-d') }}"></div>
-                                    <div class="col-sm-3"><input type="date" class="form-control" id="tanggal_jatuh_tempo"
-                                            name="tanggal_jatuh_tempo"></div>
+                                    <div class="col-sm-3"><input type="date" class="form-control form-control-sm" id="tanggal_transaksi"
+                                            name="tanggal_transaksi" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}"></div>
+                                    <div class="col-sm-3"><input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
+                                            name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;"></div>
                                     <div class="col-sm-3"></div>
                                 </div>
                             </div>
@@ -90,15 +95,13 @@
                                             <tr>
                                                 <td>{{ $v->no_str }}</td>
                                                 <td></td>
-                                                <td>{{ $v->tanggal_jatuh_tempo }}</td>
-                                                <td>{{ $v->total }}</td>
-                                                <td>{{ $v->sisa_tagihan }}</td>
+                                                <td>{{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }}</td>
+                                                <td>{{ number_format($v->total, 2, ',', '.') }}</td>
+                                                <td>{{ number_format($v->sisa_tagihan, 2, ',', '.') }}</td>
                                                 <td>
                                                     <input type="text" name="id_pembelian[]" value="{{ $v->id }}" hidden>
-                                                    <input type="number" class="form-control"
-                                                        name="total[]" id="total_{{ $v->id }}"
-                                                        onkeyup="change_total({{ $v->id }})" 
-                                                        @if($v->id == $pembelian->id) value="{{ $v->sisa_tagihan }}" @endif step="any">
+                                                    <input type="text" class="form-control form-control-sm" name="total[]" 
+                                                        id="total_{{ $v->id }}" onkeyup="change_total({{ $v->id }})" step="any">
                                                 </td>
                                             </tr>
                                             @endif
@@ -135,25 +138,71 @@
         </div>
     </div>
     <script>
+        var total = {};
+        var result_total = 0;
+
+        function load() {
+
+            result_total = 0;
+            for (var key in total) {
+                result_total += total[key];
+            }
+
+            $('#subtotal').text(rupiah(result_total));
+            $('#total_pembayaran').text(rupiah(result_total));
+
+            $('#input_subtotal').val(result_total);
+        }
+
         $( document ).ready(function() {
+            const fp_transaksi = flatpickr("#tanggal_transaksi", {
+                dateFormat: "d/m/Y" // Contoh format: DD/MM/YYYY
+            });
+            fp_transaksi.setDate(new Date('{{ date("Y-m-d") }}'));
+
+            const fp_jatuh_tempo = flatpickr("#tanggal_jatuh_tempo", {
+                dateFormat: "d/m/Y"
+            });
+            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
+
+            $('#total_{{ $pembelian->id }}').val('{{ $v->sisa_tagihan }}');
+
+            load_select_2({{ $pembelian->id }});
             change_total({{ $pembelian->id }});
         });
         var total = {};
 
         function change_total(no) {
-            total[no] = $('#total_' + no).val() ? parseFloat($('#total_' + no).val()) : 0 ;
+            total[no] = $('#total_' + no).val() ? parseFloat(AutoNumeric.getNumber('#total_' + no)) : 0 ;
             load();
         }
 
-        function load() {
-            result_total = 0;
-            for (var key in total) {
-                result_total += total[key];
-            }
-            $('#subtotal').text(rupiah(result_total));
-            $('#total_pembayaran').text(rupiah(result_total));
+        function load_select_2(id) {
+            new AutoNumeric("#total_" + id, {
+                commaDecimalCharDotSeparator: true,
+                watchExternalChanges: true,
+                modifyValueOnWheel : false
+            });
 
-            $('#input_subtotal').val(result_total);
+            // ==== Anti drag-copy ====
+            const $total  = $("#total_" + id);
+
+            // 1) Cegah mulai drag dari field AutoNumeric (sumber)
+            [$total].forEach($el => {
+                $el.attr("draggable", "false")                 // hint untuk browser
+                .on("dragstart", e => e.preventDefault());  // benar-benar blok
+            });
+
+            // 2) Cegah drop ke field angka lain (target)
+            //    Sesuaikan selector target sesuai form kamu.
+            $(document).on("drop", "input[type=number], input.autonum, #total_"+id, function(e){
+                e.preventDefault();
+            });
+
+            // (Opsional) Safari/WebKit agar makin kuat
+            [$total].forEach($el => {
+                $el.css("-webkit-user-drag", "none");
+            });
         }
 
     </script>

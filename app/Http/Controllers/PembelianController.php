@@ -454,6 +454,8 @@ class PembelianController extends Controller
 
     public function penerimaan_pembayaran(Request $request)
     {
+        $data['sidebar'] = 'pembelian';
+
         DB::beginTransaction();
         $jurnal = new Jurnal;
         $jurnal->pembayaran_pembelian($request);
@@ -827,18 +829,23 @@ class PembelianController extends Controller
         $pembayaran_pembelian->delete();
         $detail_pembayaran_pembelian = Detail_pembayaran_pembelian::where('id_pembayaran_pembelian',$id)->first();
         $pembelian = Pembelian::find($detail_pembayaran_pembelian->id_pembelian);
-        $pembelian->jumlah_terbayar = $pembelian->jumlah_terbayar - $detail_pembayaran_pembelian->jumlah;
+        if($pembelian->jumlah_terbayar - $detail_pembayaran_pembelian->jumlah > 0){
+            $pembelian->jumlah_terbayar = $pembelian->jumlah_terbayar - $detail_pembayaran_pembelian->jumlah;
+        }else{
+            $pembelian->jumlah_terbayar = null;
+        }
         $pembelian->sisa_tagihan = $pembelian->sisa_tagihan + $detail_pembayaran_pembelian->jumlah;
         if($pembelian->total == $pembelian->sisa_tagihan){
             $pembelian->status = 'open';
         }else{
             $pembelian->status = 'partial';
         }
+        $pembelian->tanggal_pembayaran = null;
         $pembelian->save();
 
         $detail_pembayaran_pembelian->delete();
 
         DB::commit();
-        return redirect('pembelian');
+        return redirect('pembelian/detail/'.$detail_pembayaran_pembelian->id_pembelian);
     }
 }

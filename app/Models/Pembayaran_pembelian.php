@@ -54,16 +54,18 @@ class Pembayaran_pembelian extends Model
     protected function insertDetailPembayaranPembelian(Request $request)
     {
         for ($i = 0; $i < count($request->input('id_pembelian')); $i++) {
+            $total = $request->input('total')[$i] != '' || $request->input('total')[$i] != null ? number_format((float)str_replace(",", "", $_POST['total'][$i]), 2, '.', '') : 0;
             if($request->input('total')[$i] != '' && $request->input('total')[$i] != null ){
                 $detail_pembelian = new Detail_pembayaran_pembelian;
+                $detail_pembelian->id_company = Auth::user()->id_company;
                 $detail_pembelian->id_pembayaran_pembelian = $this->id;
                 $detail_pembelian->id_pembelian = $request->input('id_pembelian')[$i];
-                $detail_pembelian->jumlah = $request->input('total')[$i];
+                $detail_pembelian->jumlah = $total;
                 $detail_pembelian->save();
 
                 $pembelian = Pembelian::find($request->input('id_pembelian')[$i]);
-                $pembelian->jumlah_terbayar = $pembelian->jumlah_terbayar + $request->input('total')[$i];
-                $pembelian->sisa_tagihan = $pembelian->sisa_tagihan - $request->input('total')[$i];
+                $pembelian->jumlah_terbayar = $pembelian->jumlah_terbayar + $total;
+                $pembelian->sisa_tagihan = $pembelian->sisa_tagihan - $total;
                 if($pembelian->sisa_tagihan == 0){
                     $pembelian->status = 'paid';
                 }else{

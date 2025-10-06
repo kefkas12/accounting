@@ -317,7 +317,8 @@
                                                     <option value="11" data-persen="11">PPN</option>
                                                 </select>
                                             </td>
-                                            <td style="padding: 10px !important;display:none;"><input type="text" class="form-control form-control-sm" id="jumlah_1" name="jumlah[]" value="0" onblur="change_jumlah(1)" @if(isset($pemesanan)) disabled @endif></td>
+                                            <td style="padding: 10px !important;display:none;"><input type="text" class="form-control form-control-sm" id="jumlah_1" name="jumlah[]" 
+                                                    value="0" step="any" onblur="change_jumlah(1)" @if(isset($pemesanan)) disabled @endif></td>
                                         </tr>
                                     </tbody>
                                 </table>

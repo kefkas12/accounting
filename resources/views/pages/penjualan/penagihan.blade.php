@@ -120,7 +120,7 @@
                                         <a href="{{ url('penjualan/detail').'/'.$penjualan->id }}">{{ $penjualan->no_str }}</a>
                                     </div>
                                 </div>
-                                </div>
+                            </div>
                             @endif
                             <div class="form-row">
                                 <div class="form-group col-md-3 pr-2">
@@ -214,8 +214,11 @@
                                     <!-- Your table headers -->
                                     <thead>
                                         <tr>
-                                            <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Produk</th>
-                                            <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Deskripsi</th>
+                                            @if(isset($produk_penawaran))
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;display:none;">Produk Penawaran</th>
+                                            @endif
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Produk</th>
+                                            <th scope="col" style="min-width: 150px !important; padding: 10px !important;">Deskripsi</th>
                                             @if(isset($multiple_gudang))
                                                 @if(isset($gudang))
                                                     @foreach($gudang as $v)
@@ -237,6 +240,16 @@
                                     </thead>
                                     <tbody id="list">
                                         <tr>
+                                            @if(isset($produk_penawaran))
+                                                <td style="padding: 10px !important;display:none;">
+                                                    <select class="form-control form-control-sm" name="produk_penawaran[]" id="produk_penawaran_1" required disabled>
+                                                        <option selected disabled hidden value="">Pilih Produk Penawaran</option>
+                                                        @foreach ($produk_penawaran as $v)
+                                                            <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                            @endif
                                             <td style="padding: 10px !important;">
                                                 <select class="form-control form-control-sm" name="produk[]" id="produk_1" onchange="get_data(this, 1)" required @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
                                                     <option selected disabled hidden value="">Pilih produk</option>
@@ -295,8 +308,10 @@
                                             </td>
                                             <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="jumlah_1" name="jumlah[]"
                                                     value="0" step="any" @if(isset($pemesanan) || isset($pengiriman)) disabled @endif></td>
-                                            @if(!isset($pemesanan))<td style="padding: 10px !important;"><a href="javascript:;" onclick="create_row()"><i
-                                                        class="fa fa-plus text-primary"></i></a></td>@endif
+                                            @if(!isset($pemesanan))
+                                            <td style="padding: 10px !important;"><a href="javascript:;" onclick="create_row()"><i
+                                                    class="fa fa-plus text-primary"></i></a></td>
+                                            @endif
                                         </tr>
                                     </tbody>
                                 </table>
@@ -443,7 +458,6 @@
             for (var key in diskon_per_baris) {
                 result_diskon_per_baris += diskon_per_baris[key];
             }
-
             
             $('#subtotal').text(rupiah(result_subtotal));
             $('#ppn').text(rupiah(result_ppn));
@@ -710,6 +724,16 @@
             i++;
             $('#list').append(`
                 <tr id="list_${i}">
+                    @if(isset($produk_penawaran))
+                        <td style="padding: 10px !important;display:none;">
+                            <select class="form-control form-control-sm" name="produk_penawaran[]" id="produk_penawaran_${i}" required disabled>
+                                <option selected disabled hidden value="">Pilih Produk Penawaran</option>
+                                @foreach ($produk_penawaran as $v)
+                                    <option value="{{ $v->id }}">{{ $v->nama }}</option>
+                                @endforeach
+                            </select>
+                        </td>
+                    @endif
                     <th style="padding: 10px !important;">
                         <select class="form-control form-control-sm" name="produk[]" id="produk_${i}" onchange="get_data(this, ${i})" required @if(isset($pemesanan) || isset($pengiriman)) disabled @endif>
                             <option selected disabled hidden value="">Pilih produk</option>
@@ -815,7 +839,9 @@
                 $('#email').val('{{ $penjualan->email }}')
                 $('#detail_alamat').val('{{ $penjualan->detail_alamat }}')
                 fp_transaksi.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
-                $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
+                fp_pengiriman.setDate(new Date('{{ $penjualan->tanggal_pengiriman }}'));
+                fp_jatuh_tempo.setDate(new Date('{{ $penjualan->tanggal_jatuh_tempo }}'));
+                
                 $('#gudang').val('{{ $penjualan->id_gudang }}')
 
                 $('#kirim_melalui').val('{{ $penjualan->kirim_melalui }}')
@@ -831,18 +857,29 @@
                 var x = 1;
                 load_select_2(x);
                 @foreach($detail_penjualan as $v)
+                    @if($v->produk_penawaran->produk)
+                    $('#produk_penawaran_'+x).val('{{ $v->id_produk_penawaran }}').trigger('change');
+                    $('#produk_'+x).val('{{ $v->produk_penawaran->produk->id }}').trigger('change');
+                    @else
                     $('#produk_'+x).val('{{ $v->id_produk }}').trigger('change');
+                    @endif
+                    $("#produk_"+x).prop("disabled", true);
                     $('#deskripsi_'+x).val('{{ $v->deskripsi }}');
                     @if(isset($multiple_gudang))
-                    @php
-                        $stokMap = [];
-                        foreach ($v->stok_gudang as $w) {
-                            $stokMap[$w->id_gudang] = $w->stok;
-                        }
-                    @endphp
-                    @foreach($gudang as $g)
-                        $('#kuantitas_'+{{ $g->id }}+'_'+x).val('{{ $stokMap[$g->id] ?? 0 }}').trigger('keyup');
-                    @endforeach
+                        @php
+                            $stok_temp = 0;
+                            $stokMap = [];
+                            foreach ($v->stok_gudang as $w) {
+                                $stokMap[$w->id_gudang] = $w->stok;
+                                $stok_temp += $w->stok;
+                            }
+                        @endphp
+                        @foreach($gudang as $g)
+                            $('#kuantitas_'+{{ $g->id }}+'_'+x).val('{{ $stokMap[$g->id] ?? 0 }}').trigger('keyup');
+                        @endforeach
+                        @if($stok_temp == 0)
+                            $('#kuantitas_'+{{ $gudang->first()->id }}+'_'+x).val('{{ $v->kuantitas }}');
+                        @endif
                     @else
                         $('#kuantitas_'+x).val('{{ $v->kuantitas }}').trigger('keyup');
                     @endif
