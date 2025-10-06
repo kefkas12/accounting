@@ -424,12 +424,11 @@ class Penjualan extends Model
                                 $request->input('kuantitas_'.$v->id)[$i],
                                 DateTime::createFromFormat('d/m/Y', $request->tanggal_transaksi)->format('Y-m-d'),
                                 $tipe,
-                                $jenis
+                                $jenis_transaksi
                             );
                         }
                     }
-                    if($jenis == 'pengiriman')
-                        $this->updateStok($request->input('produk')[$i], $kuantitas,'insert');
+                    $this->updateStok($request->input('produk')[$i], $kuantitas,'insert');
                 }else{
                     $this->insertStokGudang(
                         $this->id,
@@ -441,8 +440,7 @@ class Penjualan extends Model
                         $tipe,
                         $jenis_transaksi
                     );
-                    if($jenis == 'pengiriman')
-                        $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i],'insert');
+                    $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i],'insert');
                 }
             }
         }
@@ -470,11 +468,7 @@ class Penjualan extends Model
         $stok_gudang->id_detail_transaksi = $id_detail_transaksi;
         $stok_gudang->id_produk = $produk;
         $stok_gudang->id_gudang = $gudang;
-        // if($jenis == 'pemesanan'){
         $stok_gudang->stok = $kuantitas;
-        // }else{
-            // $stok_gudang->stok = $stok_gudang->stok - $kuantitas;
-        // }
         $stok_gudang->tanggal = $tanggal;
         $stok_gudang->tipe = $tipe;
         $stok_gudang->jenis = $jenis;
@@ -771,8 +765,8 @@ class Penjualan extends Model
                 $transaksi_produk->unit = $produk->unit;
                 $transaksi_produk->save();
             }
-            if($jenis != 'penawaran' && $jenis != 'pemesanan'){
-                if($jenis == 'pengiriman' && isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
+            if($jenis == 'pengiriman'){
+                if(isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
                     foreach($gudang as $v){
                         if($request->input('kuantitas_'.$v->id)[$i]){
                             $this->updateStokGudang(
@@ -783,10 +777,11 @@ class Penjualan extends Model
                                 $request->input('kuantitas_'.$v->id)[$i],
                                 DateTime::createFromFormat('d/m/Y', $request->tanggal_transaksi)->format('Y-m-d'),
                                 $tipe,
-                                $jenis
+                                $jenis_transaksi
                             );
                         }
                     }
+                    $this->updateStok($request->input('produk')[$i], $kuantitas,'update');
                 }else{
                     $this->updateStokGudang(
                         $this->id,
@@ -798,6 +793,7 @@ class Penjualan extends Model
                         $tipe,
                         $jenis_transaksi
                     );
+                    $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i],'update');
                 }
             }
         }

@@ -90,6 +90,7 @@
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Sisa Tagihan</th>
                                                 <th scope="col">Total</th>
+                                                <th scope="col">Produk</th>
                                             </tr>
                                         </thead>
                                         <tbody class="list">
@@ -110,6 +111,7 @@
                                                 </td>
                                                 <td>Rp {{ number_format($v->sisa_tagihan,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
+                                                <td>@foreach($v->detail_pembelian as $w) {{ $w->produk->nama }} @endforeach</td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -120,18 +122,19 @@
                                 aria-labelledby="nav-pengiriman-tab">
                                 <div class="table-responsive">
                                     <table class="table align-items-center table-flush" id="pengirimanTable">
-                                        <thead >
+                                        <thead>
                                             <tr>
                                                 <th scope="col">Tanggal</th>
                                                 <th scope="col">No</th>
                                                 <th scope="col">Supplier </th>
                                                 <th scope="col">Status</th>
+                                                <th scope="col">Produk</th>
                                             </tr>
                                         </thead>
                                         <tbody class="list">
                                             @foreach($pengiriman as $v)
                                             <tr>
-                                                <td>{{ $v->tanggal_transaksi }}</td>
+                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
                                                 <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->nama_supplier }}</td>
                                                 <td>
@@ -143,6 +146,7 @@
                                                     {{ $v->status }}
                                                     </button>
                                                 </td>
+                                                <td>@foreach($v->detail_pembelian as $w) {{ $w->produk->nama }} @endforeach</td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -162,12 +166,13 @@
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Jumlah DP</th>
                                                 <th scope="col">Total</th>
+                                                <th scope="col">Produk</th>
                                             </tr>
                                         </thead>
                                         <tbody class="list">
                                             @foreach($pemesanan as $v)
                                             <tr>
-                                                <td>{{ $v->tanggal_transaksi }}</td>
+                                                <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
                                                 <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
                                                 <td>{{ $v->nama_supplier }}</td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
@@ -182,6 +187,7 @@
                                                 </td>
                                                 <td>Rp {{ number_format($v->dp,2,',','.') }}</td>
                                                 <td>Rp {{ number_format($v->total,2,',','.') }}</td>
+                                                <td>@foreach($v->detail_pembelian as $w) {{ $w->produk->nama }} @endforeach</td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -233,18 +239,18 @@
     </div>
     <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
     <script>
-        let penawaranTable = new DataTable('#penawaranTable', {
-                                columnDefs: [
-                                    {
-                                        target: 6,
-                                        visible: false
-                                    }
-                                ]
-                            });
+        // let penawaranTable = new DataTable('#penawaranTable', {
+        //                         columnDefs: [
+        //                             {
+        //                                 target: 6,
+        //                                 visible: false
+        //                             }
+        //                         ]
+        //                     });
         let pemesananTable = new DataTable('#pemesananTable', {
                                 columnDefs: [
                                     {
-                                        target: 6,
+                                        target: 7,
                                         visible: false
                                     }
                                 ]
@@ -252,7 +258,7 @@
         let pengirimanTable = new DataTable('#pengirimanTable', {
                                 columnDefs: [
                                     {
-                                        target: 3,
+                                        target: 4,
                                         visible: false
                                     }
                                 ]
@@ -260,7 +266,7 @@
         let fakturTable = new DataTable('#fakturTable', {
                                 columnDefs: [
                                     {
-                                        target: 6,
+                                        target: 7,
                                         visible: false
                                     }
                                 ]

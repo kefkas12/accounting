@@ -138,7 +138,7 @@
                             <div class="tab-pane fade" id="nav-pesanan" role="tabpanel"
                                 aria-labelledby="nav-pesanan-tab">
                                 <div class="table-responsive">
-                                    <table class="table align-items-center table-flush" id="pesananTable">
+                                    <table class="table align-items-center table-flush" id="pemesananTable">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Tanggal</th>
@@ -450,7 +450,7 @@
                                 ]
                             });
         @endif
-        let pesananTable = new DataTable('#pesananTable', {
+        let pemesananTable = new DataTable('#pemesananTable', {
                                 columnDefs: [
                                     {
                                         target: 7,

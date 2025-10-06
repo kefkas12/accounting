@@ -237,7 +237,6 @@ class Pembelian extends Model
             $transaksi_produk->save();
 
             $jenis_transaksi = $transaksi_produk->jenis;
-
             if($jenis == 'pengiriman'){
                 $this->insertStokGudang(
                     $this->id,
@@ -249,8 +248,7 @@ class Pembelian extends Model
                     $tipe,
                     $jenis_transaksi
                 );
-                if($jenis == 'pengiriman')
-                    $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i],'insert');
+                $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i],'insert');
             }
         }
     }
@@ -416,7 +414,7 @@ class Pembelian extends Model
                 $transaksi_produk->save();
             }
 
-            if($jenis != 'penawaran' && $jenis != 'pemesanan') {
+            if($jenis == 'pengiriman') {
                 $this->updateStokGudang(
                     $this->id,
                     $detail_pembelian->id,
@@ -427,6 +425,7 @@ class Pembelian extends Model
                     $tipe,
                     $jenis_transaksi
                 );
+                $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i],'update');
             }
         }
     }
