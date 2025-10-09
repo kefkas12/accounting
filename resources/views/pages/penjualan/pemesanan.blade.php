@@ -762,7 +762,7 @@
                     @else
                         <td style="padding: 10px !important;"><input type="number" class="form-control form-control-sm" id="kuantitas_${i}" name="kuantitas[]" value="1" onkeyup="change_harga(${i})" onblur="check_null(this)" step="any"></td>
                     @endif
-                    <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onkeyup="change_harga(${i})"></td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="harga_satuan_${i}" name="harga_satuan[]" value="0" onblur="change_harga(${i})"></td>
                     <td style="padding: 10px !important;">
                         <div class="input-group input-group-sm">
                             <div class="input-group-prepend">
@@ -918,7 +918,6 @@
                 success: function (response) {
                     $('#alamat').append('<option selected disabled hidden value="">Pilih Alamat</option>');
                     for(var i = 0; i < response.length; i++){
-                        console.log(response[i]);
                         $('#alamat').append('<option>'+response[i].alamat+'</option>');
                     }
                 }
