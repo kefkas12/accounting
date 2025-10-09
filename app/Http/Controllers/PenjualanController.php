@@ -137,6 +137,24 @@ class PenjualanController extends Controller
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->sum('sisa_tagihan'),2,',','.');
 
+        $data['telat_dibayar'] = number_format(Penjualan::where('status','open')
+                                        ->where('penjualan.tanggal_jatuh_tempo','<',date('Y-m-d'))
+                                        ->where('penjualan.jenis','penagihan')
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->sum('sisa_tagihan'),2,',','.');
+        
+        $start = now()->subDays(30)->startOfDay();
+        $end   = now()->endOfDay();
+        $data['pelunasan_30_hari_terakhir'] = number_format(Penjualan::leftJoin('detail_pembayaran_penjualan','penjualan.id','=','detail_pembayaran_penjualan.id_penjualan')
+                                        ->leftJoin('pembayaran_penjualan','detail_pembayaran_penjualan.id_pembayaran_penjualan','=','pembayaran_penjualan.id')
+                                        ->whereRaw(
+                                            "STR_TO_DATE(pembayaran_penjualan.tanggal_transaksi, '%d/%m/%Y') BETWEEN ? AND ?",
+                                            [$start, $end]
+                                        )
+                                        ->where('penjualan.jenis','penagihan')
+                                        ->where('penjualan.id_company',Auth::user()->id_company)
+                                        ->sum('jumlah_terbayar'),2,',','.');
+
         $approval = new Approval;
         $data['is_approver'] = $approval->check_approver('penjualan');
 
@@ -248,11 +266,30 @@ class PenjualanController extends Controller
         }
     }
 
+    public function penagihan_pembayaran($id)
+    {
+        $data['sidebar'] = 'penjualan';
+        $data['penagihan_payment'] = true;
+        $data['akun'] = Akun::where('id_kategori',3)->get();
+        $data['penjualan'] = Penjualan::where('id',$id)->first();
+        $data['pembayaran'] = Kontak::with(['penjualan' => function ($query){
+                                        $query->where('jenis','penagihan');
+                                        $query->orderBy('id', 'desc');
+                                    }])
+                                    ->select('kontak.*','kontak.nama as nama_pelanggan')
+                                    ->where('kontak.id',$data['penjualan']->id_pelanggan)
+                                    ->where('kontak.id_company',Auth::user()->id_company)
+                                    ->first();
+        return view('pages.penjualan.pembayaran', $data);
+    }
+
     public function pembayaran($id)
     {
         $data['sidebar'] = 'penjualan';
+        $data['payment'] = true;
         $data['akun'] = Akun::where('id_kategori',3)->get();
-        $data['penjualan'] = Penjualan::where('id',$id)->first();
+        $data['detail_pembayaran_penjualan'] = Detail_pembayaran_penjualan::where('id_pembayaran_penjualan',$id)->first();
+        $data['penjualan'] = Penjualan::where('id',$data['detail_pembayaran_penjualan']->id_penjualan)->first();
         $data['pembayaran'] = Kontak::with(['penjualan' => function ($query){
                                         $query->where('jenis','penagihan');
                                         $query->orderBy('id', 'desc');
@@ -267,10 +304,17 @@ class PenjualanController extends Controller
     public function penagihan($id=null)
     {
         $data['sidebar'] = 'penjualan';
+        $data['produk_penawaran'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                                ->where('fitur','Produk penawaran')
+                                                ->where('status','active')
+                                                ->first();
         // $data['multiple_gudang'] = Pengaturan_produk::where('id_company',Auth::user()->id_company)
-        //                                         ->where('fitur','Multiple gudang')
-        //                                         ->where('status','active')
-        //                                         ->first();
+                                                // ->where('fitur','Multiple gudang')
+                                                // ->where('status','active')
+                                                // ->first();
+        if(isset($data['produk_penawaran'])){
+            $data['produk_penawaran'] = Produk_penawaran::where('id_company',Auth::user()->id_company)->get();
+        }
         $data['produk'] = Produk::where('id_company',Auth::user()->id_company)->get();
         $data['pelanggan'] = Kontak::where('tipe','pelanggan')
                                     ->where('id_company',Auth::user()->id_company)
@@ -298,6 +342,7 @@ class PenjualanController extends Controller
             if($data['penjualan']->id_pengiriman){
                 $data['pengiriman'] = true;
             }
+            //skt
             $data['detail_penjualan'] = Detail_penjualan::with('stok_gudang')->where('id_penjualan',$id)->get();
         }
         $data['pengaturan_dokumen'] = Pengaturan_dokumen::where('id_company',Auth::user()->id_company)
@@ -713,10 +758,8 @@ class PenjualanController extends Controller
         return view('pages.penjualan.penagihan', $data);
     }
 
-    public function penerimaan_pembayaran(Request $request)
+    public function insert_penagihan_pembayaran(Request $request)
     {
-        $data['sidebar'] = 'penjualan';
-        
         DB::beginTransaction();
         $jurnal = new Jurnal;
         $jurnal->pembayaran_penjualan($request);
@@ -728,12 +771,26 @@ class PenjualanController extends Controller
         return redirect('penjualan/receive_payment/'.$pembayaran_penjualan->id);
     }
 
+    public function update_pembayaran(Request $request, $id)
+    {
+        DB::beginTransaction();
+        $pembayaran_penjualan = Pembayaran_penjualan::find($id);
+        $jurnal = Jurnal::find($pembayaran_penjualan->id_jurnal);
+        $jurnal->pembayaran_penjualan($request, $id);
+        $pembayaran_penjualan->ubah($request, $jurnal->id);
+        DB::commit();
+
+        return redirect('penjualan/receive_payment/'.$pembayaran_penjualan->id);
+    }
+
     public function receive_payment(Request $request, $id)
     {
         $data['sidebar'] = 'penjualan';
+        $data['pembayaran_penjualan'] = Pembayaran_penjualan::where('id',$id)->first();
         $data['detail_pembayaran_penjualan'] = Detail_pembayaran_penjualan::with('pembayaran_penjualan', 'penjualan.kontak')
                                             ->where('id_pembayaran_penjualan',$id)
                                             ->get();
+        $data['penjualan'] = Detail_pembayaran_penjualan::where('id_pembayaran_penjualan',$id)->first();
         $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
                                             ->leftJoin('pembayaran_penjualan','jurnal.id','=','pembayaran_penjualan.id_jurnal')
                                             ->select('jurnal.*')

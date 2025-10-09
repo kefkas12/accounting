@@ -79,7 +79,7 @@
                                     @endphp
                                     @foreach($detail_pembayaran_pembelian as $v)
                                     <tr>
-                                        <td>{{ $v->pembelian->no_str }}</td>
+                                        <td><a href="{{ url('pembelian/detail').'/'.$v->pembelian->id }}">{{ $v->pembelian->no_str }}</a></td>
                                         <td></td>
                                         <td class="d-flex justify-content-end">Rp. {{ number_format($v->jumlah,2,',','.') }}</td>
                                     </tr>
@@ -117,6 +117,7 @@
                                 @endhasallroles
                             </div>
                             <div class="col-sm-6 d-flex justify-content-end">
+                                <a href="{{ url('pembelian/pembayaran') . '/' . $pembayaran_pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
                             </div>
                         </div>
                     </div>

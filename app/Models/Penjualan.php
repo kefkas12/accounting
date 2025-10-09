@@ -428,7 +428,7 @@ class Penjualan extends Model
                             );
                         }
                     }
-                    $this->updateStok($request->input('produk')[$i], $kuantitas,'insert');
+                    $this->updateStok($request->input('produk')[$i], $kuantitas);
                 }else{
                     $this->insertStokGudang(
                         $this->id,
@@ -440,23 +440,16 @@ class Penjualan extends Model
                         $tipe,
                         $jenis_transaksi
                     );
-                    $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i],'insert');
+                    $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i]);
                 }
             }
         }
     }
 
-    public function updateStok($id_produk, $kuantitas, $status, $id_penjualan = null)
+    public function updateStok($id_produk, $kuantitas)
     {
-        $produk = Produk::find($id_produk);
-        if($status == 'update'){
-            $detail_penjualan = Detail_penjualan::where('id_penjualan',$id_penjualan)
-                                                ->where('id_produk',$id_produk)
-                                                ->first();
-            $produk->stok = $produk->stok + $detail_penjualan->kuantitas - $kuantitas;
-        }else{
-            $produk->stok = $produk->stok - $kuantitas;
-        }
+        $produk = Produk::find((int)$id_produk);
+        $produk->stok = $produk->stok - $kuantitas;
         $produk->save();
     }
 
@@ -642,6 +635,16 @@ class Penjualan extends Model
         Transaksi_produk::where('id_transaksi',$this->id)->delete();
         Stok_gudang::where('id_transaksi',$this->id)->delete();
 
+        $detail_penjualan = Detail_penjualan::where('id_penjualan',$this->id);
+        foreach($detail_penjualan->get() as $v){
+            if($jenis != 'penawaran'){
+                $produk = Produk::find($v->id_produk);
+                $produk->stok = $produk->stok + $v->kuantitas;
+                $produk->save();
+            }
+        }
+        $detail_penjualan->delete();
+
         for ($i = 0; $i < count($index); $i++) {
             $kuantitas = 0;
             $harga_satuan = $request->input('harga_satuan')[$i] != '' || $request->input('harga_satuan')[$i] != null ? number_format((float)str_replace(",", "", $_POST['harga_satuan'][$i]), 2, '.', '') : 0;
@@ -680,9 +683,6 @@ class Penjualan extends Model
                     $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i], 'update', $this->id);
                 }
             }
-            Detail_penjualan::where('id_penjualan',$this->id)
-                            ->where('id_produk',$request->input('produk')[$i])
-                            ->delete();
 
             $detail_penjualan->save();
 
@@ -781,7 +781,7 @@ class Penjualan extends Model
                             );
                         }
                     }
-                    $this->updateStok($request->input('produk')[$i], $kuantitas,'update');
+                    $this->updateStok($request->input('produk')[$i], $kuantitas);
                 }else{
                     $this->updateStokGudang(
                         $this->id,
@@ -793,7 +793,7 @@ class Penjualan extends Model
                         $tipe,
                         $jenis_transaksi
                     );
-                    $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i],'update');
+                    $this->updateStok($request->input('produk')[$i], $request->input('kuantitas')[$i]);
                 }
             }
         }

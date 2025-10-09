@@ -20,11 +20,15 @@
                         <div class="form-row">
                             <div class="form-group col-md-9 pr-2">
                                 <a href="{{ url('penjualan') }}">Transaksi</a>
-                                <h2>Penerimaan Bayaran</h2>
+                                <h2>Penerimaan Pembayaran</h2>
                             </div>
                         </div>
                         <form method="POST" id="insertForm"
-                            action="{{ url('penjualan/pembayaran') }}"
+                            @if(isset($penagihan_payment))
+                                action="{{ url('penjualan/penagihan/pembayaran').'/'.$penjualan->id }}"
+                            @elseif(isset($payment))
+                                action="{{ url('penjualan/pembayaran').'/'.$detail_pembayaran_penjualan->id_pembayaran_penjualan }}"
+                            @endif
                             enctype="multipart/form-data"
                         >
                             @csrf
@@ -89,7 +93,6 @@
                                         </thead>
                                         <tbody>
                                             @foreach ($pembayaran->penjualan as $v)
-                                                @if($v->sisa_tagihan != 0)
                                                 <tr>
                                                     <td>{{ $v->no_str }}</td>
                                                     <td></td>
@@ -102,7 +105,6 @@
                                                             id="total_{{ $v->id }}" onkeyup="change_total({{ $v->id }})" step="any">
                                                     </td>
                                                 </tr>
-                                                @endif
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -164,7 +166,11 @@
             });
             fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
             
-            $('#total_{{ $penjualan->id }}').val('{{ $v->sisa_tagihan }}');
+            @if(isset($payment))
+                $('#total_{{ $penjualan->id }}').val('{{ $detail_pembayaran_penjualan->jumlah }}');
+            @else
+                $('#total_{{ $penjualan->id }}').val('{{ $v->sisa_tagihan }}');
+            @endif
 
             load_select_2({{ $penjualan->id }});
             change_total({{ $penjualan->id }});

@@ -43,7 +43,18 @@ class GudangController extends Controller
                 return view('pages.gudang.form', $data);
             }else if($status == 'detail'){
                 $data['daftar_produk'] = Stok_gudang::leftJoin('produk','stok_gudang.id_produk','=','produk.id')
-                                                ->select('produk.id','produk.kode','produk.nama',DB::raw('SUM(stok_gudang.stok) AS stok'))
+                                                ->select('produk.id','produk.kode','produk.nama')
+                                                ->selectRaw("
+                                                    COALESCE(SUM(
+                                                        CASE 
+                                                            WHEN stok_gudang.tipe LIKE 'Pengiriman Pembelian%'
+                                                                THEN stok_gudang.stok
+                                                            WHEN stok_gudang.tipe LIKE 'Pengiriman Penjualan%'
+                                                                THEN -stok_gudang.stok
+                                                            ELSE 0
+                                                        END
+                                                    ), 0) as stok
+                                                ")
                                                 ->where('id_gudang',$id)
                                                 ->groupBy('stok_gudang.id_produk')
                                                 ->get();

@@ -25,7 +25,11 @@
                         </div>
                     </div>
                     <form method="POST" id="insertForm"
-                        action="{{ url('pembelian/pembayaran') }}"
+                    @if(isset($faktur_payment))
+                        action="{{ url('pembelian/faktur/pembayaran').'/'.$pembelian->id }}"
+                    @elseif(isset($payment))
+                        action="{{ url('pembelian/pembayaran').'/'.$detail_pembayaran_pembelian->id_pembayaran_pembelian }}"
+                    @endif
                         enctype="multipart/form-data"
                     >
                         @csrf
@@ -91,7 +95,6 @@
                                     </thead>
                                     <tbody>
                                         @foreach($pembayaran->pembelian as $v)
-                                            @if($v->sisa_tagihan != 0)
                                             <tr>
                                                 <td>{{ $v->no_str }}</td>
                                                 <td></td>
@@ -104,7 +107,6 @@
                                                         id="total_{{ $v->id }}" onkeyup="change_total({{ $v->id }})" step="any">
                                                 </td>
                                             </tr>
-                                            @endif
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -127,7 +129,13 @@
                             <div class="row my-4">
                                 <div class="col-sm-6"></div>
                                 <div class="col-sm-6 d-flex justify-content-end">
-                                    <a href="{{ url('pembelian') }}" class="btn btn-outline-danger">Batal</a>
+                                    <a 
+                                    @if(isset($faktur_payment))
+                                    href="{{ url('pembelian/detail').'/'.$pembelian->id }}" 
+                                    @elseif(isset($payment))
+                                    href="{{ url('pembelian/receive_payment').'/'.$detail_pembayaran_pembelian->id_pembayaran_pembelian }}" 
+                                    @endif
+                                    class="btn btn-outline-danger">Batal</a>
                                     <button class="btn btn-primary">Kirim Pembayaran</button>
                                 </div>
                             </div>
@@ -165,7 +173,11 @@
             });
             fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
 
-            $('#total_{{ $pembelian->id }}').val('{{ $v->sisa_tagihan }}');
+            @if(isset($payment))
+                $('#total_{{ $pembelian->id }}').val('{{ $detail_pembayaran_pembelian->jumlah }}');
+            @else
+                $('#total_{{ $pembelian->id }}').val('{{ $v->sisa_tagihan }}');
+            @endif
 
             load_select_2({{ $pembelian->id }});
             change_total({{ $pembelian->id }});

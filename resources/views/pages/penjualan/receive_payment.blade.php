@@ -79,7 +79,7 @@
                                     @endphp
                                     @foreach($detail_pembayaran_penjualan as $v)
                                     <tr>
-                                        <td>{{ $v->penjualan->no_str }}</td>
+                                        <td><a href="{{ url('penjualan/detail').'/'.$v->penjualan->id }}">{{ $v->penjualan->no_str }}</a></td>
                                         <td></td>
                                         <td class="d-flex justify-content-end">Rp. {{ number_format($v->jumlah,2,',','.') }}</td>
                                     </tr>
@@ -115,7 +115,7 @@
                                 </form>
                             </div>
                             <div class="col-sm-6 d-flex justify-content-end">
-                                <a href="" class="btn btn-outline-primary">Ubah</a>
+                                <a href="{{ url('penjualan/pembayaran') . '/' . $pembayaran_penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
                             </div>
                         </div>
                     </div>

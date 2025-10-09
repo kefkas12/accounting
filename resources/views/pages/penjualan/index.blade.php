@@ -41,7 +41,7 @@
                                         Jatuh tempo
                                     </div>
                                     <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                        Total <br> <span style="font-weight:900">Rp. 0,00</span>
+                                        Total <br> <span style="font-weight:900">Rp. {{ $telat_dibayar }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -51,7 +51,7 @@
                                         Pelunasan 30 hari terakhir
                                     </div>
                                     <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                        Total <br> <span style="font-weight:900">Rp. 0,00</span>
+                                        Total <br> <span style="font-weight:900">Rp. {{ $pelunasan_30_hari_terakhir }}</span>
                                         
                                     </div>
                                 </div>

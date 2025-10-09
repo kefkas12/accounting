@@ -343,7 +343,7 @@
                                         <div class="dropdown-menu">
                                             <!-- Dropdown menu links -->
                                             @if($pembelian->jenis == 'faktur')
-                                                <a class="dropdown-item" href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}">Kirim Pembayaran</a>
+                                                <a class="dropdown-item" href="{{ url('pembelian/faktur/pembayaran') . '/' . $pembelian->id }}">Kirim Pembayaran</a>
                                             @elseif($pembelian->jenis == 'penawaran')
                                                 <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
                                             @elseif($pembelian->jenis == 'pemesanan')

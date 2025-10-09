@@ -386,83 +386,182 @@
                                 </div>
                                 @endif
                             @endif
-                            @if(isset($pengiriman))
-                            <div class="table-responsive mt-3" style="display:none">
-                                <div class="row">
-                                    <div class="col">Pengiriman</div>
-                                </div>
-                                <table class="table my-4">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th>Tgl. pengiriman</th>
-                                            <th>No.</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($pengiriman as $v)
-                                        <tr>
-                                            <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
-                                            <td>
-                                                <div>
-                                                    <div class="row"><a
-                                                            href="{{ url('penjualan/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
-                                                    </div>
-                                                    <div class="row text-xs">
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm 
-                                                @if ($v->status == 'open') btn-warning
-                                                @elseif($v->status == 'partial') btn-info
-                                                @elseif($v->status == 'paid') btn-success
-                                                @elseif($v->status == 'overdue') btn-danger 
-                                                @elseif($v->status == 'closed') btn-dark @endif
-                                                ml-2">
-                                                    {{ $v->status }}
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            @endif
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    @if($penjualan->status == 'draf' || $penjualan->status == 'open')
-                                    <form id="deleteForm" action="{{ url('penjualan/hapus') . '/' . $penjualan->id }}"
-                                        method="post">
-                                        @csrf
-                                        <button type="submit"
-                                            class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
-                                    </form>
+                        </div>
+                        @if(count($penjualan->detail_pembayaran_penjualan) > 0 || isset($pengiriman))
+
+                            <nav>
+                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                    @if(count($penjualan->detail_pembayaran_penjualan) > 0)
+                                    <button class="nav-link" id="nav-pembayaran-tab" data-toggle="tab" data-target="#nav-pembayaran"
+                                        type="button" role="tab" aria-controls="nav-pembayaran">Pembayaran</button>
+                                    @endif
+                                    @if(isset($pengiriman))
+                                    <button class="nav-link active" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
+                                        type="button" role="tab" aria-controls="nav-pengiriman" aria-selected="true">Pengiriman</button>
                                     @endif
                                 </div>
-                                @if($penjualan->jenis == 'penagihan' && $penjualan->status != 'paid')
-                                <div class="col-sm-6 d-flex justify-content-end">
-                                    <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
-                                    <div class="btn-group dropup mr-2">
-                                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
-                                            aria-expanded="false">
-                                            Cetak
-                                        </button>
-                                        <div class="dropdown-menu">
-                                            <!-- Dropdown menu links -->
-                                            @if($penjualan->jenis == 'penagihan')
-                                                <a class="dropdown-item" href="{{ url('penjualan/cetak/penagihan') . '/' . $penjualan->id }}" target="_blank">Cetak Faktur</a>
-                                                <a class="dropdown-item" href="{{ url('penjualan/cetak/surat_jalan') . '/' . $penjualan->id }}" target="_blank">Cetak Surat Jalan</a>
-                                            @elseif($penjualan->jenis == 'penawaran')
-                                                <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
-                                                <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pemesanan/' . $penjualan->id }}">Buat Pemesanan</a>
-                                            @elseif($penjualan->jenis == 'pemesanan')
-                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pengiriman/' . $penjualan->id }}">Buat Pengiriman</a>
-                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
-                                            @endif
-                                        </div>
+                            </nav>
+                            <div class="tab-content" id="nav-tabContent">
+                                @if(count($penjualan->detail_pembayaran_penjualan) > 0)
+                                <div class="tab-pane fade" id="nav-pembayaran" role="tabpanel"
+                                    aria-labelledby="nav-pembayaran-tab">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Tanggal</th>
+                                                    <th>No.</th>
+                                                    <th>Setor Ke</th>
+                                                    <th>Cara pembayaran</th>
+                                                    <th>Status pembayaran</th>
+                                                    <th>Jumlah</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($penjualan->detail_pembayaran_penjualan as $v)
+                                                    <tr>
+                                                        <td>{{ date('d/m/Y', strtotime($v->pembayaran_penjualan->tanggal_transaksi)) }}</td>
+                                                        <td>
+                                                            <div>
+                                                                <div class="row"><a
+                                                                        href="{{ url('penjualan/receive_payment') . '/' . $v->pembayaran_penjualan->id }}">{{ $v->pembayaran_penjualan->no_str }}</a>
+                                                                </div>
+                                                                <div class="row text-xs">
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>{{ $v->pembayaran_penjualan->setor }}</td>
+                                                        <td>{{ $v->pembayaran_penjualan->cara_pembayaran }}</td>
+                                                        <td><button class="btn btn-sm btn-success">{{ $v->pembayaran_penjualan->status_pembayaran }}</button></td>
+                                                        <td>Rp {{ number_format($v->jumlah, 2, ',', '.') }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
-                                    @if($penjualan->status != 'draf' && $penjualan->status != 'closed')
+                                </div>
+                                @endif
+                                @if(isset($pengiriman))
+                                <div class="tab-pane fade show active" id="nav-pengiriman" role="tabpanel"
+                                    aria-labelledby="nav-pengiriman-tab">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Tgl. pengiriman</th>
+                                                    <th>No.</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($pengiriman as $v)
+                                                <tr>
+                                                    <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
+                                                    <td>
+                                                        <div>
+                                                            <div class="row"><a
+                                                                    href="{{ url('penjualan/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
+                                                            </div>
+                                                            <div class="row text-xs">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm 
+                                                        @if ($v->status == 'open') btn-warning
+                                                        @elseif($v->status == 'partial') btn-info
+                                                        @elseif($v->status == 'paid') btn-success
+                                                        @elseif($v->status == 'overdue') btn-danger 
+                                                        @elseif($v->status == 'closed') btn-dark @endif
+                                                        ml-2">
+                                                            {{ $v->status }}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                        @endif
+                        <div class="row">
+                            <div class="col-sm-6">
+                                @if($penjualan->status == 'draf' || $penjualan->status == 'open')
+                                <form id="deleteForm" action="{{ url('penjualan/hapus') . '/' . $penjualan->id }}"
+                                    method="post">
+                                    @csrf
+                                    <button type="submit"
+                                        class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
+                                </form>
+                                @endif
+                            </div>
+                            @if($penjualan->jenis == 'penagihan' && $penjualan->status != 'paid')
+                            <div class="col-sm-6 d-flex justify-content-end">
+                                <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
+                                <div class="btn-group dropup mr-2">
+                                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                        Cetak
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <!-- Dropdown menu links -->
+                                        @if($penjualan->jenis == 'penagihan')
+                                            <a class="dropdown-item" href="{{ url('penjualan/cetak/penagihan') . '/' . $penjualan->id }}" target="_blank">Cetak Faktur</a>
+                                            <a class="dropdown-item" href="{{ url('penjualan/cetak/surat_jalan') . '/' . $penjualan->id }}" target="_blank">Cetak Surat Jalan</a>
+                                        @elseif($penjualan->jenis == 'penawaran')
+                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
+                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pemesanan/' . $penjualan->id }}">Buat Pemesanan</a>
+                                        @elseif($penjualan->jenis == 'pemesanan')
+                                        <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pengiriman/' . $penjualan->id }}">Buat Pengiriman</a>
+                                        <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
+                                        @endif
+                                    </div>
+                                </div>
+                                @if($penjualan->status != 'draf' && $penjualan->status != 'closed')
+                                <div class="btn-group dropup">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                        Tindakan
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <!-- Dropdown menu links -->
+                                        @if($penjualan->jenis == 'penagihan')
+                                            <a class="dropdown-item" href="{{ url('penjualan/penagihan/pembayaran') . '/' . $penjualan->id }}">Terima Pembayaran</a>
+                                        @elseif($penjualan->jenis == 'penawaran')
+                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pemesanan/' . $penjualan->id }}">Buat Pemesanan</a>
+                                        @elseif($penjualan->jenis == 'pemesanan')
+                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pengiriman/' . $penjualan->id }}">Buat Pengiriman</a>
+                                        @elseif($penjualan->jenis == 'pengiriman')
+                                            <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                            @else
+                            <div class="col-sm-6 d-flex justify-content-end">
+                                @if($penjualan->status == 'draf' || $penjualan->status == 'open')
+                                <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
+                                @endif
+                                @if($penjualan->jenis == 'penawaran' || $penjualan->jenis == 'pemesanan')
+                                <div class="btn-group dropup mr-2">
+                                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                        Cetak
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        @if($penjualan->jenis == 'penawaran')
+                                        <a target="_blank" class="dropdown-item" href="{{ url('penjualan/penawaran/cetak') . '/' . $penjualan->id }}">Cetak Penawaran</a>
+                                        @elseif($penjualan->jenis == 'pemesanan')
+                                        <a target="_blank" class="dropdown-item" href="{{ url('penjualan/pemesanan/cetak') . '/' . $penjualan->id }}">Cetak Pemesanan</a>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
+                                @if($penjualan->status != 'draf' && $penjualan->status != 'closed')
+                                    @if($penjualan->jenis != 'pengiriman')
                                     <div class="btn-group dropup">
                                         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
                                             aria-expanded="false">
@@ -481,101 +580,14 @@
                                             @endif
                                         </div>
                                     </div>
+                                    @else
+                                    <a class="btn btn-outline-primary" href="{{ url('penjualan/cetak/surat_jalan') . '/' . $penjualan->id }}" target="_blank">Cetak Surat Jalan</a>
+                                    <a href="{{ url('penjualan').'/pengiriman/penagihan/'.$penjualan->id }}" class="btn btn-primary">Buat penagihan</a>
                                     @endif
-                                </div>
-                                @else
-                                <div class="col-sm-6 d-flex justify-content-end">
-                                    @if($penjualan->status == 'draf' || $penjualan->status == 'open')
-                                    <a href="{{ url('penjualan').'/'.$penjualan->jenis.'/'.$penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
-                                    @endif
-                                    @if($penjualan->jenis == 'penawaran' || $penjualan->jenis == 'pemesanan')
-                                    <div class="btn-group dropup mr-2">
-                                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
-                                            aria-expanded="false">
-                                            Cetak
-                                        </button>
-                                        <div class="dropdown-menu">
-                                            @if($penjualan->jenis == 'penawaran')
-                                            <a target="_blank" class="dropdown-item" href="{{ url('penjualan/penawaran/cetak') . '/' . $penjualan->id }}">Cetak Penawaran</a>
-                                            @elseif($penjualan->jenis == 'pemesanan')
-                                            <a target="_blank" class="dropdown-item" href="{{ url('penjualan/pemesanan/cetak') . '/' . $penjualan->id }}">Cetak Pemesanan</a>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    @endif
-                                    @if($penjualan->status != 'draf' && $penjualan->status != 'closed')
-                                        @if($penjualan->jenis != 'pengiriman')
-                                        <div class="btn-group dropup">
-                                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-                                                aria-expanded="false">
-                                                Tindakan
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <!-- Dropdown menu links -->
-                                                @if($penjualan->jenis == 'penagihan')
-                                                    <a class="dropdown-item" href="{{ url('penjualan/pembayaran') . '/' . $penjualan->id }}">Terima Pembayaran</a>
-                                                @elseif($penjualan->jenis == 'penawaran')
-                                                    <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pemesanan/' . $penjualan->id }}">Buat Pemesanan</a>
-                                                @elseif($penjualan->jenis == 'pemesanan')
-                                                    <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pengiriman/' . $penjualan->id }}">Buat Pengiriman</a>
-                                                @elseif($penjualan->jenis == 'pengiriman')
-                                                    <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/penagihan/' . $penjualan->id }}">Buat Penagihan</a>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        @else
-                                        <a class="btn btn-outline-primary" href="{{ url('penjualan/cetak/surat_jalan') . '/' . $penjualan->id }}" target="_blank">Cetak Surat Jalan</a>
-                                        <a href="{{ url('penjualan').'/pengiriman/penagihan/'.$penjualan->id }}" class="btn btn-primary">Buat penagihan</a>
-                                        @endif
-                                    @endif
-                                </div>
                                 @endif
                             </div>
+                            @endif
                         </div>
-                        
-                        @if(count($penjualan->detail_pembayaran_penjualan) != 0)
-                        <div class="row my-4">
-                            <div class="col">
-                                Pembayaran
-                            </div>
-                            <div class="col-sm-12">
-                                <div class="table-responsive">
-                                    <table class="table my-4">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>Tanggal</th>
-                                                <th>No.</th>
-                                                <th>Setor Ke</th>
-                                                <th>Cara pembayaran</th>
-                                                <th>Status pembayaran</th>
-                                                <th>Jumlah</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($penjualan->detail_pembayaran_penjualan as $v)
-                                                <tr>
-                                                    <td>{{ date('d/m/Y', strtotime($v->pembayaran_penjualan->tanggal_transaksi)) }}</td>
-                                                    <td>
-                                                        <div>
-                                                            <div class="row"><a
-                                                                    href="{{ url('penjualan/receive_payment') . '/' . $v->pembayaran_penjualan->id }}">{{ $v->pembayaran_penjualan->no_str }}</a>
-                                                            </div>
-                                                            <div class="row text-xs">
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>{{ $v->pembayaran_penjualan->setor }}</td>
-                                                    <td>{{ $v->pembayaran_penjualan->cara_pembayaran }}</td>
-                                                    <td><button class="btn btn-sm btn-success">{{ $v->pembayaran_penjualan->status_pembayaran }}</button></td>
-                                                    <td>Rp {{ number_format($v->jumlah, 2, ',', '.') }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
                         @if(isset($penagihan) && count($penagihan) > 0)
                         <div class="row my-4">
                             <div class="col">
