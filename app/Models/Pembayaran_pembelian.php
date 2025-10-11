@@ -56,7 +56,7 @@ class Pembayaran_pembelian extends Model
     {
         for ($i = 0; $i < count($request->input('id_pembelian')); $i++) {
             $total = $request->input('total')[$i] != '' || $request->input('total')[$i] != null ? number_format((float)str_replace(",", "", $_POST['total'][$i]), 2, '.', '') : 0;
-            if($request->input('total')[$i] != '' && $request->input('total')[$i] != null ){
+            if($request->input('total')[$i] != '' && $request->input('total')[$i] != null && $request->input('total')[$i] > 0){
                 $detail_pembelian = new Detail_pembayaran_pembelian;
                 $detail_pembelian->id_company = Auth::user()->id_company;
                 $detail_pembelian->id_pembayaran_pembelian = $this->id;

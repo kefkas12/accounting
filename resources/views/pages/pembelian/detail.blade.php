@@ -289,7 +289,7 @@
                                             <tbody>
                                                 @foreach ($pembelian->detail_pembayaran_pembelian as $v)
                                                     <tr>
-                                                        <th>{{ $v->pembayaran_pembelian->tanggal_transaksi }}</th>
+                                                        <th>{{ date('d/m/Y', strtotime($v->pembayaran_pembelian->tanggal_transaksi)) }}</th>
                                                         <td>
                                                             <div>
                                                                 <div class="row"><a href="{{ url('pembelian/receive_payment').'/'.$v->pembayaran_pembelian->id }}">{{ $v->pembayaran_pembelian->no_str }}</a></div>
