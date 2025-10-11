@@ -97,8 +97,8 @@
                                             @foreach($faktur as $v)
                                             <tr>
                                                 <td>{{ $v->tanggal_transaksi }}</td>
-                                                <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
-                                                <td>{{ $v->nama_supplier }}</td>
+                                                <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a> <br> <small>{{ $v->memo }}</small></td>
+                                                <td><a href="{{ url('supplier/detail').'/'.$v->id_supplier }}">{{ $v->nama_supplier }}</a></td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
                                                 <td>
                                                     @if($v->status == 'closed')
@@ -135,8 +135,8 @@
                                             @foreach($pengiriman as $v)
                                             <tr>
                                                 <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
-                                                <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
-                                                <td>{{ $v->nama_supplier }}</td>
+                                                <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a> <br> <small>{{ $v->memo }}</small></td>
+                                                <td><a href="{{ url('supplier/detail').'/'.$v->id_supplier }}">{{ $v->nama_supplier }}</a></td>
                                                 <td>
                                                     @if($v->status == 'closed')
                                                     <button class="btn btn-sm" style="background-color:#D0D6DD;">
@@ -173,8 +173,8 @@
                                             @foreach($pemesanan as $v)
                                             <tr>
                                                 <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
-                                                <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
-                                                <td>{{ $v->nama_supplier }}</td>
+                                                <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a> <br> <small>{{ $v->memo }}</small></td>
+                                                <td><a href="{{ url('supplier/detail').'/'.$v->id_supplier }}">{{ $v->nama_supplier }}</a></td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
                                                 <td>
                                                     @if($v->status == 'closed')

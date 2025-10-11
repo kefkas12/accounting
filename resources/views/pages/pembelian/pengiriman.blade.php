@@ -550,7 +550,7 @@
             const fp_jatuh_tempo = flatpickr("#tanggal_jatuh_tempo", {
                 dateFormat: "d/m/Y"
             });
-            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
+            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d", strtotime("+30 days")) }}'));
             @if(isset($pembelian))
                 const sup = $('#supplier')
                 sup.selectpicker('val','{{ $pembelian->id_supplier }}')

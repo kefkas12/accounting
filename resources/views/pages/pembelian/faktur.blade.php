@@ -150,22 +150,20 @@
                                 </div> -->
                             </div>
                             <div class="form-row">
-                                <div class="col-md-3 pr-2" style="display:none">
-                                    <div class="form-group info_pengiriman" style="display:none">
-                                        <label for="tanggal_pengiriman">Tgl. pengiriman</label>
-                                        <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
-                                            name="tanggal_pengiriman" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
-                                    </div>
-                                    <div class="form-group info_pengiriman" style="display:none">
-                                        <label for="alamat_pengiriman">Alamat Pengiriman</label><br>
-                                        <textarea class="form-control form-control-sm" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
-                                    </div>
-                                    <div class="form-check mb-4 text-sm" style="display:none">
-                                        <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
-                                        <label class="form-check-label" for="sama_dengan_penagihan">
-                                            Sama dengan penagihan
-                                        </label>
-                                    </div>
+                                <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
+                                    <label for="tanggal_pengiriman">Tgl. Pengiriman</label>
+                                    <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
+                                        name="tanggal_pengiriman" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
+                                </div>
+                                <div class="form-group col-md-3 pr-2" style="display:none">
+                                    <label for="alamat_pengiriman">Alamat Pengiriman</label><br>
+                                    <textarea class="form-control form-control-sm" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
+                                </div>
+                                <div class="form-check mb-4 text-sm" style="display:none">
+                                    <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
+                                    <label class="form-check-label" for="sama_dengan_penagihan">
+                                        Sama dengan penagihan
+                                    </label>
                                 </div>
                                 <div class="form-group col-md-2 pr-2" style="display:none">
                                         <label for="tanggal_jatuh_tempo">Tgl. jatuh tempo</label>
@@ -192,11 +190,11 @@
                                     </select>
                                 </div>
                                 <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
-                                    <label for="kirim_melalui">Kirim melalui</label>
+                                    <label for="kirim_melalui">Kirim Melalui</label>
                                     <input type="text" class="form-control form-control-sm" id="kirim_melalui" name="kirim_melalui">
                                 </div>
                                 <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
-                                    <label for="no_pelacakan">No. pelacakan</label>
+                                    <label for="no_pelacakan">No. Pelacakan</label>
                                     <input type="text" class="form-control form-control-sm" id="no_pelacakan" name="no_pelacakan">
                                 </div>
                             </div>
@@ -507,11 +505,11 @@
         };
 
         $("#info_pengiriman").change(function() {
-            // if(this.checked) {
-                // $('.info_pengiriman').show();
-            // }else{
+            if(this.checked) {
+                $('.info_pengiriman').show();
+            }else{
                 $('.info_pengiriman').hide();
-            // }
+            }
         });
 
         $('#sama_dengan_penagihan').change(function() {
@@ -532,10 +530,15 @@
             });
             fp_transaksi.setDate(new Date('{{ date("Y-m-d") }}'));
 
+            const fp_pengiriman = flatpickr("#tanggal_pengiriman", {
+                dateFormat: "d/m/Y"
+            });
+            fp_pengiriman.setDate(new Date('{{ date("Y-m-d") }}'));
+
             const fp_jatuh_tempo = flatpickr("#tanggal_jatuh_tempo", {
                 dateFormat: "d/m/Y"
             });
-            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
+            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d", strtotime("+30 days")) }}'));
             @if(isset($pembelian))
                 const sup = $('#supplier')
                 sup.selectpicker('val','{{ $pembelian->id_supplier }}')
@@ -545,7 +548,9 @@
                 $('#email').val('{{ $pembelian->email }}')
                 $('#detail_alamat').val('{{ $pembelian->detail_alamat }}')
                 fp_transaksi.setDate(new Date('{{ $pembelian->tanggal_transaksi }}'));
-                $('#tanggal_jatuh_tempo').val('{{ $pembelian->tanggal_jatuh_tempo }}');
+                fp_pengiriman.setDate(new Date('{{ $pembelian->tanggal_pengiriman }}'));
+                fp_jatuh_tempo.setDate(new Date('{{ $pembelian->tanggal_jatuh_tempo }}'));
+                
                 $('#gudang').val('{{ $pembelian->id_gudang }}')
 
                 $('#kirim_melalui').val('{{ $pembelian->kirim_melalui }}')

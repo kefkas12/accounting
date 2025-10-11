@@ -33,7 +33,7 @@
                         >
                             @csrf
                             <div class="card-body" style="padding: 0px !important;">
-                                <div style="background-color: #E0F7FF; border-top: 2px solid #B3D7E5;">
+                                <div style="background-color: #E0F7FF; border-top: 2px solid #B3D7E5;border-bottom: 2px solid #B3D7E5;">
                                     <div class="row">
                                         <div class="col-sm-3 mt-2">Pelanggan</div>
                                         <div class="col-sm-4 mt-2">Setor Ke</div>
@@ -54,8 +54,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <hr>
-                                <div class="mb-5">
+                                <div class="my-3">
                                     <div class="row">
                                         <div class="col-sm-3">Cara Pembayaran</div>
                                         <div class="col-sm-3">Tgl Transaksi Pembayaran</div>
@@ -94,8 +93,8 @@
                                         <tbody>
                                             @foreach ($pembayaran->penjualan as $v)
                                                 <tr>
-                                                    <td>{{ $v->no_str }}</td>
-                                                    <td></td>
+                                                    <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                    <td>{{ $v->memo }}</td>
                                                     <td>{{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }}</td>
                                                     <td>{{ number_format($v->total, 2, ',', '.') }}</td>
                                                     <td>{{ number_format($v->sisa_tagihan, 2, ',', '.') }}</td>
@@ -112,7 +111,6 @@
                                 <div class="row">
                                     <div class="col"></div>
                                     <div class="col ">
-                                        <hr class="bg-white">
                                         <div class="row mb-3">
                                             <div class="col">
                                                 <span>Total</span>

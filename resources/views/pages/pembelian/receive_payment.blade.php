@@ -31,12 +31,12 @@
                     <div class="card-body" style="padding: 0px !important;">
                         <div style="background-color: #E0F7FF; border-top: 2px solid #B3D7E5;">
                             <div class="row">
-                                <div class="col-sm-3 mt-2">Pelanggan</div>
+                                <div class="col-sm-3 mt-2">Supplier</div>
                                 <div class="col-sm-4 mt-2">Setor Ke</div>
                                 <div class="col-sm-4 mt-2 d-flex justify-content-end"></div>
                             </div>
                             <div class="row mb-4">
-                                <div class="col-sm-3"><strong>{{ $detail_pembayaran_pembelian[0]->pembelian->kontak->nama }}</strong></div>
+                                <div class="col-sm-3"><strong><a href="{{ url('supplier/detail').'/'.$detail_pembayaran_pembelian[0]->pembelian->id_supplier }}">{{ $detail_pembayaran_pembelian[0]->pembelian->kontak->nama }}</a></strong></div>
                                 <div class="col-sm-5"><strong>{{ $detail_pembayaran_pembelian[0]->pembayaran_pembelian->setor }}</strong>
                                 </div>
                                 <div class="col-sm-4 d-flex justify-content-end">
@@ -80,7 +80,7 @@
                                     @foreach($detail_pembayaran_pembelian as $v)
                                     <tr>
                                         <td><a href="{{ url('pembelian/detail').'/'.$v->pembelian->id }}">{{ $v->pembelian->no_str }}</a></td>
-                                        <td></td>
+                                        <td>{{ $v->pembelian->memo }}</td>
                                         <td class="d-flex justify-content-end">Rp. {{ number_format($v->jumlah,2,',','.') }}</td>
                                     </tr>
                                     @php
@@ -93,13 +93,12 @@
                         <div class="row">
                             <div class="col"></div>
                             <div class="col ">
-                                <hr class="bg-white">
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <span>Total</span>
+                                        <b><span>Total</span></b>
                                     </div>
                                     <div class="col d-flex justify-content-end">
-                                        <span id="subtotal">Rp. {{ number_format($subtotal,2,',','.') }}</span>
+                                        <b><span id="subtotal">Rp. {{ number_format($subtotal,2,',','.') }}</span></b>
                                         <input type="text" id="input_subtotal" name="subtotal" hidden>
                                     </div>
                                 </div>
@@ -117,6 +116,7 @@
                                 @endhasallroles
                             </div>
                             <div class="col-sm-6 d-flex justify-content-end">
+                                <a href="{{ url('pembelian/detail') . '/' . $detail_pembayaran_pembelian[0]->id_pembelian }}" class="btn btn-dark">Kembali</a>
                                 <a href="{{ url('pembelian/pembayaran') . '/' . $pembayaran_pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
                             </div>
                         </div>

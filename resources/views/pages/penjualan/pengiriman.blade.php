@@ -115,10 +115,10 @@
                                     <label for="email">Email</label>
                                     <input type="email" class="form-control form-control-sm" id="email" name="email">
                                 </div>
-                                <div class="form-group col-md-3 pr-4">
-                                    <label for="tanggal_transaksi">Tgl. Transaksi</label>
-                                    <input type="date" class="form-control form-control-sm" id="tanggal_transaksi" 
-                                        name="tanggal_transaksi" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
+                                <div class="form-group col-md-3 pr-2 info_pengiriman">
+                                    <label for="tanggal_pengiriman">Tgl. Pengiriman</label>
+                                    <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
+                                        name="tanggal_pengiriman" style="background-color: #ffffff !important;">
                                 </div>
                                 <label class="form-group col-md-3 pr-2">
                                     <label for="alamat">Pilih Alamat</label>
@@ -170,10 +170,10 @@
                                     </select>
                                 </div>
                                 @endif
-                                <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
-                                    <label for="tanggal_pengiriman">Tgl. Pengiriman</label>
-                                    <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
-                                        name="tanggal_pengiriman" style="background-color: #ffffff !important;">
+                                <div class="form-group col-md-3 pr-4" style="display:none">
+                                    <label for="tanggal_transaksi">Tgl. Transaksi</label>
+                                    <input type="date" class="form-control form-control-sm" id="tanggal_transaksi" 
+                                        name="tanggal_transaksi" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
                                 </div>
                                 <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
                                     <label for="kirim_melalui">Kirim Melalui</label>
@@ -845,7 +845,7 @@
             const fp_jatuh_tempo = flatpickr("#tanggal_jatuh_tempo", {
                 dateFormat: "d/m/Y"
             });
-            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
+            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d", strtotime("+30 days")) }}'));
             @if(isset($penjualan))
                 const pel = $('#pelanggan')
                 pel.selectpicker('val','{{ $penjualan->id_pelanggan }}')

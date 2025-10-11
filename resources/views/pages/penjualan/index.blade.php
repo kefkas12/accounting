@@ -111,9 +111,9 @@
                                             @foreach($penawaran as $v)
                                             <tr>
                                                 <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
-                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a> <br> <small>{{ $v->memo }}</small></td>
                                                 <td>{{ $v->no_rfq }}</td>
-                                                <td>{{ $v->nama_pelanggan }}</td>
+                                                <td><a href="{{ url('pelanggan/detail').'/'.$v->id_pelanggan }}">{{ $v->nama_pelanggan }}</a></td>
                                                 <td>{{ $v->pic }}</td>
                                                 <td>
                                                     @if($v->status == 'closed')
@@ -155,9 +155,9 @@
                                             @foreach($pemesanan as $v)
                                             <tr>
                                                 <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
-                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a> <br> <small>{{ $v->memo }}</small></td>
                                                 <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
-                                                <td>{{ $v->nama_pelanggan }}</td>
+                                                <td><a href="{{ url('pelanggan/detail').'/'.$v->id_pelanggan }}">{{ $v->nama_pelanggan }}</a></td>
                                                 <td>
                                                     @if($v->status == 'closed')
                                                     <span class="badge badge-dark text-white">
@@ -197,10 +197,10 @@
                                             @foreach($pengiriman as $v)
                                             <tr>
                                                 <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
-                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a> <br> <small>{{ $v->memo }}</small></td>
                                                 <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_pemesanan }}">{{ $v->no_str_pemesanan }}</a></td>
                                                 <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
-                                                <td>{{ $v->nama_pelanggan }}</td>
+                                                <td><a href="{{ url('pelanggan/detail').'/'.$v->id_pelanggan }}">{{ $v->nama_pelanggan }}</a></td>
                                                 <td>
                                                     @if($v->status == 'closed')
                                                     <span class="badge badge-dark text-white">
@@ -242,10 +242,10 @@
                                             @if(date('Y-m-d',strtotime($v->tanggal_jatuh_tempo)) >= date('Y-m-d') || $v->status == 'paid')
                                             <tr>
                                                 <td>{{ date('d-m-Y', strtotime($v->tanggal_transaksi)) }} / @if($v->tanggal_transaksi_pengiriman) {{ date('d-m-Y', strtotime($v->tanggal_transaksi_pengiriman)) }} @else - @endif</td>
-                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a> <br> <small>{{ $v->memo }}</small></td>
                                                 <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_pemesanan }}">{{ $v->no_str_pemesanan }}</a></td>
                                                 <td><a class="text-dark" href="{{ url('penjualan/detail').'/'.$v->id_penawaran }}">{{ $v->no_str_penawaran }}</a></td>
-                                                <td>{{ $v->nama_pelanggan }}</td>
+                                                <td><a href="{{ url('pelanggan/detail').'/'.$v->id_pelanggan }}">{{ $v->nama_pelanggan }}</a></td>
                                                 <td>@if($v->tanggal_jatuh_tempo) {{ date('d/m/Y',strtotime($v->tanggal_jatuh_tempo)) }} @else - @endif</td>
                                                 <td>
                                                     @if($v->selesai == 'selesai') <span class="badge badge-dark text-white">closed</span>

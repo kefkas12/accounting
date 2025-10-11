@@ -164,22 +164,20 @@
                                 <!-- </div> -->
                             </div>
                             <div class="form-row">
-                                <div class="col-md-3 pr-2" style="display:none">
-                                    <div class="form-group info_pengiriman" style="display:none">
-                                        <label for="tanggal_pengiriman">Tgl. Pengiriman</label>
-                                        <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
-                                            name="tanggal_pengiriman" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
-                                    </div>
-                                    <div class="form-group info_pengiriman" style="display:none">
-                                        <label class="alamat_pengiriman" style="display:none">Alamat Pengiriman</label>
-                                        <textarea class="form-control form-control-sm" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
-                                    </div>
-                                    <div class="form-check mb-4 text-sm" style="display:none">
-                                        <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
-                                        <label class="form-check-label" for="sama_dengan_penagihan">
-                                            Sama dengan penagihan
-                                        </label>
-                                    </div>
+                                <div class="form-group col-md-3 pr-2 info_pengiriman" style="display:none">
+                                    <label for="tanggal_pengiriman">Tgl. Pengiriman</label>
+                                    <input type="date" class="form-control form-control-sm" id="tanggal_pengiriman"
+                                        name="tanggal_pengiriman" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}">
+                                </div>
+                                <div class="form-group col-md-3 pr-2" style="display:none">
+                                    <label class="alamat_pengiriman">Alamat Pengiriman</label>
+                                    <textarea class="form-control form-control-sm" name="alamat_pengiriman" id="alamat_pengiriman" rows="1" style="display:none"></textarea>
+                                </div>
+                                <div class="form-check mb-4 text-sm" style="display:none">
+                                    <input class="form-check-input" type="checkbox" id="sama_dengan_penagihan" name="sama_dengan_penagihan" checked>
+                                    <label class="form-check-label" for="sama_dengan_penagihan">
+                                        Sama dengan penagihan
+                                    </label>
                                 </div>
                                 <div class="form-group col-md-2 pr-2" style="display:none">
                                     <label for="tanggal_jatuh_tempo">Tgl. Jatuh Tempo</label>
@@ -794,11 +792,11 @@
         };
 
         $("#info_pengiriman").change(function() {
-            // if(this.checked) {
-                // $('.info_pengiriman').show();
-            // }else{
+            if(this.checked) {
+                $('.info_pengiriman').show();
+            }else{
                 $('.info_pengiriman').hide();
-            // }
+            }
         });
 
         $('#sama_dengan_penagihan').change(function() {
@@ -829,7 +827,7 @@
             const fp_jatuh_tempo = flatpickr("#tanggal_jatuh_tempo", {
                 dateFormat: "d/m/Y"
             });
-            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
+            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d", strtotime("+30 days")) }}'));
             @if(isset($penjualan))
                 const pel = $('#pelanggan')
                 pel.selectpicker('val','{{ $penjualan->id_pelanggan }}')

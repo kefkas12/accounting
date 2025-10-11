@@ -36,7 +36,7 @@
                                 <div class="col-sm-4 mt-2 d-flex justify-content-end"></div>
                             </div>
                             <div class="row mb-4">
-                                <div class="col-sm-3"><strong>{{ $detail_pembayaran_penjualan[0]->penjualan->kontak->nama }}</strong></div>
+                                <div class="col-sm-3"><strong><a href="{{ url('pelanggan/detail').'/'.$detail_pembayaran_penjualan[0]->penjualan->id_pelanggan }}">{{ $detail_pembayaran_penjualan[0]->penjualan->kontak->nama }}</a></strong></div>
                                 <div class="col-sm-5"><strong>{{ $detail_pembayaran_penjualan[0]->pembayaran_penjualan->setor }}</strong>
                                 </div>
                                 <div class="col-sm-4 d-flex justify-content-end">
@@ -80,7 +80,7 @@
                                     @foreach($detail_pembayaran_penjualan as $v)
                                     <tr>
                                         <td><a href="{{ url('penjualan/detail').'/'.$v->penjualan->id }}">{{ $v->penjualan->no_str }}</a></td>
-                                        <td></td>
+                                        <td>{{ $v->penjualan->memo }}</td>
                                         <td class="d-flex justify-content-end">Rp. {{ number_format($v->jumlah,2,',','.') }}</td>
                                     </tr>
                                     @php
@@ -93,13 +93,12 @@
                         <div class="row">
                             <div class="col"></div>
                             <div class="col ">
-                                <hr class="bg-white">
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <span>Total</span>
+                                        <b><span>Total</span></b>
                                     </div>
                                     <div class="col d-flex justify-content-end">
-                                        <span id="subtotal">Rp. {{ number_format($subtotal,2,',','.') }}</span>
+                                        <b><span id="subtotal">Rp. {{ number_format($subtotal,2,',','.') }}</span></b>
                                         <input type="text" id="input_subtotal" name="subtotal" hidden>
                                     </div>
                                 </div>
@@ -115,6 +114,7 @@
                                 </form>
                             </div>
                             <div class="col-sm-6 d-flex justify-content-end">
+                                <a href="{{ url('penjualan/detail') . '/' . $detail_pembayaran_penjualan[0]->id_penjualan }}" class="btn btn-dark">Kembali</a>
                                 <a href="{{ url('penjualan/pembayaran') . '/' . $pembayaran_penjualan->id }}" class="btn btn-outline-primary">Ubah</a>
                             </div>
                         </div>

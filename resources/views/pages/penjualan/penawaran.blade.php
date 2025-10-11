@@ -540,14 +540,14 @@
             @if(isset($produk_penawaran))
             $('#list').append(`
                 <tr id="list_${i}">
-                    <th style="padding: 10px !important;">
-                        <select class="form-control form-control-sm" name="produk_penawaran[]" id="produk_penawaran_${i}" onchange="get_data(this, ${i})" required>
+                    <td style="padding: 10px !important;">
+                        <select class="form-control form-control-sm" name="produk_penawaran[]" id="produk_penawaran_${i}" onchange="get_data(tdis, ${i})" required>
                             <option selected disabled hidden value="">Pilih Produk Penawaran</option>
                             @foreach ($produk_penawaran as $v)
                                 <option value="{{ $v->id }}">{{ $v->nama }}</option>
                             @endforeach
                         </select>
-                    </th>
+                    </td>
                     <td style="padding: 10px !important;">
                         <textarea class="form-control form-control-sm" name="deskripsi[]" id="deskripsi_${i}" cols="30" rows="1" placeholder="Masukkan Deskripsi"></textarea>
                     </td>
@@ -558,7 +558,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">%</span>
                             </div>
-                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" placeholder="0" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
@@ -566,7 +566,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Rp</span>
                             </div>
-                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" placeholder="0" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
@@ -603,7 +603,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">%</span>
                             </div>
-                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                            <input type="number" class="form-control" id="diskon_per_baris_${i}" name="diskon_per_baris[]" placeholder="0" onkeyup="change_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
@@ -611,7 +611,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Rp</span>
                             </div>
-                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
+                            <input type="number" class="form-control" id="nilai_diskon_per_baris_${i}" name="nilai_diskon_per_baris[]" placeholder="0" onkeyup="change_nilai_diskon_per_baris(${i})" onblur="check_null(this)" step="any">
                         </div>
                     </td>
                     <td style="padding: 10px !important;">
@@ -642,6 +642,11 @@
                 dateFormat: "d/m/Y" // Contoh format: DD/MM/YYYY
             });
             fp_transaksi.setDate(new Date('{{ date("Y-m-d") }}'));
+
+            const fp_jatuh_tempo = flatpickr("#tanggal_jatuh_tempo", {
+                dateFormat: "d/m/Y"
+            });
+            fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d", strtotime("+30 days")) }}'));
             @if(isset($penjualan))
                 // $('#pelanggan').val('id_pelanggan').trigger('change')
                 const pel = $('#pelanggan')
@@ -654,7 +659,7 @@
                 $('#pic').val('{{ $penjualan->pic }}')
                 $('#detail_alamat').val('{{ $penjualan->detail_alamat }}')
                 fp_transaksi.setDate(new Date('{{ $penjualan->tanggal_transaksi }}'));
-                $('#tanggal_jatuh_tempo').val('{{ $penjualan->tanggal_jatuh_tempo }}')
+                fp_jatuh_tempo.setDate(new Date('{{ $pembelian->tanggal_jatuh_tempo }}'));
 
                 $('#pesan').val('{{ $penjualan->pesan }}')
                 $('#memo').val('{{ $penjualan->memo }}')

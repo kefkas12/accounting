@@ -58,7 +58,7 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-sm-2">Supplier <br> @if($pembelian->nama_supplier)<strong>{{ $pembelian->nama_supplier }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-sm-2">Supplier <br> @if($pembelian->nama_supplier)<strong> <a href="{{ url('supplier/detail').'/'.$pembelian->id_supplier }}">{{ $pembelian->nama_supplier }}</a> </strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-sm-2">Tgl. Transaksi <br> @if($pembelian->tanggal_transaksi)<strong>{{ date('d/m/Y', strtotime($pembelian->tanggal_transaksi)) }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-sm-2">Alamat <br> @if($pembelian->alamat)<strong>{{ $pembelian->alamat }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-sm-2">Detail Alamat <br> @if($pembelian->detail_alamat)<strong>{{ $pembelian->detail_alamat }}</strong>@else <strong> - </strong> @endif</div>
@@ -66,7 +66,7 @@
                             <div class="form-group col-md-2">@if ($jurnal) Jurnal <br> <a href="#" data-toggle="modal" data-target="#jurnalEntryModal">Lihat Jurnal Entry</a> @endif </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-sm-2">Gudang <br> @if($pembelian->nama_gudang)<strong>{{ $pembelian->nama_gudang }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-sm-2">Gudang <br> @if($pembelian->nama_gudang)<strong><a href="{{ url('gudang/detail').'/'.$pembelian->id_gudang }}">{{ $pembelian->nama_gudang }}</a></strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-sm-2">Kirim Melalui <br> @if($pembelian->kirim_melalui)<strong>{{ $pembelian->kirim_melalui }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-sm-2">No. Pelacakan <br> @if($pembelian->no_pelacakan)<strong>{{ $pembelian->no_pelacakan }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-sm-2"></div>
@@ -256,85 +256,183 @@
                                 </div>
                                 @endif
                             @endif
-                            @if(isset($pengiriman))
-                            <div class="table-responsive mt-3" style="display:none">
-                                <div class="row">
-                                    <div class="col">Pengiriman</div>
+                        </div>
+                        @if(count($pembelian->detail_pembayaran_pembelian) > 0 || isset($pengiriman))
+                            <nav>
+                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                    @if(count($pembelian->detail_pembayaran_pembelian) > 0)
+                                    <button class="nav-link active" id="nav-pembayaran-tab" data-toggle="tab" data-target="#nav-pembayaran"
+                                        type="button" role="tab" aria-controls="nav-pembayaran" aria-selected="true">Pembayaran</button>
+                                    @endif
+                                    @if(isset($pengiriman))
+                                    <button class="nav-link @if(count($pembelian->detail_pembayaran_pembelian) == 0) active @endif" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
+                                        type="button" role="tab" aria-controls="nav-pengiriman" @if(count($pembelian->detail_pembayaran_pembelian) == 0) aria-selected="true" @endif>Pengiriman</button>
+                                    @endif
                                 </div>
-                                <table class="table my-4">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th>Tgl. pengiriman</th>
-                                            <th>No.</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($pengiriman as $v)
-                                        <tr>
-                                            <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
-                                            <td>
-                                                <div>
-                                                    <div class="row"><a
-                                                            href="{{ url('pembelian/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
-                                                    </div>
-                                                    <div class="row text-xs">
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <button class="btn btn-sm 
-                                                @if ($v->status == 'open') btn-warning
-                                                @elseif($v->status == 'partial') btn-info
-                                                @elseif($v->status == 'paid') btn-success
-                                                @elseif($v->status == 'overdue') btn-danger 
-                                                @elseif($v->status == 'closed') btn-dark @endif
-                                                ml-2">
-                                                    {{ $v->status }}
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            @endif
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    @hasanyrole('pemilik')
-                                        @if($pembelian->status == 'draf' || $pembelian->status == 'open')
-                                        <form id="deleteForm" action="{{ url('pembelian/hapus') . '/' . $pembelian->id }}"
-                                            method="post">
-                                            @csrf
-                                            <button type="submit"
-                                                class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
-                                        </form>
-                                        @endif
-                                    @endhasallroles
-                                </div>
-                                @if($pembelian->jenis == 'faktur' && $pembelian->status != 'paid')
-                                <div class="col-sm-6 d-flex justify-content-end">
-                                    <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
-                                    <div class="btn-group dropup mr-2">
-                                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
-                                            aria-expanded="false">
-                                            Cetak
-                                        </button>
-                                        <div class="dropdown-menu">
-                                            <!-- Dropdown menu links -->
-                                            @if($pembelian->jenis == 'faktur')
-                                                <a class="dropdown-item" href="{{ url('pembelian/cetak/faktur') . '/' . $pembelian->id }}" target="_blank">Cetak Faktur</a>
-                                                <a class="dropdown-item" href="{{ url('pembelian/cetak/surat_jalan') . '/' . $pembelian->id }}" target="_blank">Cetak Surat Jalan</a>
-                                            @elseif($pembelian->jenis == 'penawaran')
-                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Faktur</a>
-                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
-                                            @elseif($pembelian->jenis == 'pemesanan')
-                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
-                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Faktur</a>
-                                            @endif
-                                        </div>
+                            </nav>
+                            <div class="tab-content" id="nav-tabContent">
+                                @if(count($pembelian->detail_pembayaran_pembelian) > 0)
+                                <div class="tab-pane fade show active" id="nav-pembayaran" role="tabpanel"
+                                    aria-labelledby="nav-pembayaran-tab">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Tanggal</th>
+                                                    <th>No.</th>
+                                                    <th>Setor Ke</th>
+                                                    <th>Cara pembayaran</th>
+                                                    <th>Status pembayaran</th>
+                                                    <th>Jumlah</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($pembelian->detail_pembayaran_pembelian as $v)
+                                                    <tr>
+                                                        <th>{{ $v->pembayaran_pembelian->tanggal_transaksi }}</th>
+                                                        <td>
+                                                            <div>
+                                                                <div class="row"><a href="{{ url('pembelian/receive_payment').'/'.$v->pembayaran_pembelian->id }}">{{ $v->pembayaran_pembelian->no_str }}</a></div>
+                                                                <div class="row text-xs">
+                                                                    <small>{{ $pembelian->no_str }}</small>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>{{ $v->pembayaran_pembelian->setor }}</td>
+                                                        <td>{{ $v->pembayaran_pembelian->cara_pembayaran }}</td>
+                                                        <td><button class="btn btn-sm btn-success">{{ $v->pembayaran_pembelian->status_pembayaran }}</button></td>
+                                                        <td>Rp {{ number_format($v->jumlah, 2, ',', '.') }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
-                                    @if($pembelian->status != 'draf' && $pembelian->status != 'closed')
+                                </div>
+                                @endif
+                                @if(isset($pengiriman))
+                                <div class="tab-pane fade @if(count($pembelian->detail_pembayaran_pembelian) == 0) show active @endif" id="nav-pengiriman" role="tabpanel"
+                                    aria-labelledby="nav-pengiriman-tab">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Tgl. pengiriman</th>
+                                                    <th>No.</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($pengiriman as $v)
+                                                <tr>
+                                                    <td>{{ date('d/m/Y', strtotime($v->tanggal_transaksi)) }}</td>
+                                                    <td>
+                                                        <div>
+                                                            <div class="row"><a
+                                                                    href="{{ url('pembelian/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
+                                                            </div>
+                                                            <div class="row text-xs">
+                                                                <small>{{ $v->memo }}</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm 
+                                                        @if ($v->status == 'open') btn-warning
+                                                        @elseif($v->status == 'partial') btn-info
+                                                        @elseif($v->status == 'paid') btn-success
+                                                        @elseif($v->status == 'overdue') btn-danger 
+                                                        @elseif($v->status == 'closed') btn-dark @endif
+                                                        ml-2">
+                                                            {{ $v->status }}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                        @endif
+                        <div class="row">
+                            <div class="col-sm-6">
+                                @hasanyrole('pemilik')
+                                    @if($pembelian->status == 'draf' || $pembelian->status == 'open')
+                                    <form id="deleteForm" action="{{ url('pembelian/hapus') . '/' . $pembelian->id }}"
+                                        method="post">
+                                        @csrf
+                                        <button type="submit"
+                                            class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
+                                    </form>
+                                    @endif
+                                @endhasallroles
+                            </div>
+                            @if($pembelian->jenis == 'faktur' && $pembelian->status != 'paid')
+                            <div class="col-sm-6 d-flex justify-content-end">
+                                <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
+                                <div class="btn-group dropup mr-2">
+                                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                        Cetak
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <!-- Dropdown menu links -->
+                                        @if($pembelian->jenis == 'faktur')
+                                            <a class="dropdown-item" href="{{ url('pembelian/cetak/faktur') . '/' . $pembelian->id }}" target="_blank">Cetak Faktur</a>
+                                            <a class="dropdown-item" href="{{ url('pembelian/cetak/surat_jalan') . '/' . $pembelian->id }}" target="_blank">Cetak Surat Jalan</a>
+                                        @elseif($pembelian->jenis == 'penawaran')
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Faktur</a>
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
+                                        @elseif($pembelian->jenis == 'pemesanan')
+                                        <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                        <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Faktur</a>
+                                        @endif
+                                    </div>
+                                </div>
+                                @if($pembelian->status != 'draf' && $pembelian->status != 'closed')
+                                <div class="btn-group dropup">
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                        Tindakan
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <!-- Dropdown menu links -->
+                                        @if($pembelian->jenis == 'faktur' && $pembelian->sisa_tagihan > 0)
+                                            <a class="dropdown-item" href="{{ url('pembelian/faktur/pembayaran') . '/' . $pembelian->id }}">Kirim Pembayaran</a>
+                                        @elseif($pembelian->jenis == 'penawaran')
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
+                                        @elseif($pembelian->jenis == 'pemesanan')
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                        @elseif($pembelian->jenis == 'pengiriman')
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Faktur</a>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                            @else
+                            <div class="col-sm-6 d-flex justify-content-end">
+                                @if($pembelian->status == 'draf' || $pembelian->status == 'open')
+                                <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
+                                @endif
+                                @if($pembelian->jenis == 'penawaran' || $pembelian->jenis == 'pemesanan')
+                                <div class="btn-group dropup mr-2">
+                                    <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
+                                        aria-expanded="false">
+                                        Cetak
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        @if($pembelian->jenis == 'penawaran')
+                                        <a target="_blank" class="dropdown-item" href="{{ url('pembelian/penawaran/cetak') . '/' . $pembelian->id }}">Cetak Penawaran</a>
+                                        @elseif($pembelian->jenis == 'pemesanan')
+                                        <a target="_blank" class="dropdown-item" href="{{ url('pembelian/pemesanan/cetak') . '/' . $pembelian->id }}">Cetak Pemesanan</a>
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
+                                @if($pembelian->status != 'draf' && $pembelian->status != 'closed')
+                                    @if($pembelian->jenis != 'pengiriman')
                                     <div class="btn-group dropup">
                                         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
                                             aria-expanded="false">
@@ -342,77 +440,34 @@
                                         </button>
                                         <div class="dropdown-menu">
                                             <!-- Dropdown menu links -->
-                                            @if($pembelian->jenis == 'faktur')
-                                                <a class="dropdown-item" href="{{ url('pembelian/faktur/pembayaran') . '/' . $pembelian->id }}">Kirim Pembayaran</a>
+                                            @hasanyrole('pemilik')
+                                            @if($pembelian->jenis == 'faktur' && $pembelian->sisa_tagihan > 0)
+                                                <a class="dropdown-item" href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}">Terima Pembayaran</a>
                                             @elseif($pembelian->jenis == 'penawaran')
                                                 <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
                                             @elseif($pembelian->jenis == 'pemesanan')
                                                 <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
                                             @elseif($pembelian->jenis == 'pengiriman')
-                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/faktur/' . $pembelian->id }}">Buat Faktur</a>
+                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis. '/faktur/' . $pembelian->id }}">Buat Faktur</a>
                                             @endif
+                                            @endhasallroles
+                                            @hasanyrole('pergudangan')
+                                            <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
+                                            @endhasallroles
                                         </div>
                                     </div>
+                                    @else
+                                    <a class="btn btn-outline-primary" href="{{ url('pembelian/cetak/surat_jalan') . '/' . $pembelian->id }}" target="_blank">Cetak Surat Jalan</a>
+                                    <a href="{{ url('pembelian').'/pengiriman/faktur/'.$pembelian->id }}" class="btn btn-primary">Buat Faktur</a>
                                     @endif
-                                </div>
-                                @else
-                                <div class="col-sm-6 d-flex justify-content-end">
-                                    @if($pembelian->status == 'draf' || $pembelian->status == 'open')
-                                    <a href="{{ url('pembelian').'/'.$pembelian->jenis.'/'.$pembelian->id }}" class="btn btn-outline-primary">Ubah</a>
-                                    @endif
-                                    @if($pembelian->jenis == 'penawaran' || $pembelian->jenis == 'pemesanan')
-                                    <div class="btn-group dropup mr-2">
-                                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown"
-                                            aria-expanded="false">
-                                            Cetak
-                                        </button>
-                                        <div class="dropdown-menu">
-                                            @if($pembelian->jenis == 'penawaran')
-                                            <a target="_blank" class="dropdown-item" href="{{ url('pembelian/penawaran/cetak') . '/' . $pembelian->id }}">Cetak Penawaran</a>
-                                            @elseif($pembelian->jenis == 'pemesanan')
-                                            <a target="_blank" class="dropdown-item" href="{{ url('pembelian/pemesanan/cetak') . '/' . $pembelian->id }}">Cetak Pemesanan</a>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    @endif
-                                    @if($pembelian->status != 'draf' && $pembelian->status != 'closed')
-                                        @if($pembelian->jenis != 'pengiriman')
-                                        <div class="btn-group dropup">
-                                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-                                                aria-expanded="false">
-                                                Tindakan
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <!-- Dropdown menu links -->
-                                                @hasanyrole('pemilik')
-                                                @if($pembelian->jenis == 'faktur')
-                                                    <a class="dropdown-item" href="{{ url('pembelian/pembayaran') . '/' . $pembelian->id }}">Terima Pembayaran</a>
-                                                @elseif($pembelian->jenis == 'penawaran')
-                                                    <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pemesanan/' . $pembelian->id }}">Buat Pemesanan</a>
-                                                @elseif($pembelian->jenis == 'pemesanan')
-                                                    <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
-                                                @elseif($pembelian->jenis == 'pengiriman')
-                                                    <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis. '/faktur/' . $pembelian->id }}">Buat Faktur</a>
-                                                @endif
-                                                @endhasallroles
-                                                @hasanyrole('pergudangan')
-                                                <a class="dropdown-item" href="{{ url('pembelian') .'/'.$pembelian->jenis . '/pengiriman/' . $pembelian->id }}">Buat Pengiriman</a>
-                                                @endhasallroles
-                                            </div>
-                                        </div>
-                                        @else
-                                        <a class="btn btn-outline-primary" href="{{ url('pembelian/cetak/surat_jalan') . '/' . $pembelian->id }}" target="_blank">Cetak Surat Jalan</a>
-                                        <a href="{{ url('pembelian').'/pengiriman/faktur/'.$pembelian->id }}" class="btn btn-primary">Buat Faktur</a>
-                                        @endif
-                                    @endif
-                                </div>
                                 @endif
                             </div>
+                            @endif
                         </div>
-                        @if(count($pembelian->detail_pembayaran_pembelian) != 0)
+                        @if(isset($faktur) && count($faktur) > 0)
                         <div class="row my-4">
                             <div class="col">
-                                Pembayaran
+                                Faktur Pembelian
                             </div>
                             <div class="col-sm-12">
                                 <div class="table-responsive">
@@ -421,78 +476,43 @@
                                             <tr>
                                                 <th>Tanggal</th>
                                                 <th>No.</th>
-                                                <th>Setor Ke</th>
-                                                <th>Cara pembayaran</th>
-                                                <th>Status pembayaran</th>
+                                                <th>Tgl. jatuh tempo</th>
+                                                <th>Status</th>
                                                 <th>Jumlah</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($pembelian->detail_pembayaran_pembelian as $v)
+                                            @foreach ($faktur as $v)
                                                 <tr>
-                                                    <th>{{ $v->pembayaran_pembelian->tanggal_transaksi }}</th>
+                                                    <td>{{ $v->tanggal_transaksi }}</td>
                                                     <td>
                                                         <div>
-                                                            <div class="row"><a href="{{ url('pembelian/receive_payment').'/'.$v->pembayaran_pembelian->id }}">{{ $v->pembayaran_pembelian->no_str }}</a></div>
+                                                            <div class="row"><a
+                                                                    href="{{ url('pembelian/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
+                                                            </div>
                                                             <div class="row text-xs">
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td>{{ $v->pembayaran_pembelian->setor }}</td>
-                                                    <td>{{ $v->pembayaran_pembelian->cara_pembayaran }}</td>
-                                                    <td><button class="btn btn-sm btn-success">{{ $v->pembayaran_pembelian->status_pembayaran }}</button></td>
-                                                    <td>Rp {{ number_format($v->jumlah, 2, ',', '.') }}</td>
+                                                    <td>{{ $v->tanggal_jatuh_tempo }}</td>
+                                                    <td>
+                                                        <button class="btn btn-sm 
+                                                        @if ($v->status == 'open') btn-warning
+                                                        @elseif($v->status == 'partial') btn-info
+                                                        @elseif($v->status == 'paid') btn-success
+                                                        @elseif($v->status == 'overdue') btn-danger 
+                                                        @elseif($v->status == 'closed') btn-dark @endif
+                                                        ml-2">
+                                                            {{ $v->status }}
+                                                        </button>
+                                                    </td>
+                                                    <td>Rp {{ number_format($v->total, 2, ',', '.') }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                        </div>
-                        @endif
-                        @if(isset($faktur) && count($faktur) > 0)
-                        <div class="table-responsive">
-                            Faktur Pembelian
-                            <table class="table my-4">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>Tanggal</th>
-                                        <th>No.</th>
-                                        <th>Tgl. jatuh tempo</th>
-                                        <th>Status</th>
-                                        <th>Jumlah</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($faktur as $v)
-                                        <tr>
-                                            <td>{{ $v->tanggal_transaksi }}</td>
-                                            <td>
-                                                <div>
-                                                    <div class="row"><a
-                                                            href="{{ url('pembelian/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
-                                                    </div>
-                                                    <div class="row text-xs">
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>{{ $v->tanggal_jatuh_tempo }}</td>
-                                            <td>
-                                                <button class="btn btn-sm 
-                                                @if ($v->status == 'open') btn-warning
-                                                @elseif($v->status == 'partial') btn-info
-                                                @elseif($v->status == 'paid') btn-success
-                                                @elseif($v->status == 'overdue') btn-danger 
-                                                @elseif($v->status == 'closed') btn-dark @endif
-                                                ml-2">
-                                                    {{ $v->status }}
-                                                </button>
-                                            </td>
-                                            <td>Rp {{ number_format($v->total, 2, ',', '.') }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
                         </div>
                         @endif
                     </div>

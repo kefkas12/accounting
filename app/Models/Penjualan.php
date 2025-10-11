@@ -486,7 +486,6 @@ class Penjualan extends Model
         }
         
         $this->id_pelanggan = $request->input('pelanggan');
-
         $date = DateTime::createFromFormat('d/m/Y', $request->tanggal_jatuh_tempo);
 
         if ($date) {
@@ -671,8 +670,8 @@ class Penjualan extends Model
                 $detail_penjualan->kuantitas = $request->input('kuantitas')[$i];
             }
             $detail_penjualan->harga_satuan = $harga_satuan;
-            $detail_penjualan->diskon_per_baris = $request->input('diskon_per_baris')[$i];
-            $detail_penjualan->nilai_diskon_per_baris = $request->input('nilai_diskon_per_baris')[$i];
+            $detail_penjualan->diskon_per_baris = $request->input('diskon_per_baris')[$i] ? $request->input('diskon_per_baris')[$i] : 0;
+            $detail_penjualan->nilai_diskon_per_baris = $request->input('nilai_diskon_per_baris')[$i] ? $request->input('nilai_diskon_per_baris')[$i] : 0;
             $detail_penjualan->pajak = $jumlah * $pajak / 100;
             $detail_penjualan->jumlah = $jumlah;
 

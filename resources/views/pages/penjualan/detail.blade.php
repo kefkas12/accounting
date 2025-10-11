@@ -56,7 +56,7 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-md-2">Pelanggan <br> @if($penjualan->nama_pelanggan)<strong>{{ $penjualan->nama_pelanggan }}</strong>@else <strong> - </strong> @endif</div>
+                            <div class="form-group col-md-2">Pelanggan <br> @if($penjualan->nama_pelanggan)<strong><a href="{{ url('pelanggan/detail').'/'.$penjualan->id_pelanggan }}">{{ $penjualan->nama_pelanggan }}</a></strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-md-2">Tgl. Transaksi <br> @if($penjualan->tanggal_transaksi)<strong>{{ date('d/m/Y', strtotime($penjualan->tanggal_transaksi)) }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-md-2">Alamat <br> @if($penjualan->alamat)<strong>{{ $penjualan->alamat }}</strong>@else <strong> - </strong> @endif</div>
                             <div class="form-group col-md-2">Detail Alamat <br> @if($penjualan->detail_alamat)<strong>{{ $penjualan->detail_alamat }}</strong>@else <strong> - </strong> @endif</div>
@@ -320,6 +320,7 @@
                                                 <strong>Rp. {{ number_format($penjualan->subtotal, 2, ',', '.') }}</strong>
                                             </div>
                                         </div>
+                                        @if(isset($penjualan->diskon_per_baris) && $penjualan->diskon_per_baris > 0)
                                         <div class="row mb-1">
                                             <div class="col">
                                                 <span>Diskon per baris</span>
@@ -328,6 +329,7 @@
                                                 <strong>Rp. {{ number_format($penjualan->diskon_per_baris, 2, ',', '.') }}</strong>
                                             </div>
                                         </div>
+                                        @endif
                                         @if(isset($penjualan->ppn) && $penjualan->ppn > 0)
                                         <div class="row mb-1">
                                             <div class="col">
@@ -388,22 +390,21 @@
                             @endif
                         </div>
                         @if(count($penjualan->detail_pembayaran_penjualan) > 0 || isset($pengiriman))
-
                             <nav>
                                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                                     @if(count($penjualan->detail_pembayaran_penjualan) > 0)
-                                    <button class="nav-link" id="nav-pembayaran-tab" data-toggle="tab" data-target="#nav-pembayaran"
-                                        type="button" role="tab" aria-controls="nav-pembayaran">Pembayaran</button>
+                                    <button class="nav-link active" id="nav-pembayaran-tab" data-toggle="tab" data-target="#nav-pembayaran"
+                                        type="button" role="tab" aria-controls="nav-pembayaran" aria-selected="true">Pembayaran</button>
                                     @endif
                                     @if(isset($pengiriman))
-                                    <button class="nav-link active" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
-                                        type="button" role="tab" aria-controls="nav-pengiriman" aria-selected="true">Pengiriman</button>
+                                    <button class="nav-link @if(count($penjualan->detail_pembayaran_penjualan) == 0) active @endif" id="nav-pengiriman-tab" data-toggle="tab" data-target="#nav-pengiriman"
+                                        type="button" role="tab" aria-controls="nav-pengiriman" @if(count($penjualan->detail_pembayaran_penjualan) == 0) aria-selected="true" @endif>Pengiriman</button>
                                     @endif
                                 </div>
                             </nav>
                             <div class="tab-content" id="nav-tabContent">
                                 @if(count($penjualan->detail_pembayaran_penjualan) > 0)
-                                <div class="tab-pane fade" id="nav-pembayaran" role="tabpanel"
+                                <div class="tab-pane fade show active" id="nav-pembayaran" role="tabpanel"
                                     aria-labelledby="nav-pembayaran-tab">
                                     <div class="table-responsive">
                                         <table class="table">
@@ -423,10 +424,11 @@
                                                         <td>{{ date('d/m/Y', strtotime($v->pembayaran_penjualan->tanggal_transaksi)) }}</td>
                                                         <td>
                                                             <div>
-                                                                <div class="row"><a
-                                                                        href="{{ url('penjualan/receive_payment') . '/' . $v->pembayaran_penjualan->id }}">{{ $v->pembayaran_penjualan->no_str }}</a>
+                                                                <div class="row">
+                                                                    <a href="{{ url('penjualan/receive_payment') . '/' . $v->pembayaran_penjualan->id }}">{{ $v->pembayaran_penjualan->no_str }}</a>                                                                    
                                                                 </div>
                                                                 <div class="row text-xs">
+                                                                    <small>{{ $penjualan->no_str }}</small>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -442,7 +444,7 @@
                                 </div>
                                 @endif
                                 @if(isset($pengiriman))
-                                <div class="tab-pane fade show active" id="nav-pengiriman" role="tabpanel"
+                                <div class="tab-pane fade @if(count($penjualan->detail_pembayaran_penjualan) == 0) show active @endif" id="nav-pengiriman" role="tabpanel"
                                     aria-labelledby="nav-pengiriman-tab">
                                     <div class="table-responsive">
                                         <table class="table">
@@ -463,6 +465,7 @@
                                                                     href="{{ url('penjualan/detail') . '/' . $v->id }}">{{ $v->no_str }}</a>
                                                             </div>
                                                             <div class="row text-xs">
+                                                                <small>{{ $v->memo }}</small>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -527,7 +530,7 @@
                                     </button>
                                     <div class="dropdown-menu">
                                         <!-- Dropdown menu links -->
-                                        @if($penjualan->jenis == 'penagihan')
+                                        @if($penjualan->jenis == 'penagihan' && $penjualan->sisa_tagihan > 0)
                                             <a class="dropdown-item" href="{{ url('penjualan/penagihan/pembayaran') . '/' . $penjualan->id }}">Terima Pembayaran</a>
                                         @elseif($penjualan->jenis == 'penawaran')
                                             <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pemesanan/' . $penjualan->id }}">Buat Pemesanan</a>
@@ -569,7 +572,7 @@
                                         </button>
                                         <div class="dropdown-menu">
                                             <!-- Dropdown menu links -->
-                                            @if($penjualan->jenis == 'penagihan')
+                                            @if($penjualan->jenis == 'penagihan' && $penjualan->sisa_tagihan > 0)
                                                 <a class="dropdown-item" href="{{ url('penjualan/pembayaran') . '/' . $penjualan->id }}">Terima Pembayaran</a>
                                             @elseif($penjualan->jenis == 'penawaran')
                                                 <a class="dropdown-item" href="{{ url('penjualan') .'/'.$penjualan->jenis . '/pemesanan/' . $penjualan->id }}">Buat Pemesanan</a>

@@ -23,124 +23,120 @@
                                 <h2>Pengiriman Pembayaran</h2>
                             </div>
                         </div>
-                    </div>
-                    <form method="POST" id="insertForm"
-                    @if(isset($faktur_payment))
-                        action="{{ url('pembelian/faktur/pembayaran').'/'.$pembelian->id }}"
-                    @elseif(isset($payment))
-                        action="{{ url('pembelian/pembayaran').'/'.$detail_pembayaran_pembelian->id_pembayaran_pembelian }}"
-                    @endif
-                        enctype="multipart/form-data"
-                    >
-                        @csrf
-                        <div class="card-body " style="padding: 0px !important;">
-                            <div style="background-color: #E0F7FF; border-top: 2px solid #B3D7E5;">
-                                <div class="row">
-                                    <div class="col-sm-3 mt-2">Supplier</div>
-                                    <div class="col-sm-4 mt-2">Bayar Dari</div>
-                                    <div class="col-sm-4 mt-2 d-flex justify-content-end"></div>
-                                </div>
-                                <div class="row mb-4">
-                                    <div class="col-sm-3"><strong>{{ $pembayaran->nama_supplier }}</strong></div>
-                                    <div class="col-sm-5">
-                                        <select class="form-control form-control-sm" name="setor_ke" id="setor_ke">
-                                            @foreach ($akun as $v)
-                                                <option value="{{ $v->id }}">({{ $v->nomor }}) - {{ $v->nama }}
-                                                    ({{ $v->nama_kategori }})</option>
-                                            @endforeach
-                                        </select>
+                        <form method="POST" id="insertForm"
+                        @if(isset($faktur_payment))
+                            action="{{ url('pembelian/faktur/pembayaran').'/'.$pembelian->id }}"
+                        @elseif(isset($payment))
+                            action="{{ url('pembelian/pembayaran').'/'.$detail_pembayaran_pembelian->id_pembayaran_pembelian }}"
+                        @endif
+                            enctype="multipart/form-data"
+                        >
+                            @csrf
+                            <div class="card-body" style="padding: 0px !important;">
+                                <div style="background-color: #E0F7FF; border-top: 2px solid #B3D7E5;border-bottom: 2px solid #B3D7E5;">
+                                    <div class="row">
+                                        <div class="col-sm-3 mt-2">Supplier</div>
+                                        <div class="col-sm-4 mt-2">Bayar Dari</div>
+                                        <div class="col-sm-4 mt-2 d-flex justify-content-end"></div>
                                     </div>
-                                    <div class="col-sm-4 d-flex justify-content-end">
-                                        <h2>Total <span id="total_pembayaran" style="color:#2980b9">Rp 0,00</span></h2>
+                                    <div class="row mb-4">
+                                        <div class="col-sm-3"><strong>{{ $pembayaran->nama_supplier }}</strong></div>
+                                        <div class="col-sm-5">
+                                            <select class="form-control form-control-sm" name="setor_ke" id="setor_ke">
+                                                @foreach ($akun as $v)
+                                                    <option value="{{ $v->id }}">({{ $v->nomor }}) - {{ $v->nama }}
+                                                        ({{ $v->nama_kategori }})</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-4 d-flex justify-content-end">
+                                            <h2>Total <span id="total_pembayaran" style="color:#2980b9">Rp 0,00</span></h2>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="mb-5">
-                                <div class="row">
-                                    <div class="col-sm-3">Cara Pembayaran</div>
-                                    <div class="col-sm-3">Tgl Transaksi Pembayaran</div>
-                                    <div class="col-sm-3">Tgl. Jatuh Tempo</div>
-                                    <div class="col-sm-6"></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-3">
-                                        <select class="form-control form-control-sm" name="cara_pembayaran" id="cara_pembayaran">
-                                            <option>Kas Tunai</option>
-                                            <option>Cek & Giro</option>
-                                            <option>Transfer Bank</option>
-                                            <option>Kartu Kredit</option>
-                                        </select>
+                                <div class="my-3">
+                                    <div class="row">
+                                        <div class="col-sm-3">Cara Pembayaran</div>
+                                        <div class="col-sm-3">Tgl Transaksi Pembayaran</div>
+                                        <div class="col-sm-3">Tgl. Jatuh Tempo</div>
+                                        <div class="col-sm-6"></div>
                                     </div>
-                                    <div class="col-sm-3"><input type="date" class="form-control form-control-sm" id="tanggal_transaksi"
-                                            name="tanggal_transaksi" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}"></div>
-                                    <div class="col-sm-3"><input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
-                                            name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;"></div>
-                                    <div class="col-sm-3"></div>
+                                    <div class="row">
+                                        <div class="col-sm-3">
+                                            <select class="form-control form-control-sm" name="cara_pembayaran" id="cara_pembayaran">
+                                                <option>Kas Tunai</option>
+                                                <option>Cek & Giro</option>
+                                                <option>Transfer Bank</option>
+                                                <option>Kartu Kredit</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-3"><input type="date" class="form-control form-control-sm" id="tanggal_transaksi"
+                                                name="tanggal_transaksi" style="background-color: #ffffff !important;" value="{{ date('Y-m-d') }}"></div>
+                                        <div class="col-sm-3"><input type="date" class="form-control form-control-sm" id="tanggal_jatuh_tempo"
+                                                name="tanggal_jatuh_tempo" style="background-color: #ffffff !important;"></div>
+                                        <div class="col-sm-3"></div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table my-4" >
-                                    <thead style="background-color: #E0F7FF">
-                                        <tr>
-                                            <th>Number</th>
-                                            <th>Deskripsi</th>
-                                            <th>Tgl Jatuh Tempo</th>
-                                            <th>Total</th>
-                                            <th>Sisa Tagihan</th>
-                                            <th>Jumlah</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($pembayaran->pembelian as $v)
+                                <div class="table-responsive">
+                                    <table class="table my-4" >
+                                        <thead style="background-color: #E0F7FF">
                                             <tr>
-                                                <td>{{ $v->no_str }}</td>
-                                                <td></td>
-                                                <td>{{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }}</td>
-                                                <td>{{ number_format($v->total, 2, ',', '.') }}</td>
-                                                <td>{{ number_format($v->sisa_tagihan, 2, ',', '.') }}</td>
-                                                <td>
-                                                    <input type="text" name="id_pembelian[]" value="{{ $v->id }}" hidden>
-                                                    <input type="text" class="form-control form-control-sm" name="total[]" 
-                                                        id="total_{{ $v->id }}" onkeyup="change_total({{ $v->id }})" step="any">
-                                                </td>
+                                                <th>Number</th>
+                                                <th>Deskripsi</th>
+                                                <th>Tgl Jatuh Tempo</th>
+                                                <th>Total</th>
+                                                <th>Sisa Tagihan</th>
+                                                <th>Jumlah</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="row">
-                                <div class="col"></div>
-                                <div class="col ">
-                                    <hr class="bg-white">
-                                    <div class="row mb-3">
-                                        <div class="col">
-                                            <span>Total</span>
-                                        </div>
-                                        <div class="col d-flex justify-content-end">
-                                            <span id="subtotal">Rp 0,00</span>
-                                            <input type="text" id="input_subtotal" name="subtotal" hidden>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($pembayaran->pembelian as $v)
+                                                <tr>
+                                                    <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                    <td>{{ $v->memo }}</td>
+                                                    <td>{{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }}</td>
+                                                    <td>{{ number_format($v->total, 2, ',', '.') }}</td>
+                                                    <td>{{ number_format($v->sisa_tagihan, 2, ',', '.') }}</td>
+                                                    <td>
+                                                        <input type="text" name="id_pembelian[]" value="{{ $v->id }}" hidden>
+                                                        <input type="text" class="form-control form-control-sm" name="total[]" 
+                                                            id="total_{{ $v->id }}" onkeyup="change_total({{ $v->id }})" step="any">
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="col"></div>
+                                    <div class="col ">
+                                        <div class="row mb-3">
+                                            <div class="col">
+                                                <span>Total</span>
+                                            </div>
+                                            <div class="col d-flex justify-content-end">
+                                                <span id="subtotal">Rp 0,00</span>
+                                                <input type="text" id="input_subtotal" name="subtotal" hidden>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row my-4">
-                                <div class="col-sm-6"></div>
-                                <div class="col-sm-6 d-flex justify-content-end">
-                                    <a 
-                                    @if(isset($faktur_payment))
-                                    href="{{ url('pembelian/detail').'/'.$pembelian->id }}" 
-                                    @elseif(isset($payment))
-                                    href="{{ url('pembelian/receive_payment').'/'.$detail_pembayaran_pembelian->id_pembayaran_pembelian }}" 
-                                    @endif
-                                    class="btn btn-outline-danger">Batal</a>
-                                    <button class="btn btn-primary">Kirim Pembayaran</button>
+                                <div class="row my-4">
+                                    <div class="col-sm-6"></div>
+                                    <div class="col-sm-6 d-flex justify-content-end">
+                                        <a 
+                                        @if(isset($faktur_payment))
+                                        href="{{ url('pembelian/detail').'/'.$pembelian->id }}" 
+                                        @elseif(isset($payment))
+                                        href="{{ url('pembelian/receive_payment').'/'.$detail_pembayaran_pembelian->id_pembayaran_pembelian }}" 
+                                        @endif
+                                        class="btn btn-outline-danger">Batal</a>
+                                        <button class="btn btn-primary">Kirim Pembayaran</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
