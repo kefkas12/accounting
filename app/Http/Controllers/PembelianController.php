@@ -862,7 +862,6 @@ class PembelianController extends Controller
         Detail_jurnal::where('id_jurnal',$pembayaran_pembelian->id_jurnal)->delete();
         Jurnal::find($pembayaran_pembelian->id_jurnal)->delete();
 
-        $pembayaran_pembelian->delete();
         // $pembayaran_pembelian->delete();
         $detail_pembayaran_pembelian = Detail_pembayaran_pembelian::where('id_pembayaran_pembelian',$id);
         foreach($detail_pembayaran_pembelian->get() as $v){
