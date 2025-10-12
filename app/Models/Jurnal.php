@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Jurnal extends Model
 {
@@ -113,6 +114,31 @@ class Jurnal extends Model
 
     public function pengiriman_penjualan($request, $id = null)
     {
+        $multiple_gudang = Pengaturan_produk::where('id_company',Auth::user()->id_company)
+                                            ->where('fitur','Multiple gudang')
+                                            ->where('status','active')
+                                            ->first();
+        $gudang = Gudang::where('id_company',Auth::user()->id_company)->get();
+        //pembelian
+        //1-10200 - Persediaan Barang - 6 
+        $cogs = 0;
+        for ($i = 0; $i < count($request->input('produk')); $i++) {
+            $jumlah_pengiriman = 0;
+            if(isset($multiple_gudang) && $multiple_gudang && $gudang->count() > 0){
+                foreach($gudang as $v){
+                    $jumlah_pengiriman += $request->input('kuantitas_'.$v->id)[$i];
+                }
+            }else{
+                $jumlah_pengiriman = $request->input('kuantitas')[$i];
+            }
+            $pembelian = Pembelian::where('id_company',Auth::user()->id_company)->where('jenis','pengiriman')->pluck('id');
+            $harga_total = Detail_pembelian::whereIn('id_pembelian',$pembelian)->where('id_produk',$request->input('produk')[$i])->sum(DB::raw('kuantitas * harga_satuan'));
+            $kuantitas = Detail_pembelian::whereIn('id_pembelian',$pembelian)->where('id_produk',$request->input('produk')[$i])->sum('kuantitas');
+            // $harga_satuan = Detail_pembelian::whereIn('id_pembelian',$pembelian)->where('id_produk',$request->input('produk')[$i])->sum('harga_satuan');
+            $harga_barang = $harga_total /(int)$kuantitas;
+            $cogs += $harga_barang * $jumlah_pengiriman;
+        }
+
         $subtotal = $request->input('input_ongkos_kirim') ? $request->input('input_ongkos_kirim') + $request->input('input_subtotal') - $request->input('input_diskon_per_baris') : $request->input('input_subtotal') - $request->input('input_diskon_per_baris');
 
         $this->id_company = Auth::user()->id_company;
@@ -122,8 +148,8 @@ class Jurnal extends Model
             $this->no = $this->no('sales_delivery');
             $this->no_str = 'Sales Delivery #' . $this->no('sales_delivery');
         }
-        $this->debit = $subtotal;
-        $this->kredit = $subtotal;
+        $this->debit = $cogs + $subtotal;
+        $this->kredit = $cogs + $subtotal;
         $this->save();
 
         if($id){
@@ -138,17 +164,17 @@ class Jurnal extends Model
         }
         Detail_jurnal::where('id_jurnal',$this->id)->delete();
 
-
         $this->createDetailJurnal($this->id, 5, $subtotal, 0);
         $this->updateAkunBalance(5, $subtotal, 0);
 
-        if($request->input('input_ongkos_kirim')){
-            $this->createDetailJurnal($this->id, 61, 0, $subtotal);
-            $this->updateAkunBalance(61, 0, $subtotal);
-        }else{
-            $this->createDetailJurnal($this->id, 61, 0, $subtotal);
-            $this->updateAkunBalance(61, 0, $subtotal);
-        }
+        $this->createDetailJurnal($this->id, 62, $cogs, 0);
+        $this->updateAkunBalance(62, $cogs, 0);
+
+        $this->createDetailJurnal($this->id, 61, 0, $subtotal);
+        $this->updateAkunBalance(61, 0, $subtotal);
+
+        $this->createDetailJurnal($this->id, 6, 0, $cogs);
+        $this->updateAkunBalance(6, 0, $cogs);
     }
     //update skt
     public function pengiriman_pembelian($request, $id = null)

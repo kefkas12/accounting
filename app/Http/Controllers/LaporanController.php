@@ -247,11 +247,6 @@ class LaporanController extends Controller
     {
         $data['sidebar'] = 'laporan';
 
-        // $data['buku_besar'] = Akun_company::with('detail_jurnal.jurnal')
-        //     ->join('akun', 'akun_company.id_akun', '=', 'akun.id')
-        //     ->select('akun.*', 'akun_company.saldo as saldo_akun')
-        //     ->where('akun_company.id_company', Auth::user()->id_company)
-        //     ->get();
         $buku_besar = [];
 
         $akun = Detail_jurnal::join('jurnal', 'detail_jurnal.id_jurnal', '=', 'jurnal.id')
@@ -262,7 +257,7 @@ class LaporanController extends Controller
         $saldo = null;
         foreach ($akun as $v) {
             if (!isset($buku_besar[$v->id_akun])) {
-                $saldo[$v->id_akun] = ($v->debit - $v->kredit);
+                $saldo[$v->id_akun] = $v->pengali * ($v->debit - $v->kredit);
                 
                 $buku_besar[$v->id_akun]['nama'] = $v->nama;
                 $buku_besar[$v->id_akun]['nomor'] = $v->nomor;
@@ -280,7 +275,7 @@ class LaporanController extends Controller
                 array_push($buku_besar[$v->id_akun]['detail'], $detail);
                 
             }else{
-                $saldo[$v->id_akun] += ($v->debit - $v->kredit);
+                $saldo[$v->id_akun] += $v->pengali * ($v->debit - $v->kredit);
                 $detail = 
                     [
                         'tanggal_transaksi' => $v->tanggal_transaksi,

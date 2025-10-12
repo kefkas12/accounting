@@ -1168,27 +1168,22 @@ class PenjualanController extends Controller
         Detail_jurnal::where('id_jurnal',$pembayaran_penjualan->id_jurnal)->delete();
         Jurnal::find($pembayaran_penjualan->id_jurnal)->delete();
 
-        $pembayaran_penjualan->delete();
-        $detail_pembayaran_penjualan = Detail_pembayaran_penjualan::where('id_pembayaran_penjualan',$id)->first();
-        $penjualan = penjualan::find($detail_pembayaran_penjualan->id_penjualan);
-        if($penjualan->jumlah_terbayar - $detail_pembayaran_penjualan->jumlah > 0){
-            $penjualan->jumlah_terbayar = $penjualan->jumlah_terbayar - $detail_pembayaran_penjualan->jumlah;
-        }else{
-            $penjualan->jumlah_terbayar = null;
+        // $pembayaran_penjualan->delete();
+        $detail_pembayaran_penjualan = Detail_pembayaran_penjualan::where('id_pembayaran_penjualan',$id);
+        foreach($detail_pembayaran_penjualan->get() as $v){
+            $penjualan = penjualan::find($v->id_penjualan);
+            $penjualan->jumlah_terbayar = $penjualan->jumlah_terbayar - $v->jumlah > 0 ? $penjualan->jumlah_terbayar - $v->jumlah : null;
+            $penjualan->sisa_tagihan = $penjualan->sisa_tagihan + $v->jumlah;
+            $penjualan->status = $penjualan->total == $penjualan->sisa_tagihan ? 'open' : 'partial';
+            $penjualan->tanggal_pembayaran = null;
+            $penjualan->save();
         }
-        $penjualan->sisa_tagihan = $penjualan->sisa_tagihan + $detail_pembayaran_penjualan->jumlah;
-        if($penjualan->total == $penjualan->sisa_tagihan){
-            $penjualan->status = 'open';
-        }else{
-            $penjualan->status = 'partial';
-        }
-        $penjualan->tanggal_pembayaran = null;
-        $penjualan->save();
-
+        $id_penjualan = $penjualan->id;
         $detail_pembayaran_penjualan->delete();
+        $pembayaran_penjualan->delete();
 
         DB::commit();
-        return redirect('penjualan/detail/'.$detail_pembayaran_penjualan->id_penjualan);
+        return redirect('penjualan/detail/'.$id_penjualan);
     }
 
     public function cetak_surat_jalan($id){

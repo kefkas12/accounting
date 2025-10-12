@@ -92,7 +92,13 @@
                                         <tbody>
                                             @foreach($pembayaran->pembelian as $v)
                                                 <tr>
-                                                    <td><a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                    <td>
+                                                        @if($pembelian->id == $v->id)
+                                                            <a href="{{ url('pembelian/detail').'/'.$v->id }}">{{ $v->no_str }}</a>
+                                                        @else
+                                                            {{ $v->no_str }}
+                                                        @endif
+                                                    </td>
                                                     <td>{{ $v->memo }}</td>
                                                     <td>{{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }}</td>
                                                     <td>{{ number_format($v->total, 2, ',', '.') }}</td>
@@ -100,7 +106,7 @@
                                                     <td>
                                                         <input type="text" name="id_pembelian[]" value="{{ $v->id }}" hidden>
                                                         <input type="text" class="form-control form-control-sm" name="total[]" 
-                                                            id="total_{{ $v->id }}" onkeyup="change_total({{ $v->id }})" step="any">
+                                                            id="total_{{ $v->id }}" onkeyup="change_total({{ $v->id }})" step="any" required>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -169,14 +175,13 @@
             });
             fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
 
-            @if(isset($payment))
-                $('#total_{{ $pembelian->id }}').val('{{ $detail_pembayaran_pembelian->jumlah }}');
-            @else
-                $('#total_{{ $pembelian->id }}').val('{{ $v->sisa_tagihan }}');
-            @endif
-
-            load_select_2({{ $pembelian->id }});
-            change_total({{ $pembelian->id }});
+            @foreach($pembayaran->pembelian as $v)
+                @if($pembelian->id == $v->id)
+                    $('#total_{{ $v->id }}').val('{{ $v->sisa_tagihan }}');
+                @endif
+                load_select_2({{ $v->id }});
+                change_total({{ $v->id }});
+            @endforeach
         });
         var total = {};
 

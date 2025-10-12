@@ -93,7 +93,12 @@
                                         <tbody>
                                             @foreach ($pembayaran->penjualan as $v)
                                                 <tr>
-                                                    <td><a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                    <td>
+                                                        @if($penjualan->id == $v->id)
+                                                            <a href="{{ url('penjualan/detail').'/'.$v->id }}">{{ $v->no_str }}</a></td>
+                                                        @else
+                                                            {{ $v->no_str }}
+                                                        @endif
                                                     <td>{{ $v->memo }}</td>
                                                     <td>{{ date('d-m-Y',strtotime($v->tanggal_jatuh_tempo)) }}</td>
                                                     <td>{{ number_format($v->total, 2, ',', '.') }}</td>
@@ -101,7 +106,7 @@
                                                     <td>
                                                         <input type="text" name="id_penjualan[]" value="{{ $v->id }}" hidden>
                                                         <input type="text" class="form-control form-control-sm" name="total[]" 
-                                                            id="total_{{ $v->id }}" onkeyup="change_total({{ $v->id }})" step="any">
+                                                            id="total_{{ $v->id }}" onkeyup="change_total({{ $v->id }})" step="any" required>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -163,15 +168,14 @@
                 dateFormat: "d/m/Y"
             });
             fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
-            
-            @if(isset($payment))
-                $('#total_{{ $penjualan->id }}').val('{{ $detail_pembayaran_penjualan->jumlah }}');
-            @else
-                $('#total_{{ $penjualan->id }}').val('{{ $v->sisa_tagihan }}');
-            @endif
 
-            load_select_2({{ $penjualan->id }});
-            change_total({{ $penjualan->id }});
+            @foreach($pembayaran->penjualan as $v)
+                @if($penjualan->id == $v->id)
+                    $('#total_{{ $v->id }}').val('{{ $v->sisa_tagihan }}');
+                @endif
+                load_select_2({{ $v->id }});
+                change_total({{ $v->id }});
+            @endforeach
         });
         var total = {};
 
