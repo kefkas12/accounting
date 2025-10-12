@@ -56,7 +56,7 @@ class Pembayaran_penjualan extends Model
     {
         for ($i = 0; $i < count($request->input('id_penjualan')); $i++) {
             $total = $request->input('total')[$i] != '' || $request->input('total')[$i] != null ? number_format((float)str_replace(",", "", $_POST['total'][$i]), 2, '.', '') : 0;
-            if($request->input('subtotal')[$i] != '' && $request->input('subtotal')[$i] != null ){
+            if($request->input('subtotal')[$i] != '' && $request->input('subtotal')[$i] != null  && $request->input('total')[$i] > 0){
                 $detail_penjualan = new Detail_pembayaran_penjualan;
                 $detail_penjualan->id_company = Auth::user()->id_company;
                 $detail_penjualan->id_pembayaran_penjualan = $this->id;
@@ -96,18 +96,26 @@ class Pembayaran_penjualan extends Model
 
     protected function editDetailPembayaranPenjualan(Request $request)
     {
+        $detail_pembayaran_penjualan = Detail_pembayaran_penjualan::where('id_pembayaran_penjualan',$this->id);
+        foreach($detail_pembayaran_penjualan->get() as $v){
+            $penjualan = Penjualan::find($v->id_penjualan);
+            $penjualan->jumlah_terbayar = $penjualan->jumlah_terbayar - $v->jumlah;
+            $penjualan->sisa_tagihan = $penjualan->sisa_tagihan + $v->jumlah;
+            if($penjualan->sisa_tagihan == 0){
+                $penjualan->status = 'paid';
+            }else if($penjualan->sisa_tagihan == $penjualan->total){
+                $penjualan->status = 'open';
+            }else{
+                $penjualan->status = 'partial';
+            }
+            $penjualan->save();
+        }
+        $detail_pembayaran_penjualan->delete();
+
         for ($i = 0; $i < count($request->input('id_penjualan')); $i++) {
             $total = $request->input('total')[$i] != '' || $request->input('total')[$i] != null ? number_format((float)str_replace(",", "", $_POST['total'][$i]), 2, '.', '') : 0;
-            if($request->input('total')[$i] != '' && $request->input('total')[$i] != null ){
-                $detail_pembayaran_penjualan = Detail_pembayaran_penjualan::where('id_pembayaran_penjualan',$this->id)
-                                            ->where('id_penjualan',$request->input('id_penjualan')[$i])
-                                            ->first();
-                $penjualan = Penjualan::find($request->input('id_penjualan')[$i]);
-                $penjualan->jumlah_terbayar = $penjualan->jumlah_terbayar - $detail_pembayaran_penjualan->jumlah;
-                $penjualan->sisa_tagihan = $penjualan->sisa_tagihan + $detail_pembayaran_penjualan->jumlah;
-                $penjualan->save();
+            if($request->input('total')[$i] != '' && $request->input('total')[$i] != null && $request->input('total')[$i] > 0){
                 
-                $detail_pembayaran_penjualan->delete();
                 
                 $detail_pembayaran_penjualan = new Detail_pembayaran_penjualan;
                 $detail_pembayaran_penjualan->id_company = Auth::user()->id_company;

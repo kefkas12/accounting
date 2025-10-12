@@ -173,6 +173,7 @@ class PembelianController extends Controller
         $data['pembelian'] = Pembelian::where('id',$id)->first();
         $data['pembayaran'] = Kontak::with(['pembelian' => function ($query){
                                         $query->where('jenis','faktur');
+                                        $query->where('sisa_tagihan','>',0);
                                         $query->orderBy('id', 'desc');
                                     }])
                                     ->select('kontak.*','kontak.nama as nama_supplier')

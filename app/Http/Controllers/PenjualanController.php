@@ -274,6 +274,7 @@ class PenjualanController extends Controller
         $data['penjualan'] = Penjualan::where('id',$id)->first();
         $data['pembayaran'] = Kontak::with(['penjualan' => function ($query){
                                         $query->where('jenis','penagihan');
+                                        $query->where('sisa_tagihan','>',0);
                                         $query->orderBy('id', 'desc');
                                     }])
                                     ->select('kontak.*','kontak.nama as nama_pelanggan')

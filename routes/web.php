@@ -104,6 +104,10 @@ Route::controller(KasBankController::class)->prefix('kas_bank')->group(function 
 	Route::get('/transfer_uang/{status}/{id}', 'detail_transfer_uang');	
 });
 
+Route::controller(KasBankController::class)->prefix('kas_bank')->group(function () {
+	Route::get('/', 'index');
+});
+
 Route::controller(PembelianController::class)->prefix('pembelian')->group(function () {
 	
 	

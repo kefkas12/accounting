@@ -22,6 +22,20 @@ class KasBankController extends Controller
         $this->middleware('auth');
     }
 
+    public function index()
+    {   
+        $data['sidebar'] = 'kas_bank';
+
+        $data['kas_bank'] = Akun_company::leftJoin('akun','akun_company.id_akun','akun.id')
+                                        ->where('akun.id_kategori','3')
+                                        ->where('akun_company.id_company',Auth::user()->id_company)
+                                        ->select('akun_company.*','akun.nama','akun.nomor')
+                                        ->orderBy('akun.nomor','asc')
+                                        ->get();
+        
+        return view('pages.kas_bank.index', $data);
+    }
+
     public function pembayaran()
     {
         $data['sidebar'] = 'pembayaran';

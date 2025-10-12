@@ -99,7 +99,12 @@
                     </a>
                 </li>
                 <li class="nav-item" style="margin-left: -10px">
-                    <a tabindex="0" class="nav-link {{ $sidebar == 'penjualan' ? 'active' : '' }}" href="{{ url('penjualan') }}" data-toggle="popover" data-trigger="hover" data-placement="right" data-content="Penjualan">
+                    <a class="nav-link {{ $sidebar == 'kas_bank' ? 'active' : '' }}" href="{{ url('kas_bank') }}">
+                        <i class="fa fa-store text-primary"></i> {{ __('Kas & Bank') }}
+                    </a>
+                </li>
+                <li class="nav-item" style="margin-left: -10px">
+                    <a class="nav-link {{ $sidebar == 'penjualan' ? 'active' : '' }}" href="{{ url('penjualan') }}">
                         <i class="fa fa-store text-primary"></i> {{ __('Penjualan') }}
                     </a>
                 </li>
@@ -118,6 +123,8 @@
                         <i class="fa fa-store text-primary"></i> {{ __('Laporan') }}
                     </a>
                 </li>
+
+
                 <li hidden class="nav-item {{ $sidebar == 'pembayaran' || $sidebar == 'penerimaan' || $sidebar == 'transfer_uang' ? 'active' : '' }}" style="margin-left: -10px">
                     <a class="nav-link" href="#navbar_kas_dan_bank" data-toggle="collapse" role="button" aria-expanded="{{ $sidebar == 'pembayaran' || $sidebar == 'penerimaan' || $sidebar == 'transfer_uang' ? 'true' : 'false' }}" aria-controls="navbar_kas_dan_bank">
                         <i class="fa fa-address-book text-primary"></i>
