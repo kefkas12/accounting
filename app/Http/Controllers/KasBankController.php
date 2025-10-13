@@ -33,7 +33,19 @@ class KasBankController extends Controller
                                         ->orderBy('akun.nomor','asc')
                                         ->get();
         
+        $data['total_saldo'] = Akun_company::leftJoin('akun','akun_company.id_akun','akun.id')
+                                        ->where('akun.id_kategori','3')
+                                        ->where('akun_company.id_company',Auth::user()->id_company)
+                                        ->sum('akun_company.saldo');
         return view('pages.kas_bank.index', $data);
+    }
+
+    public function transfer_uang()
+    {
+        $data['sidebar'] = 'kas_bank';
+        $data['akun'] = Akun::where('id_kategori',3)->get();
+
+        return view('pages.kas_bank.transfer_uang.index', $data);
     }
 
     public function pembayaran()
@@ -188,14 +200,7 @@ class KasBankController extends Controller
         return redirect('kas_bank/penerimaan');
     }
     
-    public function transfer_uang()
-    {
-        $data['sidebar'] = 'transfer_uang';
-        $data['transfer_uang'] = Transfer_uang::where('id_company',Auth::user()->id_company)
-                                        ->get();
-
-        return view('pages.kas_bank.transfer_uang.index', $data);
-    }
+    
     public function insert_transfer_uang(Request $request)
     {
         $transfer_uang = new Transfer_uang();

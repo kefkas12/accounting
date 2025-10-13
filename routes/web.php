@@ -97,15 +97,16 @@ Route::controller(KasBankController::class)->prefix('kas_bank')->group(function 
 	Route::post('/penerimaan/edit/{id}', 'edit_penerimaan');
 	Route::get('/penerimaan/{status}/{id}', 'detail_penerimaan');	
 
-	Route::get('/transfer_uang', 'transfer_uang');
-	Route::get('/transfer_uang/insert', 'detail_transfer_uang');
-	Route::post('/transfer_uang/insert', 'insert_transfer_uang');
-	Route::post('/transfer_uang/edit/{id}', 'edit_transfer_uang');
-	Route::get('/transfer_uang/{status}/{id}', 'detail_transfer_uang');	
+	// Route::get('/transfer_uang', 'transfer_uang');
+	// Route::get('/transfer_uang/insert', 'detail_transfer_uang');
+	// Route::post('/transfer_uang/insert', 'insert_transfer_uang');
+	// Route::post('/transfer_uang/edit/{id}', 'edit_transfer_uang');
+	// Route::get('/transfer_uang/{status}/{id}', 'detail_transfer_uang');	
 });
 
 Route::controller(KasBankController::class)->prefix('kas_bank')->group(function () {
 	Route::get('/', 'index');
+	Route::get('/transfer_uang', 'transfer_uang');
 });
 
 Route::controller(PembelianController::class)->prefix('pembelian')->group(function () {

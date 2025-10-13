@@ -16,9 +16,9 @@
                             <div class="col d-flex justify-content-end ">
                                 <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">Buat Akun / Transaksi</button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item text-capitalize" href="{{ url('penjualan/pemesanan') }}">Transfer Uang</a>
-                                    <a class="dropdown-item text-capitalize" href="{{ url('penjualan/penawaran') }}">Terima Uang</a>
-                                    <a class="dropdown-item text-capitalize" href="{{ url('penjualan/penawaran') }}">Kirim Uang</a>
+                                    <a class="dropdown-item text-capitalize" href="{{ url('kas_bank/transfer_uang') }}">Transfer Uang</a>
+                                    <a class="dropdown-item text-capitalize" href="{{ url('kas_bank/terima_uang') }}">Terima Uang</a>
+                                    <a class="dropdown-item text-capitalize" href="{{ url('kas_bank/kirim_uang') }}">Kirim Uang</a>
                                 </div>
                             </div>
                         </div>
@@ -29,7 +29,7 @@
                                         Pemasukan
                                     </div>
                                     <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                        Total <br> <span style="font-weight:900">Rp. </span>
+                                        Total <br> <span style="font-weight:900">Rp. 0,00</span>
                                     </div>
                                 </div>
                             </div>
@@ -39,7 +39,7 @@
                                         Pengeluaran
                                     </div>
                                     <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                        Total <br> <span style="font-weight:900">Rp. </span>
+                                        Total <br> <span style="font-weight:900">Rp. 0,00</span>
                                     </div>
                                 </div>
                             </div>
@@ -49,7 +49,7 @@
                                         Saldo Kas & Bank
                                     </div>
                                     <div class="card-body" style="padding: 0.5rem 0.75rem !important;">
-                                        Total <br> <span style="font-weight:900">Rp </span>
+                                        Total <br> <span style="font-weight:900">Rp {{ number_format($total_saldo,2,',','.') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -59,19 +59,19 @@
                     </div>
                     <div class='container-fluid' style="padding-left: 1.45rem !important;">
                         <div class="table-responsive">
-                            <table class="table align-items-center table-flush">
-                                <thead>
+                            <table class="table align-items-center">
+                                <thead class="thead-light">
                                     <tr>
                                         <th scope="col">Kode akun</th>
                                         <th scope="col">Nama akun</th>
                                         <th scope="col">Saldo</th>
                                         <th scope="col"></th>
                                     </tr>
+                                </thead>
+                                <tbody class="list">
                                     <tr>
                                         <th scope="col" colspan="4">Kas & Bank</th>
                                     </tr>
-                                </thead>
-                                <tbody class="list">
                                     @foreach($kas_bank as $v)
                                         <tr>
                                             <td>{{ $v->nomor }}</td>
