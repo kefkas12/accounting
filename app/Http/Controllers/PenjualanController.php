@@ -281,6 +281,7 @@ class PenjualanController extends Controller
                                     ->where('kontak.id',$data['penjualan']->id_pelanggan)
                                     ->where('kontak.id_company',Auth::user()->id_company)
                                     ->first();
+        $data['pembayaran_penjualan'] = Pembayaran_penjualan::where('id',$id)->first();
         return view('pages.penjualan.pembayaran', $data);
     }
 
@@ -299,6 +300,7 @@ class PenjualanController extends Controller
                                     ->where('kontak.id',$data['penjualan']->id_pelanggan)
                                     ->where('kontak.id_company',Auth::user()->id_company)
                                     ->first();
+        $data['pembayaran_penjualan'] = Pembayaran_penjualan::where('id',$id)->first();
         return view('pages.penjualan.pembayaran', $data);
     }
 

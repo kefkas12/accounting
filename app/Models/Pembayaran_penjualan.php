@@ -39,7 +39,8 @@ class Pembayaran_penjualan extends Model
     {
         $this->id_company = Auth::user()->id_company;
         $this->id_jurnal = $idJurnal;
-        $this->tanggal_transaksi = $request->input('tanggal_transaksi');
+        $this->tanggal_transaksi = DateTime::createFromFormat('d/m/Y', $request->tanggal_transaksi)->format('Y-m-d');
+        $this->tanggal_jatuh_tempo = DateTime::createFromFormat('d/m/Y', $request->tanggal_jatuh_tempo)->format('Y-m-d');
         $this->no = $this->no();
         $this->no_str = 'Receive Payment #' . $this->no;
         $this->id_setor = $request->input('setor_ke');
@@ -48,6 +49,13 @@ class Pembayaran_penjualan extends Model
         $this->status_pembayaran = 'Lunas';
         $this->subtotal = $request->input('subtotal');
         $this->save();
+
+        $log = new Log;
+        $log->id_user = Auth::user()->id;
+        $log->id_transaksi = $this->id;
+        $log->transaksi = 'pembayaran_penjualan';
+        $log->aksi = 'insert';
+        $log->save();
 
         $this->insertDetailPembayaranPenjualan($request);
     }
@@ -84,6 +92,7 @@ class Pembayaran_penjualan extends Model
         $this->id_company = Auth::user()->id_company;
         $this->id_jurnal = $idJurnal;
         $this->tanggal_transaksi = DateTime::createFromFormat('d/m/Y', $request->tanggal_transaksi)->format('Y-m-d');
+        $this->tanggal_jatuh_tempo = DateTime::createFromFormat('d/m/Y', $request->tanggal_jatuh_tempo)->format('Y-m-d');
         $this->id_setor = $request->input('setor_ke');
         $this->setor = Akun::where('id',$this->id_setor)->first()->nama;
         $this->cara_pembayaran = $request->input('cara_pembayaran');

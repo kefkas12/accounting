@@ -40,12 +40,30 @@ class KasBankController extends Controller
         return view('pages.kas_bank.index', $data);
     }
 
-    public function transfer_uang()
+    public function transfer_uang($id=null)
     {
         $data['sidebar'] = 'kas_bank';
         $data['akun'] = Akun::where('id_kategori',3)->get();
+        if($id){
+            $data['transfer_uang'] = Transfer_uang::where('id', $id)
+                                        ->where('id_company',Auth::user()->id_company)
+                                        ->first();
+        }
 
         return view('pages.kas_bank.transfer_uang.index', $data);
+    }
+
+    public function insert_transfer_uang(Request $request)
+    {
+        DB::beginTransaction();
+        $jurnal = new Jurnal();
+        $jurnal->transfer_uang($request);
+
+        $transfer_uang = new Transfer_uang();
+        $transfer_uang->insert($request, $jurnal->id);
+        DB::commit();
+
+        return redirect('kas_bank/transfer_uang/'.$transfer_uang->id);
     }
 
     public function pembayaran()
@@ -201,23 +219,6 @@ class KasBankController extends Controller
     }
     
     
-    public function insert_transfer_uang(Request $request)
-    {
-        $transfer_uang = new Transfer_uang();
-        $transfer_uang->id_company = Auth::user()->id_company;
-        $transfer_uang->nama = $_POST['nama'];
-        $transfer_uang->nama_perusahaan = $_POST['nama_perusahaan'];
-        $transfer_uang->email = $_POST['email'];
-        $transfer_uang->nomor_handphone = $_POST['nomor_handphone'];
-        $transfer_uang->nomor_telepon = $_POST['nomor_telepon'];
-        $transfer_uang->alamat = $_POST['alamat'];
-        $transfer_uang->fax = $_POST['fax'];
-        $transfer_uang->npwp = $_POST['npwp'];
-        $transfer_uang->tipe = 'transfer_uang';
-        $transfer_uang->save();
-
-        return redirect('kas_bank/transfer_uang');
-    }
     public function detail_transfer_uang($status=null,$id=null)
     {
         $data['sidebar'] = 'transfer_uang';

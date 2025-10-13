@@ -36,6 +36,39 @@ class Jurnal extends Model
         return $this->hasMany(Detail_jurnal::class, 'id_jurnal');
     }
 
+    public function transfer_uang($request, $id = null)
+    {
+        $jumlah = $request->input('jumlah') != '' || $request->input('jumlah') != null ? number_format((float)str_replace(",", "", $_POST['jumlah']), 2, '.', '') : 0;
+        $this->id_company = Auth::user()->id_company;
+        $this->tanggal_transaksi = $request->input('tanggal_transaksi');
+        $this->kategori = 'bank_transfer';
+        if(!$id){
+            $this->no = $this->no('bank_transfer');
+            $this->no_str = 'Bank Transfer #' . $this->no('bank_transfer');
+        }
+        $this->debit = $jumlah;
+        $this->kredit = $jumlah;
+        $this->save();
+
+        if($id){
+            $detail_jurnal = Detail_jurnal::where('id_jurnal',$this->id)->get();
+            foreach($detail_jurnal as $v){
+                $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                            ->where('id_akun',$v->id_akun)->first();
+                $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                $akun_company->save();
+            }
+        }
+
+        Detail_jurnal::where('id_jurnal',$this->id)->delete();
+
+        $this->createDetailJurnal($this->id, $request->input('setor_ke'), $jumlah, 0);
+        $this->updateAkunBalance($request->input('setor_ke'), $jumlah, 0);
+
+        $this->createDetailJurnal($this->id, $request->input('transfer_dari'), 0, $jumlah);
+        $this->updateAkunBalance($request->input('transfer_dari'), 0, $jumlah);
+    }
+
     public function pembayaran_penjualan($request, $id = null)
     {
         $this->id_company = Auth::user()->id_company;

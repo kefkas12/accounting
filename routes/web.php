@@ -107,6 +107,8 @@ Route::controller(KasBankController::class)->prefix('kas_bank')->group(function 
 Route::controller(KasBankController::class)->prefix('kas_bank')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/transfer_uang', 'transfer_uang');
+	Route::post('/transfer_uang', 'insert_transfer_uang');
+	Route::post('/transfer_uang/{id}', 'update_transfer_uang');
 });
 
 Route::controller(PembelianController::class)->prefix('pembelian')->group(function () {

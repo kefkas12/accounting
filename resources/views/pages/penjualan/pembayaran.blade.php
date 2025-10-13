@@ -27,7 +27,7 @@
                             @if(isset($penagihan_payment))
                                 action="{{ url('penjualan/penagihan/pembayaran').'/'.$penjualan->id }}"
                             @elseif(isset($payment))
-                                action="{{ url('penjualan/pembayaran').'/'.$detail_pembayaran_penjualan->id_pembayaran_penjualan }}"
+                                action="{{ url('penjualan/pembayaran').'/'.$pembayaran_penjualan->id }}"
                             @endif
                             enctype="multipart/form-data"
                         >
@@ -168,6 +168,14 @@
                 dateFormat: "d/m/Y"
             });
             fp_jatuh_tempo.setDate(new Date('{{ date("Y-m-d") }}'));
+
+            @if(isset($pembayaran_penjualan))
+                $('#setor_ke').val('{{ $pembayaran_penjualan->id_setor }}');
+                $('#cara_pembayaran').val('{{ $pembayaran_penjualan->cara_pembayaran }}');
+
+                fp_transaksi.setDate(new Date('{{ $pembayaran_penjualan->tanggal_transaksi }}'));
+                fp_jatuh_tempo.setDate(new Date('{{ $pembayaran_penjualan->tanggal_jatuh_tempo }}'));
+            @endif
 
             @foreach($pembayaran->penjualan as $v)
                 @if($penjualan->id == $v->id)
