@@ -626,6 +626,125 @@ class LaporanController extends Controller
         return view('pages.laporan.laba_rugi', $data);
     }
 
+    public function arus_kas()
+    {
+        $data['sidebar'] = 'laporan';
+
+        $akun = Akun_company::join('akun', 'akun_company.id_akun', '=', 'akun.id')
+            ->where('akun_company.id_company', Auth::user()->id_company)
+            ->get();
+
+        if(isset($_POST['periode_dari'])){
+            $akun = Detail_jurnal::join('jurnal', 'detail_jurnal.id_jurnal', '=', 'jurnal.id')
+            ->join('akun', 'detail_jurnal.id_akun', '=', 'akun.id')
+            ->select('detail_jurnal.*', 'akun.id_kategori', 'akun.pengali', 'akun.nama', 'akun.nomor', 'jurnal.tanggal_transaksi')
+            ->where('detail_jurnal.id_company', Auth::user()->id_company)
+            ->where(function($query) {
+                $query->whereNot('jurnal.status','draf')
+                        ->orWhere('jurnal.status',null);
+            })
+            ->whereBetween('jurnal.tanggal_transaksi',[$_POST['periode_dari'],$_POST['periode_sampai']])
+            ->get();
+        }else{
+            $akun = Detail_jurnal::join('jurnal', 'detail_jurnal.id_jurnal', '=', 'jurnal.id')
+            ->join('akun', 'detail_jurnal.id_akun', '=', 'akun.id')
+            ->select('detail_jurnal.*', 'akun.id_kategori', 'akun.pengali', 'akun.nama', 'akun.nomor', 'jurnal.tanggal_transaksi')
+            ->where('detail_jurnal.id_company', Auth::user()->id_company)
+            ->where(function($query) {
+                $query->whereNot('jurnal.status','draf')
+                        ->orWhere('jurnal.status',null);
+            })
+            ->get();
+        }
+
+        $kategori_pendapatan = array(13);
+        $kategori_pendapatan_lainnya = array(14);
+        $kategori_harga_pokok_pendapatan = array(15);
+        $kategori_beban = array(16, 17);
+        $pendapatan = [];
+        $pendapatan_lainnya = [];
+        $harga_pokok_pendapatan = [];
+        $beban = [];
+
+        foreach ($akun as $v) {
+            if (in_array($v->id_kategori, $kategori_pendapatan)) {
+                if (isset($pendapatan[$v->id_akun])) {
+                    $pendapatan[$v->id_akun]['saldo'] += ($v->debit - $v->kredit) * $v->pengali;
+                } else {
+                    $pendapatan[$v->id_akun] =
+                        [
+                            'id_akun' => $v->id_akun,
+                            'nomor' => $v->nomor,
+                            'nama' => $v->nama,
+                            'saldo' => ($v->debit - $v->kredit) * $v->pengali,
+                        ];
+                }
+            }
+            if (in_array($v->id_kategori, $kategori_pendapatan_lainnya)) {
+                if (isset($pendapatan_lainnya[$v->id_akun])) {
+                    $pendapatan_lainnya[$v->id_akun]['saldo'] += ($v->debit - $v->kredit) * $v->pengali;
+                } else {
+                    $pendapatan_lainnya[$v->id_akun] =
+                        [
+                            'id_akun' => $v->id_akun,
+                            'nomor' => $v->nomor,
+                            'nama' => $v->nama,
+                            'saldo' => ($v->debit - $v->kredit) * $v->pengali,
+                        ];
+                }
+            }
+            if (in_array($v->id_kategori, $kategori_harga_pokok_pendapatan)) {
+                if (isset($harga_pokok_pendapatan[$v->id_akun])) {
+                    $harga_pokok_pendapatan[$v->id_akun]['saldo'] += ($v->debit - $v->kredit) * $v->pengali;
+                } else {
+                    $harga_pokok_pendapatan[$v->id_akun] =
+                        [
+                            'id_akun' => $v->id_akun,
+                            'nomor' => $v->nomor,
+                            'nama' => $v->nama,
+                            'saldo' => ($v->debit - $v->kredit) * $v->pengali,
+                        ];
+                }
+            }
+            if (in_array($v->id_kategori, $kategori_beban)) {
+                if (isset($beban[$v->id_akun])) {
+                    $beban[$v->id_akun]['saldo'] += ($v->debit - $v->kredit);
+                } else {
+                    $beban[$v->id_akun] =
+                        [
+                            'id_akun' => $v->id_akun,
+                            'nomor' => $v->nomor,
+                            'nama' => $v->nama,
+                            'saldo' => ($v->debit - $v->kredit),
+                        ];
+                }
+            }
+        }
+
+
+        $arus_kas = [
+            'Arus kas dari aktivitas operasional' => [
+                'Penerimaan dari pelanggan' => [],
+                'Aset lancar lainnya' => [],
+                'Pembayaran ke pemasok' => [],
+                'Kartu kredit dan liabilitas jangka pendek lainnya' => [],
+                'Pendapatan lainnya' => [],
+                'Pengeluaran operasional' => [],
+            ],
+            'Arus kas dari aktivitas investasi' => [
+                'Perolehan/Penjualan aset' => [],
+                'Aktivitas investasi lainnya' => []
+            ],
+            'Arus kas dari aktivitas pendanaan' => [
+                'Biaya Operasional' => $beban
+            ]
+        ];
+
+        $data['arus_kas'] = json_encode($arus_kas);
+
+        return view('pages.laporan.arus_kas', $data);
+    }
+
     public function penjualan($jenis)
     {
         $data['sidebar'] = 'laporan';

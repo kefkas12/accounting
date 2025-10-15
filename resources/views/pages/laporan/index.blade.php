@@ -79,6 +79,19 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-sm-6 ">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">Arus Kas</h5>
+                                                <p class="card-text">Menampilkan pergerakan uang masuk dan keluar dari transaksi dalam periode tertentu. Template laporan ini bisa Anda custom sesuai kebutuhan.
+                                                </p>
+
+                                            </div>
+                                            <div class="card-footer">
+                                                <a href="{{ url('laporan/arus_kas') }}" class="btn btn-primary">Lihat Laporan</a>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="nav-penjualan" role="tabpanel"

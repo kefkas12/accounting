@@ -29,6 +29,8 @@ class Transfer_uang extends Model
 
     public function insert($request, $idJurnal)
     {
+        $jumlah = $request->input('jumlah') != '' || $request->input('jumlah') != null ? number_format((float)str_replace(",", "", $_POST['jumlah']), 2, '.', '') : 0;
+        
         $this->id_company = Auth::user()->id_company;
         $this->id_jurnal = $idJurnal;
 
@@ -47,7 +49,8 @@ class Transfer_uang extends Model
         $this->transfer_dari = Akun::where('id',$this->id_transfer_dari)->first()->nama;
         $this->id_setor_ke = $request->input('setor_ke');
         $this->setor_ke = Akun::where('id',$this->id_setor_ke)->first()->nama;
-        $this->jumlah = $request->input('jumlah');
+        $this->jumlah = $jumlah;
+
         $this->memo = $request->input('memo') ? $request->input('memo') : null;
         $this->save();
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Akun;
 use App\Models\Akun_company;
+use App\Models\Detail_jurnal;
 use App\Models\Detail_penerimaan;
 use App\Models\Jurnal;
 use App\Models\Kirim_uang;
@@ -40,6 +41,26 @@ class KasBankController extends Controller
         return view('pages.kas_bank.index', $data);
     }
 
+    public function detail_kas_bank($id=null)
+    {
+        $data['sidebar'] = 'kas_bank';
+        $data['akun'] = Akun::where('id_kategori',3)->first();
+        if($id){
+            $data['detail_jurnal'] = Detail_jurnal::leftJoin('jurnal','detail_jurnal.id_jurnal','=','jurnal.id')
+                                                    ->leftJoin('penjualan','jurnal.no_str','=','penjualan.no_str')
+                                                    ->leftJoin('pembelian','jurnal.no_str','=','pembelian.no_str')
+                                                    ->leftJoin('kontak as pelanggan','penjualan.id_pelanggan','=','pelanggan.id')
+                                                    ->leftJoin('kontak as supplier','pembelian.id_supplier','=','supplier.id')
+                                                    ->select('detail_jurnal.*','jurnal.tanggal_transaksi','jurnal.kategori','jurnal.no_str','pelanggan.nama as nama_pelanggan','supplier.nama as nama_supplier')
+                                                    ->where('detail_jurnal.id_company',Auth::user()->id_company)
+                                                    ->where('detail_jurnal.id_akun',$id)
+                                                    ->orderBy('detail_jurnal.debit','desc')
+                                                    ->get();
+        }
+
+        return view('pages.kas_bank.detail', $data);
+    }
+
     public function transfer_uang($id=null)
     {
         $data['sidebar'] = 'kas_bank';
@@ -48,6 +69,31 @@ class KasBankController extends Controller
             $data['transfer_uang'] = Transfer_uang::where('id', $id)
                                         ->where('id_company',Auth::user()->id_company)
                                         ->first();
+            $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                                        ->leftJoin('transfer_uang','jurnal.id','=','transfer_uang.id_jurnal')
+                                        ->select('jurnal.*')
+                                        ->where('transfer_uang.id',$id)
+                                        ->first();
+            return view('pages.kas_bank.transfer_uang.detail', $data);
+        }
+
+        return view('pages.kas_bank.transfer_uang.index', $data);
+    }
+
+    public function detail_transfer_uang($id=null)
+    {
+        $data['sidebar'] = 'kas_bank';
+        $data['akun'] = Akun::where('id_kategori',3)->get();
+        if($id){
+            $data['transfer_uang'] = Transfer_uang::where('id', $id)
+                                        ->where('id_company',Auth::user()->id_company)
+                                        ->first();
+            $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                                        ->leftJoin('transfer_uang','jurnal.id','=','transfer_uang.id_jurnal')
+                                        ->select('jurnal.*')
+                                        ->where('transfer_uang.id',$id)
+                                        ->first();
+            return view('pages.kas_bank.transfer_uang.detail', $data);
         }
 
         return view('pages.kas_bank.transfer_uang.index', $data);
@@ -219,22 +265,22 @@ class KasBankController extends Controller
     }
     
     
-    public function detail_transfer_uang($status=null,$id=null)
-    {
-        $data['sidebar'] = 'transfer_uang';
-        if($id){
-            $data['transfer_uang'] = Transfer_uang::where('id', $id)
-                                        ->where('id_company',Auth::user()->id_company)
-                                        ->first();
-            if($status == 'edit'){
-                return view('pages.kas_bank.transfer_uang.form', $data);
-            }else if($status == 'detail'){
-                return view('pages.kas_bank.transfer_uang.detail', $data);
-            }
-        }else{
-            return view('pages.kas_bank.transfer_uang.form', $data);
-        }  
-    }
+    // public function detail_transfer_uang($status=null,$id=null)
+    // {
+    //     $data['sidebar'] = 'transfer_uang';
+    //     if($id){
+    //         $data['transfer_uang'] = Transfer_uang::where('id', $id)
+    //                                     ->where('id_company',Auth::user()->id_company)
+    //                                     ->first();
+    //         if($status == 'edit'){
+    //             return view('pages.kas_bank.transfer_uang.form', $data);
+    //         }else if($status == 'detail'){
+    //             return view('pages.kas_bank.transfer_uang.detail', $data);
+    //         }
+    //     }else{
+    //         return view('pages.kas_bank.transfer_uang.form', $data);
+    //     }  
+    // }
     public function edit_transfer_uang($id, Request $request)
     {
         $transfer_uang = Transfer_uang::find($id);

@@ -74,8 +74,8 @@
                                     </tr>
                                     @foreach($kas_bank as $v)
                                         <tr>
-                                            <td>{{ $v->nomor }}</td>
-                                            <td>{{ $v->nama }}</td>
+                                            <td><a href="{{ url('kas_bank/detail').'/'.$v->id_akun }}">{{ $v->nomor }}</a></td>
+                                            <td><a href="{{ url('kas_bank/detail').'/'.$v->id_akun }}">{{ $v->nama }}</a></td>
                                             <td>Rp {{ number_format($v->saldo,2,',','.') }}</td>
                                             <td>
                                                 <div class="d-flex justify-content-end">

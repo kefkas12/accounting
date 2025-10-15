@@ -107,8 +107,12 @@ Route::controller(KasBankController::class)->prefix('kas_bank')->group(function 
 Route::controller(KasBankController::class)->prefix('kas_bank')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/transfer_uang', 'transfer_uang');
+	Route::get('/transfer_uang/detail/{id}', 'detail_transfer_uang');
+	Route::get('/transfer_uang/edit/{id}', 'transfer_uang');
 	Route::post('/transfer_uang', 'insert_transfer_uang');
 	Route::post('/transfer_uang/{id}', 'update_transfer_uang');
+
+	Route::get('/detail/{id}', 'detail_kas_bank');
 });
 
 Route::controller(PembelianController::class)->prefix('pembelian')->group(function () {
@@ -314,6 +318,7 @@ Route::controller(LaporanController::class)->prefix('laporan')->group(function (
 
 	Route::get('/buku_besar', 'buku_besar');
 	Route::get('/laba_rugi', 'laba_rugi');
+	Route::get('/arus_kas', 'arus_kas');
 
 	Route::get('/penjualan/{jenis}', 'penjualan');
 
