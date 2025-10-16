@@ -148,13 +148,13 @@ class PenjualanController extends Controller
         $data['pelunasan_30_hari_terakhir'] = number_format(Penjualan::leftJoin('detail_pembayaran_penjualan','penjualan.id','=','detail_pembayaran_penjualan.id_penjualan')
                                         ->leftJoin('pembayaran_penjualan','detail_pembayaran_penjualan.id_pembayaran_penjualan','=','pembayaran_penjualan.id')
                                         ->whereRaw(
-                                            "STR_TO_DATE(pembayaran_penjualan.tanggal_transaksi, '%d/%m/%Y') BETWEEN ? AND ?",
+                                            "pembayaran_penjualan.tanggal_transaksi BETWEEN ? AND ?",
                                             [$start, $end]
                                         )
                                         ->where('penjualan.jenis','penagihan')
                                         ->where('penjualan.id_company',Auth::user()->id_company)
                                         ->sum('jumlah_terbayar'),2,',','.');
-
+        // dd($data['pelunasan_30_hari_terakhir']);
         $approval = new Approval;
         $data['is_approver'] = $approval->check_approver('penjualan');
 

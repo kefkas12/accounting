@@ -49,14 +49,14 @@
                         <div class="form-row">
                             <div class="form-group col-md-9 pr-2">
                                 <a href="{{ url('penjualan') }}">Transaksi</a>
-                                <h2>Transfer Uang</h2>
+                                <h2>Terima Uang</h2>
                             </div>
                         </div>
                         <form method="POST" id="insertForm"
-                            @if(isset($transfer_uang))
-                                action="{{ url('kas_bank/transfer_uang').'/'.$transfer_uang->id }}"
+                            @if(isset($terima_uang))
+                                action="{{ url('kas_bank/terima_uang').'/'.$terima_uang->id }}"
                             @else
-                                action="{{ url('kas_bank/transfer_uang') }}"
+                                action="{{ url('kas_bank/terima_uang') }}"
                             @endif
                             enctype="multipart/form-data"
                         >
@@ -64,19 +64,10 @@
                             <div class="card-body" style="padding: 0px !important;">
                                 <div style="background-color: #E0F7FF; border-top: 2px solid #B3D7E5;border-bottom: 2px solid #B3D7E5;">
                                     <div class="row">
-                                        <div class="col-sm-3 mt-2">Transfer Dari</div>
                                         <div class="col-sm-3 mt-2">Setor Ke</div>
-                                        <div class="col-sm-3 mt-2">Jumlah</div>
+                                        <div class="col-sm-3 mt-2"></div>
                                     </div>
                                     <div class="row mb-4">
-                                        <div class="col-sm-3">
-                                            <select class="form-control form-control-sm" name="transfer_dari" id="transfer_dari">
-                                                @foreach ($akun as $v)
-                                                    <option value="{{ $v->id }}">({{ $v->nomor }}) - {{ $v->nama }}
-                                                        ({{ $v->nama_kategori }})</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
                                         <div class="col-sm-3">
                                             <select class="form-control form-control-sm" name="setor_ke" id="setor_ke">
                                                 @foreach ($akun as $v)
@@ -86,8 +77,6 @@
                                             </select>
                                         </div>
                                         <div class="col-sm-3">
-                                            <input type="text" class="form-control form-control-sm" name="jumlah" 
-                                                id="jumlah" onkeyup="change_jumlah()" step="any" placeholder="Rp 0,00" required>
                                         </div>
                                     </div>
                                 </div>
@@ -111,7 +100,7 @@
                                     <div class="col-sm-6"></div>
                                     <div class="col-sm-6 d-flex justify-content-end">
                                         <a href="{{ url('kas_bank') }}" class="btn btn-outline-danger">Batal</a>
-                                        @if(isset($transfer_uang))
+                                        @if(isset($terima_uang))
                                         <button class="btn btn-primary">Edit Transferan</button>
                                         @else
                                         <button class="btn btn-primary">Buat Transferan</button>
@@ -140,12 +129,12 @@
 
             load_select_2();
 
-            @if(isset($transfer_uang))
-                $('#transfer_dari').val('{{ $transfer_uang->id_transfer_dari }}').trigger('change');
-                $('#setor_ke').val('{{ $transfer_uang->id_setor_ke }}').trigger('change');
-                $('#jumlah').val('{{ $transfer_uang->jumlah }}');
-                $('#memo').val(`{!! $transfer_uang->memo !!}`);
-                $('#tanggal_transaksi').val('{{ date("Y-m-d",strtotime($transfer_uang->tanggal_transaksi)) }}');
+            @if(isset($terima_uang))
+                $('#transfer_dari').val('{{ $terima_uang->id_transfer_dari }}').trigger('change');
+                $('#setor_ke').val('{{ $terima_uang->id_setor_ke }}').trigger('change');
+                $('#jumlah').val('{{ $terima_uang->jumlah }}');
+                $('#memo').val(`{!! $terima_uang->memo !!}`);
+                $('#tanggal_transaksi').val('{{ date("Y-m-d",strtotime($terima_uang->tanggal_transaksi)) }}');
                 change_jumlah();
             @endif
         });

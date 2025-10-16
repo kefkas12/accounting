@@ -6,6 +6,7 @@ use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,9 +31,24 @@ class Pembayaran_penjualan extends Model
         return $no;
     }
 
+    public function jurnal(): BelongsTo
+    {
+        return $this->belongsTo(Jurnal::class, 'id_jurnal', 'id');
+    }
+
     public function detail_pembayaran_penjualan(): HasMany
     {
-        return $this->hasMany(Detail_pembayaran_penjualan::class, 'id_pembayaran_penjualan');
+        return $this->hasMany(Detail_pembayaran_penjualan::class, 'id_pembayaran_penjualan', 'id');
+    }
+
+    public function penjualan(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Penjualan::class,
+            'detail_pembayaran_penjualan',
+            'id_pembayaran_penjualan',
+            'id_penjualan'
+        )->withPivot('jumlah');
     }
 
     public function insert($request, $idJurnal)
@@ -99,6 +115,13 @@ class Pembayaran_penjualan extends Model
         $this->status_pembayaran = 'Lunas';
         $this->subtotal = $request->input('subtotal');
         $this->save();
+
+        $log = new Log;
+        $log->id_user = Auth::user()->id;
+        $log->id_transaksi = $this->id;
+        $log->transaksi = 'pembayaran_penjualan';
+        $log->aksi = 'edit';
+        $log->save();
 
         $this->editDetailPembayaranPenjualan($request);
     }

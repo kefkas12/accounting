@@ -6,6 +6,7 @@ use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,9 +31,24 @@ class Pembayaran_pembelian extends Model
         return $no;
     }
 
+    public function jurnal(): BelongsTo
+    {
+        return $this->belongsTo(Jurnal::class, 'id_jurnal', 'id');
+    }
+
     public function detail_pembayaran_pembelian(): HasMany
     {
-        return $this->hasMany(Detail_pembayaran_pembelian::class, 'id_pembayaran_pembelian');
+        return $this->hasMany(Detail_pembayaran_pembelian::class, 'id_pembayaran_pembelian', 'id');
+    }
+
+    public function pembelian(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Pembelian::class,
+            'detail_pembayaran_pembelian',
+            'id_pembayaran_pembelian',
+            'id_pembelian'
+        )->withPivot('jumlah');
     }
 
     public function insert($request, $idJurnal)

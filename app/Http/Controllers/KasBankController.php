@@ -44,17 +44,26 @@ class KasBankController extends Controller
     public function detail_kas_bank($id=null)
     {
         $data['sidebar'] = 'kas_bank';
-        $data['akun'] = Akun::where('id_kategori',3)->first();
+        $data['akun'] = Akun::where('id',$id)->first();
         if($id){
-            $data['detail_jurnal'] = Detail_jurnal::leftJoin('jurnal','detail_jurnal.id_jurnal','=','jurnal.id')
-                                                    ->leftJoin('penjualan','jurnal.no_str','=','penjualan.no_str')
-                                                    ->leftJoin('pembelian','jurnal.no_str','=','pembelian.no_str')
-                                                    ->leftJoin('kontak as pelanggan','penjualan.id_pelanggan','=','pelanggan.id')
-                                                    ->leftJoin('kontak as supplier','pembelian.id_supplier','=','supplier.id')
-                                                    ->select('detail_jurnal.*','jurnal.tanggal_transaksi','jurnal.kategori','jurnal.no_str','pelanggan.nama as nama_pelanggan','supplier.nama as nama_supplier')
-                                                    ->where('detail_jurnal.id_company',Auth::user()->id_company)
-                                                    ->where('detail_jurnal.id_akun',$id)
-                                                    ->orderBy('detail_jurnal.debit','desc')
+            $data['detail_jurnal'] = Detail_jurnal::leftJoin('jurnal', 'detail_jurnal.id_jurnal', '=', 'jurnal.id')
+                                                    ->select('detail_jurnal.*') // ambil semua field detail_jurnal
+                                                    ->with([
+                                                        'jurnal:id,tanggal_transaksi,kategori,no_str',
+                                                        'jurnal.pembayaranPenjualan:id,id_jurnal,no_str,cara_pembayaran,subtotal',
+                                                        'jurnal.pembayaranPenjualan.detail_pembayaran_penjualan:id,id_pembayaran_penjualan,id_penjualan,jumlah',
+                                                        'jurnal.pembayaranPenjualan.detail_pembayaran_penjualan.penjualan:id,no_str,jenis,id_pelanggan',
+                                                        'jurnal.pembayaranPenjualan.detail_pembayaran_penjualan.penjualan.pelanggan:id,nama',
+                                                        'jurnal.pembayaranPembelian:id,id_jurnal,no_str,cara_pembayaran,subtotal',
+                                                        'jurnal.pembayaranPembelian.detail_pembayaran_pembelian:id,id_pembayaran_pembelian,id_pembelian,jumlah',
+                                                        'jurnal.pembayaranPembelian.detail_pembayaran_pembelian.pembelian:id,no_str,jenis,id_supplier',
+                                                        'jurnal.pembayaranPembelian.detail_pembayaran_pembelian.pembelian.supplier:id,nama',
+                                                        'jurnal.transferUang:id,id_jurnal,no_str,id_transfer_dari,transfer_dari,id_setor_ke,setor_ke',
+                                                    ])
+                                                    ->where('detail_jurnal.id_company', Auth::user()->id_company)
+                                                    ->where('detail_jurnal.id_akun', $id)
+                                                    ->orderByRaw("STR_TO_DATE(jurnal.tanggal_transaksi, '%d/%m/%Y') ASC")
+                                                    ->orderBy('detail_jurnal.debit', 'desc')
                                                     ->get();
         }
 
@@ -74,7 +83,6 @@ class KasBankController extends Controller
                                         ->select('jurnal.*')
                                         ->where('transfer_uang.id',$id)
                                         ->first();
-            return view('pages.kas_bank.transfer_uang.detail', $data);
         }
 
         return view('pages.kas_bank.transfer_uang.index', $data);
@@ -109,7 +117,37 @@ class KasBankController extends Controller
         $transfer_uang->insert($request, $jurnal->id);
         DB::commit();
 
-        return redirect('kas_bank/transfer_uang/'.$transfer_uang->id);
+        return redirect('kas_bank/transfer_uang/detail/'.$transfer_uang->id);
+    }
+
+    public function update_transfer_uang(Request $request, $id)
+    {
+        DB::beginTransaction();
+        $transfer_uang = Transfer_uang::find($id);
+        $jurnal = Jurnal::find($transfer_uang->id_jurnal);
+        $jurnal->transfer_uang($request, $id);
+        $transfer_uang->ubah($request, $jurnal->id);
+        DB::commit();
+
+        return redirect('kas_bank/transfer_uang/detail/'.$transfer_uang->id);
+    }
+
+    public function terima_uang($id=null)
+    {
+        $data['sidebar'] = 'terima_uang';
+        $data['akun'] = Akun::where('id_kategori',3)->get();
+        if($id){
+            $data['transfer_uang'] = Transfer_uang::where('id', $id)
+                                        ->where('id_company',Auth::user()->id_company)
+                                        ->first();
+            $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                                        ->leftJoin('transfer_uang','jurnal.id','=','transfer_uang.id_jurnal')
+                                        ->select('jurnal.*')
+                                        ->where('transfer_uang.id',$id)
+                                        ->first();
+        }
+
+        return view('pages.kas_bank.terima_uang.index', $data);
     }
 
     public function pembayaran()

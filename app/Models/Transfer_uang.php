@@ -62,4 +62,38 @@ class Transfer_uang extends Model
         $log->save();
 
     }
+
+    public function ubah($request, $idJurnal)
+    {
+        $jumlah = $request->input('jumlah') != '' || $request->input('jumlah') != null ? number_format((float)str_replace(",", "", $_POST['jumlah']), 2, '.', '') : 0;
+        
+        $this->id_company = Auth::user()->id_company;
+        $this->id_jurnal = $idJurnal;
+
+        $date = DateTime::createFromFormat('d/m/Y', $request->tanggal_transaksi);
+
+        if ($date) {
+            $this->tanggal_transaksi = $date->format('Y-m-d');
+        } else {
+            $date = DateTime::createFromFormat('Y-m-d', $request->tanggal_transaksi);
+            $this->tanggal_transaksi = $date ? $date->format('Y-m-d') : null;
+        }
+
+        $this->id_transfer_dari = $request->input('transfer_dari');
+        $this->transfer_dari = Akun::where('id',$this->id_transfer_dari)->first()->nama;
+        $this->id_setor_ke = $request->input('setor_ke');
+        $this->setor_ke = Akun::where('id',$this->id_setor_ke)->first()->nama;
+        $this->jumlah = $jumlah;
+
+        $this->memo = $request->input('memo') ? $request->input('memo') : null;
+        $this->save();
+
+        $log = new Log;
+        $log->id_user = Auth::user()->id;
+        $log->id_transaksi = $this->id;
+        $log->transaksi = 'transfer_uang';
+        $log->aksi = 'edit';
+        $log->save();
+
+    }
 }

@@ -41,6 +41,11 @@ class Pembelian extends Model
         return $no;
     }
 
+    public function supplier()
+    {
+        return $this->belongsTo(Kontak::class, 'id_supplier', 'id');
+    }
+
     public function detail_pembelian(): HasMany
     {
         return $this->hasMany(Detail_pembelian::class, 'id_pembelian');

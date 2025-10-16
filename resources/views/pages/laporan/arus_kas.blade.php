@@ -48,7 +48,7 @@
     <script>
         
         $( document ).ready(function() {
-            const jsonData = {!! $arus_kas !!}
+            const jsonData = {!! $arus_kas !!};
             var total = 0;
             var subtotal = 0;
             var grandtotal = 0;
@@ -62,44 +62,19 @@
                 }
                 $('#arus_kas').append(`
                     <tr class="bg-secondary" id="${key.replace(/ /g,"_")}">
-                        <th colspan="3">${key_string}</th>
+                        <th colspan="2">${key_string}</th>
                     </tr>
                 `)
 
                 $.each(value, function(key_1, value_1) {
                     $('#'+key.replace(/ /g,"_")).parent().append(`
                         <tr id="${key_1.replace(/ /g,"_")}">
-                            <th colspan="3">&nbsp;&nbsp;&nbsp;&nbsp; ${key_1}</th>
+                            <th colspan="2">&nbsp;&nbsp;&nbsp;&nbsp; ${key_1}</th>
+                            <td class="text-right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${rupiah(value_1)}</td>
                         </tr>
                     `)
-                    $.each(value_1, function(key_2, value_2) {
-                        if(value_2.saldo != 0){
-                            if(value_2.id_akun != ''){
-                                var akun_nomor = "<a href='{{ url('akun/detail') }}/"+value_2.id_akun+"'>&nbsp;&nbsp;"+value_2.nomor+"</a>";
-                                var akun_nama = "<a href='{{ url('akun/detail') }}/"+value_2.id_akun+"'>&nbsp;&nbsp;"+value_2.nama+"</a>";
-                            }else{
-                                var akun_nomor = "&nbsp;&nbsp;&nbsp;&nbsp;"+value_2.nomor;
-                                var akun_nama = "&nbsp;&nbsp;&nbsp;&nbsp;"+value_2.nama;
-                            }
-                            $('#'+key_1.replace(/ /g,"_")).parent().append(`
-                                <tr >
-                                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${ akun_nomor }</td>
-                                    <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${ akun_nama }</td>
-                                    <td class="text-right">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${rupiah(value_2.saldo)}</td>
-                                </tr>
-                            `)
-                            total += value_2.saldo;
-                        }
-                    });
-                    
-                    subtotal += total;
-                    total = 0;
+                    subtotal += parseFloat(value_1) || 0;
                 });
-                if(key == 'Other income'){
-                    key_string = 'Other income (expense)';
-                }else{
-                    key_string = key;
-                }
                 if(key_string == 'Arus kas dari aktivitas operasional') {
                     $('#'+key.replace(/ /g,"_")).parent().append(`
                         <tr >
@@ -122,6 +97,7 @@
                         </tr>
                     `);
                 }
+                grandtotal += subtotal;
                 
                 if(key == 'Revenue') {
                     revenue = subtotal;
@@ -135,7 +111,6 @@
                             <th class="text-right"> ${rupiah([revenue-cost_of_sales])}</th>
                         </tr>
                     `)
-                    grandtotal = 0;
                 }
                 if(key == 'Operational expense'){
                     $('#arus_kas').append(`
@@ -144,10 +119,6 @@
                             <th class="text-right"> ${rupiah([0])}</th>
                         </tr>
                     `)
-                    grandtotal = 0;
-                }
-                if(key == 'Other income'){
-                    grandtotal = 0;
                 }
                 subtotal = 0;
             });
@@ -162,11 +133,11 @@
                 </tr>
                 <tr>
                     <th colspan="2">Total revaluasi bank</th>
-                    <th class="text-right"> ${rupiah([grandtotal])}</th>
+                    <th class="text-right"> ${rupiah([0])}</th>
                 </tr>
                 <tr>
                     <th colspan="2">Saldo kas awal</th>
-                    <th class="text-right"> ${rupiah([grandtotal])}</th>
+                    <th class="text-right"> ${rupiah([0])}</th>
                 </tr>
                 <tr>
                     <th colspan="2">Saldo kas akhir</th>

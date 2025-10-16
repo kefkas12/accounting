@@ -46,21 +46,25 @@
                                             $saldo = $saldo + $v->debit - $v->kredit;
                                         @endphp
                                         <tr>
-                                            <td>{{ $v->tanggal_transaksi }}</td>
-                                            <td>{{ $v->nama_supplier }}</td>
+                                            <td>{{ $v->jurnal->tanggal_transaksi }}</td>
                                             <td>
-                                                @if($v->kategori == 'sales_invoice')
-                                                <a href="{{ url('penjualan/detail').'/'.$v->id_penjualan }}">{{ $v->no_str }}</a>
-                                                @elseif($v->kategori == 'purchase_invoice')
-                                                <a href="{{ url('pembelian/detail').'/'.$v->id_pembelian }}">{{ $v->no_str }}</a>
-                                                @elseif($v->kategori == 'receive_payment')
-                                                <a href="{{ url('penjualan/receive_payment').'/'.$v->id_pembayaran_penjualan }}">{{ $v->no_str }}</a>
-                                                @elseif($v->kategori == 'purchase_payment')
-                                                <a href="{{ url('pembelian/receive_payment').'/'.$v->id_pembayaran_pembelian }}">{{ $v->no_str }}</a>
-                                                @elseif($v->kategori == 'transfer_uang')
-                                                <a href="{{ url('kas_bank/transfer_uang/detail').'/'.$v->id_transfer_uang }}">{{ $v->no_str }}</a>
-                                                @else
-                                                <a href="{{ url('jurnal/detail').'/'.$v->id }}">{{ $v->no_str }}</a>
+                                                @if($v->jurnal->pembayaranPenjualan != null)
+                                                    <a href="{{ url('pelanggan/detail').'/'.$v->jurnal->pembayaranPenjualan->detail_pembayaran_penjualan[0]->penjualan->pelanggan->id }}">{{ $v->jurnal->pembayaranPenjualan->detail_pembayaran_penjualan[0]->penjualan->pelanggan->nama }}</a>
+                                                @elseif($v->jurnal->pembayaranPembelian != null)
+                                                    <a href="{{ url('supplier/detail').'/'.$v->jurnal->pembayaranPembelian->detail_pembayaran_pembelian[0]->pembelian->supplier->id }}">{{ $v->jurnal->pembayaranPembelian->detail_pembayaran_pembelian[0]->pembelian->supplier->nama }}</a>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($v->jurnal->kategori == 'sales_invoice')
+                                                <a href="{{ url('penjualan/detail').'/'.$v->jurnal->pembayaranPenjualan->detail_pembayaran_penjualan[0]->penjualan->id }}">{{ $v->jurnal->no_str }}</a>
+                                                @elseif($v->jurnal->kategori == 'purchase_invoice')
+                                                <a href="{{ url('pembelian/detail').'/'.$v->jurnal->pembayaranPembelian->detail_pembayaran_pembelian[0]->pembelian->id   }}">{{ $v->jurnal->no_str }}</a>
+                                                @elseif($v->jurnal->kategori == 'receive_payment')
+                                                <a href="{{ url('penjualan/receive_payment').'/'.$v->id_pembayaran_penjualan }}">{{ $v->jurnal->no_str }}</a>
+                                                @elseif($v->jurnal->kategori == 'purchase_payment')
+                                                <a href="{{ url('pembelian/receive_payment').'/'.$v->id_pembayaran_pembelian }}">{{ $v->jurnal->no_str }}</a>
+                                                @elseif($v->jurnal->kategori == 'bank_transfer')
+                                                <a href="{{ url('kas_bank/transfer_uang/detail').'/'.$v->jurnal->transferUang->id }}">{{ $v->jurnal->transferUang->no_str }}</a>
                                                 @endif
                                             </td>
                                             <td class="text-right">{{ number_format($v->debit,2,',','.') }}</td>

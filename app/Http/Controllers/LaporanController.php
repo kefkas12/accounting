@@ -657,41 +657,20 @@ class LaporanController extends Controller
             ->get();
         }
 
-        $kategori_pendapatan = array(13);
         $kategori_pendapatan_lainnya = array(14);
         $kategori_harga_pokok_pendapatan = array(15);
         $kategori_beban = array(16, 17);
-        $pendapatan = [];
-        $pendapatan_lainnya = [];
+        $penerimaan_dari_pelanggan = 0;
+        $pembayaran_ke_pemasok = 0;
         $harga_pokok_pendapatan = [];
         $beban = [];
 
         foreach ($akun as $v) {
-            if (in_array($v->id_kategori, $kategori_pendapatan)) {
-                if (isset($pendapatan[$v->id_akun])) {
-                    $pendapatan[$v->id_akun]['saldo'] += ($v->debit - $v->kredit) * $v->pengali;
-                } else {
-                    $pendapatan[$v->id_akun] =
-                        [
-                            'id_akun' => $v->id_akun,
-                            'nomor' => $v->nomor,
-                            'nama' => $v->nama,
-                            'saldo' => ($v->debit - $v->kredit) * $v->pengali,
-                        ];
-                }
+            if ($v->id_akun == 4) {
+                $penerimaan_dari_pelanggan += $v->kredit;
             }
-            if (in_array($v->id_kategori, $kategori_pendapatan_lainnya)) {
-                if (isset($pendapatan_lainnya[$v->id_akun])) {
-                    $pendapatan_lainnya[$v->id_akun]['saldo'] += ($v->debit - $v->kredit) * $v->pengali;
-                } else {
-                    $pendapatan_lainnya[$v->id_akun] =
-                        [
-                            'id_akun' => $v->id_akun,
-                            'nomor' => $v->nomor,
-                            'nama' => $v->nama,
-                            'saldo' => ($v->debit - $v->kredit) * $v->pengali,
-                        ];
-                }
+            if ($v->id_akun == 33) {
+                $pembayaran_ke_pemasok += $v->kredit * $v->pengali;
             }
             if (in_array($v->id_kategori, $kategori_harga_pokok_pendapatan)) {
                 if (isset($harga_pokok_pendapatan[$v->id_akun])) {
@@ -721,12 +700,11 @@ class LaporanController extends Controller
             }
         }
 
-
         $arus_kas = [
             'Arus kas dari aktivitas operasional' => [
-                'Penerimaan dari pelanggan' => [],
+                'Penerimaan dari pelanggan' => $penerimaan_dari_pelanggan,
                 'Aset lancar lainnya' => [],
-                'Pembayaran ke pemasok' => [],
+                'Pembayaran ke pemasok' => $pembayaran_ke_pemasok,
                 'Kartu kredit dan liabilitas jangka pendek lainnya' => [],
                 'Pendapatan lainnya' => [],
                 'Pengeluaran operasional' => [],

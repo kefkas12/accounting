@@ -28,6 +28,11 @@ class Penjualan extends Model
         'jenis'
     ];
 
+    public function pelanggan()
+    {
+        return $this->belongsTo(Kontak::class, 'id_pelanggan', 'id');
+    }
+
     function no($jenis)
     {
         $no = Penjualan::select('no')
