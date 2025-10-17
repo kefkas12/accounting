@@ -6,8 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Models\Akun_company;
 use App\Models\Company;
 use App\Models\Detail_jurnal;
+use App\Models\Detail_pembayaran_pembelian;
+use App\Models\Detail_pembayaran_penjualan;
+use App\Models\Detail_pembelian;
+use App\Models\Detail_penjualan;
 use App\Models\Jurnal;
 use App\Models\Kontak;
+use App\Models\Log;
+use App\Models\Pembayaran_pembelian;
+use App\Models\Pembayaran_penjualan;
+use App\Models\Pembelian;
+use App\Models\Penjualan;
+use App\Models\Produk;
+use App\Models\Status_pengiriman;
+use App\Models\Stok_gudang;
+use App\Models\Transaksi_produk;
+use App\Models\Transaksi_produk_penawaran;
+use App\Models\Transfer_uang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +41,32 @@ class CompanyController extends Controller
                                     ->select('company.id as id_company','users.*')
                                     ->get();
         return view('superadmin.company.index', $data);
+    }
+
+    public function reset()
+    {
+        $id_company = Auth::user()->id_company;
+        DB::beginTransaction();
+        Akun_company::where('id_company',$id_company)->update(['saldo' => 0]);
+        Detail_jurnal::where('id_company',$id_company)->delete();
+        Detail_pembayaran_pembelian::where('id_company',$id_company)->delete();
+        Detail_pembayaran_penjualan::where('id_company',$id_company)->delete();
+        Detail_pembelian::where('id_company',$id_company)->delete();
+        Detail_penjualan::where('id_company',$id_company)->delete();
+        Jurnal::where('id_company',$id_company)->delete();
+        Log::where('id_company',$id_company)->delete();
+        Pembayaran_pembelian::where('id_company',$id_company)->delete();
+        Pembayaran_penjualan::where('id_company',$id_company)->delete();
+        Pembelian::where('id_company',$id_company)->delete();
+        Penjualan::where('id_company',$id_company)->delete();
+        Produk::where('id_company',$id_company)->update(['stok' => 0]);
+        Status_pengiriman::where('id_company',$id_company)->delete();
+        Stok_gudang::where('id_company',$id_company)->delete();
+        Transaksi_produk::where('id_company',$id_company)->delete();
+        Transaksi_produk_penawaran::where('id_company',$id_company)->delete();
+        Transfer_uang::where('id_company',$id_company)->delete();
+        DB::commit();
+        return redirect()->back();
     }
 
     public function refresh_akun($id)

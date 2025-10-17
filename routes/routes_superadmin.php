@@ -16,6 +16,7 @@ use App\Http\Controllers\CompanyController;
 */
 Route::controller(CompanyController::class)->prefix('company')->group(function () {
 	Route::get('/', 'index');
+	Route::get('/reset', 'reset');
 	Route::get('/insert', 'detail');
 	Route::get('/refresh_akun/{id}', 'refresh_akun');
 	Route::post('/insert', 'insert');

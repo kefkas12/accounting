@@ -8,6 +8,8 @@ use App\Models\Detail_jurnal;
 use App\Models\Detail_penerimaan;
 use App\Models\Jurnal;
 use App\Models\Kirim_uang;
+use App\Models\Kontak;
+use App\Models\Log;
 use App\Models\Pembayaran;
 use App\Models\Penerimaan;
 use App\Models\Terima_uang;
@@ -88,25 +90,6 @@ class KasBankController extends Controller
         return view('pages.kas_bank.transfer_uang.index', $data);
     }
 
-    public function detail_transfer_uang($id=null)
-    {
-        $data['sidebar'] = 'kas_bank';
-        $data['akun'] = Akun::where('id_kategori',3)->get();
-        if($id){
-            $data['transfer_uang'] = Transfer_uang::where('id', $id)
-                                        ->where('id_company',Auth::user()->id_company)
-                                        ->first();
-            $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
-                                        ->leftJoin('transfer_uang','jurnal.id','=','transfer_uang.id_jurnal')
-                                        ->select('jurnal.*')
-                                        ->where('transfer_uang.id',$id)
-                                        ->first();
-            return view('pages.kas_bank.transfer_uang.detail', $data);
-        }
-
-        return view('pages.kas_bank.transfer_uang.index', $data);
-    }
-
     public function insert_transfer_uang(Request $request)
     {
         DB::beginTransaction();
@@ -132,10 +115,53 @@ class KasBankController extends Controller
         return redirect('kas_bank/transfer_uang/detail/'.$transfer_uang->id);
     }
 
+    public function detail_transfer_uang($id=null)
+    {
+        $data['sidebar'] = 'kas_bank';
+        $data['akun'] = Akun::where('id_kategori',3)->get();
+        if($id){
+            $data['transfer_uang'] = Transfer_uang::where('id', $id)
+                                        ->where('id_company',Auth::user()->id_company)
+                                        ->first();
+            $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                                        ->leftJoin('transfer_uang','jurnal.id','=','transfer_uang.id_jurnal')
+                                        ->select('jurnal.*')
+                                        ->where('transfer_uang.id',$id)
+                                        ->first();
+            return view('pages.kas_bank.transfer_uang.detail', $data);
+        }
+
+        return view('pages.kas_bank.transfer_uang.index', $data);
+    }
+
+    public function hapus_transfer_uang($id){
+        DB::beginTransaction();
+        $transfer_uang = Transfer_uang::find($id);
+
+        $detail_jurnal = Detail_jurnal::where('id_jurnal',$transfer_uang->id_jurnal)->get();
+        foreach($detail_jurnal as $v){
+            $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                        ->where('id_akun',$v->id_akun)->first();
+            $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+            $akun_company->save();
+        }
+
+        Detail_jurnal::where('id_jurnal',$transfer_uang->id_jurnal)->delete();
+        Jurnal::find($transfer_uang->id_jurnal)->delete();
+        Log::where('id_transaksi',$id)->delete();
+        $transfer_uang->delete();
+        DB::commit();
+        
+        return redirect('kas_bank');
+    }
+
     public function terima_uang($id=null)
     {
-        $data['sidebar'] = 'terima_uang';
+        $data['sidebar'] = 'kas_bank';
         $data['akun'] = Akun::where('id_kategori',3)->get();
+        $data['akun_terima_dari'] = Akun::get();
+        $data['kontak'] = Kontak::where('id_company',Auth::user()->id_company)
+                                    ->get();
         if($id){
             $data['transfer_uang'] = Transfer_uang::where('id', $id)
                                         ->where('id_company',Auth::user()->id_company)
@@ -148,6 +174,27 @@ class KasBankController extends Controller
         }
 
         return view('pages.kas_bank.terima_uang.index', $data);
+    }
+
+    public function kirim_uang($id=null)
+    {
+        $data['sidebar'] = 'kas_bank';
+        $data['akun'] = Akun::where('id_kategori',3)->get();
+        $data['akun_terima_dari'] = Akun::get();
+        $data['kontak'] = Kontak::where('id_company',Auth::user()->id_company)
+                                    ->get();
+        if($id){
+            $data['transfer_uang'] = Transfer_uang::where('id', $id)
+                                        ->where('id_company',Auth::user()->id_company)
+                                        ->first();
+            $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                                        ->leftJoin('transfer_uang','jurnal.id','=','transfer_uang.id_jurnal')
+                                        ->select('jurnal.*')
+                                        ->where('transfer_uang.id',$id)
+                                        ->first();
+        }
+
+        return view('pages.kas_bank.kirim_uang.index', $data);
     }
 
     public function pembayaran()

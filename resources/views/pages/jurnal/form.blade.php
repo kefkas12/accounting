@@ -64,11 +64,11 @@
                                                 @endif
                                             </th>
                                             <td style="padding: 10px !important;">
-                                                <textarea class="form-control" id="deskripsi_1" name="deskripsi[]"></textarea>
+                                                <textarea class="form-control form-control-sm" id="deskripsi_1" name="deskripsi[]" rows="1"></textarea>
                                             </td>
-                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="debit_1" name="debit[]"
+                                            <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="debit_1" name="debit[]"
                                                     value="0" onblur="change_debit(1)"></td>
-                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="kredit_1" name="kredit[]"
+                                            <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="kredit_1" name="kredit[]"
                                                     value="0" onblur="change_kredit(1)"></td>
                                             <td style="padding: 10px !important;">
                                                 <a href="javascript:;" onclick="clear_row(1)"><i class="fa fa-trash text-primary"></i></a>
@@ -88,11 +88,11 @@
                                                 @endif
                                             </th>
                                             <td style="padding: 10px !important;">
-                                                <textarea class="form-control" id="deskripsi_2" name="deskripsi[]"></textarea>
+                                                <textarea class="form-control form-control-sm" id="deskripsi_2" name="deskripsi[]" rows="1"></textarea>
                                             </td>
-                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="debit_2" name="debit[]"
+                                            <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="debit_2" name="debit[]"
                                                     value="0" onblur="change_debit(2)"></td>
-                                            <td style="padding: 10px !important;"><input type="text" class="form-control" id="kredit_2" name="kredit[]"
+                                            <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="kredit_2" name="kredit[]"
                                                     value="0" onblur="change_kredit(2)"></td>
                                             <td style="padding: 10px !important;">
                                                 <a href="javascript:;" onclick="clear_row(2)"><i class="fa fa-trash text-primary"></i></a>
@@ -233,8 +233,6 @@
                 AutoNumeric.set(this, pastedData);
             });
         }
-
-
         
         var debit = {};
         var kredit = {};
@@ -300,7 +298,7 @@
             $('#list').append(`
                 <tr id="list_${i}">
                     <th style="padding: 10px !important;">
-                        <select class="form-control" name="akun[]" id="akun_${i}" required>
+                        <select class="form-control form-control-sm" name="akun[]" id="akun_${i}" required>
                             <option value="" hidden selected disabled>Pilih akun</option>
                             @foreach ($akun as $v)
                                 <option value="{{ $v->id }}" >({{ $v->nomor }}) {{ $v->nama }} ({{ $v->nama_kategori }})</option>
@@ -310,9 +308,9 @@
                             <input type="number" name="id_detail_jurnal[]" id="id_detail_jurnal_${i}" hidden>
                         @endif
                     </th>
-                    <td style="padding: 10px !important;"><textarea class="form-control" id="deskripsi_${i}" name="deskripsi[]"></textarea></td>
-                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="debit_${i}" name="debit[]" value="0" onblur="change_debit(${i})"></td>
-                    <td style="padding: 10px !important;"><input type="text" class="form-control" id="kredit_${i}" name="kredit[]" value="0" onblur="change_kredit(${i})"></td>
+                    <td style="padding: 10px !important;"><textarea class="form-control form-control-sm" id="deskripsi_${i}" name="deskripsi[]" rows="1"></textarea></td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="debit_${i}" name="debit[]" value="0" onblur="change_debit(${i})"></td>
+                    <td style="padding: 10px !important;"><input type="text" class="form-control form-control-sm" id="kredit_${i}" name="kredit[]" value="0" onblur="change_kredit(${i})"></td>
                     <td style="padding: 10px !important;"><a href="javascript:;" onclick="hapus(${i})"><i class="fa fa-trash text-primary"></i></a></td>
                 </tr>
             `);

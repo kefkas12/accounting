@@ -48,7 +48,7 @@
                     <div class="card-body border-0 text-sm">
                         <div class="form-row">
                             <div class="form-group col-md-9 pr-2">
-                                <a href="{{ url('penjualan') }}">Transaksi</a>
+                                <a href="{{ url('kas_bank') }}">Transaksi</a>
                                 <h2>Transfer Uang</h2>
                             </div>
                         </div>

@@ -111,10 +111,13 @@ Route::controller(KasBankController::class)->prefix('kas_bank')->group(function 
 	Route::get('/transfer_uang', 'transfer_uang');
 	Route::get('/transfer_uang/edit/{id}', 'transfer_uang');
 	Route::get('/transfer_uang/detail/{id}', 'detail_transfer_uang');
+	Route::post('/transfer_uang/hapus/{id}', 'hapus_transfer_uang');
 	Route::post('/transfer_uang', 'insert_transfer_uang');
 	Route::post('/transfer_uang/{id}', 'update_transfer_uang');
 
 	Route::get('/terima_uang', 'terima_uang');
+
+	Route::get('/kirim_uang', 'kirim_uang');
 });
 
 Route::controller(PembelianController::class)->prefix('pembelian')->group(function () {
@@ -364,12 +367,6 @@ Route::group([], __DIR__.'/routes_superadmin.php');
 
 
 /*
-Route::controller(KaryawanController::class)->group(function () {
-	Route::get('/karyawan', 'index');
-	Route::post('/insert_karyawan', 'insert');
-	Route::post('/edit_karyawan/{id}', 'edit');
-	Route::get('/status_karyawan/{id}', 'status');
-});
 
 Route::controller(RoleController::class)->group(function () {
 	Route::get('/role', 'index');
@@ -403,22 +400,6 @@ Route::controller(UserController::class)->group(function () {
 	
 	Route::get('/konsumen/browse/{keyword}', 'browse');
 });
-Route::controller(ReceiveItemController::class)->group(function () {
-	Route::get('/receive_item', 'index');
-	Route::get('/receive_item/{id}', 'cari');
-	Route::post('/receive_item', 'insert');
-	Route::post('/receive_item/{id}', 'edit');
-	Route::get('/receive_item/pengirim/{id}', 'pengirim');
-	Route::get('/receive_item/penerima/{id}', 'penerima');
-	Route::get('/receive_item/delete/{id}', 'delete');
-	
-	Route::get('/receive_item/unit/{id}', 'unit');
-	Route::post('/receive_item/unit/{id}', 'insert_unit');
-	Route::post('/receive_item/unit/edit/{id}', 'edit_unit');
-	Route::get('/receive_item/unit/delete/{id}', 'delete_unit');
-	
-	
-});
 
 Route::controller(UnitController::class)->group(function () {
     Route::get('/unit/mutasi/{id}', 'mutasi');
@@ -446,26 +427,6 @@ Route::controller(PenerimaanUnitController::class)->group(function () {
 	Route::get('/penerimaan_unit/penerima/{id}', 'penerima');
 });
 
-
-Route::controller(ServiceController::class)->group(function () {
-	Route::get('/service', 'index');
-	Route::get('/service/{id}', 'service');
-	Route::post('/service/{id}', 'edit');
-	// Route::get('/service_load', 'load');
-	Route::POST('/service_load', 'load');
-	Route::post('/insert_service', 'insert');
-	Route::post('/edit_service/{id}', 'edit');
-	Route::post('/import_service', 'import');
-	Route::get('/service/delete/{id}', 'delete');
-	Route::get('/service/no_seri_unit/{no_seri_unit}', 'no_seri_unit');
-	Route::get('/service/no_job_request/{no_job_request}', 'no_job_request');
-	Route::get('/service/mekanik/{nama}', 'mekanik');
-	Route::post('/service/edit_mekanik/{id}', 'edit_mekanik');
-	Route::get('/service/customer/{nama}', 'customer');
-	Route::get('/service/no_service_bill_manual/{no_service_bill_manual}', 'no_service_bill_manual');
-	
-	Route::get('/service/foto/{id}', 'foto');
-});
 
 Route::controller(JobRequestController::class)->group(function () {
 	Route::get('/job_request', 'index');

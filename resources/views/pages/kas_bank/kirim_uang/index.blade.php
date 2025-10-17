@@ -49,7 +49,7 @@
                         <div class="form-row">
                             <div class="form-group col-md-9 pr-2">
                                 <a href="{{ url('kas_bank') }}">Transaksi</a>
-                                <h2>Terima Uang</h2>
+                                <h2>Kirim Uang</h2>
                             </div>
                         </div>
                         <form method="POST" id="insertForm"
@@ -64,7 +64,7 @@
                             <div class="card-body" style="padding: 0px !important;">
                                 <div style="background-color: #E0F7FF; border-top: 2px solid #B3D7E5;border-bottom: 2px solid #B3D7E5;">
                                     <div class="row">
-                                        <div class="col-sm-3 mt-2">Setor Ke</div>
+                                        <div class="col-sm-3 mt-2">Bayar Dari</div>
                                         <div class="col-sm-3 mt-2"></div>
                                     </div>
                                     <div class="row mb-4">
@@ -83,7 +83,7 @@
                                 </div>
                                 <div class="my-4">
                                     <div class="row">
-                                        <div class="col-sm-3">Yang Membayar</div>
+                                        <div class="col-sm-3">Penerima</div>
                                         <div class="col-sm-3">Tgl Transaksi</div>
                                         <div class="col-sm-3"></div>
                                     </div>
@@ -104,7 +104,7 @@
                                     <table class="table">
                                         <thead>
                                             <tr style="background-color: #E0F7FF; border-top: 2px solid #B3D7E5;border-bottom: 2px solid #B3D7E5;">
-                                                <th scope="col" style="min-width: 300px !important;padding: 10px !important;">Terima dari</th>
+                                                <th scope="col" style="min-width: 300px !important;padding: 10px !important;">Pembayaran Untuk</th>
                                                 <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Deskripsi</th>
                                                 <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Debit</th>
                                                 <th scope="col" style="min-width: 150px !important;padding: 10px !important;">jumlah</th>
@@ -234,9 +234,9 @@
                                     <div class="col-sm-6 d-flex justify-content-end">
                                         <a href="{{ url('kas_bank') }}" class="btn btn-outline-danger">Batal</a>
                                         @if(isset($terima_uang))
-                                        <button class="btn btn-primary">Edit Penerimaan</button>
+                                        <button class="btn btn-primary">Edit Pengiriman</button>
                                         @else
-                                        <button class="btn btn-primary">Buat Penerimaan</button>
+                                        <button class="btn btn-primary">Buat Pengiriman</button>
                                         @endif
                                     </div>
                                 </div>
@@ -265,7 +265,7 @@
             for (var key in ppn) {
                 result_ppn += ppn[key];
             }
-
+            
             $('#jumlah').text(rupiah(result_jumlah));
         }
 

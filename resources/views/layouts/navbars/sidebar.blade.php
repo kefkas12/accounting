@@ -203,6 +203,11 @@
                         <i class="fa fa-address-book text-primary"></i> {{ __('Pengaturan') }}
                     </a>
                 </li>
+                <li class="nav-item" style="margin-left: -10px">
+                    <a class="nav-link" href="{{ url('company/reset') }}">
+                        <i class="fa fa-address-book text-danger"></i> {{ __('Reset Company') }}
+                    </a>
+                </li>
             </ul>
             @else
             <ul class="navbar-nav">
