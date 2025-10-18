@@ -85,26 +85,6 @@ Route::controller(ProfilController::class)->prefix('profil')->group(function () 
 });
 
 Route::controller(KasBankController::class)->prefix('kas_bank')->group(function () {
-	Route::get('/pembayaran', 'pembayaran');
-	Route::get('/pembayaran/insert', 'detail_pembayaran');
-	Route::post('/pembayaran/insert', 'insert_pembayaran');
-	Route::post('/pembayaran/edit/{id}', 'edit_pembayaran');
-	Route::get('/pembayaran/{status}/{id}', 'detail_pembayaran');	
-
-	// Route::get('/penerimaan', 'penerimaan');
-	// Route::get('/penerimaan/insert', 'detail_penerimaan');
-	// Route::post('/penerimaan/insert', 'insert_penerimaan');
-	// Route::post('/penerimaan/edit/{id}', 'edit_penerimaan');
-	// Route::get('/penerimaan/{status}/{id}', 'detail_penerimaan');	
-
-	// Route::get('/transfer_uang', 'transfer_uang');
-	// Route::get('/transfer_uang/insert', 'detail_transfer_uang');
-	// Route::post('/transfer_uang/insert', 'insert_transfer_uang');
-	// Route::post('/transfer_uang/edit/{id}', 'edit_transfer_uang');
-	// Route::get('/transfer_uang/{status}/{id}', 'detail_transfer_uang');	
-});
-
-Route::controller(KasBankController::class)->prefix('kas_bank')->group(function () {
 	Route::get('/', 'index');
 	Route::get('/detail/{id}', 'detail_kas_bank');
 
@@ -116,8 +96,10 @@ Route::controller(KasBankController::class)->prefix('kas_bank')->group(function 
 	Route::post('/transfer_uang/{id}', 'update_transfer_uang');
 
 	Route::get('/terima_uang', 'terima_uang');
+	Route::post('/terima_uang', 'insert_terima_uang');
 
 	Route::get('/kirim_uang', 'kirim_uang');
+	Route::post('/kirim_uang', 'insert_kirim_uang');
 });
 
 Route::controller(PembelianController::class)->prefix('pembelian')->group(function () {

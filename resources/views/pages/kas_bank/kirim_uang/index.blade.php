@@ -53,10 +53,10 @@
                             </div>
                         </div>
                         <form method="POST" id="insertForm"
-                            @if(isset($terima_uang))
-                                action="{{ url('kas_bank/terima_uang').'/'.$terima_uang->id }}"
+                            @if(isset($kirim_uang))
+                                action="{{ url('kas_bank/kirim_uang').'/'.$kirim_uang->id }}"
                             @else
-                                action="{{ url('kas_bank/terima_uang') }}"
+                                action="{{ url('kas_bank/kirim_uang') }}"
                             @endif
                             enctype="multipart/form-data"
                         >
@@ -77,7 +77,7 @@
                                             </select>
                                         </div>
                                         <div class="col-sm-9 d-flex justify-content-end">
-                                            <h2>Total Amount Rp. 0,00</h2>
+                                            <h2>Total Amount <span id="total_amount">Rp. 0,00</span></h2>
                                         </div>
                                     </div>
                                 </div>
@@ -90,6 +90,7 @@
                                     <div class="row">
                                         <div class="col-sm-3">
                                             <select class="form-control form-control-sm" name="yang_membayar" id="yang_membayar">
+                                                <option value="" hidden selected disabled>Pilih penerima</option>
                                                 @foreach ($kontak as $v)
                                                     <option value="{{ $v->id }}">{{ $v->nama }} - ({{ $v->tipe }})</option>
                                                 @endforeach
@@ -106,7 +107,7 @@
                                             <tr style="background-color: #E0F7FF; border-top: 2px solid #B3D7E5;border-bottom: 2px solid #B3D7E5;">
                                                 <th scope="col" style="min-width: 300px !important;padding: 10px !important;">Pembayaran Untuk</th>
                                                 <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Deskripsi</th>
-                                                <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Debit</th>
+                                                <th scope="col" style="min-width: 150px !important;padding: 10px !important;">Pajak</th>
                                                 <th scope="col" style="min-width: 150px !important;padding: 10px !important;">jumlah</th>
                                                 <th scope="col" style="min-width: 25px !important;padding: 10px !important;"></th>
                                             </tr>
@@ -171,12 +172,11 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="form-row">
-                                    <div class="form-group col-md-3 pr-2">
-                                        <label for="pesan">Pesan</label>
-                                        <textarea class="form-control form-control-sm" name="pesan" id="pesan"></textarea>
-                                    </div>
-                                    <div class="form-group col-md-3 pr-2">
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="create_row();">+ Tambah Data</button>
+                                </div>
+                                <div class="form-row mt-3">
+                                    <div class="form-group col-md-6 pr-2">
                                         <label for="memo">Memo</label>
                                         <textarea class="form-control form-control-sm" name="memo" id="memo"></textarea>
                                     </div>
@@ -208,35 +208,16 @@
                                                 <input type="text" id="input_total" name="input_total" hidden>
                                             </div>
                                         </div>
-                                        <div class="row mb-1">
-                                            <div class="col">
-                                                <span>Sisa Tagihan</span>
-                                            </div>
-                                            <div class="col d-flex justify-content-end">
-                                                <span id="sisa_tagihan">Rp 0,00</span>
-                                                <input type="text" id="input_sisa_tagihan" name="input_sisa_tagihan" hidden>
-                                            </div>
-                                        </div>
-                                        <div class="row my-4">
-                                            <div class="col d-flex justify-content-end">
-                                                @if(isset($pembelian))
-                                                <a href="{{ url('pembelian').'/detail/'.$pembelian->id }}" class="btn btn-light">Batalkan</a>
-                                                @else
-                                                <a href="{{ url('pembelian') }}" class="btn btn-light">Batalkan</a>
-                                                @endif
-                                                <button type="submit" class="btn btn-primary">Buat</button>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                                 <div class="row my-4">
                                     <div class="col-sm-6"></div>
                                     <div class="col-sm-6 d-flex justify-content-end">
-                                        <a href="{{ url('kas_bank') }}" class="btn btn-outline-danger">Batal</a>
-                                        @if(isset($terima_uang))
-                                        <button class="btn btn-primary">Edit Pengiriman</button>
+                                        <a href="{{ url('kas_bank') }}" class="btn btn-light">Batal</a>
+                                        @if(isset($kirim_uang))
+                                        <button type="submit" class="btn btn-primary">Edit Pengiriman</button>
                                         @else
-                                        <button class="btn btn-primary">Buat Pengiriman</button>
+                                        <button type="submit" class="btn btn-primary">Buat Pengiriman</button>
                                         @endif
                                     </div>
                                 </div>
@@ -266,31 +247,14 @@
                 result_ppn += ppn[key];
             }
             
-            $('#jumlah').text(rupiah(result_jumlah));
-        }
+            $('#subtotal').text(rupiah(result_jumlah));
+            $('#ppn').text(rupiah(result_ppn));
+            $('#total').text(rupiah(result_jumlah + result_ppn));
+            $('#total_amount').text(rupiah(result_jumlah + result_ppn));
 
-        $( document ).ready(function() {
-            const fp_transaksi = flatpickr("#tanggal_transaksi", {
-                dateFormat: "d/m/Y" // Contoh format: DD/MM/YYYY
-            });
-            fp_transaksi.setDate(new Date('{{ date("Y-m-d") }}'));
-
-            load_select_2(1);
-            load_select_2(2);
-
-            @if(isset($terima_uang))
-                $('#transfer_dari').val('{{ $terima_uang->id_transfer_dari }}').trigger('change');
-                $('#setor_ke').val('{{ $terima_uang->id_setor_ke }}').trigger('change');
-                $('#jumlah').val('{{ $terima_uang->jumlah }}');
-                $('#memo').val(`{!! $terima_uang->memo !!}`);
-                $('#tanggal_transaksi').val('{{ date("Y-m-d",strtotime($terima_uang->tanggal_transaksi)) }}');
-                change_jumlah();
-            @endif
-        });
-
-        function change_jumlah() {
-            jumlah = $('#jumlah').val() ? parseFloat(AutoNumeric.getNumber('#jumlah')) : 0 ;
-            load();
+            $('#input_subtotal').val(result_jumlah);
+            $('#input_ppn').val(result_ppn);
+            $('#input_total').val(result_jumlah + result_ppn);
         }
 
         function load_select_2(id) {
@@ -311,12 +275,7 @@
             new AutoNumeric("#jumlah_" + id, {
                 commaDecimalCharDotSeparator: false,
                 watchExternalChanges: true,
-                modifyValueOnWheel : false,
-                showOnlyNumbersOnFocus : true,
-                unformatOnSubmit: true,
-                noSeparatorOnFocus: true,
-                allowDecimalPadding: false,
-                unformatOnSubmit: true
+                modifyValueOnWheel : false
             });
 
             document.getElementById("jumlah_" + id).addEventListener("paste", function (e) {
@@ -346,16 +305,28 @@
             });
         }
 
-        var jumlah = {};
+        $( document ).ready(function() {
+            const fp_transaksi = flatpickr("#tanggal_transaksi", {
+                dateFormat: "d/m/Y" // Contoh format: DD/MM/YYYY
+            });
+            fp_transaksi.setDate(new Date('{{ date("Y-m-d") }}'));
 
-        function load() {
-            result_jumlah = 0;
-            for (var key in jumlah) {
-                result_jumlah += jumlah[key];
-            }
-            $('#jumlah').text(rupiah(result_jumlah));
+            load_select_2(1);
+            load_select_2(2);
 
-            $('#input_jumlah').val(result_jumlah);
+            @if(isset($terima_uang))
+                $('#transfer_dari').val('{{ $terima_uang->id_transfer_dari }}').trigger('change');
+                $('#setor_ke').val('{{ $terima_uang->id_setor_ke }}').trigger('change');
+                $('#jumlah').val('{{ $terima_uang->jumlah }}');
+                $('#memo').val(`{!! $terima_uang->memo !!}`);
+                $('#tanggal_transaksi').val('{{ date("Y-m-d",strtotime($terima_uang->tanggal_transaksi)) }}');
+                change_jumlah();
+            @endif
+        });
+
+        function change_jumlah(no) {
+            jumlah[no] = parseFloat(AutoNumeric.getNumber('#jumlah_' + no));
+            load();
         }
 
         function get_pajak(thisElement, no) {
@@ -370,19 +341,8 @@
             load();
         }
 
-        function change_jumlah(no, val_jumlah = null) {
-            if(val_jumlah){
-                AutoNumeric.set('#jumlah_' + no,val_jumlah);
-            }else{
-                AutoNumeric.set('#jumlah_' + no,AutoNumeric.getNumber('#jumlah_' + no));
-            }
-            jumlah[no] = parseFloat(AutoNumeric.getNumber('#jumlah_' + no));
-            load();
-        }
-
         function hapus(no) {
             $('#list_' + no).remove();
-            debit[no] = 0;
             jumlah[no] = 0;
             load();
         }
@@ -391,9 +351,7 @@
             $('#akun_'+no).val('').trigger('change');
             $('#id_detail_jurnal_'+no).val('');
             $('#deskripsi_'+no).val('');
-            AutoNumeric.set('#debit_' + no,0);
             AutoNumeric.set('#jumlah_' + no,0);
-            debit[no] = 0;
             jumlah[no] = 0;
             load();
         }

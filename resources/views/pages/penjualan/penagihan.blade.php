@@ -441,7 +441,6 @@
         var kuantitas_array = [];
 
         function load() {
-
             result_subtotal = 0;
             for (var key in subtotal) {
                 result_subtotal += subtotal[key];

@@ -809,33 +809,10 @@ class PenjualanController extends Controller
 
         DB::beginTransaction();
         $jurnal = new Jurnal;
-        $jurnal->penjualan($request,null,$is_requester);
+        $jurnal->penjualan($request,null,$is_requester, null);
 
         $penjualan = new Penjualan;
         $penjualan->insert($request, $jurnal->id, 'penagihan', null,$is_requester);
-
-        $multiple_gudang = Pengaturan_produk::where('id_company',Auth::user()->id_company)
-                                                    ->where('fitur','Multiple gudang')
-                                                    ->where('status','active')
-                                                    ->first();
-        $gudang = Gudang::where('id_company',Auth::user()->id_company)->get();
-
-
-        for ($i = 0; $i < count($request->input('produk')); $i++) {
-            $kuantitas = 0;
-            $produk = Produk::find($request->input('produk')[$i]);
-            if($produk->batas_stok_minimum){
-                if($multiple_gudang && $gudang->count() > 0){
-                    foreach($gudang as $v){
-                        $kuantitas += $request->input('kuantitas_'.$v->id)[$i];
-                    }
-                    $produk->stok = $produk->stok - $kuantitas;
-                }else{
-                    $produk->stok = $produk->stok - $request->input('kuantitas')[$i];
-                }
-                $produk->save();
-            }
-        }
 
         DB::commit();
 
@@ -932,7 +909,7 @@ class PenjualanController extends Controller
 
         DB::beginTransaction();
         $jurnal = new Jurnal;
-        $jurnal->penjualan($request, null, $is_requester);
+        $jurnal->penjualan($request, null, $is_requester,$id);
         
         $penjualan = new Penjualan;
         $penjualan->insert($request, $jurnal->id, 'penagihan', $id, $is_requester);

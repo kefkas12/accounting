@@ -176,6 +176,31 @@ class KasBankController extends Controller
         return view('pages.kas_bank.terima_uang.index', $data);
     }
 
+    public function insert_terima_uang(Request $request)
+    {
+        DB::beginTransaction();
+        $jurnal = new Jurnal();
+        $jurnal->terima_uang($request);
+
+        $terima_uang = new Transfer_uang();
+        $terima_uang->insert($request, $jurnal->id);
+        DB::commit();
+
+        return redirect('kas_bank/terima_uang/detail/'.$terima_uang->id);
+    }
+
+    public function update_terima_uang(Request $request, $id)
+    {
+        DB::beginTransaction();
+        $terima_uang = Terima_uang::find($id);
+        $jurnal = Jurnal::find($terima_uang->id_jurnal);
+        $jurnal->terima_uang($request, $id);
+        $terima_uang->ubah($request, $jurnal->id);
+        DB::commit();
+
+        return redirect('kas_bank/terima_uang/detail/'.$terima_uang->id);
+    }
+
     public function kirim_uang($id=null)
     {
         $data['sidebar'] = 'kas_bank';

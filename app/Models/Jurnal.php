@@ -84,6 +84,82 @@ class Jurnal extends Model
         $this->updateAkunBalance($request->input('transfer_dari'), 0, $jumlah);
     }
 
+    public function terima_uang($request, $id = null)
+    {
+        $total = $request->input('input_total') != '' || $request->input('input_total') != null ? number_format((float)str_replace(",", "", $_POST['input_total']), 2, '.', '') : 0;
+        $this->id_company = Auth::user()->id_company;
+        $this->tanggal_transaksi = $request->input('tanggal_transaksi');
+        $this->kategori = 'terima_uang';
+        if(!$id){
+            $this->no = $this->no('terima_uang');
+            $this->no_str = 'Bank Deposit #' . $this->no('terima_uang');
+        }
+        $this->debit = $total;
+        $this->kredit = $total;
+        $this->save();
+
+        if($id){
+            $detail_jurnal = Detail_jurnal::where('id_jurnal',$this->id)->get();
+            foreach($detail_jurnal as $v){
+                $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                            ->where('id_akun',$v->id_akun)->first();
+                $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                $akun_company->save();
+            }
+        }
+
+        Detail_jurnal::where('id_jurnal',$this->id)->delete();
+
+        $this->createDetailJurnal($this->id, $request->input('setor_ke'), $total, 0);
+        $this->updateAkunBalance($request->input('setor_ke'), $total, 0);
+
+        $this->createDetailJurnal($this->id, 43, 0, $request->input('input_ppn'));
+        $this->updateAkunBalance(43, 0, $request->input('input_ppn'));
+
+        for ($i = 0; $i < count($request->input('akun')); $i++) {
+            $this->createDetailJurnal($this->id, $request->input('akun')[$i], 0, $total);
+            $this->updateAkunBalance($request->input('akun')[$i], 0, $total);
+        }
+    }
+
+    public function kirim_uang($request, $id = null)
+    {
+        $total = $request->input('input_total') != '' || $request->input('input_total') != null ? number_format((float)str_replace(",", "", $_POST['input_total']), 2, '.', '') : 0;
+        $this->id_company = Auth::user()->id_company;
+        $this->tanggal_transaksi = $request->input('tanggal_transaksi');
+        $this->kategori = 'kirim_uang';
+        if(!$id){
+            $this->no = $this->no('kirim_uang');
+            $this->no_str = 'Bank Withdrawal #' . $this->no('kirim_uang');
+        }
+        $this->debit = $total;
+        $this->kredit = $total;
+        $this->save();
+
+        if($id){
+            $detail_jurnal = Detail_jurnal::where('id_jurnal',$this->id)->get();
+            foreach($detail_jurnal as $v){
+                $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                            ->where('id_akun',$v->id_akun)->first();
+                $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+                $akun_company->save();
+            }
+        }
+
+        Detail_jurnal::where('id_jurnal',$this->id)->delete();
+
+        $this->createDetailJurnal($this->id, 13, $request->input('input_ppn'), 0);
+        $this->updateAkunBalance(13, $request->input('input_ppn'), 0);
+
+        for ($i = 0; $i < count($request->input('akun')); $i++) {
+            $this->createDetailJurnal($this->id, $request->input('akun')[$i], $total, 0);
+            $this->updateAkunBalance($request->input('akun')[$i], $total, 0);
+        }
+
+        $this->createDetailJurnal($this->id, $request->input('bayar_dari'), 0, $total);
+        $this->updateAkunBalance($request->input('bayar_dari'), 0, $total);
+    }
+
     public function pembayaran_penjualan($request, $id = null)
     {
         $this->id_company = Auth::user()->id_company;
@@ -334,10 +410,24 @@ class Jurnal extends Model
         }
     }
 
-    public function penjualan($request, $id = null, $is_requester = null)
-    {
+    public function penjualan($request, $id = null, $is_requester = null, $id_pengiriman)
+    {        
+        $cogs = 0;
+        for ($i = 0; $i < count($request->input('produk')); $i++) {
+            $jumlah_barang = $request->input('kuantitas')[$i];
+        
+            $pembelian = Pembelian::where('id_company',Auth::user()->id_company)->where('jenis','faktur')->pluck('id');
+            $harga_total = Detail_pembelian::whereIn('id_pembelian',$pembelian)->where('id_produk',$request->input('produk')[$i])->sum(DB::raw('kuantitas * harga_satuan'));
+            $kuantitas = Detail_pembelian::whereIn('id_pembelian',$pembelian)->where('id_produk',$request->input('produk')[$i])->sum('kuantitas');
+            // $harga_satuan = Detail_pembelian::whereIn('id_pembelian',$pembelian)->where('id_produk',$request->input('produk')[$i])->sum('harga_satuan');
+            $harga_barang = $harga_total /(int)$kuantitas;
+            $cogs += $harga_barang * $jumlah_barang;
+        }
+
         $ongkos_kirim = $request->input('input_ongkos_kirim') ? $request->input('input_ongkos_kirim') : 0;
         $diskon_per_baris = $request->input('input_diskon_per_baris') ? $request->input('input_diskon_per_baris') : 0;
+
+        $subtotal = $diskon_per_baris + $request->input('input_subtotal') - $diskon_per_baris;
 
         $this->id_company = Auth::user()->id_company;
         $this->tanggal_transaksi = $request->input('tanggal_transaksi');
@@ -346,8 +436,8 @@ class Jurnal extends Model
             $this->no = $this->no('sales_invoice');
             $this->no_str = 'Sales Invoice #' . $this->no('sales_invoice');
         }
-        $this->debit = $request->input('input_total') + $request->input('input_subtotal') - $diskon_per_baris + $request->input('input_diskon_per_baris');
-        $this->kredit = $request->input('input_total') + $request->input('input_subtotal') - $diskon_per_baris + $ongkos_kirim + $request->input('input_ppn');
+        $this->debit = $cogs + $subtotal + $request->input('input_diskon_per_baris');
+        $this->kredit = $cogs + $subtotal + $ongkos_kirim + $request->input('input_ppn');
         if($is_requester){
             $this->status = 'draf';
         }
@@ -368,12 +458,17 @@ class Jurnal extends Model
         $this->createDetailJurnal($this->id, 4, $request->input('input_total'), 0);
         $this->updateAkunBalance(4, $request->input('input_total'), 0);
 
-        if($request->input('input_ongkos_kirim') && $request->input('input_ongkos_kirim') > 0){
-            $this->createDetailJurnal($this->id, 61, $request->input('input_subtotal') - $diskon_per_baris + $ongkos_kirim, 0);
-            $this->updateAkunBalance(61, $request->input('input_subtotal') - $diskon_per_baris + $ongkos_kirim, 0);
+        if($id_pengiriman){
+            if($request->input('input_ongkos_kirim') && $request->input('input_ongkos_kirim') > 0){
+                $this->createDetailJurnal($this->id, 61, $request->input('input_subtotal') - $diskon_per_baris + $ongkos_kirim, 0);
+                $this->updateAkunBalance(61, $request->input('input_subtotal') - $diskon_per_baris + $ongkos_kirim, 0);
+            }else{
+                $this->createDetailJurnal($this->id, 61, $request->input('input_subtotal') - $diskon_per_baris, 0);
+                $this->updateAkunBalance(61, $request->input('input_subtotal') - $diskon_per_baris, 0);
+            }
         }else{
-            $this->createDetailJurnal($this->id, 61, $request->input('input_subtotal') - $diskon_per_baris, 0);
-            $this->updateAkunBalance(61, $request->input('input_subtotal') - $diskon_per_baris, 0);
+            $this->createDetailJurnal($this->id, 62, $cogs, 0);
+            $this->updateAkunBalance(6, 62, $cogs, 0);
         }
 
         if($request->input('input_diskon_per_baris')){
@@ -384,15 +479,20 @@ class Jurnal extends Model
         $this->createDetailJurnal($this->id, 58, 0, $request->input('input_subtotal'));
         $this->updateAkunBalance(58, 0, $request->input('input_subtotal'));
         
-        if($request->input('input_ongkos_kirim') && $request->input('input_ongkos_kirim') > 0){
-            $this->createDetailJurnal($this->id, 5, 0, $request->input('input_subtotal') - $request->input('input_diskon_per_baris') + $request->input('input_ongkos_kirim'));  
-            $this->updateAkunBalance(5, 0, $request->input('input_subtotal') - $request->input('input_diskon_per_baris') + $request->input('input_ongkos_kirim'));
+        if($id_pengiriman){
+            if($request->input('input_ongkos_kirim') && $request->input('input_ongkos_kirim') > 0){
+                $this->createDetailJurnal($this->id, 5, 0, $request->input('input_subtotal') - $request->input('input_diskon_per_baris') + $request->input('input_ongkos_kirim'));  
+                $this->updateAkunBalance(5, 0, $request->input('input_subtotal') - $request->input('input_diskon_per_baris') + $request->input('input_ongkos_kirim'));
 
-            $this->createDetailJurnal($this->id, 121, 0, $request->input('input_ongkos_kirim'));  
-            $this->updateAkunBalance(121, 0, $request->input('input_ongkos_kirim'));
+                $this->createDetailJurnal($this->id, 121, 0, $request->input('input_ongkos_kirim'));  
+                $this->updateAkunBalance(121, 0, $request->input('input_ongkos_kirim'));
+            }else{
+                $this->createDetailJurnal($this->id, 5, 0, $request->input('input_subtotal') - $request->input('input_diskon_per_baris'));  
+                $this->updateAkunBalance(5, 0, $request->input('input_subtotal') - $request->input('input_diskon_per_baris'));
+            }
         }else{
-            $this->createDetailJurnal($this->id, 5, 0, $request->input('input_subtotal') - $request->input('input_diskon_per_baris'));  
-            $this->updateAkunBalance(5, 0, $request->input('input_subtotal') - $request->input('input_diskon_per_baris'));
+            $this->createDetailJurnal($this->id, 6, 0, $cogs);
+            $this->updateAkunBalance(6, 0, $cogs);
         }
 
         if($request->input('input_ppn')){

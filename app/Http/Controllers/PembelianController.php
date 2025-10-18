@@ -640,7 +640,7 @@ class PembelianController extends Controller
 
         DB::beginTransaction();
         $jurnal = new Jurnal;
-        $jurnal->pembelian($request, null, $is_requester);
+        $jurnal->pembelian($request, null, $is_requester, $id);
         
         $pembelian = new Pembelian;
         $pembelian->insert($request, $jurnal->id, 'faktur', $id, $is_requester);
