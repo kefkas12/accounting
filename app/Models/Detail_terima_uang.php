@@ -11,4 +11,6 @@ class Detail_terima_uang extends Model
 {
     use HasFactory;
     protected $table = 'detail_terima_uang';
+
+    public $timestamps = false;
 }

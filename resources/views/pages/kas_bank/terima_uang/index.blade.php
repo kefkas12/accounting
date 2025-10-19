@@ -317,6 +317,7 @@
 
         function change_jumlah(no) {
             jumlah[no] = parseFloat(AutoNumeric.getNumber('#jumlah_' + no));
+            get_pajak($('#pajak_' + no), no);
             load();
         }
 

@@ -11,4 +11,6 @@ class Detail_kirim_uang extends Model
 {
     use HasFactory;
     protected $table = 'detail_kirim_uang';
+
+    public $timestamps = false;
 }

@@ -51,6 +51,16 @@ class Jurnal extends Model
         return $this->hasOne(Transfer_uang::class, 'id_jurnal', 'id');
     }
 
+    public function kirimUang()  // purchase payment
+    {
+        return $this->hasOne(Kirim_uang::class, 'id_jurnal', 'id');
+    }
+
+    public function terimaUang()  // purchase payment
+    {
+        return $this->hasOne(Terima_uang::class, 'id_jurnal', 'id');
+    }
+
     public function transfer_uang($request, $id = null)
     {
         $jumlah = $request->input('jumlah') != '' || $request->input('jumlah') != null ? number_format((float)str_replace(",", "", $_POST['jumlah']), 2, '.', '') : 0;

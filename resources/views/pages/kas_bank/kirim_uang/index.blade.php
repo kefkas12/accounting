@@ -263,15 +263,6 @@
                 placeholder: 'Pilih akun'
             });
 
-            if(id > 1){
-                $('#akun_'+id).on('select2:select', function (e) {
-                    if(id >= x){
-                        x += 1;
-                        create_row();
-                    }
-                });
-            }
-
             new AutoNumeric("#jumlah_" + id, {
                 commaDecimalCharDotSeparator: false,
                 watchExternalChanges: true,
@@ -326,6 +317,7 @@
 
         function change_jumlah(no) {
             jumlah[no] = parseFloat(AutoNumeric.getNumber('#jumlah_' + no));
+            get_pajak($('#pajak_' + no), no);
             load();
         }
 

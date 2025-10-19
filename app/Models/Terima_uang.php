@@ -69,7 +69,7 @@ class Terima_uang extends Model
             $detail_terima_uang = new Detail_terima_uang;
             $detail_terima_uang->id_terima_uang = $this->id;
             $detail_terima_uang->id_company = Auth::user()->id_company;
-            $detail_terima_uang->akun = $request->input('akun')[$i];
+            $detail_terima_uang->id_akun = $request->input('akun')[$i];
             $detail_terima_uang->deskripsi = $request->input('deskripsi')[$i];
             $detail_terima_uang->jumlah = $request->input('jumlah')[$i] != '' || $request->input('jumlah')[$i] != null ? number_format((float)str_replace(",", "", $request->input('jumlah')[$i]), 2, '.', '') : 0;
             $detail_terima_uang->pajak = $detail_terima_uang->jumlah * $request->input('pajak')[$i] / 100;

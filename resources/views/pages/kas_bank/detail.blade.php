@@ -65,6 +65,11 @@
                                                 <a href="{{ url('pembelian/receive_payment').'/'.$v->id_pembayaran_pembelian }}">{{ $v->jurnal->no_str }}</a>
                                                 @elseif($v->jurnal->kategori == 'bank_transfer')
                                                 <a href="{{ url('kas_bank/transfer_uang/detail').'/'.$v->jurnal->transferUang->id }}">{{ $v->jurnal->transferUang->no_str }}</a>
+                                                @elseif($v->jurnal->kategori == 'terima_uang')
+                                                <a href="{{ url('kas_bank/terima_uang/detail').'/'.$v->jurnal->terimaUang->id }}">{{ $v->jurnal->terimaUang->no_str }}</a>
+                                                @elseif($v->jurnal->kategori == 'kirim_uang')
+                                                <a href="{{ url('kas_bank/kirim_uang/detail').'/'.$v->jurnal->kirimUang->id }}">{{ $v->jurnal->kirimUang->no_str }}</a>
+
                                                 @endif
                                             </td>
                                             <td class="text-right">{{ number_format($v->debit,2,',','.') }}</td>

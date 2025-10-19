@@ -61,6 +61,8 @@ class KasBankController extends Controller
                                                         'jurnal.pembayaranPembelian.detail_pembayaran_pembelian.pembelian:id,no_str,jenis,id_supplier',
                                                         'jurnal.pembayaranPembelian.detail_pembayaran_pembelian.pembelian.supplier:id,nama',
                                                         'jurnal.transferUang:id,id_jurnal,no_str,id_transfer_dari,transfer_dari,id_setor_ke,setor_ke',
+                                                        'jurnal.kirimUang:id,id_jurnal,no_str,id_bayar_dari,bayar_dari',
+                                                        'jurnal.terimaUang:id,id_jurnal,no_str,id_setor_ke,setor_ke',
                                                     ])
                                                     ->where('detail_jurnal.id_company', Auth::user()->id_company)
                                                     ->where('detail_jurnal.id_akun', $id)
@@ -163,13 +165,13 @@ class KasBankController extends Controller
         $data['kontak'] = Kontak::where('id_company',Auth::user()->id_company)
                                     ->get();
         if($id){
-            $data['transfer_uang'] = Transfer_uang::where('id', $id)
+            $data['terima_uang'] = Terima_uang::where('id', $id)
                                         ->where('id_company',Auth::user()->id_company)
                                         ->first();
             $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
-                                        ->leftJoin('transfer_uang','jurnal.id','=','transfer_uang.id_jurnal')
+                                        ->leftJoin('terima_uang','jurnal.id','=','terima_uang.id_jurnal')
                                         ->select('jurnal.*')
-                                        ->where('transfer_uang.id',$id)
+                                        ->where('terima_uang.id',$id)
                                         ->first();
         }
 
@@ -182,7 +184,7 @@ class KasBankController extends Controller
         $jurnal = new Jurnal();
         $jurnal->terima_uang($request);
 
-        $terima_uang = new Transfer_uang();
+        $terima_uang = new Terima_uang();
         $terima_uang->insert($request, $jurnal->id);
         DB::commit();
 
@@ -209,13 +211,13 @@ class KasBankController extends Controller
         $data['kontak'] = Kontak::where('id_company',Auth::user()->id_company)
                                     ->get();
         if($id){
-            $data['transfer_uang'] = Transfer_uang::where('id', $id)
+            $data['kirim_uang'] = Kirim_uang::where('id', $id)
                                         ->where('id_company',Auth::user()->id_company)
                                         ->first();
             $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
-                                        ->leftJoin('transfer_uang','jurnal.id','=','transfer_uang.id_jurnal')
+                                        ->leftJoin('kirim_uang','jurnal.id','=','kirim_uang.id_jurnal')
                                         ->select('jurnal.*')
-                                        ->where('transfer_uang.id',$id)
+                                        ->where('kirim_uang.id',$id)
                                         ->first();
         }
 
