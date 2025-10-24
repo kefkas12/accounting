@@ -29,6 +29,11 @@ class Terima_uang extends Model
         return $no;
     }
 
+    public function kontak()
+    {
+        return $this->belongsTo(Kontak::class, 'id_yang_membayar', 'id');
+    }
+
     public function insert($request, $idJurnal)
     {
         $this->id_company = Auth::user()->id_company;
@@ -47,6 +52,11 @@ class Terima_uang extends Model
         $this->no_str = 'Bank Deposit #' . $this->no;
         $this->id_setor_ke = $request->input('setor_ke');
         $this->setor_ke = Akun::where('id',$this->id_setor_ke)->first()->nama;
+
+        $yang_membayar = explode("_", $request->input('yang_membayar'));
+
+        $this->id_yang_membayar = $yang_membayar[0];
+        $this->tipe_yang_membayar = $yang_membayar[1];
         $this->jumlah = $request->input('input_total');
 
         $this->memo = $request->input('memo') ? $request->input('memo') : null;

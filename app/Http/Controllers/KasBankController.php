@@ -6,6 +6,7 @@ use App\Models\Akun;
 use App\Models\Akun_company;
 use App\Models\Detail_jurnal;
 use App\Models\Detail_penerimaan;
+use App\Models\Detail_terima_uang;
 use App\Models\Jurnal;
 use App\Models\Kirim_uang;
 use App\Models\Kontak;
@@ -62,15 +63,14 @@ class KasBankController extends Controller
                                                         'jurnal.pembayaranPembelian.detail_pembayaran_pembelian.pembelian.supplier:id,nama',
                                                         'jurnal.transferUang:id,id_jurnal,no_str,id_transfer_dari,transfer_dari,id_setor_ke,setor_ke',
                                                         'jurnal.kirimUang:id,id_jurnal,no_str,id_bayar_dari,bayar_dari',
-                                                        'jurnal.terimaUang:id,id_jurnal,no_str,id_setor_ke,setor_ke',
+                                                        'jurnal.terimaUang:id,id_jurnal,no_str,id_setor_ke,setor_ke,id_yang_membayar,tipe_yang_membayar',
+                                                        'jurnal.terimaUang.kontak:id,nama',
                                                     ])
                                                     ->where('detail_jurnal.id_company', Auth::user()->id_company)
                                                     ->where('detail_jurnal.id_akun', $id)
                                                     ->orderByRaw("STR_TO_DATE(jurnal.tanggal_transaksi, '%d/%m/%Y') ASC")
-                                                    ->orderBy('detail_jurnal.debit', 'desc')
                                                     ->get();
         }
-
         return view('pages.kas_bank.detail', $data);
     }
 
@@ -201,6 +201,46 @@ class KasBankController extends Controller
         DB::commit();
 
         return redirect('kas_bank/terima_uang/detail/'.$terima_uang->id);
+    }
+
+    public function detail_terima_uang($id=null)
+    {
+        $data['sidebar'] = 'terima_uang';
+        $data['akun'] = Akun::where('id',$id)->first();
+        $data['terima_uang'] = Terima_uang::where('id_company', Auth::user()->id_company)
+                                        ->where('id',$id)
+                                        ->first();
+        $data['detail_terima_uang'] = Detail_terima_uang::with('akun')
+                                        ->where('id_terima_uang', $id)
+                                        ->get();
+        $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
+                                        ->leftJoin('terima_uang','jurnal.id','=','terima_uang.id_jurnal')
+                                        ->select('jurnal.*')
+                                        ->where('terima_uang.id',$id)
+                                        ->first();
+
+        return view('pages.kas_bank.terima_uang.detail', $data);
+    }
+
+    public function hapus_terima_uang($id){
+        DB::beginTransaction();
+        $terima_uang = Terima_uang::find($id);
+
+        $detail_jurnal = Detail_jurnal::where('id_jurnal',$terima_uang->id_jurnal)->get();
+        foreach($detail_jurnal as $v){
+            $akun_company = Akun_company::where('id_company',Auth::user()->id_company)
+                        ->where('id_akun',$v->id_akun)->first();
+            $akun_company->saldo = $akun_company->saldo - $v->debit + $v->kredit;
+            $akun_company->save();
+        }
+
+        Detail_jurnal::where('id_jurnal',$terima_uang->id_jurnal)->delete();
+        Jurnal::find($terima_uang->id_jurnal)->delete();
+        Log::where('id_transaksi',$id)->delete();
+        $terima_uang->delete();
+        DB::commit();
+        
+        return redirect('terima_uang');
     }
 
     public function kirim_uang($id=null)

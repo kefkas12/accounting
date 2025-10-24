@@ -52,6 +52,8 @@
                                                     <a href="{{ url('pelanggan/detail').'/'.$v->jurnal->pembayaranPenjualan->detail_pembayaran_penjualan[0]->penjualan->pelanggan->id }}">{{ $v->jurnal->pembayaranPenjualan->detail_pembayaran_penjualan[0]->penjualan->pelanggan->nama }}</a>
                                                 @elseif($v->jurnal->pembayaranPembelian != null)
                                                     <a href="{{ url('supplier/detail').'/'.$v->jurnal->pembayaranPembelian->detail_pembayaran_pembelian[0]->pembelian->supplier->id }}">{{ $v->jurnal->pembayaranPembelian->detail_pembayaran_pembelian[0]->pembelian->supplier->nama }}</a>
+                                                @elseif($v->jurnal->terimaUang != null)
+                                                    <a href="{{ url($v->jurnal->terimaUang->tipe_yang_membayar.'/detail').'/'.$v->jurnal->terimaUang->id_yang_membayar }}">{{ $v->jurnal->terimaUang->kontak->nama }}</a>
                                                 @endif
                                             </td>
                                             <td>

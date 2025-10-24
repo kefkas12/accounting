@@ -92,7 +92,7 @@
                                             <select class="form-control form-control-sm" name="yang_membayar" id="yang_membayar">
                                                 <option value="" hidden selected disabled>Pilih penerima</option>
                                                 @foreach ($kontak as $v)
-                                                    <option value="{{ $v->id }}">{{ $v->nama }} - ({{ $v->tipe }})</option>
+                                                    <option value="{{ $v->id }}_{{ $v->tipe }}">{{ $v->nama }} - ({{ $v->tipe }})</option>
                                                 @endforeach
                                             </select>
                                         </div>

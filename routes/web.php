@@ -96,6 +96,8 @@ Route::controller(KasBankController::class)->prefix('kas_bank')->group(function 
 	Route::post('/transfer_uang/{id}', 'update_transfer_uang');
 
 	Route::get('/terima_uang', 'terima_uang');
+	Route::get('/terima_uang/detail/{id}', 'detail_terima_uang');
+	Route::post('/terima_uang/hapus/{id}', 'hapus_terima_uang');
 	Route::post('/terima_uang', 'insert_terima_uang');
 
 	Route::get('/kirim_uang', 'kirim_uang');

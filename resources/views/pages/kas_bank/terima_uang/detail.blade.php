@@ -21,50 +21,120 @@
                     <div class="card-header bg-transparent border-0">
                         <div class="row">
                             <div class="col-sm-8">Transaksi <br>
-                                <h2>{{ $transfer_uang->no_str }}</h2></div>
+                                <h2>{{ $terima_uang->no_str }}</h2></div>
                             <div class="col-sm-4 d-flex justify-content-end">
-                                <h1 class="text-dark">SELESAI</h1>
+                                <h1>Selesai</h1>
                             </div>
                         </div>
                         
                     </div>
                     <div class="card-body" style="padding: 0px !important;">
                         <div style="background-color: #E0F7FF; border-top: 2px solid #B3D7E5;">
-                            <div class="container-fluid mt-5">
-                                <div class="row">
-                                    <div class="col-sm-2 mt-2">Transfer Dari</div>
-                                    <div class="col-sm-4 mt-2"><a href="{{ url('kas_bank/detail').'/'.$transfer_uang->id_transfer_dari }}">{{ $transfer_uang->transfer_dari }}</a></div>
-                                    <div class="col-sm-4 mt-2 d-flex justify-content-end">No Transaksi: <br> {{ $transfer_uang->no }}</div>
+                            <div class="row">
+                                <div class="col-sm-8 mt-2">Setor Ke</div>
+                                <div class="col-sm-4 mt-2 d-flex justify-content-end"></div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-sm-8"><strong><a href="{{ url('kas_bank/detail').'/'.$terima_uang->id_setor_ke }}">{{ $terima_uang->setor_ke }}</a></strong></div>
+                                <div class="col-sm-4 d-flex justify-content-end">
+                                    <h2>Total Amount <span id="total_pembayaran" style="color:#2980b9">Rp. {{ number_format($terima_uang->jumlah,2,',','.') }}</span><br> 
+                                        <a href="#" class="text-xs" data-toggle="modal" data-target="#exampleModal">Lihat Jurnal Entry</a></h2>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm-2 mt-2">Setor Ke</div>
-                                    <div class="col-sm-4 mt-2"><a href="{{ url('kas_bank/detail').'/'.$transfer_uang->id_setor_ke }}">{{ $transfer_uang->setor_ke }}</a></div>
-                                    <div class="col-sm-4 mt-2 d-flex justify-content-end"><br><br></div>    
+                            </div>
+                            <div class="row">
+                            </div>
+                        </div>
+                        <div class="mt-3 mb-5">
+                            <div class="row">
+                                <div class="col-sm-3"><strong>Pembayar</strong></div>
+                                <div class="col-sm-3"><strong>Tgl Transaksi</strong></div>
+                                <div class="col-sm-3"><strong>No Transaksi</strong></div>
+                                <div class="col-sm-6"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3"><a href="{{ url($terima_uang->tipe_yang_membayar.'/detail').'/'.$terima_uang->id_yang_membayar }}">{{ $terima_uang->kontak->nama }}</a></div>
+                                <div class="col-sm-3">{{ date('d/m/Y', strtotime($terima_uang->tanggal_transaksi)) }}</div>
+                                <div class="col-sm-3">{{ $terima_uang->no }}</div>
+                                <div class="col-sm-3"></div>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table my-4">
+                                <thead style="background-color: #E0F7FF">
+                                    <tr>
+                                        <th>Akun</th>
+                                        <th>Deskripsi</th>
+                                        <th>Pajak</th>
+                                        <th class="d-flex justify-content-end">Jumlah (in IDR)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php 
+                                        $subtotal = 0;
+                                        $pajak = 0;
+                                    @endphp
+                                    @foreach($detail_terima_uang as $v)
+                                    <tr>
+                                        <td><a href="{{ url('akun/detail').'/'.$v->id_akun }}">{{ $v->akun->nama }}</a></td>
+                                        <td>{{ $v->deskripsi }}</td>
+                                        <td>@if($v->pajak) PPN @endif</td>
+                                        <td class="d-flex justify-content-end">Rp. {{ number_format($v->jumlah,2,',','.') }}</td>
+                                    </tr>
+                                    @php
+                                        $subtotal += $v->jumlah;
+                                        $pajak += $v->pajak;
+                                    @endphp
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col"></div>
+                            <div class="col ">
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <b><span>Total</span></b>
+                                    </div>
+                                    <div class="col d-flex justify-content-end">
+                                        <b><span id="subtotal">Rp. {{ number_format($subtotal,2,',','.') }}</span></b>
+                                        <input type="text" id="input_subtotal" name="subtotal" hidden>
+                                    </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm-2 mt-2">Tgl Transaksi:</div>
-                                    <div class="col-sm-2 mt-2">{{ date('d/m/Y',strtotime($transfer_uang->tanggal_transaksi)) }}</div>
-                                    <div class="col-sm-4 mt-2 d-flex justify-content-end"><br><br></div>  
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <b><span>PPN</span></b>
+                                    </div>
+                                    <div class="col d-flex justify-content-end">
+                                        <b><span id="pajak">Rp. {{ number_format($pajak,2,',','.') }}</span></b>
+                                        <input type="text" id="input_pajak" name="pajak" hidden>
+                                    </div>
                                 </div>
-                                <div class="row mb-4">
-                                    <div class="col-sm-2 mt-2">Tgl Transaksi:</div>
-                                    <div class="col-sm-2 mt-2">Rp {{ number_format($transfer_uang->jumlah,2,',','.') }} <br> <a href="#" class="text-xs" data-toggle="modal" data-target="#exampleModal">Lihat Jurnal Entry</a></h2></div>
-                                    <div class="col-sm-4 mt-2 d-flex justify-content-end"><br><br><br><br></div>  
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <b><span>Sisa Tagihan</span></b>
+                                    </div>
+                                    <div class="col d-flex justify-content-end">
+                                        <b><span id="pajak">Rp. {{ number_format($subtotal+$pajak,2,',','.') }}</span></b>
+                                        <input type="text" id="input_pajak" name="pajak" hidden>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row mb-4">
                             <div class="col-sm-6">
-                                <form id="deleteForm" action="{{ url('kas_bank/transfer_uang/hapus') . '/' . $transfer_uang->id }}"
+                                @hasanyrole('pemilik')
+                                <form id="deleteForm" action="{{ url('kas_bank/terima_uang/hapus') . '/' . $terima_uang->id }}"
                                     method="post">
                                     @csrf
                                     <button type="submit"
                                         class="btn btn-outline-danger"onclick="confirmDelete(event)">Hapus</button>
                                 </form>
+                                @endhasallroles
                             </div>
                             <div class="col-sm-6 d-flex justify-content-end">
-                                <a href="{{ url('kas_bank/detail') . '/' . $transfer_uang->id_transfer_dari }}" class="btn btn-dark">Kembali</a>
-                                <a href="{{ url('kas_bank/transfer_uang/edit') . '/' . $transfer_uang->id }}" class="btn btn-outline-primary">Ubah</a>
+                                <a href="{{ url('pembelian/detail') }}" class="btn btn-dark">Kembali</a>
+                                <a href="{{ url('kas_bank/terima_uang') . '/' . $terima_uang->id }}" class="btn btn-outline-primary">Ubah</a>
                             </div>
                         </div>
                     </div>
@@ -76,7 +146,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="exampleModalLabel"><div class="text-xs mb-1">Laporan Jurnal</div><strong>{{ $transfer_uang->no_str }}</strong></h4>
+                    <h4 class="modal-title" id="exampleModalLabel"><div class="text-xs mb-1">Laporan Jurnal</div><strong>{{ $terima_uang->no_str }}</strong></h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

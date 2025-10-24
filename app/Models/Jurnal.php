@@ -127,8 +127,8 @@ class Jurnal extends Model
         $this->updateAkunBalance(43, 0, $request->input('input_ppn'));
 
         for ($i = 0; $i < count($request->input('akun')); $i++) {
-            $this->createDetailJurnal($this->id, $request->input('akun')[$i], 0, $total);
-            $this->updateAkunBalance($request->input('akun')[$i], 0, $total);
+            $this->createDetailJurnal($this->id, $request->input('akun')[$i], 0, $request->input('jumlah')[$i] != '' || $request->input('jumlah')[$i] != null ? number_format((float)str_replace(",", "", $request->input('jumlah')[$i]), 2, '.', '') : 0);
+            $this->updateAkunBalance($request->input('akun')[$i], 0, $request->input('jumlah')[$i] != '' || $request->input('jumlah')[$i] != null ? number_format((float)str_replace(",", "", $request->input('jumlah')[$i]), 2, '.', '') : 0);
         }
     }
 
