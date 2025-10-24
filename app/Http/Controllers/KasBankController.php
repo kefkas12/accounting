@@ -168,6 +168,9 @@ class KasBankController extends Controller
             $data['terima_uang'] = Terima_uang::where('id', $id)
                                         ->where('id_company',Auth::user()->id_company)
                                         ->first();
+            $data['detail_terima_uang'] = Detail_terima_uang::with('akun')
+                                        ->where('id_terima_uang', $id)
+                                        ->get();
             $data['jurnal'] = Jurnal::with('detail_jurnal.akun')
                                         ->leftJoin('terima_uang','jurnal.id','=','terima_uang.id_jurnal')
                                         ->select('jurnal.*')

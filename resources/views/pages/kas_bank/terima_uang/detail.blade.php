@@ -133,8 +133,8 @@
                                 @endhasallroles
                             </div>
                             <div class="col-sm-6 d-flex justify-content-end">
-                                <a href="{{ url('pembelian/detail') }}" class="btn btn-dark">Kembali</a>
-                                <a href="{{ url('kas_bank/terima_uang') . '/' . $terima_uang->id }}" class="btn btn-outline-primary">Ubah</a>
+                                <a href="{{ url('kas_bank/terima_uang/edit') . '/' . $terima_uang->id }}" class="btn btn-dark">Kembali</a>
+                                <a href="{{ url('kas_bank/terima_uang/edit') . '/' . $terima_uang->id }}" class="btn btn-outline-primary">Ubah</a>
                             </div>
                         </div>
                     </div>

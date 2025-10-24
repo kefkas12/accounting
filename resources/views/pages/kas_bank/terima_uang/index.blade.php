@@ -310,7 +310,18 @@
                 $('#setor_ke').val('{{ $terima_uang->id_setor_ke }}').trigger('change');
                 $('#jumlah').val('{{ $terima_uang->jumlah }}');
                 $('#memo').val(`{!! $terima_uang->memo !!}`);
+                $('#yang_membayar').val('{{ $terima_uang->id_yang_membayar }}_{{ $terima_uang->tipe_yang_membayar }}');
                 $('#tanggal_transaksi').val('{{ date("Y-m-d",strtotime($terima_uang->tanggal_transaksi)) }}');
+
+                var x = 1;
+                @foreach ($detail_terima_uang as $v)
+                    $('#akun_'+x).val('{{ $v->id_akun }}').trigger('change');
+                    $('#deskripsi_'+x).val(`{!! $v->deskripsi !!}`);
+                    @if($v->pajak)
+                    $('#pajak_'+x).val('11').trigger('change');
+                    @endif
+                    x++;
+                @endforeach
                 change_jumlah();
             @endif
         });
